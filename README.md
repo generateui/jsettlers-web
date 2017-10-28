@@ -14,4 +14,4 @@ Carcatonne depends on npm, browserify & protobuf. To build locally:
 
 This should have you setup. To run the app, run `index.html`. You should see the following:
 
-![screenie](https://github.com/geluso/carcatonne/raw/master/doc/images/app-screenshot.png?raw=true "Screenshot")
+![screenie](https://github.com/geluso/carcattonne/blob/master/doc/images/app-screenshot.png?raw=true "Screenshot")
