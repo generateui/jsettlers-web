@@ -15,5 +15,9 @@
   "bugs": {
     "url": "https://github.com/geluso/carcattonne/issues"
   },
-  "homepage": "https://github.com/geluso/carcattonne#readme"
+  "homepage": "https://github.com/geluso/carcattonne#readme",
+  "dependencies": {
+    "google-protobuf": "^3.4.0",
+    "protobufjs": "^6.8.0"
+  }
 }
