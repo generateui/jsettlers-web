@@ -1,0 +1,19 @@
+{
+  "name": "carcattonne",
+  "version": "0.0.1",
+  "description": "a hexagonal game to build settlements, cities & roads",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/geluso/carcattonne.git"
+  },
+  "author": "",
+  "license": "AGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/geluso/carcattonne/issues"
+  },
+  "homepage": "https://github.com/geluso/carcattonne#readme"
+}
