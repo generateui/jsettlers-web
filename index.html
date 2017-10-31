@@ -6,7 +6,35 @@
         <title>Carcatonne</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <style>
+            body {
+                overflow: hidden;
+            }
+            #view {
+                position: absolute;
+                top: 0;
+                left: 0;
+            }
+            input[type='radio'] {
+                display: none;
+            }
+            label {
+                text-align: right;
+                clear: both;
+                float: left;
+                cursor: pointer;
+                border: 2px solid transparent;
+            }
+            input[type='radio']:checked+label {
+                font-weight: 900;
+                border: 2px solid black;
+            }
+            #hex-type-picker {
+                position: absolute;
+                float:left;
+            }
 
+        </style>
     </head>
     <body>
         <!--[if lte IE 9]>
@@ -14,10 +42,36 @@
         <![endif]-->
 
         <p>This is SPCARCATONNE!!!!!!</p>
-		<div>
-			<p>All hexagon types currently defined:</p>
-			<ol id="hexagon-types"></ol>
-		</div>
+        
         <script src="bundle.js"></script>
+        <script src="src/hex.js"></script>
+        <script src="src/board.js"></script>
+        <script src="src/coord.js"></script>
+        <script src="src/ui/boardRenderer.js"></script>
+        <script src="src/ui/boardBehavior.js"></script>
+        <script src="src/ui/hexTypePicker.js"></script>
+
+        <script type="text/javascript" src="von-grid/lib/three.min.js"></script>
+        <script type="text/javascript" src="von-grid/lib/OrbitControls.js"></script>
+        <script type="text/javascript" src="von-grid/dist/hex-grid.min.js"></script>
+
+        <div id="view"></div>
+
+		<div id="hex-type-picker">
+			<p>Select a hex type:</p>
+            <div id="hexagon-types"></div>
+        </div>
+        
+        <script type="text/javascript">
+            window.addEventListener('load', function(evt) {
+                var el = document.getElementById("view");
+                var board = new Standard4pDesign();
+                var setHex = new SetHex();
+                var boardRenderer = new BoardRenderer(el, board, setHex);
+                var hexTypePicker = new HexTypePicker(setHex);
+                hexTypePicker.setHex = boardRenderer.setHex;
+            });
+        </script>
+
     </body>
 </html>

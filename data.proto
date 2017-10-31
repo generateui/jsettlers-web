@@ -31,6 +31,7 @@ enum HexType {
 	FOREST = 5; // timber
 	SEA = 6;
 	DESERT = 7;
+	HEXFROMBAG = 8;
 }
 
 message Hex {
