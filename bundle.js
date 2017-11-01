@@ -979,18 +979,10 @@ goog.object.extend(exports, proto.carcattone_data);
 var data = require("./data_pb");
 
 function main() {
-	// var el = document.getElementById("hexagon-types");
-	// var allHexTypes = proto.carcattone_data.HexType;
-	// for (var hexType in allHexTypes) {
-	// 	var itemEl = document.createElement("li");
-	// 	itemEl.textContent = hexType.toString();
-	// 	el.appendChild(itemEl);
-	// }
-
-	// var desert = new Desert({});
+ 
 }
 main();
-
+ 
 },{"./data_pb":1}],3:[function(require,module,exports){
 (function (global){
 var $jscomp={scope:{},getGlobal:function(a){return"undefined"!=typeof window&&window===a?a:"undefined"!=typeof global?global:a}};$jscomp.global=$jscomp.getGlobal(this);$jscomp.initSymbol=function(){$jscomp.global.Symbol||($jscomp.global.Symbol=$jscomp.Symbol);$jscomp.initSymbol=function(){}};$jscomp.symbolCounter_=0;$jscomp.Symbol=function(a){return"jscomp_symbol_"+a+$jscomp.symbolCounter_++};
