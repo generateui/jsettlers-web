@@ -11,11 +11,57 @@ class HexRenderer {
         grid.cells[hash].tile.material.color = color;
     }
 }
+class NodeRenderer {
+    constructor(node, vgGrid) {
+        this.node = node;
+        this.vgGrid = vgGrid;
+        this.mesh = null;
+
+        var cilinderGeometry = new THREE.CylinderGeometry(3, 3, 1, 16);
+        var edges = new THREE.EdgesGeometry(cilinderGeometry);
+        var lines = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x000000 }));
+        var material = new THREE.MeshBasicMaterial({color: 0xffff00});
+        var cilinder = new THREE.Mesh(cilinderGeometry, material);
+        cilinder.visible = false;
+        cilinder.add(lines);
+        var position = this.nodeToPixel(node);
+        cilinder.position.set(position.x, position.y, position.z);
+        this.mesh = cilinder;
+    }
+
+    nodeToPixel(node) {
+        // TODO: this code is a bit barfy.
+        // TODO: cache
+        var cell1 = new vg.Cell(node.coord1.x, node.coord1.y, node.coord1.z);
+        var coord1Position = this.cellToPixel(cell1);
+
+        var cell2 = new vg.Cell(node.coord2.x, node.coord2.y, node.coord2.z);
+        var coord2Position = this.cellToPixel(cell2);
+
+        var cell3 = new vg.Cell(node.coord3.x, node.coord3.y, node.coord3.z);
+        var coord3Position = this.cellToPixel(cell3);
+        // coordPosition is the center of a hex in world coordinates
+        // the center of three world positions is the position of the node
+        var centroidX = (coord1Position.x + coord2Position.x + coord3Position.x) / 3;
+        var centroidZ = (coord1Position.z + coord2Position.z + coord3Position.z) / 3;
+        return new THREE.Vector3(centroidX, 2, centroidZ);
+    }
+
+	cellToPixel(cell) {
+        return new THREE.Vector3(
+            cell.q * this.vgGrid._cellWidth * 0.75,
+            cell.h,
+            -((cell.s - cell.r) * this.vgGrid._cellLength * 0.5)
+        );
+	}
+}
 /* Renders a 3D hexagon board using von-grid */
 class BoardRenderer {
     constructor(element, board, behavior) {
         this.board = board || new Standard4pDesign();
-        this.behavior = behavior || new SetHex();
+        this._behavior = behavior || new SetHex();
+        this.displayedNodes = [];
+        this.nodesGroup = new THREE.Group();
 
         this.scene = new vg.Scene({
             element: element,
@@ -41,13 +87,13 @@ class BoardRenderer {
 
         var vec = new THREE.Vector3();
 
-        this.hexRenderers = new Map(); // <coord.hash, HexRenderer>
+        this.hexRenderers = new Map(); // <Coord, HexRenderer>
 
         this.mouse.signal.add(function(evt, tile) {
             if (evt === vg.MouseCaster.CLICK) {
                 var cell = this.vgBoard.grid.pixelToCell(this.mouse.position);
                 var coord3D = new Coord3D(cell.q, cell.r, cell.s);
-                var hex = this.board.hexes.get(coord3D.hash);
+                var hex = this.board.hexes.get(coord3D);
                 if (hex == null) {
                     // the board is rendering more hexes than underlaying domain board object
                     // has defined. 
@@ -65,9 +111,37 @@ class BoardRenderer {
         for (var [coord, hex] of this.board.hexes) {
             var hexRenderer = new HexRenderer(hex)
             hexRenderer.render(this.vgGrid);
-            this.hexRenderers.set(hex.coord.hash, hexRenderer);
+            this.hexRenderers.set(hex.coord, hexRenderer);
+        }
+        this.nodeRenderers = new Map();
+        for (var node of this.board.getAllNodes()) {
+            var nodeRenderer = new NodeRenderer(node, this.vgGrid);
+            this.nodesGroup.add(nodeRenderer.mesh);
+            this.nodeRenderers.set(node, nodeRenderer)
+        }
+        this.scene.add(this.nodesGroup);
+    }
+    get behavior() { return this._behavior; }
+    set behavior(newBehavior) {
+        this._behavior.stop(this);
+        this._behavior = newBehavior;
+        this._behavior.start(this);
+    }
+
+    hideAllNodes() {
+        this.nodesGroup.visible = false;
+    }
+    showNodes(nodes) {
+        this.nodesGroup.visible = true;
+        for (var [node, nodeRenderer] of this.nodeRenderers) {
+            nodeRenderer.mesh.visible = false;
+        }
+        for (var nnode of nodes) {
+            var nodeRenderer = this.nodeRenderers.get(nnode);
+            nodeRenderer.mesh.visible = true;
         }
     }
+
 
     update() {
         this.mouse.update();

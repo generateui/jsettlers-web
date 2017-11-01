@@ -13,7 +13,7 @@ class Board {
              // e.g. [new Forest(), [3, () => new Mountain()]]
             hexBag: [],
         };
-        this._hexes = new Map(); // <Coord.hash, Hex>
+        this._hexes = new Map(); // <Coord, Hex>
     }
     placeHexes() {
         for (var hex of this._config.hexes) {
@@ -24,19 +24,28 @@ class Board {
                 for (var i=0; i< amount; i++){
                     var createdHex = createHexFunction();
                     createdHex.coord = coord;
-                    this._hexes.set(createdHex.coord.hash, createdHex);
+                    this._hexes.set(createdHex.coord, createdHex);
                 }
             } else {
-                this._hexes.set(hex.coord.hash, hex);
+                this._hexes.set(hex.coord, hex);
             }
         }
     }
     generateBoard(random) {
 
     }
+    getAllNodes() {
+        var nodes = new Map();
+        for (var hex of this._hexes.values()) {
+            for (var node of hex.coord.nodes) {
+                nodes.set(node, node);
+            }
+        }
+        return nodes.values();
+    }
     get hexes() { return this._hexes; }
     setHex(coord, hex) {
-        this._hexes[coord.hash] = hex;
+        this._hexes[coord] = hex;
     }
 }
 class Standard4pDesign extends Board {
@@ -57,7 +66,7 @@ class Standard4pDesign extends Board {
     }
 
     generateHexes() {
-        var coords = new Map(); // <coord.hash, Coord>
+        var coords = new Map(); // <coord, Coord>
         var center = new Coord3D(0,0,0);
         var fromBagCoords = [
             ...this.getCoordsByRadius(0).values(),
@@ -79,7 +88,7 @@ class Standard4pDesign extends Board {
         if (radius === 0) {
             var map = new Map();
             var center = new Coord3D(0, 0, 0);
-            map.set(center.hash, center);
+            map.set(center, center);
             return map;
         }
         var aCoord = new Coord3D(0, radius, -radius);
@@ -89,10 +98,10 @@ class Standard4pDesign extends Board {
     }
     addNeighborsRecursively(coords, coord, shouldAdd) {
         if (shouldAdd(coord)) {
-            coords.set(coord.hash, coord);
+            coords.set(coord, coord);
         }
         for (var neighbor of coord.neighbors) {
-            if (!coords.has(neighbor.hash) && shouldAdd(neighbor)) {
+            if (!coords.has(neighbor) && shouldAdd(neighbor)) {
                 this.addNeighborsRecursively(coords, neighbor, shouldAdd);
             }
         }
