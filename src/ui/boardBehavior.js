@@ -2,7 +2,9 @@
 * This default behavior does nothing 
 */
 class BoardBehavior {
-    click(br, hex) { }
+    start(boardRenderer) {} // set the behavior as active behavior on the BoardRenderer
+    click(boardRenderer, hex) { }
+    stop(boardRenderer) {} // unset the behavior
 }
 
 /* Sets a hex to target clicked hexagon location */
@@ -16,11 +18,39 @@ class SetHex extends BoardBehavior {
         // create and set the new hex to the board
         var newHex = Hex.fromType(this.hexType)
         newHex.coord = hex.coord;
-        boardRenderer.board.hexes[hex.coord.hash] = newHex;
+        boardRenderer.board.hexes[hex.coord] = newHex;
         
         // update the hex renderer
-        var hexRenderer = boardRenderer.hexRenderers.get(hex.coord.hash);
+        var hexRenderer = boardRenderer.hexRenderers.get(hex.coord);
         hexRenderer.hex = newHex;
         hexRenderer.render(boardRenderer.vgGrid);
+    }
+}
+class ShowAllNodes extends BoardBehavior {
+    constructor() {
+        super();
+    }
+    start(boardRenderer) {
+        var nodes = boardRenderer.board.getAllNodes();
+        boardRenderer.showNodes(nodes);
+    }
+    stop(boardRenderer) {
+        boardRenderer.hideAllNodes();
+    }
+}
+
+class ShowNodesOfClickedHex extends BoardBehavior {
+    constructor() {
+        super();
+    }
+    start(boardRenderer) {
+        boardRenderer.hideAllNodes();
+    }
+    click(boardRenderer, hex) {
+        var nodes = hex.coord.nodes;
+        boardRenderer.showNodes(nodes);
+    }
+    stop(boardRenderer) {
+        boardRenderer.hideAllNodes();
     }
 }

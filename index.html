@@ -10,7 +10,7 @@
             body {
                 overflow: hidden;
             }
-            #view {
+            #board-renderer {
                 position: absolute;
                 top: 0;
                 left: 0;
@@ -25,15 +25,27 @@
                 cursor: pointer;
                 border: 2px solid transparent;
             }
+
+            /* a label right after an input element which is checked */
             input[type='radio']:checked+label {
-                font-weight: 900;
                 border: 2px solid black;
+                background-color: #C4C4C4;
             }
-            #hex-type-picker {
+            #map-editor-menu {
+                background-color: lightgray;
                 position: absolute;
                 float:left;
+                display: inline-flex;
+                -webkit-padding-start: 0; /* remove margin on the left */
             }
-
+            .widget-header {
+                font-size: large;
+                font-weight: 600;
+            }
+            li {
+                list-style-type:none;
+                margin: 10px;
+            }
         </style>
     </head>
     <body>
@@ -47,28 +59,53 @@
         <script src="src/hex.js"></script>
         <script src="src/board.js"></script>
         <script src="src/coord.js"></script>
+        <script src="src/node.js"></script>
         <script src="src/ui/boardRenderer.js"></script>
         <script src="src/ui/boardBehavior.js"></script>
+        <script src="src/ui/boardBehaviorPicker.js"></script>
         <script src="src/ui/hexTypePicker.js"></script>
 
         <script type="text/javascript" src="von-grid/lib/three.min.js"></script>
         <script type="text/javascript" src="von-grid/lib/OrbitControls.js"></script>
         <script type="text/javascript" src="von-grid/dist/hex-grid.min.js"></script>
 
-        <div id="view"></div>
+        <div id="board-renderer"></div>
 
-		<div id="hex-type-picker">
-			<p>Select a hex type:</p>
-            <div id="hexagon-types"></div>
+        <ul id="map-editor-menu">
+            <li id="board-behavior-picker">
+                <div class="widget-header">Editor mode</div>
+                <div id="behaviors"></div>
+            </li>
+
+            <li id="hex-type-picker">
+                <div class="widget-header">HexType</div>
+                <div id="hexagon-types"></div>
+            </li>
         </div>
         
         <script type="text/javascript">
+            var boardDesign = null;
+            var boardRenderer = null;
+            var hexTypePicker = null;
+            var boardBehaviorPicker = null;
+
             window.addEventListener('load', function(evt) {
-                var el = document.getElementById("view");
-                var board = new Standard4pDesign();
+                // A design representation of a board morphable into a play board
+                boardDesign = new Standard4pDesign();
+
+                // behavior to change clicked hex into selected HexType
                 var setHex = new SetHex();
-                var boardRenderer = new BoardRenderer(el, board, setHex);
-                var hexTypePicker = new HexTypePicker(setHex);
+                var behaviors = [setHex, new ShowAllNodes(), new ShowNodesOfClickedHex()];
+
+                // render the board in a 3D viewport 
+                var brEl = document.getElementById("board-renderer");
+                boardRenderer = new BoardRenderer(brEl, boardDesign, setHex);
+
+                var bbpEl = document.getElementById("behaviors");
+                boardBehaviorPicker = new BoardBehaviorPicker(bbpEl, boardRenderer, behaviors);
+
+                // widget to let the user pick a HexType
+                hexTypePicker = new HexTypePicker(setHex);
                 hexTypePicker.setHex = boardRenderer.setHex;
             });
         </script>

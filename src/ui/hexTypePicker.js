@@ -1,4 +1,7 @@
-/** A UI component enabling user to select a hex type */
+/** A UI component showing a list of hex types so user can select a hex
+ *  type. 
+ * setHex.hexType is used to track selected HexType.
+ * */
 class HexTypePicker {
     constructor(setHex) {
         this._setHex = setHex || new SetHex();
