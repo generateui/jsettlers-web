@@ -35,13 +35,22 @@ class Board {
 
     }
     getAllNodes() {
-        var nodes = new Map();
+        var nodes = new Set();
         for (var hex of this._hexes.values()) {
             for (var node of hex.coord.nodes) {
-                nodes.set(node, node);
+                nodes.add(node);
             }
         }
-        return nodes.values();
+        return nodes;
+    }
+    getAllEdges() {
+        var edges = new Set();
+        for (var hex of this._hexes.values()) {
+            for (var edge of hex.coord.edges) {
+                edges.add(edge);
+            }
+        }
+        return edges;
     }
     get hexes() { return this._hexes; }
     setHex(coord, hex) {
@@ -69,11 +78,11 @@ class Standard4pDesign extends Board {
         var coords = new Map(); // <coord, Coord>
         var center = new Coord3D(0,0,0);
         var fromBagCoords = [
-            ...this.getCoordsByRadius(0).values(),
-            ...this.getCoordsByRadius(1).values(),
-            ...this.getCoordsByRadius(2).values(), 
+            ...this.getCoordsByRadius(0),
+            ...this.getCoordsByRadius(1),
+            ...this.getCoordsByRadius(2), 
         ];
-        var seaCoords = this.getCoordsByRadius(3).values();
+        var seaCoords = this.getCoordsByRadius(3);
         
         var hexes = [];
         for (var coord of fromBagCoords) {
@@ -86,19 +95,16 @@ class Standard4pDesign extends Board {
     }
     getCoordsByRadius(radius) {
         if (radius === 0) {
-            var map = new Map();
-            var center = new Coord3D(0, 0, 0);
-            map.set(center, center);
-            return map;
+            return new Set( [Coord3D.center] );
         }
         var aCoord = new Coord3D(0, radius, -radius);
-        var coords = new Map();
+        var coords = new Set();
         this.addNeighborsRecursively(coords, aCoord, c => c.radius === radius);
         return coords;
     }
     addNeighborsRecursively(coords, coord, shouldAdd) {
         if (shouldAdd(coord)) {
-            coords.set(coord, coord);
+            coords.add(coord);
         }
         for (var neighbor of coord.neighbors) {
             if (!coords.has(neighbor) && shouldAdd(neighbor)) {

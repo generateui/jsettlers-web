@@ -36,6 +36,8 @@ class Coord2D extends Coord {
  * instances with the same reference. e.g.
  * 
  * let equal = new Coord3D(0,0,0) === new Coord(0,0,0); // true
+ * 
+ * TODO: document (pointy | flat). Is this impl dependent on it?
  */
 class Coord3D extends Coord {
     constructor(x, y, z) {
@@ -43,6 +45,7 @@ class Coord3D extends Coord {
         
         var hash = Coord3D._getHash(x, y, z);
         if (this.constructor._cache.has(hash)) {
+            // return existing instance and exit this constructor
             return this.constructor._cache.get(hash);
         }
         this.x = x;
@@ -50,6 +53,10 @@ class Coord3D extends Coord {
         this.z = z;
         this._hash = hash;
         this.constructor._cache.set(hash, this);
+    }
+    get hash() { return this._hash; }
+    static _getHash(x, y, z) {
+        return x + "." + y + "." + z;
     }
     static fromData(data) {
         return new Coord3D(data.getX(), data.getY(), data.getZ());
@@ -60,12 +67,6 @@ class Coord3D extends Coord {
         data.setY(this.y);
         data.setZ(this.z);
         return data;
-    }
-    get hash() {
-        return this._hash;
-    }
-    static _getHash(x, y, z) {
-        return x + "." + y + "." + z;
     }
     get neighbors() {
         if (this._neighbors == undefined) {
@@ -103,5 +104,20 @@ class Coord3D extends Coord {
         }
         return this._nodes;
     }
+    get edges() {
+        if (this._edges === undefined) {
+            var n = this.neighbors;
+            this._edges = [
+                new Edge (this, n[0]),
+                new Edge (this, n[1]),
+                new Edge (this, n[2]),
+                new Edge (this, n[3]),
+                new Edge (this, n[4]),
+                new Edge (this, n[5]),
+            ];
+        }
+        return this._edges;
+    }
 }
 Coord3D._cache = new Map();
+Coord3D.center = new Coord3D(0,0,0);
