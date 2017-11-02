@@ -18,7 +18,7 @@ class SetHex extends BoardBehavior {
         // create and set the new hex to the board
         var newHex = Hex.fromType(this.hexType)
         newHex.coord = hex.coord;
-        boardRenderer.board.hexes[hex.coord] = newHex;
+        boardRenderer.board.hexes.set(hex.coord, newHex);
         
         // update the hex renderer
         var hexRenderer = boardRenderer.hexRenderers.get(hex.coord);

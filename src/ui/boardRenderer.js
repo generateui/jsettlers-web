@@ -11,6 +11,7 @@ class HexRenderer {
         grid.cells[hash].tile.material.color = color;
     }
 }
+
 class NodeRenderer {
     constructor(node, vgGrid) {
         this.node = node;
@@ -136,12 +137,11 @@ class BoardRenderer {
         for (var [node, nodeRenderer] of this.nodeRenderers) {
             nodeRenderer.mesh.visible = false;
         }
-        for (var nnode of nodes) {
-            var nodeRenderer = this.nodeRenderers.get(nnode);
+        for (var node of nodes) {
+            var nodeRenderer = this.nodeRenderers.get(node);
             nodeRenderer.mesh.visible = true;
         }
     }
-
 
     update() {
         this.mouse.update();
