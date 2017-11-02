@@ -104,6 +104,20 @@ class Coord3D extends Coord {
         }
         return this._nodes;
     }
+    get edges() {
+        if (this._edges === undefined) {
+            var n = this.neighbors;
+            this._edges = [
+                new Edge (this, n[0]),
+                new Edge (this, n[1]),
+                new Edge (this, n[2]),
+                new Edge (this, n[3]),
+                new Edge (this, n[4]),
+                new Edge (this, n[5]),
+            ];
+        }
+        return this._edges;
+    }
 }
 Coord3D._cache = new Map();
 Coord3D.center = new Coord3D(0,0,0);

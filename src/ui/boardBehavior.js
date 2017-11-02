@@ -3,7 +3,9 @@
 */
 class BoardBehavior {
     start(boardRenderer) {} // set the behavior as active behavior on the BoardRenderer
-    click(boardRenderer, hex) { }
+    click(boardRenderer, renderer) { }
+    enter(boardRenderer, renderer) { }
+    leave(boardRenderer, renderer) { }
     stop(boardRenderer) {} // unset the behavior
 }
 
@@ -14,7 +16,11 @@ class SetHex extends BoardBehavior {
         // the hextype to use for the setted hex
         this.hexType = proto.carcattone_data.HexType.FOREST; 
     }
-    click(boardRenderer, hex) {
+    click(boardRenderer, renderer) {
+        var hex = renderer.hex;
+        if (hex === undefined) {
+            return;
+        }
         // create and set the new hex to the board
         var newHex = Hex.fromType(this.hexType)
         newHex.coord = hex.coord;
@@ -46,11 +52,118 @@ class ShowNodesOfClickedHex extends BoardBehavior {
     start(boardRenderer) {
         boardRenderer.hideAllNodes();
     }
-    click(boardRenderer, hex) {
-        var nodes = hex.coord.nodes;
+    click(boardRenderer, renderer) {
+        if (renderer.hex === undefined) {
+            return;
+        }
+        var nodes = renderer.hex.coord.nodes;
         boardRenderer.showNodes(nodes);
     }
     stop(boardRenderer) {
         boardRenderer.hideAllNodes();
+    }
+}
+
+class ShowAllEdges extends BoardBehavior {
+    start(boardRenderer) {
+        var edges = boardRenderer.board.getAllEdges();
+        boardRenderer.showEdges(edges);
+    }
+    stop(boardRenderer) {
+        boardRenderer.hideAllEdges();
+    }
+}
+class ShowEdgesOfClickedHex extends BoardBehavior {
+    start(boardRenderer) {
+        boardRenderer.hideAllEdges();
+    }
+    click(boardRenderer, renderer) {
+        var edges = renderer.hex.coord.edges;
+        boardRenderer.showEdges(edges);
+    }
+    stop(boardRenderer) {
+        boardRenderer.hideAllEdges();
+    }
+}
+class ShowEdgesOfClickedNode extends BoardBehavior {
+    constructor() {
+        super();
+        this.composite = new CompositeBehavior(
+            new ShowAllNodes(), 
+            new EmphasizeHoveredObject( function(r) { return r.node !== undefined;} ));
+    }
+    start(boardRenderer) {
+        this.composite.start(boardRenderer);
+    }
+    enter(boardRenderer, renderer) {
+        this.composite.enter(boardRenderer, renderer);
+    }
+    leave(boardRenderer, renderer) {
+        this.composite.leave(boardRenderer, renderer);
+    }
+    click(boardRenderer, renderer) {
+        if (renderer.node === undefined) {
+            return;
+        }
+        var edges = renderer.node.edges;
+        boardRenderer.showEdges(edges);
+    }
+    stop(boardRenderer) {
+        this.composite.stop(boardRenderer);
+    }
+}
+class EmphasizeHoveredObject extends BoardBehavior {
+    constructor(rendererFilter) {
+        super();
+        this.oldHsl = null;
+        this.rendererFilter = rendererFilter || function(r) { return true; };
+    }
+    enter(boardRenderer, renderer) {
+        if (!this.rendererFilter(renderer)) {
+            return;
+        }
+        var hsl = renderer.mesh.material.color.getHSL();
+        renderer.mesh.material.color.setHSL(hsl.h, hsl.s, 0.1);
+        this.oldHsl = {h: hsl.h, s: hsl.s, l: hsl.l};
+    }
+    leave(boardRenderer, renderer) {
+        if (!this.rendererFilter(renderer)) {
+            return;
+        }
+        if (this.oldHsl !== null) {
+            renderer.mesh.material.color.setHSL(this.oldHsl.h, this.oldHsl.s, 0.5);
+        }
+    }
+        
+}
+class CompositeBehavior extends BoardBehavior {
+    constructor(...behaviors) {
+        super();
+        this.behaviors = behaviors;
+    }
+    start(boardRenderer) {
+        for (var behavior of this.behaviors) {
+            behavior.start(boardRenderer);
+        }
+    }
+    stop(boardRenderer) {
+        for (var behavior of this.behaviors) {
+            behavior.stop(boardRenderer);
+        }
+    }
+    click(boardRenderer, renderer) {
+        for (var behavior of this.behaviors) {
+            behavior.click(boardRenderer, renderer);
+        }
+    }
+    enter(boardRenderer, renderer) {
+        for (var behavior of this.behaviors) {
+            behavior.enter(boardRenderer, renderer);
+        }
+    }
+    leave(boardRenderer, renderer) {
+        for (var behavior of this.behaviors) {
+            behavior.leave(boardRenderer, renderer);
+        }
     }
 }

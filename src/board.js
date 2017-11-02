@@ -43,6 +43,15 @@ class Board {
         }
         return nodes;
     }
+    getAllEdges() {
+        var edges = new Set();
+        for (var hex of this._hexes.values()) {
+            for (var edge of hex.coord.edges) {
+                edges.add(edge);
+            }
+        }
+        return edges;
+    }
     get hexes() { return this._hexes; }
     setHex(coord, hex) {
         this._hexes[coord] = hex;

@@ -60,6 +60,7 @@
         <script src="src/board.js"></script>
         <script src="src/coord.js"></script>
         <script src="src/node.js"></script>
+        <script src="src/edge.js"></script>
         <script src="src/ui/boardRenderer.js"></script>
         <script src="src/ui/boardBehavior.js"></script>
         <script src="src/ui/boardBehaviorPicker.js"></script>
@@ -95,7 +96,16 @@
 
                 // behavior to change clicked hex into selected HexType
                 var setHex = new SetHex();
-                var behaviors = [setHex, new ShowAllNodes(), new ShowNodesOfClickedHex()];
+                var behaviors = [
+                    new EmphasizeHoveredObject(), 
+                    setHex, 
+                    new CompositeBehavior(new EmphasizeHoveredObject(), new ShowAllEdges()),
+                    new ShowAllNodes(), 
+                    new ShowNodesOfClickedHex(), 
+                    new ShowAllEdges(), 
+                    new ShowEdgesOfClickedHex(),
+                    new ShowEdgesOfClickedNode(),
+                ];
 
                 // render the board in a 3D viewport 
                 var brEl = document.getElementById("board-renderer");

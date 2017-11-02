@@ -9,13 +9,14 @@ class HexRenderer {
         var color = new THREE.Color(this.hex.color);
         var hash = grid.cellToHash(cell);
         grid.cells[hash].tile.material.color = color;
+        grid.cells[hash].tile.mesh.userData.structure = this;
+        this.mesh = grid.cells[hash].tile.mesh;
     }
 }
 
 class NodeRenderer {
-    constructor(node, vgGrid) {
+    constructor(node, boardRenderer) {
         this.node = node;
-        this.vgGrid = vgGrid;
         this.mesh = null;
 
         var cilinderGeometry = new THREE.CylinderGeometry(3, 3, 1, 16);
@@ -25,9 +26,137 @@ class NodeRenderer {
         var cilinder = new THREE.Mesh(cilinderGeometry, material);
         cilinder.visible = false;
         cilinder.add(lines);
-        var position = this.nodeToPixel(node);
+        var position = boardRenderer.nodeToPixel(node);
         cilinder.position.set(position.x, position.y, position.z);
         this.mesh = cilinder;
+        this.mesh.userData.structure = this;
+    }
+}
+
+class EdgeRenderer {
+    constructor(edge, boardRenderer) {
+        this.edge = edge;
+
+        var boxGeometry = new THREE.BoxGeometry(8, 3, 3);
+        var edgesGeometry = new THREE.EdgesGeometry(boxGeometry);
+        var lines = new THREE.LineSegments(edgesGeometry, new THREE.LineBasicMaterial({ color: 0x000000 }));
+        var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+        var box = new THREE.Mesh(boxGeometry, material);
+        box.add(lines);
+        var radians = ((edge.rotation || 60)* Math.PI) / 180;
+        box.rotateY(radians);
+        box.visible = false;
+        var position = boardRenderer.edgeToPixel(edge);
+        box.position.set(position.x, position.y, position.z);
+        this.mesh = box;
+        this.mesh.userData.structure = this;
+    }
+}
+/* Renders a 3D hexagon board using von-grid */
+class BoardRenderer {
+    constructor(element, board, behavior) {
+        this.board = board || new Standard4pDesign();
+        this._behavior = behavior || new SetHex();
+        this.displayedNodes = [];
+        this.nodesGroup = new THREE.Group();
+        this.edgesGroup = new THREE.Group();
+
+        this.scene = new vg.Scene({
+            element: element,
+            cameraPosition: {x:0, y:150, z:150}
+        }, true);
+        // this constructs the cells in grid coordinate space
+        this.vgGrid = new vg.HexGrid({
+            cellSize: 11 // size of individual cells
+        });
+        this.vgGrid.generate({
+            size: 3 // size of the board
+        });
+
+        this.vgBoard = new vg.Board(this.vgGrid);
+
+        // this will generate extruded hexagonal tiles
+        this.vgBoard.generateTilemap({
+            tileScale: 0.96 // you might have to scale the tile so the extruded geometry fits the cell size perfectly
+        });
+        this.scene.add(this.vgBoard.group);
+        this.scene.focusOn(this.vgBoard.group);
+
+        var vec = new THREE.Vector3();
+
+        this.hexRenderers = new Map(); // <Coord, HexRenderer>
+        for (var [coord, hex] of this.board.hexes) {
+            var hexRenderer = new HexRenderer(hex)
+            hexRenderer.render(this.vgGrid);
+            this.hexRenderers.set(hex.coord, hexRenderer);
+        }
+        this.nodeRenderers = new Map();
+        for (var node of this.board.getAllNodes()) {
+            var nodeRenderer = new NodeRenderer(node, this);
+            this.nodesGroup.add(nodeRenderer.mesh);
+            this.nodeRenderers.set(node, nodeRenderer)
+        }
+        this.edgeRenderers = new Map();
+        for (var edge of this.board.getAllEdges()) {
+            var edgeRenderer = new EdgeRenderer(edge, this);
+            this.edgesGroup.add(edgeRenderer.mesh);
+            this.edgeRenderers.set(edge, edgeRenderer);
+        }
+
+        this.vgBoard.group.add(this.nodesGroup);
+        this.vgBoard.group.add(this.edgesGroup);
+
+        this.mouse = new vg.MouseCaster(this.scene.container, this.scene.camera, element);
+        this.mouse.signal.add(function(event, targetObject) {
+            if (targetObject === null || targetObject === undefined) {
+                return;
+            }
+            if (event === vg.MouseCaster.CLICK) {
+                this.behavior.click(this, targetObject);
+            }
+            if (event === vg.MouseCaster.OVER) {
+                this.behavior.enter(this, targetObject);
+            }
+            if (event === vg.MouseCaster.OUT) {
+                this.behavior.leave(this, targetObject);
+            }
+        }, this);
+
+        this.update();
+    }
+    get behavior() { return this._behavior; }
+    set behavior(newBehavior) {
+        this._behavior.stop(this);
+        this._behavior = newBehavior;
+        this._behavior.start(this);
+    }
+
+    hideAllNodes() {
+        this.nodesGroup.visible = false;
+    }
+    showNodes(nodes) {
+        this.nodesGroup.visible = true;
+        for (var [node, nodeRenderer] of this.nodeRenderers) {
+            nodeRenderer.mesh.visible = false;
+        }
+        for (var node of nodes) {
+            var nodeRenderer = this.nodeRenderers.get(node);
+            nodeRenderer.mesh.visible = true;
+        }
+    }
+
+    hideAllEdges() {
+        this.edgesGroup.visible = false;
+    }
+    showEdges(edges) {
+        this.edgesGroup.visible = true;
+        for (var [edge, edgeRenderer] of this.edgeRenderers) {
+            edgeRenderer.mesh.visible = false;
+        }
+        for (var edge of edges) {
+            var edgeRenderer = this.edgeRenderers.get(edge);
+            edgeRenderer.mesh.visible = true;
+        }
     }
 
     nodeToPixel(node) {
@@ -54,95 +183,14 @@ class NodeRenderer {
             cell.h,
             -((cell.s - cell.r) * this.vgGrid._cellLength * 0.5)
         );
-	}
-}
-/* Renders a 3D hexagon board using von-grid */
-class BoardRenderer {
-    constructor(element, board, behavior) {
-        this.board = board || new Standard4pDesign();
-        this._behavior = behavior || new SetHex();
-        this.displayedNodes = [];
-        this.nodesGroup = new THREE.Group();
-
-        this.scene = new vg.Scene({
-            element: element,
-            cameraPosition: {x:0, y:150, z:150}
-        }, true);
-        // this constructs the cells in grid coordinate space
-        this.vgGrid = new vg.HexGrid({
-            cellSize: 11 // size of individual cells
-        });
-        this.vgGrid.generate({
-            size: 3 // size of the board
-        });
-
-        this.mouse = new vg.MouseCaster(this.scene.container, this.scene.camera);
-        this.vgBoard = new vg.Board(this.vgGrid);
-
-        // this will generate extruded hexagonal tiles
-        this.vgBoard.generateTilemap({
-            tileScale: 0.96 // you might have to scale the tile so the extruded geometry fits the cell size perfectly
-        });
-        this.scene.add(this.vgBoard.group);
-        this.scene.focusOn(this.vgBoard.group);
-
-        var vec = new THREE.Vector3();
-
-        this.hexRenderers = new Map(); // <Coord, HexRenderer>
-
-        this.mouse.signal.add(function(evt, tile) {
-            if (evt === vg.MouseCaster.CLICK) {
-                var cell = this.vgBoard.grid.pixelToCell(this.mouse.position);
-                var coord3D = new Coord3D(cell.q, cell.r, cell.s);
-                var hex = this.board.hexes.get(coord3D);
-                if (hex == null) {
-                    // the board is rendering more hexes than underlaying domain board object
-                    // has defined. 
-                    return;                            
-                }
-                var tile = this.vgBoard.getTileAtCell(cell);
-                if (tile) {
-                    this.behavior.click(this, hex);
-                }
-            }
-        }, this);
-
-        this.update();
-
-        for (var [coord, hex] of this.board.hexes) {
-            var hexRenderer = new HexRenderer(hex)
-            hexRenderer.render(this.vgGrid);
-            this.hexRenderers.set(hex.coord, hexRenderer);
-        }
-        this.nodeRenderers = new Map();
-        for (var node of this.board.getAllNodes()) {
-            var nodeRenderer = new NodeRenderer(node, this.vgGrid);
-            this.nodesGroup.add(nodeRenderer.mesh);
-            this.nodeRenderers.set(node, nodeRenderer)
-        }
-        this.scene.add(this.nodesGroup);
     }
-    get behavior() { return this._behavior; }
-    set behavior(newBehavior) {
-        this._behavior.stop(this);
-        this._behavior = newBehavior;
-        this._behavior.start(this);
+    edgeToPixel(edge) {
+        var edge1Position = this.nodeToPixel(edge.node1);
+        var edge2Position = this.nodeToPixel(edge.node2);
+        var centroidX = (edge1Position.x + edge2Position.x) / 2;
+        var centroidZ = (edge1Position.z + edge2Position.z) / 2;
+        return new THREE.Vector3(centroidX, 3, centroidZ);
     }
-
-    hideAllNodes() {
-        this.nodesGroup.visible = false;
-    }
-    showNodes(nodes) {
-        this.nodesGroup.visible = true;
-        for (var [node, nodeRenderer] of this.nodeRenderers) {
-            nodeRenderer.mesh.visible = false;
-        }
-        for (var node of nodes) {
-            var nodeRenderer = this.nodeRenderers.get(node);
-            nodeRenderer.mesh.visible = true;
-        }
-    }
-
     update() {
         this.mouse.update();
         this.scene.render();

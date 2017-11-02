@@ -18,6 +18,16 @@ class Node {
     get hash() { 
         return this._hash;
     }
+    get edges() {
+        if (this._edges === undefined) {
+            this._edges = [
+                new Edge(this._coord1, this._coord2),
+                new Edge(this._coord1, this._coord3),
+                new Edge(this._coord2, this._coord3),
+            ]
+        }
+        return this._edges;
+    }
     // By adding the hashcode numbers the order of coord1, 
     // coord2 and coord3 is not important
     // We divide by 3 to prevent overflow
