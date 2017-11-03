@@ -15,24 +15,25 @@ class Board {
         };
         this._hexes = new Map(); // <Coord, Hex>
     }
-    placeHexes() {
-        for (var hex of this._config.hexes) {
+    generateBoardForPlay() {
+        this.hexBag = [];
+        for (var hex of this._config.hexBag) {
+            // expand config specification of hexes in hexBag
             if (Array.isArray(hex)) {
                 var array = hex;
-                var amount = hex[0];
+                var amount = array[0];
                 var createHexFunction = array[1];
-                for (var i=0; i< amount; i++){
+                for (var i=0; i<amount; i++){
                     var createdHex = createHexFunction();
-                    createdHex.coord = coord;
-                    this._hexes.set(createdHex.coord, createdHex);
+                    this.hexBag.add(createdHex);
                 }
-            } else {
-                this._hexes.set(hex.coord, hex);
             }
         }
     }
-    generateBoard(random) {
-
+    placeHexes() {
+        for (var hex of this._config.hexes) {
+            this._hexes.set(hex.coord, hex);
+        }
     }
     getAllNodes() {
         var nodes = new Set();
@@ -75,8 +76,6 @@ class Standard4pDesign extends Board {
     }
 
     generateHexes() {
-        var coords = new Map(); // <coord, Coord>
-        var center = new Coord3D(0,0,0);
         var fromBagCoords = [
             ...this.getCoordsByRadius(0),
             ...this.getCoordsByRadius(1),

@@ -66,8 +66,8 @@ class ShowNodesOfClickedHex extends BoardBehavior {
 
 class ShowAllEdges extends BoardBehavior {
     start(boardRenderer) {
-        var edges = boardRenderer.board.getAllEdges();
-        boardRenderer.showEdges(edges);
+        var allEdges = boardRenderer.board.getAllEdges();
+        boardRenderer.showEdges(allEdges);
     }
     stop(boardRenderer) {
         boardRenderer.hideAllEdges();
@@ -88,9 +88,10 @@ class ShowEdgesOfClickedHex extends BoardBehavior {
 class ShowEdgesOfClickedNode extends BoardBehavior {
     constructor() {
         super();
+        let isNodeRenderer = r => r.node !== undefined;
         this.composite = new CompositeBehavior(
             new ShowAllNodes(), 
-            new EmphasizeHoveredObject( function(r) { return r.node !== undefined;} ));
+            new EmphasizeHoveredObject(isNodeRenderer));
     }
     start(boardRenderer) {
         this.composite.start(boardRenderer);
@@ -112,8 +113,9 @@ class ShowEdgesOfClickedNode extends BoardBehavior {
         this.composite.stop(boardRenderer);
     }
 }
+/** Changes color of hovered object */
 class EmphasizeHoveredObject extends BoardBehavior {
-    constructor(rendererFilter) {
+    constructor(rendererFilter) { // a function: bool filter(renderer);
         super();
         this.oldHsl = null;
         this.rendererFilter = rendererFilter || function(r) { return true; };
@@ -134,8 +136,8 @@ class EmphasizeHoveredObject extends BoardBehavior {
             renderer.mesh.material.color.setHSL(this.oldHsl.h, this.oldHsl.s, 0.5);
         }
     }
-        
 }
+/** Dispatches behavior onto given behaviors */
 class CompositeBehavior extends BoardBehavior {
     constructor(...behaviors) {
         super();

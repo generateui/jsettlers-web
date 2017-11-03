@@ -14,6 +14,9 @@ class HexRenderer {
     }
 }
 
+/** Renders a Node as a large yellow cilinder positioned at the Node
+ * This renderer enables user selection of a node.
+ */
 class NodeRenderer {
     constructor(node, boardRenderer) {
         this.node = node;
@@ -33,6 +36,7 @@ class NodeRenderer {
     }
 }
 
+/** Renders a Node as a large yellow rectangular box positioned at given Edge */
 class EdgeRenderer {
     constructor(edge, boardRenderer) {
         this.edge = edge;
@@ -57,14 +61,19 @@ class BoardRenderer {
     constructor(element, board, behavior) {
         this.board = board || new Standard4pDesign();
         this._behavior = behavior || new SetHex();
-        this.displayedNodes = [];
+
         this.nodesGroup = new THREE.Group();
         this.edgesGroup = new THREE.Group();
-
+        this.hexRenderers = new Map(); // <Coord, HexRenderer>
+        this.nodeRenderers = new Map(); // <Node, NodeRenderer>
+        this.edgeRenderers = new Map(); // <Edge, EdgeRenderer>
+        
         this.scene = new vg.Scene({
             element: element,
             cameraPosition: {x:0, y:150, z:150}
         }, true);
+
+        // TODO: use sparse maps instead
         // this constructs the cells in grid coordinate space
         this.vgGrid = new vg.HexGrid({
             cellSize: 11 // size of individual cells
@@ -82,21 +91,16 @@ class BoardRenderer {
         this.scene.add(this.vgBoard.group);
         this.scene.focusOn(this.vgBoard.group);
 
-        var vec = new THREE.Vector3();
-
-        this.hexRenderers = new Map(); // <Coord, HexRenderer>
         for (var [coord, hex] of this.board.hexes) {
             var hexRenderer = new HexRenderer(hex)
             hexRenderer.render(this.vgGrid);
             this.hexRenderers.set(hex.coord, hexRenderer);
         }
-        this.nodeRenderers = new Map();
         for (var node of this.board.getAllNodes()) {
             var nodeRenderer = new NodeRenderer(node, this);
             this.nodesGroup.add(nodeRenderer.mesh);
             this.nodeRenderers.set(node, nodeRenderer)
         }
-        this.edgeRenderers = new Map();
         for (var edge of this.board.getAllEdges()) {
             var edgeRenderer = new EdgeRenderer(edge, this);
             this.edgesGroup.add(edgeRenderer.mesh);
@@ -107,23 +111,36 @@ class BoardRenderer {
         this.vgBoard.group.add(this.edgesGroup);
 
         this.mouse = new vg.MouseCaster(this.scene.container, this.scene.camera, element);
-        this.mouse.signal.add(function(event, targetObject) {
-            if (targetObject === null || targetObject === undefined) {
+        this.mouse.signal.add(function(event, target) {
+            this.dirty = true;
+            // target here is the userData supplied object set in Renderers
+            // target: Renderer
+            if (target === null || target === undefined) {
                 return;
             }
             if (event === vg.MouseCaster.CLICK) {
-                this.behavior.click(this, targetObject);
+                this.behavior.click(this, target);
             }
             if (event === vg.MouseCaster.OVER) {
-                this.behavior.enter(this, targetObject);
+                this.behavior.enter(this, target);
             }
             if (event === vg.MouseCaster.OUT) {
-                this.behavior.leave(this, targetObject);
+                this.behavior.leave(this, target);
             }
         }, this);
 
+        this.dirty = true;
         this.update();
     }
+    // TODO: don't hog resources by RAF-ing when dirty only
+    update(timestamp) {
+        if (this.dirty){
+            window.requestAnimationFrame(this.update.bind(this));
+        }
+        this.mouse.update();
+        this.scene.render();
+}
+
     get behavior() { return this._behavior; }
     set behavior(newBehavior) {
         this._behavior.stop(this);
@@ -133,6 +150,7 @@ class BoardRenderer {
 
     hideAllNodes() {
         this.nodesGroup.visible = false;
+        this.dirty = true;
     }
     showNodes(nodes) {
         this.nodesGroup.visible = true;
@@ -143,10 +161,12 @@ class BoardRenderer {
             var nodeRenderer = this.nodeRenderers.get(node);
             nodeRenderer.mesh.visible = true;
         }
+        this.dirty = true;
     }
 
     hideAllEdges() {
         this.edgesGroup.visible = false;
+        this.dirty = true;
     }
     showEdges(edges) {
         this.edgesGroup.visible = true;
@@ -157,6 +177,7 @@ class BoardRenderer {
             var edgeRenderer = this.edgeRenderers.get(edge);
             edgeRenderer.mesh.visible = true;
         }
+        this.dirty = true;
     }
 
     nodeToPixel(node) {
@@ -191,9 +212,5 @@ class BoardRenderer {
         var centroidZ = (edge1Position.z + edge2Position.z) / 2;
         return new THREE.Vector3(centroidX, 3, centroidZ);
     }
-    update() {
-        this.mouse.update();
-        this.scene.render();
-        requestAnimationFrame(this.update.bind(this));
-    }
+
 }

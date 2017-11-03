@@ -16,6 +16,7 @@ class Hex {
             case hexType.HEXFROMBAG: return new HexFromBag(coord);
         }
     }
+    get color() { return 0x0; }
 }
 class Desert extends Hex {
     constructor(coord) {

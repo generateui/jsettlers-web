@@ -12,34 +12,37 @@ class Edge {
     get coord1() { return this._coord1; }
     get coord2() { return this._coord2; }
     get node1() {
-        if (this._nodes == undefined) {
+        if (this._nodes === undefined) {
             this._setNodes();
         }
         return this._node1;
     }
     get node2() {
-        if (this._nodes == undefined) {
+        if (this._nodes === undefined) {
             this._setNodes();
         }
         return this._node2;
     }
+    /** <Node>[2]
+     * // TODO: needed? */
     get nodes() {
-        if (this._nodes == undefined) {
+        if (this._nodes === undefined) {
             this._setNodes();
         }
         return this._nodes;
     }
-    /** For flat, a value 0..240 indicating the rotation */
+    /** For flat, a value 0..240 indicating the rotation 
+     * int in degrees 0-360 */
     get rotation() {
         var c1 = this._coord1;
         var c2 = this._coord2;
         if (c1.x === c2.x) {
             return 180;
         }
-        if (c1.y == c2.y) {
+        if (c1.y === c2.y) {
             return 60;
         }
-        if (c1.z == c2.z) {
+        if (c1.z === c2.z) {
             return 120;
         }
     }
