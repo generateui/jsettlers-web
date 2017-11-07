@@ -5,6 +5,13 @@ Build settlements, roads & cities on a hexagonal grid
 ## Demo
 https://generateui.github.io/carcattonne/
 
+## Dependencies
+
+```
+npm install browserify
+brew install protobuf
+```
+
 ## Build
 
 Carcatonne depends on npm, browserify & protobuf. To build locally:
