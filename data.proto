@@ -1,40 +1,63 @@
 syntax = "proto3";
-package carcattone_data;
-
-message Coord1D {
-	int32 id = 1;
-}
-
-message Coord2D {
-	int32 row = 1;
-	int32 column = 2;
-}
-
-message Coord3D {
-	int32 x = 1;
-	int32 y = 2;
-	int32 z = 3;
-}
+package carcattonne_data;
 
 message Coord {
-	Coord1D coord1D = 1;
-	Coord2D coord2D = 2;
-	Coord3D coord3D = 3;
+	oneof coord_oneof {
+		Coord1D coord1D = 1;
+		Coord2D coord2D = 2;
+		Coord3D coord3D = 3;
+	}
 }
+	message Coord1D {
+		int32 id = 1;
+	}
+	message Coord2D {
+		int32 row = 1;
+		int32 column = 2;
+	}
+	message Coord3D {
+		int32 x = 1;
+		int32 y = 2;
+		int32 z = 3;
+	}
 
-enum HexType {
-	NONE = 0; // Used for boards that have fixed amount of hexagons
-	RIVER = 1; // clay
-	MOUNTAIN = 2; // ore
-	PASTURE = 3; // sheep
-	WHEATFIELD = 4; // wheatField instead of Field to have W as first letter
-	FOREST = 5; // timber
-	SEA = 6;
-	DESERT = 7;
-	HEXFROMBAG = 8;
+message Node {
+	Coord coord1 = 1;
+	Coord coord2 = 2;
+	Coord coord3 = 3;
+}
+message Edge {
+	Coord coord1 = 1;
+	Coord coord2 = 2;
 }
 
 message Hex {
 	HexType Type = 1;
 	Coord coord = 2;
+	ChitType chit = 3;
 }
+	enum HexType {
+		NONE = 0; // Used for boards that have fixed amount of hexagons
+		RIVER = 1; // clay
+		MOUNTAIN = 2; // ore
+		PASTURE = 3; // sheep
+		WHEATFIELD = 4; // wheatField instead of Field to have W as first letter
+		FOREST = 5; // timber
+		SEA = 6;
+		DESERT = 7;
+		HEXFROMBAG = 8; // the hex is picked from a bag
+	}
+	enum ChitType {
+		None = 0; // the hex does not have a chit
+		Chit2 = 1;
+		Chit3 = 2;
+		Chit4 = 3;
+		Chit5 = 4;
+		Chit6 = 5;
+		Chit8 = 6;
+		Chit9 = 7;
+		Chit10 = 8;
+		Chit11 = 9;
+		Chit12 = 10;
+		ChitFromBag = 11; // the chit is picked from a bag
+	}

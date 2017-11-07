@@ -16,9 +16,7 @@ class Node {
     get coord2() { return this._coord2; }
     get coord3() { return this._coord3; }
     /** String */
-    get hash() { 
-        return this._hash;
-    }
+    get hash() { return this._hash; }
     /** <Edge>[3] */
     get edges() {
         if (this._edges === undefined) {
@@ -39,6 +37,15 @@ class Node {
         return ((c1.hash.hashCode() / 3) >> 0) + 
             ((c2.hash.hashCode() / 3) >> 0) + 
             ((c3.hash.hashCode() / 3) >> 0);
+    }
+    get data() {
+        var data = new proto.carcattonne_data.Node();
+        data.setCoord1(this.coord1.data);
+        data.setCoord2(this.coord1.data);
+        return data;
+    }
+    static fromData(data) {
+        return new Node(data.getCoord1(), data.getCoord2());
     }
 }
 Node._cache = new Map();

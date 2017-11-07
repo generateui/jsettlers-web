@@ -19,7 +19,8 @@ class Board {
         this.hexBag = [];
         for (var hex of this._config.hexBag) {
             // expand config specification of hexes in hexBag
-            if (Array.isArray(hex)) {
+             // e.g. [new Forest(), [3, () => new Mountain()]]
+             if (Array.isArray(hex)) {
                 var array = hex;
                 var amount = array[0];
                 var createHexFunction = array[1];
@@ -84,13 +85,25 @@ class Standard4pDesign extends Board {
         var seaCoords = this.getCoordsByRadius(3);
         
         var hexes = [];
-        for (var coord of fromBagCoords) {
-            hexes.push(new HexFromBag(coord));
+        for (let coord of fromBagCoords) {
+            var hex = new HexFromBag(coord);
+            hex.chit = new Chit(proto.carcattonne_data.ChitType.CHITFROMBAG);
+            // hex.chit = this.getRandomChit();
+            hexes.push(hex);
         }
-        for (var coord of seaCoords) {
+        for (let coord of seaCoords) {
             hexes.push(new Sea(coord));
         }
         return hexes;
+    }
+    getRandomChit() {
+        var index = this.getRandomIntInclusive(0, 11);
+        return new Chit(index);
+    }
+    getRandomIntInclusive(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive 
     }
     getCoordsByRadius(radius) {
         if (radius === 0) {

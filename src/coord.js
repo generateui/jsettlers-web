@@ -16,7 +16,7 @@ class Coord1D extends Coord {
         return new Coord1D(data.getId()); 
     }
     get data() { 
-        var data = new protobuf.carcattone_data.Coord1D();
+        var data = new proto.carcattonne_data.Coord1D();
         data.setId(this.id);
         return data;
     }
@@ -60,14 +60,12 @@ class Coord3D extends Coord {
     }
     /** String */
     get hash() { return this._hash; }
-    static _getHash(x, y, z) {
-        return x + "." + y + "." + z;
-    }
+    static _getHash(x, y, z) { return x + "." + y + "." + z; }
     static fromData(data) {
         return new Coord3D(data.getX(), data.getY(), data.getZ());
     }
     get data() {
-        let data = new proto.carcattone_data.Coord3D();
+        let data = new proto.carcattonne_data.Coord3D();
         data.setX(this.x);
         data.setY(this.y);
         data.setZ(this.z);

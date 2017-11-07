@@ -8,13 +8,14 @@ class BoardBehavior {
     leave(boardRenderer, renderer) { }
     stop(boardRenderer) {} // unset the behavior
 }
-
+/** Don't respond to any user input at all */
+class NoBehavior extends BoardBehavior { }
 /* Sets a hex to target clicked hexagon location */
 class SetHex extends BoardBehavior {
     constructor() {
         super();
         // the hextype to use for the setted hex
-        this.hexType = proto.carcattone_data.HexType.FOREST; 
+        this.hexType = proto.carcattonne_data.HexType.FOREST; 
     }
     click(boardRenderer, renderer) {
         var hex = renderer.hex;
@@ -32,10 +33,35 @@ class SetHex extends BoardBehavior {
         hexRenderer.render(boardRenderer.vgGrid);
     }
 }
-class ShowAllNodes extends BoardBehavior {
+class SetChit extends BoardBehavior {
     constructor() {
         super();
+        this.composite = new EmphasizeHoveredObject(r => r.chit !== undefined || r.hex !== undefined);
+        this.chitType = proto.carcattonne_data.ChitType.HEXFROMBAG;
     }
+    click(boardRenderer, renderer) {
+        if (renderer instanceof ChitRenderer) {
+            renderer.setChit(new Chit(this.chitType));
+        }
+        if (renderer instanceof HexRenderer) {
+            renderer.chitRenderer.setChit(new Chit(this.chitType));
+        }
+    }
+    start(boardRenderer) {
+        this.composite.start(boardRenderer);
+    }
+    enter(boardRenderer, renderer) {
+        this.composite.enter(boardRenderer, renderer);
+    }
+    leave(boardRenderer, renderer) {
+        this.composite.leave(boardRenderer, renderer);
+    }
+    stop(boardRenderer) {
+        this.composite.stop(boardRenderer);
+    }
+}
+/** Shows all the nodes of all the hexes of the board */
+class ShowAllNodes extends BoardBehavior {
     start(boardRenderer) {
         var nodes = boardRenderer.board.getAllNodes();
         boardRenderer.showNodes(nodes);
@@ -44,7 +70,7 @@ class ShowAllNodes extends BoardBehavior {
         boardRenderer.hideAllNodes();
     }
 }
-
+/** Shows all nodes of clicked hex */
 class ShowNodesOfClickedHex extends BoardBehavior {
     constructor() {
         super();
@@ -117,23 +143,25 @@ class ShowEdgesOfClickedNode extends BoardBehavior {
 class EmphasizeHoveredObject extends BoardBehavior {
     constructor(rendererFilter) { // a function: bool filter(renderer);
         super();
-        this.oldHsl = null;
-        this.rendererFilter = rendererFilter || function(r) { return true; };
+        this._oldHsl = null;
+        this._rendererFilter = rendererFilter || function(r) { return true; };
     }
     enter(boardRenderer, renderer) {
-        if (!this.rendererFilter(renderer)) {
+        if (!this._rendererFilter(renderer)) {
             return;
         }
-        var hsl = renderer.mesh.material.color.getHSL();
-        renderer.mesh.material.color.setHSL(hsl.h, hsl.s, 0.1);
-        this.oldHsl = {h: hsl.h, s: hsl.s, l: hsl.l};
+        if (renderer.mesh.material.color !== undefined) {
+            var hsl = renderer.mesh.material.color.getHSL();
+            renderer.mesh.material.color.setHSL(hsl.h, hsl.s, 0.1);
+            this._oldHsl = {h: hsl.h, s: hsl.s, l: hsl.l};
+        }
     }
     leave(boardRenderer, renderer) {
-        if (!this.rendererFilter(renderer)) {
+        if (!this._rendererFilter(renderer)) {
             return;
         }
-        if (this.oldHsl !== null) {
-            renderer.mesh.material.color.setHSL(this.oldHsl.h, this.oldHsl.s, 0.5);
+        if (this._oldHsl !== null && renderer.mesh.material.color !== undefined) {
+            renderer.mesh.material.color.setHSL(this._oldHsl.h, this._oldHsl.s, 0.5);
         }
     }
 }
