@@ -2,18 +2,96 @@
 class HexRenderer {
     constructor(hex) {
         this.hex = hex;
+        this.chitRenderer = null;
     }
-    render(grid) {
-        var coord = this.hex.coord;
-        var cell = new vg.Cell(coord.x, coord.y, coord.z);
-        var color = new THREE.Color(this.hex.color);
-        var hash = grid.cellToHash(cell);
+    render(grid, boardRenderer) {
+        const coord = this.hex.coord;
+        const cell = new vg.Cell(coord.x, coord.y, coord.z);
+        const color = new THREE.Color(this.hex.color);
+        const hash = grid.cellToHash(cell);
         grid.cells[hash].tile.material.color = color;
         grid.cells[hash].tile.mesh.userData.structure = this;
         this.mesh = grid.cells[hash].tile.mesh;
+        if (this.chitRenderer === null) {
+            this.chitRenderer = new ChitRenderer(this.hex, boardRenderer);
+            boardRenderer.group.add(this.chitRenderer.mesh);
+        }
     }
 }
 
+class ChitRenderer {
+    constructor(hex, boardRenderer) {
+        this.hex = hex;
+        this.chit = hex.chit;
+
+        var texture = this._getTexture(this.chit);
+        const radius =  3;
+        var cilinderGeometry = new THREE.CylinderGeometry(radius, radius, 0.2, 16);
+        // Apply material to top cap of cilinder and a different material
+        // to the sides of the cilinder, so the texture is placed on top
+        // and the sides have just a color
+        var radius_half = radius / 2;
+        for (var z = 0; z < cilinderGeometry.faces.length; z++) {
+            var face = cilinderGeometry.faces[z];
+            if (face.normal.y !== 0) {
+                cilinderGeometry.faceVertexUvs[0][z][0].u = (cilinderGeometry.vertices[face.a].x + radius_half) / radius;
+                cilinderGeometry.faceVertexUvs[0][z][0].v = (cilinderGeometry.vertices[face.a].z + radius_half) / radius;
+                cilinderGeometry.faceVertexUvs[0][z][1].u = (cilinderGeometry.vertices[face.b].x + radius_half) / radius;
+                cilinderGeometry.faceVertexUvs[0][z][1].v = (cilinderGeometry.vertices[face.b].z + radius_half) / radius;
+                cilinderGeometry.faceVertexUvs[0][z][2].u = (cilinderGeometry.vertices[face.c].x + radius_half) / radius;
+                cilinderGeometry.faceVertexUvs[0][z][2].v = (cilinderGeometry.vertices[face.c].z + radius_half) / radius;
+                face.materialIndex = 0;
+            } else {
+                face.materialIndex = 1;
+            }
+        }
+
+        var edges = new THREE.EdgesGeometry(cilinderGeometry);
+        this.topMaterial = new THREE.MeshBasicMaterial( {color: 0xf9f7b4, map: texture} ); //khaki
+        var sideMaterial = new THREE.MeshBasicMaterial( {color: 0xc3b091} ); //khaki
+        var cilinder = new THREE.Mesh(cilinderGeometry, [this.topMaterial, sideMaterial]);
+
+        var position = boardRenderer.coordToPixel(hex.coord);
+        cilinder.position.set(position.x, 2, position.z);
+        this.mesh = cilinder;
+        this.mesh.userData.structure = this;
+        this.geometry = cilinderGeometry;
+
+        const show = this.chit.chitType !== proto.carcattonne_data.ChitType.NONE;
+        cilinder.visible = show;
+    }
+    _getTexture(chit) {
+        if (chit.chitType === proto.carcattonne_data.ChitType.NONE) {
+            return null;
+        }
+        var imageFileName = "doc/images/Chit";
+        // TODO: simplify this. we want to set the texture based on the name only, no
+        // special cases please :). 
+        if (chit.number !== null) {
+            imageFileName = imageFileName + chit.number.toString();
+        } else if (chit.chitType === proto.carcattonne_data.ChitType.CHITFROMBAG) {
+            imageFileName = imageFileName + "FromBag";
+        } else {
+            imageFileName = "Chit" + chit.number.toString();
+        }
+        imageFileName = imageFileName + ".png";
+        var texture = new THREE.TextureLoader().load(imageFileName);
+        texture.mapping = THREE.EquirectangularReflectionMapping;
+        return texture;
+    }
+    setChit(chit) {
+        var texture = this._getTexture(chit);
+        this.topMaterial.map = texture;
+        const show = chit.chitType !== proto.carcattonne_data.ChitType.NONE;
+        this.mesh.visible = show;
+        // do we want to do the reverse instead and be reactive?
+        this.hex.chit = chit; 
+    }
+}
+
+/** Renders a Node as a large yellow cilinder positioned at the Node
+ * This renderer enables user selection of a node.
+ */
 class NodeRenderer {
     constructor(node, boardRenderer) {
         this.node = node;
@@ -33,6 +111,7 @@ class NodeRenderer {
     }
 }
 
+/** Renders a Node as a large yellow rectangular box positioned at given Edge */
 class EdgeRenderer {
     constructor(edge, boardRenderer) {
         this.edge = edge;
@@ -57,14 +136,20 @@ class BoardRenderer {
     constructor(element, board, behavior) {
         this.board = board || new Standard4pDesign();
         this._behavior = behavior || new SetHex();
-        this.displayedNodes = [];
+
         this.nodesGroup = new THREE.Group();
         this.edgesGroup = new THREE.Group();
-
+        this.group = new THREE.Group();
+        this.hexRenderers = new Map(); // <Coord, HexRenderer>
+        this.nodeRenderers = new Map(); // <Node, NodeRenderer>
+        this.edgeRenderers = new Map(); // <Edge, EdgeRenderer>
+        
         this.scene = new vg.Scene({
             element: element,
             cameraPosition: {x:0, y:150, z:150}
         }, true);
+
+        // TODO: use sparse maps instead
         // this constructs the cells in grid coordinate space
         this.vgGrid = new vg.HexGrid({
             cellSize: 11 // size of individual cells
@@ -82,21 +167,18 @@ class BoardRenderer {
         this.scene.add(this.vgBoard.group);
         this.scene.focusOn(this.vgBoard.group);
 
-        var vec = new THREE.Vector3();
-
-        this.hexRenderers = new Map(); // <Coord, HexRenderer>
         for (var [coord, hex] of this.board.hexes) {
-            var hexRenderer = new HexRenderer(hex)
-            hexRenderer.render(this.vgGrid);
+            var hexRenderer = new HexRenderer(hex, this)
+            hexRenderer.render(this.vgGrid, this);
             this.hexRenderers.set(hex.coord, hexRenderer);
         }
-        this.nodeRenderers = new Map();
+        // TODO: we probably want to make this lazy
         for (var node of this.board.getAllNodes()) {
             var nodeRenderer = new NodeRenderer(node, this);
             this.nodesGroup.add(nodeRenderer.mesh);
             this.nodeRenderers.set(node, nodeRenderer)
         }
-        this.edgeRenderers = new Map();
+        // TODO: we probably want to make this lazy
         for (var edge of this.board.getAllEdges()) {
             var edgeRenderer = new EdgeRenderer(edge, this);
             this.edgesGroup.add(edgeRenderer.mesh);
@@ -105,25 +187,36 @@ class BoardRenderer {
 
         this.vgBoard.group.add(this.nodesGroup);
         this.vgBoard.group.add(this.edgesGroup);
+        this.vgBoard.group.add(this.group);
 
         this.mouse = new vg.MouseCaster(this.scene.container, this.scene.camera, element);
-        this.mouse.signal.add(function(event, targetObject) {
-            if (targetObject === null || targetObject === undefined) {
+
+        // target: Renderer
+        this.mouse.signal.add(function(event, target) {
+            // target here is the userData supplied object set in Renderers
+            if (target === null || target === undefined) {
                 return;
             }
             if (event === vg.MouseCaster.CLICK) {
-                this.behavior.click(this, targetObject);
+                this.behavior.click(this, target);
             }
             if (event === vg.MouseCaster.OVER) {
-                this.behavior.enter(this, targetObject);
+                this.behavior.enter(this, target);
             }
             if (event === vg.MouseCaster.OUT) {
-                this.behavior.leave(this, targetObject);
+                this.behavior.leave(this, target);
             }
         }, this);
 
         this.update();
     }
+    // TODO: don't hog resources by RAF-ing when dirty only
+    update(timestamp) {
+        window.requestAnimationFrame(this.update.bind(this));
+        this.mouse.update();
+        this.scene.render();
+    }
+
     get behavior() { return this._behavior; }
     set behavior(newBehavior) {
         this._behavior.stop(this);
@@ -184,16 +277,18 @@ class BoardRenderer {
             -((cell.s - cell.r) * this.vgGrid._cellLength * 0.5)
         );
     }
+    coordToPixel(coord) {
+        return new THREE.Vector3(
+            coord.x * this.vgGrid._cellWidth * 0.75,
+            1,
+            -((coord.z - coord.y) * this.vgGrid._cellLength * 0.5)
+        );
+    }
     edgeToPixel(edge) {
         var edge1Position = this.nodeToPixel(edge.node1);
         var edge2Position = this.nodeToPixel(edge.node2);
         var centroidX = (edge1Position.x + edge2Position.x) / 2;
         var centroidZ = (edge1Position.z + edge2Position.z) / 2;
         return new THREE.Vector3(centroidX, 3, centroidZ);
-    }
-    update() {
-        this.mouse.update();
-        this.scene.render();
-        requestAnimationFrame(this.update.bind(this));
     }
 }

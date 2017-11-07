@@ -1,5 +1,9 @@
 // relative location of a hex on a hexagonal grid
-class Coord {}  
+class Coord {
+    // get neighbors;
+    // get nodes();
+    // get edges();
+}
 
 class Coord1D extends Coord {
     constructor(id) { // integer id of a hex
@@ -12,7 +16,7 @@ class Coord1D extends Coord {
         return new Coord1D(data.getId()); 
     }
     get data() { 
-        var data = new protobuf.carcattone_data.Coord1D();
+        var data = new proto.carcattonne_data.Coord1D();
         data.setId(this.id);
         return data;
     }
@@ -43,7 +47,7 @@ class Coord3D extends Coord {
     constructor(x, y, z) {
         super();
         
-        var hash = Coord3D._getHash(x, y, z);
+        let hash = Coord3D._getHash(x, y, z);
         if (this.constructor._cache.has(hash)) {
             // return existing instance and exit this constructor
             return this.constructor._cache.get(hash);
@@ -54,20 +58,20 @@ class Coord3D extends Coord {
         this._hash = hash;
         this.constructor._cache.set(hash, this);
     }
+    /** String */
     get hash() { return this._hash; }
-    static _getHash(x, y, z) {
-        return x + "." + y + "." + z;
-    }
+    static _getHash(x, y, z) { return x + "." + y + "." + z; }
     static fromData(data) {
         return new Coord3D(data.getX(), data.getY(), data.getZ());
     }
     get data() {
-        var data = new proto.carcattone_data.Coord3D();
+        let data = new proto.carcattonne_data.Coord3D();
         data.setX(this.x);
         data.setY(this.y);
         data.setZ(this.z);
         return data;
     }
+    /** <Coord3D>[6] */
     get neighbors() {
         if (this._neighbors == undefined) {
             var x = this.x, y = this.y, z = this.z;
@@ -82,17 +86,21 @@ class Coord3D extends Coord {
         }
         return this._neighbors;
     }
-    // Distance to 3-axis origin 0,0,0
+    /** Distance to 3-axis origin 0, 0, 0 
+     * int >= 0 */
     get radius() {
         if (this._radius === undefined) {
             this._radius = Math.max(
-                Math.abs(this.x), Math.abs(this.y), Math.abs(this.z))
+                Math.abs(this.x), 
+                Math.abs(this.y),
+                Math.abs(this.z))
         }
         return this._radius;
     }
+    /** <Node>[6] */
     get nodes() {
         if (this._nodes === undefined) {
-            var n = this.neighbors;
+            let n = this.neighbors;
             this._nodes = [
                 new Node(this, n[0], n[1]),
                 new Node(this, n[1], n[2]),
@@ -104,20 +112,21 @@ class Coord3D extends Coord {
         }
         return this._nodes;
     }
+    /** <Edge>[6] */
     get edges() {
         if (this._edges === undefined) {
-            var n = this.neighbors;
+            let n = this.neighbors;
             this._edges = [
-                new Edge (this, n[0]),
-                new Edge (this, n[1]),
-                new Edge (this, n[2]),
-                new Edge (this, n[3]),
-                new Edge (this, n[4]),
-                new Edge (this, n[5]),
+                new Edge(this, n[0]),
+                new Edge(this, n[1]),
+                new Edge(this, n[2]),
+                new Edge(this, n[3]),
+                new Edge(this, n[4]),
+                new Edge(this, n[5]),
             ];
         }
         return this._edges;
     }
 }
 Coord3D._cache = new Map();
-Coord3D.center = new Coord3D(0,0,0);
+Coord3D.center = new Coord3D(0, 0, 0);

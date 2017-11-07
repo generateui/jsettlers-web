@@ -1,9 +1,10 @@
 class Hex {
     constructor(coord) {
         this.coord = coord; // a Coord1d, Coord2d or Coord3d
+        this.chit = new Chit(proto.carcattonne_data.ChitType.NONE);
     }
     static fromType(type, coord) {
-        var hexType = proto.carcattone_data.HexType;
+        var hexType = proto.carcattonne_data.HexType;
         switch (type) {
             case hexType.NONE: return new NoneHex(coord);
             case hexType.DESERT: return new Desert(coord);
@@ -16,12 +17,13 @@ class Hex {
             case hexType.HEXFROMBAG: return new HexFromBag(coord);
         }
     }
+    get color() { return 0x0; }
 }
 class Desert extends Hex {
     constructor(coord) {
         super(coord);
     }
-    get type() { return proto.carcattone_data.HexType.DESERT; }
+    get type() { return proto.carcattonne_data.HexType.DESERT; }
     get color() { return 0xFFE4C4; }
 }
 class Sea extends Hex { 
@@ -34,7 +36,7 @@ class WheatField extends Hex {
     constructor(coord) {
         super(coord);
     }
-    get type() { return proto.carcattone_data.HexType.WHEATFIELD; }
+    get type() { return proto.carcattonne_data.HexType.WHEATFIELD; }
     get color() { return 0xFFD700; }
 }
 class Mountain extends Hex {

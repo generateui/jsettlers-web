@@ -15,24 +15,26 @@ class Board {
         };
         this._hexes = new Map(); // <Coord, Hex>
     }
-    placeHexes() {
-        for (var hex of this._config.hexes) {
-            if (Array.isArray(hex)) {
+    generateBoardForPlay() {
+        this.hexBag = [];
+        for (var hex of this._config.hexBag) {
+            // expand config specification of hexes in hexBag
+             // e.g. [new Forest(), [3, () => new Mountain()]]
+             if (Array.isArray(hex)) {
                 var array = hex;
-                var amount = hex[0];
+                var amount = array[0];
                 var createHexFunction = array[1];
-                for (var i=0; i< amount; i++){
+                for (var i=0; i<amount; i++){
                     var createdHex = createHexFunction();
-                    createdHex.coord = coord;
-                    this._hexes.set(createdHex.coord, createdHex);
+                    this.hexBag.add(createdHex);
                 }
-            } else {
-                this._hexes.set(hex.coord, hex);
             }
         }
     }
-    generateBoard(random) {
-
+    placeHexes() {
+        for (var hex of this._config.hexes) {
+            this._hexes.set(hex.coord, hex);
+        }
     }
     getAllNodes() {
         var nodes = new Set();
@@ -75,8 +77,6 @@ class Standard4pDesign extends Board {
     }
 
     generateHexes() {
-        var coords = new Map(); // <coord, Coord>
-        var center = new Coord3D(0,0,0);
         var fromBagCoords = [
             ...this.getCoordsByRadius(0),
             ...this.getCoordsByRadius(1),
@@ -85,13 +85,25 @@ class Standard4pDesign extends Board {
         var seaCoords = this.getCoordsByRadius(3);
         
         var hexes = [];
-        for (var coord of fromBagCoords) {
-            hexes.push(new HexFromBag(coord));
+        for (let coord of fromBagCoords) {
+            var hex = new HexFromBag(coord);
+            hex.chit = new Chit(proto.carcattonne_data.ChitType.CHITFROMBAG);
+            // hex.chit = this.getRandomChit();
+            hexes.push(hex);
         }
-        for (var coord of seaCoords) {
+        for (let coord of seaCoords) {
             hexes.push(new Sea(coord));
         }
         return hexes;
+    }
+    getRandomChit() {
+        var index = this.getRandomIntInclusive(0, 11);
+        return new Chit(index);
+    }
+    getRandomIntInclusive(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive 
     }
     getCoordsByRadius(radius) {
         if (radius === 0) {
