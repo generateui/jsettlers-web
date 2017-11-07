@@ -8,7 +8,7 @@ https://generateui.github.io/carcattonne/
 ## Dependencies
 
 ```
-npm install browserify
+npm install -g browserify
 brew install protobuf
 ```
 
