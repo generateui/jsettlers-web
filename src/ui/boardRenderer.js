@@ -1,10 +1,34 @@
 /** Renders a Hex onto a von-grid tile */
 class HexRenderer {
     constructor(hex) {
-        this.hex = hex;
+        this.portRenderer = null;
         this.chitRenderer = null;
+        var that = this;
+        this.hex = new Proxy(hex, {
+            set (target, key, value) {
+                if (key === "port") {
+                    if (that.portRenderer !== null) {
+                        that.boardRenderer.group.remove(that.portRenderer.mesh);
+                    }
+                    if (value !== null) {
+                        that.portRenderer = new PortRenderer(boardRenderer, value);
+                    }
+                }
+                return Reflect.set(...arguments);
+            }
+        });
+    }
+    portChanged(newPort) {
+        if (this.portRenderer !== null) {
+            boardRenderer.group.remove(this.portRenderer.mesh);
+        }
+        if (newPort !== null) {
+            this.portRenderer = new PortRenderer(boardRenderer, newPort);
+            boardRenderer.group.add(this.portRenderer.mesh);
+        }
     }
     render(grid, boardRenderer) {
+        this.boardRenderer = boardRenderer;
         const coord = this.hex.coord;
         const cell = new vg.Cell(coord.x, coord.y, coord.z);
         const color = new THREE.Color(this.hex.color);
@@ -15,6 +39,9 @@ class HexRenderer {
         if (this.chitRenderer === null) {
             this.chitRenderer = new ChitRenderer(this.hex, boardRenderer);
             boardRenderer.group.add(this.chitRenderer.mesh);
+        }
+        if (this.hex.port !== null) {
+            this.portRenderer = new PortRenderer(boardRenderer, hex.port);
         }
     }
 }
@@ -30,16 +57,16 @@ class ChitRenderer {
         // Apply material to top cap of cilinder and a different material
         // to the sides of the cilinder, so the texture is placed on top
         // and the sides have just a color
-        var radius_half = radius / 2;
+        var halfRadius = radius / 2;
         for (var z = 0; z < cilinderGeometry.faces.length; z++) {
             var face = cilinderGeometry.faces[z];
             if (face.normal.y !== 0) {
-                cilinderGeometry.faceVertexUvs[0][z][0].u = (cilinderGeometry.vertices[face.a].x + radius_half) / radius;
-                cilinderGeometry.faceVertexUvs[0][z][0].v = (cilinderGeometry.vertices[face.a].z + radius_half) / radius;
-                cilinderGeometry.faceVertexUvs[0][z][1].u = (cilinderGeometry.vertices[face.b].x + radius_half) / radius;
-                cilinderGeometry.faceVertexUvs[0][z][1].v = (cilinderGeometry.vertices[face.b].z + radius_half) / radius;
-                cilinderGeometry.faceVertexUvs[0][z][2].u = (cilinderGeometry.vertices[face.c].x + radius_half) / radius;
-                cilinderGeometry.faceVertexUvs[0][z][2].v = (cilinderGeometry.vertices[face.c].z + radius_half) / radius;
+                cilinderGeometry.faceVertexUvs[0][z][0].u = (cilinderGeometry.vertices[face.a].x + halfRadius) / radius;
+                cilinderGeometry.faceVertexUvs[0][z][0].v = (cilinderGeometry.vertices[face.a].z + halfRadius) / radius;
+                cilinderGeometry.faceVertexUvs[0][z][1].u = (cilinderGeometry.vertices[face.b].x + halfRadius) / radius;
+                cilinderGeometry.faceVertexUvs[0][z][1].v = (cilinderGeometry.vertices[face.b].z + halfRadius) / radius;
+                cilinderGeometry.faceVertexUvs[0][z][2].u = (cilinderGeometry.vertices[face.c].x + halfRadius) / radius;
+                cilinderGeometry.faceVertexUvs[0][z][2].v = (cilinderGeometry.vertices[face.c].z + halfRadius) / radius;
                 face.materialIndex = 0;
             } else {
                 face.materialIndex = 1;
@@ -86,6 +113,161 @@ class ChitRenderer {
         this.mesh.visible = show;
         // do we want to do the reverse instead and be reactive?
         this.hex.chit = chit; 
+    }
+}
+/** Renders a hex over a hovered hex to have user select one of six triangles */
+class PortPickerRenderer {
+    constructor(boardRenderer) {
+        this._hex = null;
+        this.boardRenderer = boardRenderer;
+
+        this.group = new THREE.Group();
+        this.group.visible = false;
+        this.hexPart0 = new HexPartRenderer(boardRenderer, 0);
+        this.hexPart1 = new HexPartRenderer(boardRenderer, 1);
+        this.hexPart2 = new HexPartRenderer(boardRenderer, 2);
+        this.hexPart3 = new HexPartRenderer(boardRenderer, 3);
+        this.hexPart4 = new HexPartRenderer(boardRenderer, 4);
+        this.hexPart5 = new HexPartRenderer(boardRenderer, 5);
+        this.group.add(this.hexPart0.mesh);
+        this.group.add(this.hexPart1.mesh);
+        this.group.add(this.hexPart2.mesh);
+        this.group.add(this.hexPart3.mesh);
+        this.group.add(this.hexPart4.mesh);
+        this.group.add(this.hexPart5.mesh);
+        this.mesh = this.group;
+        this.mesh.userData.structure = this;
+    }
+    get hexPartRenderer() {
+        return this._hexPartRenderer;
+    }
+    set hex(hex) {
+        this._hex = hex;
+        var position = this.boardRenderer.coordToPixel(hex.coord);
+        this.mesh.position.set(position.x, 1.01, position.z);
+    }
+    set portType(portType) {
+        this.hexPart0.portType = portType;
+        this.hexPart1.portType = portType;
+        this.hexPart2.portType = portType;
+        this.hexPart3.portType = portType;
+        this.hexPart4.portType = portType;
+        this.hexPart5.portType = portType;
+    }
+    set visible(visible) {
+        this.group.visible = visible;
+    }
+}
+
+class HexPartRenderer {
+    constructor(boardRenderer, partIndex) {
+        this.partIndex = partIndex;
+        const cell = null;
+        const scale = 1.05;
+        const cellSize = 10;
+
+        const partIndexAngle = (vg.TAU / 6) * partIndex;
+        const partIndexX = cellSize * Math.cos(partIndexAngle);
+        const partIndexY = cellSize * Math.sin(partIndexAngle);
+
+        const nextPartIndex = partIndex == 5 ? 0 : partIndex + 1;
+        const nextPartIndexAngle = (vg.TAU / 6) * nextPartIndex;
+        const nextPartIndexX = cellSize * Math.cos(nextPartIndexAngle);
+        const nextPartIndexY = cellSize * Math.sin(nextPartIndexAngle);
+
+        var material = new THREE.MeshPhongMaterial({
+            color: new THREE.Color(0x0000ff)
+        });
+        const triangleShape = new THREE.Shape();
+        triangleShape.moveTo(0, 0);
+        triangleShape.lineTo(partIndexX, partIndexY);
+        triangleShape.lineTo(nextPartIndexX, nextPartIndexY);
+        triangleShape.lineTo(0, 0);
+        triangleShape.autoClose = true;
+
+        var texture = new THREE.TextureLoader().load("doc/images/Wheat2To1Port.png");
+        const shapeGeometry = new THREE.ShapeGeometry(triangleShape);
+        shapeGeometry.faceVertexUvs[0][0][0].x = 0.5
+        shapeGeometry.faceVertexUvs[0][0][0].y = 1;
+        shapeGeometry.faceVertexUvs[0][0][1].x = 0;
+        shapeGeometry.faceVertexUvs[0][0][1].y = 0;
+        shapeGeometry.faceVertexUvs[0][0][2].x = 1;
+        shapeGeometry.faceVertexUvs[0][0][2].y = 0;
+        material = new THREE.MeshBasicMaterial( {map: texture} );
+        this.mesh = new THREE.Mesh(shapeGeometry, material);
+        this.mesh.rotation.x = -90 * vg.DEG_TO_RAD;
+        this.mesh.position.y = 1.01;
+        this.mesh.scale.set(scale, scale, 1);
+        this.mesh.userData.structure = this;
+    }
+    get visible() {
+        return this.mesh.visible;
+    }
+    set visible(visible) {
+        this.mesh.visible = visible;
+    }
+    get hovered() {
+        return this._hovered;
+    }
+    set hovered(hovered) {
+        this._hovered = hovered;
+        this.mesh.material.color = hovered ? new THREE.Color(0xaaaaaa) : new THREE.Color(0xffffff);
+    }
+    set portType(portType) {
+        var portName = Util.getEnumName(proto.carcattonne_data.PortType, portType);
+        var humanName = Util.getPascalCasedName(portName);
+        var fileName = `doc/images/${humanName}Port.png`;
+        var texture = new THREE.TextureLoader().load(fileName);
+        this.mesh.material.map = texture;
+        this.mesh.material.needsUpdate = true;
+    }
+}
+/** Renders a port on a hexagon using a triangle and a cylinder */
+class PortRenderer {
+    constructor(boardRenderer, port) {
+        this.port = port;
+        const cell = null;
+        const scale = 1.05;
+        const cellSize = 10;
+
+        const partIndexAngle = (vg.TAU / 6) * port.partIndex;
+        const partIndexX = cellSize * Math.cos(partIndexAngle);
+        const partIndexY = cellSize * Math.sin(partIndexAngle);
+
+        const nextPartIndex = port.partIndex == 5 ? 0 : port.partIndex + 1;
+        const nextPartIndexAngle = (vg.TAU / 6) * nextPartIndex;
+        const nextPartIndexX = cellSize * Math.cos(nextPartIndexAngle);
+        const nextPartIndexY = cellSize * Math.sin(nextPartIndexAngle);
+
+        const triangleShape = new THREE.Shape();
+        triangleShape.moveTo(0, 0);
+        triangleShape.lineTo(partIndexX, partIndexY);
+        triangleShape.lineTo(nextPartIndexX, nextPartIndexY);
+        triangleShape.lineTo(0, 0);
+        triangleShape.autoClose = true;
+
+        var texture = this._getTexture(port);
+        const shapeGeometry = new THREE.ShapeGeometry(triangleShape);
+        shapeGeometry.faceVertexUvs[0][0][0].x = 0.5
+        shapeGeometry.faceVertexUvs[0][0][0].y = 1;
+        shapeGeometry.faceVertexUvs[0][0][1].x = 0;
+        shapeGeometry.faceVertexUvs[0][0][1].y = 0;
+        shapeGeometry.faceVertexUvs[0][0][2].x = 1;
+        shapeGeometry.faceVertexUvs[0][0][2].y = 0;
+        var material = new THREE.MeshBasicMaterial( {color: 0xffffff, map: texture} );
+        this.mesh = new THREE.Mesh(shapeGeometry, material);
+        var position = boardRenderer.coordToPixel(port.seaCoord);
+        this.mesh.position.set(position.x, 2, position.z);
+        this.mesh.rotation.x = -90 * vg.DEG_TO_RAD;
+        this.mesh.scale.set(scale, scale, 1);
+        this.mesh.userData.structure = this;
+        boardRenderer.group.add(this.mesh);
+    }
+    _getTexture(port) {
+        var imageFileName = "doc/images/" + port.constructor.name + ".png";
+        var texture = new THREE.TextureLoader().load(imageFileName);
+        texture.mapping = THREE.EquirectangularReflectionMapping;
+        return texture;
     }
 }
 
@@ -157,6 +339,9 @@ class BoardRenderer {
         this.vgGrid.generate({
             size: 3 // size of the board
         });
+
+        this.portPickerRenderer = new PortPickerRenderer(this);
+        this.group.add(this.portPickerRenderer.group);
 
         this.vgBoard = new vg.Board(this.vgGrid);
 

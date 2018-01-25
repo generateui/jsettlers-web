@@ -35,6 +35,7 @@ message Hex {
 	HexType Type = 1;
 	Coord coord = 2;
 	ChitType chit = 3;
+	PortType port = 4;
 }
 	enum HexType {
 		NONE = 0; // Used for boards that have fixed amount of hexagons
@@ -60,4 +61,14 @@ message Hex {
 		Chit11 = 9;
 		Chit12 = 10;
 		ChitFromBag = 11; // the chit is picked from a bag
+	}
+	enum PortType {
+		Clay2To1 = 0;
+		Ore2To1 = 1;
+		Sheep2To1 = 2;
+		Wheat2To1 = 3;
+		Timber2To1 = 4;
+		Any3To1 = 5; // 3 of same yields one gold
+		Any4To1 = 6; // The default 4:1 trading ability
+		FromBag = 7;
 	}
