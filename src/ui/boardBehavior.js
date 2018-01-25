@@ -41,10 +41,10 @@ class SetChit extends BoardBehavior {
     }
     click(boardRenderer, renderer) {
         if (renderer instanceof ChitRenderer) {
-            renderer.setChit(new Chit(this.chitType));
+            renderer.hex.chit = new Chit(this.chitType);
         }
         if (renderer instanceof HexRenderer) {
-            renderer.chitRenderer.setChit(new Chit(this.chitType));
+            renderer.hex.chit = new Chit(this.chitType);
         }
     }
     start(boardRenderer) {

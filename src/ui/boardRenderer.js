@@ -3,7 +3,7 @@ class HexRenderer {
     constructor(hex) {
         this.portRenderer = null;
         this.chitRenderer = null;
-        var that = this;
+        const that = this;
         this.hex = new Proxy(hex, {
             set (target, key, value) {
                 if (key === "port") {
@@ -12,6 +12,17 @@ class HexRenderer {
                     }
                     if (value !== null) {
                         that.portRenderer = new PortRenderer(boardRenderer, value);
+                    }
+                }
+                if (key === "chit") {
+                    if (that.chitRenderer !== null) {
+                        that.boardRenderer.group.remove(that.chitRenderer.mesh);
+                    }
+                    if (value !== null) {
+                        var success = Reflect.set(...arguments);
+                        that.chitRenderer = new ChitRenderer(that.hex, boardRenderer);
+                        boardRenderer.group.add(that.chitRenderer.mesh);
+                        return success;
                     }
                 }
                 return Reflect.set(...arguments);
@@ -105,14 +116,6 @@ class ChitRenderer {
         var texture = new THREE.TextureLoader().load(imageFileName);
         texture.mapping = THREE.EquirectangularReflectionMapping;
         return texture;
-    }
-    setChit(chit) {
-        var texture = this._getTexture(chit);
-        this.topMaterial.map = texture;
-        const show = chit.chitType !== proto.carcattonne_data.ChitType.NONE;
-        this.mesh.visible = show;
-        // do we want to do the reverse instead and be reactive?
-        this.hex.chit = chit; 
     }
 }
 /** Renders a hex over a hovered hex to have user select one of six triangles */
