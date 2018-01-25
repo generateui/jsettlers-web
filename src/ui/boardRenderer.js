@@ -264,8 +264,10 @@ class PortRenderer {
         boardRenderer.group.add(this.mesh);
     }
     _getTexture(port) {
-        var imageFileName = "doc/images/" + port.constructor.name + ".png";
-        var texture = new THREE.TextureLoader().load(imageFileName);
+        var portName = Util.getEnumName(proto.carcattonne_data.PortType, portType);
+        var humanName = Util.getPascalCasedName(portName);
+        var fileName = `doc/images/${humanName}port.png`;
+        var texture = new THREE.TextureLoader().load(fileName);
         texture.mapping = THREE.EquirectangularReflectionMapping;
         return texture;
     }
