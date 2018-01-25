@@ -97,7 +97,7 @@ class ChitRenderer {
         if (chit.number !== null) {
             imageFileName = imageFileName + chit.number.toString();
         } else if (chit.chitType === proto.carcattonne_data.ChitType.CHITFROMBAG) {
-            imageFileName = imageFileName + "FromBag";
+            imageFileName = imageFileName + "frombag";
         } else {
             imageFileName = "Chit" + chit.number.toString();
         }
