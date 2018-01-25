@@ -26,7 +26,7 @@ class PortTypePicker {
             var imageEl = document.createElement("img");
             var imageFileName;
             var humanPortName = Util.getPascalCasedName(portName);
-            imageEl.src = "doc/images/" + humanPortName + "Port.png";
+            imageEl.src = `doc/images/${humanPortName}port.png`;
             labelEl.appendChild(imageEl);
             var spanEl = document.createElement("span");
             spanEl.textContent = humanPortName;
