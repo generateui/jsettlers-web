@@ -246,7 +246,7 @@ class PortRenderer {
         triangleShape.lineTo(0, 0);
         triangleShape.autoClose = true;
 
-        var texture = this._getTexture(port);
+        var texture = this._getTexture(port.type);
         const shapeGeometry = new THREE.ShapeGeometry(triangleShape);
         shapeGeometry.faceVertexUvs[0][0][0].x = 0.5
         shapeGeometry.faceVertexUvs[0][0][0].y = 1;
@@ -263,7 +263,7 @@ class PortRenderer {
         this.mesh.userData.structure = this;
         boardRenderer.group.add(this.mesh);
     }
-    _getTexture(port) {
+    _getTexture(portType) {
         var portName = Util.getEnumName(proto.carcattonne_data.PortType, portType);
         var humanName = Util.getPascalCasedName(portName);
         var fileName = `doc/images/${humanName}port.png`;
