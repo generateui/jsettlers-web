@@ -68,15 +68,34 @@
         <script src="src/node.js"></script>
         <script src="src/edge.js"></script>
         <script src="src/chit.js"></script>
+        <script src="src/port.js"></script>
+        <script src="src/util.js"></script>
         <script src="src/ui/boardRenderer.js"></script>
         <script src="src/ui/boardBehavior.js"></script>
         <script src="src/ui/boardBehaviorPicker.js"></script>
         <script src="src/ui/hexTypePicker.js"></script>
         <script src="src/ui/chitTypePicker.js"></script>
+        <script src="src/ui/portTypePicker.js"></script>
 
         <script type="text/javascript" src="von-grid/lib/three.min.js"></script>
         <script type="text/javascript" src="von-grid/lib/OrbitControls.js"></script>
-        <script type="text/javascript" src="von-grid/dist/hex-grid.min.js"></script>
+        <script type="text/javascript" src="von-grid/src/vg.js"></script>
+        <script type="text/javascript" src="von-grid/src/Board.js"></script>
+        <script type="text/javascript" src="von-grid/src/utils/Loader.js"></script>
+        <script type="text/javascript" src="von-grid/src/utils/MouseCaster.js"></script>
+        <script type="text/javascript" src="von-grid/src/utils/Scene.js"></script>
+        <script type="text/javascript" src="von-grid/src/utils/SelectionManager.js"></script>
+        <script type="text/javascript" src="von-grid/src/utils/Tools.js"></script>
+        <script type="text/javascript" src="von-grid/src/pathing/AStarFinder.js"></script>
+        <script type="text/javascript" src="von-grid/src/pathing/PathUtil.js"></script>
+        <script type="text/javascript" src="von-grid/src/grids/Cell.js"></script>
+        <script type="text/javascript" src="von-grid/src/grids/HexGrid.js"></script>
+        <script type="text/javascript" src="von-grid/src/grids/SqrGrid.js"></script>
+        <script type="text/javascript" src="von-grid/src/grids/Tile.js"></script>
+        <script type="text/javascript" src="von-grid/src/lib/LinkedList.js"></script>
+        <script type="text/javascript" src="von-grid/src/lib/Signal.js"></script>
+
+
 
         <div id="board-renderer"></div>
 
@@ -95,6 +114,10 @@
                 <div class="widget-header">ChitType</div>
                 <div id="chit-types"></div>
             </li>
+            <li id="port-type-picker">
+                <div class="widget-header">PortType</div>
+                <div id="port-types"></div>
+            </li>
         </div>
         
         <script type="text/javascript">
@@ -102,6 +125,7 @@
             var boardRenderer = null;
             var hexTypePicker = null;
             var chitTypePicker = null;
+            var portTypePicker = null;
             var boardBehaviorPicker = null;
 
             window.addEventListener('load', function(evt) {
@@ -111,6 +135,7 @@
                 // behavior to change clicked hex into selected HexType
                 const setHex = new SetHex();
                 const setChit = new SetChit();
+                const setPort = new SetPort();
                 const behaviors = [
                     new NoBehavior(),
                     new EmphasizeHoveredObject(),
@@ -122,6 +147,7 @@
                     new ShowAllEdges(),
                     new ShowEdgesOfClickedHex(),
                     new ShowEdgesOfClickedNode(),
+                    setPort,
                 ];
 
                 // render the board in a 3D viewport 
@@ -134,6 +160,7 @@
                 // widget to let the user pick a HexType
                 hexTypePicker = new HexTypePicker(setHex);
                 chitTypePicker = new ChitTypePicker(setChit);
+                portTypePicker = new PortTypePicker(setPort);
             });
         </script>
 

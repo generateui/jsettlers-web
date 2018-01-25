@@ -2,6 +2,7 @@ class Hex {
     constructor(coord) {
         this.coord = coord; // a Coord1d, Coord2d or Coord3d
         this.chit = new Chit(proto.carcattonne_data.ChitType.NONE);
+        this.port = null;
     }
     static fromType(type, coord) {
         var hexType = proto.carcattonne_data.HexType;
@@ -18,6 +19,8 @@ class Hex {
         }
     }
     get color() { return 0x0; }
+    /** True when this hex can have a port on top of it */
+    get canHavePort() { return false; }
 }
 class Desert extends Hex {
     constructor(coord) {
@@ -31,6 +34,7 @@ class Sea extends Hex {
         super(coord);
     }
     get color() { return 0x1E90FF; }
+    get canHavePort() { return true; }
 }
 class WheatField extends Hex { 
     constructor(coord) {

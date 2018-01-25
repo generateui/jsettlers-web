@@ -197,3 +197,47 @@ class CompositeBehavior extends BoardBehavior {
         }
     }
 }
+class SetPort {
+    constructor() {
+        this.selectedHexPartRenderer = null;
+        this.selectedHexRenderer = null;
+        this._portType = proto.carcattonne_data.PortType.Clay2To1;
+    }
+    get portType() {
+        return this._portType;
+    }
+    set portType(portType) {
+        this._portType = portType;
+        this.portPickerRenderer.portType = this.portType;
+    }
+    start(boardRenderer) {
+        this.portPickerRenderer = boardRenderer.portPickerRenderer;
+        boardRenderer.portPickerRenderer.visible = true;
+    }
+    stop(boardRenderer) {
+        boardRenderer.portPickerRenderer.visible = false;
+    }
+    click(boardRenderer, renderer) {
+        if (this.selectedHexRenderer != null) {
+            var newPort = Port.fromType(this.portType, this.selectedHexPartRenderer.partIndex, this.selectedHexRenderer.hex.coord);
+            this.selectedHexRenderer.hex.port = newPort;
+        }
+    }
+    enter(boardRenderer, renderer) {
+        if (renderer instanceof HexRenderer) {
+            boardRenderer.portPickerRenderer.visible = renderer.hex.canHavePort;
+            boardRenderer.portPickerRenderer.hex = renderer.hex;
+            this.selectedHexRenderer = renderer;
+        }
+        if (renderer instanceof HexPartRenderer) {
+            this.selectedHexPartRenderer = renderer;
+            this.selectedHexPartRenderer.hovered = true;
+        }
+    }
+    leave(boardRenderer, renderer) {
+        if (this.selectedHexPartRenderer != null) {
+            this.selectedHexPartRenderer.hovered = false;
+            this.selectedHexPartRenderer = null;
+        }
+    }
+}
