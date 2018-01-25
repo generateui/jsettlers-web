@@ -27,43 +27,49 @@ class Clay2To1Port extends Port {
         super(partIndex, seaCoord);
     }
     get color() { return 0xff0000; }   
-    get type() { return proto.carcattonne_data.PortType.Clay2To1; } 
+    get type() { return proto.carcattonne_data.PortType.CLAY2TO1; } 
 }
 class Ore2To1Port extends Port { 
     constructor(partIndex, seaCoord) {
         super(partIndex, seaCoord);
     }
     get color() { return 0x8A2BE2; }
+    get type() { return proto.carcattonne_data.PortType.ORE2TO1; } 
 }
 class Sheep2To1Port extends Port { 
     constructor(partIndex, seaCoord) {
         super(partIndex, seaCoord);
     }
     get color() { return 0x00FF00; }        
+    get type() { return proto.carcattonne_data.PortType.SHEEP2TO1; } 
 }
 class Wheat2To1Port extends Port { 
     constructor(partIndex, seaCoord) {
         super(partIndex, seaCoord);
     }
     get color() { return 0xFFD700; }    
+    get type() { return proto.carcattonne_data.PortType.WHEAT2TO1; } 
 }
 class Timber2To1Port extends Port { 
     constructor(partIndex, seaCoord) {
         super(partIndex, seaCoord);
     }
     get color() { return 0x006400; }
+    get type() { return proto.carcattonne_data.PortType.TIMBER2TO1; } 
 }
 class Any3To1Port extends Port { 
     constructor(partIndex, seaCoord) {
         super(partIndex, seaCoord);
     }
     get color() { return 0xffffff; }
+    get type() { return proto.carcattonne_data.PortType.ANY3TO1; } 
 }
 class Any4To1Port extends Port { 
     constructor(partIndex, seaCoord) {
         super(partIndex, seaCoord);
     }
     get canPlaceOnBoard() { return false; }
+    get type() { return proto.carcattonne_data.PortType.ANY4TO1; } 
 }
 /* Design-time port replaced on board-preparation time by a port from a bag */
 class FromBagPort extends Port {
@@ -71,4 +77,5 @@ class FromBagPort extends Port {
         super(partIndex, seaCoord);
     }
     get color() { return 0xaaaaaa; }
+    get type() { return proto.carcattonne_data.PortType.FROMBAG; } 
 }
