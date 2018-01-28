@@ -1,44 +1,32 @@
 /** Renders a Hex onto a von-grid tile */
 class HexRenderer {
     constructor(hex) {
+        this._hex = hex;
         this.portRenderer = null;
         this.chitRenderer = null;
-        const that = this;
-        this.hex = new Proxy(hex, {
-            set (target, key, value) {
-                if (key === "port") {
-                    if (that.portRenderer !== null) {
-                        that.boardRenderer.group.remove(that.portRenderer.mesh);
-                    }
-                    if (value !== null) {
-                        that.portRenderer = new PortRenderer(boardRenderer, value);
-                    }
-                }
-                if (key === "chit") {
-                    if (that.chitRenderer !== null) {
-                        that.boardRenderer.group.remove(that.chitRenderer.mesh);
-                    }
-                    if (value !== null) {
-                        var success = Reflect.set(...arguments);
-                        that.chitRenderer = new ChitRenderer(that.hex, boardRenderer);
-                        boardRenderer.group.add(that.chitRenderer.mesh);
-                        return success;
-                    }
-                }
-                return Reflect.set(...arguments);
-            }
-        });
+
+        this.removePortChangedSubscription = hex.portChanged(this.portChanged.bind(this));
+        this.removeChitChangedSubscription = hex.chitChanged(this.chitChanged.bind(this));
     }
-    portChanged(newPort) {
+    portChanged(oldPort, newPort) {
         if (this.portRenderer !== null) {
-            boardRenderer.group.remove(this.portRenderer.mesh);
+            this.boardRenderer.group.remove(this.portRenderer.mesh);
         }
         if (newPort !== null) {
             this.portRenderer = new PortRenderer(boardRenderer, newPort);
-            boardRenderer.group.add(this.portRenderer.mesh);
+        }
+    }
+    chitChanged(oldChit, newChit) {
+        if (this.chitRenderer !== null) {
+            this.boardRenderer.group.remove(this.chitRenderer.mesh);
+        }
+        if (newChit !== null) {
+            this.chitRenderer = new ChitRenderer(this.hex, boardRenderer);
+            boardRenderer.group.add(this.chitRenderer.mesh);
         }
     }
     render(grid, boardRenderer) {
+        this.grid = grid;
         this.boardRenderer = boardRenderer;
         const coord = this.hex.coord;
         const cell = new vg.Cell(coord.x, coord.y, coord.z);
@@ -52,8 +40,25 @@ class HexRenderer {
             boardRenderer.group.add(this.chitRenderer.mesh);
         }
         if (this.hex.port !== null) {
-            this.portRenderer = new PortRenderer(boardRenderer, hex.port);
+            this.portRenderer = new PortRenderer(boardRenderer, this.hex.port);
         }
+    }
+    dispose() {
+        this.removeChitChangedSubscription();
+        this.removePortChangedSubscription();
+    }
+    get hex() { return this._hex; }
+    set hex(hex) {
+        this._hex = hex;
+        const color = new THREE.Color(this.hex.color);
+        const coord = this.hex.coord;
+        const cell = new vg.Cell(coord.x, coord.y, coord.z);
+        const hash = this.grid.cellToHash(cell);
+        this.grid.cells[hash].tile.material.color = color;
+        this.removeChitChangedSubscription();
+        this.removePortChangedSubscription();
+        this.removePortChangedSubscription = this.hex.portChanged(this.portChanged);
+        this.removeChitChangedSubscription = this.hex.chitChanged(this.chitChanged);
     }
 }
 
@@ -324,6 +329,11 @@ class BoardRenderer {
         this.board = board || new Standard4pDesign();
         this._behavior = behavior || new SetHex();
 
+        this.removeChangedSubscription = this.board.hexes.changed((key, oldValue, newValue) => {
+            var hexRenderer = this.hexRenderers.get(oldValue.coord);
+            hexRenderer.hex = newValue;
+        });
+
         this.nodesGroup = new THREE.Group();
         this.edgesGroup = new THREE.Group();
         this.group = new THREE.Group();
@@ -398,14 +408,44 @@ class BoardRenderer {
             }
         }, this);
 
-        this.update();
+        // this.update();
+        this.frameCount = 0;
+        this.fpsInterval = 0;
+        this.startTime = null;
+        this.now = null;
+        this.then = null;
+        this.elapsed = null;
+        this.startAnimating(30);
     }
+    
+    startAnimating(fps) {
+        this.fpsInterval = 1000 / fps;
+        this.then = window.performance.now();
+        this.startTime = this.then;
+        this.animate();
+    }
+
+    animate(newtime) {
+        window.requestAnimationFrame(this.animate.bind(this));
+        this.now = newtime;
+        this.elapsed = this.now - this.then;
+    
+        if (this.elapsed > this.fpsInterval) {
+            // Get ready for next frame by setting then=now, but...
+            // Also, adjust for fpsInterval not being multiple of 16.67
+            this.then = this.now - (this.elapsed % this.fpsInterval);
+    
+            this.mouse.update();
+            this.scene.render();
+        }
+    }
+
     // TODO: don't hog resources by RAF-ing when dirty only
-    update(timestamp) {
-        window.requestAnimationFrame(this.update.bind(this));
-        this.mouse.update();
-        this.scene.render();
-    }
+    // update(timestamp) {
+    //     window.requestAnimationFrame(this.update.bind(this));
+    //     this.mouse.update();
+    //     this.scene.render();
+    // }
 
     get behavior() { return this._behavior; }
     set behavior(newBehavior) {

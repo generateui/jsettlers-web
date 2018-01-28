@@ -13,7 +13,7 @@ class Board {
              // e.g. [new Forest(), [3, () => new Mountain()]]
             hexBag: [],
         };
-        this._hexes = new Map(); // <Coord, Hex>
+        this._hexes = new ObservableMap(); // <Coord, Hex>
     }
     generateBoardForPlay() {
         this.hexBag = [];

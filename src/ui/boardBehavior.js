@@ -26,11 +26,6 @@ class SetHex extends BoardBehavior {
         var newHex = Hex.fromType(this.hexType)
         newHex.coord = hex.coord;
         boardRenderer.board.hexes.set(hex.coord, newHex);
-        
-        // update the hex renderer
-        var hexRenderer = boardRenderer.hexRenderers.get(hex.coord);
-        hexRenderer.hex = newHex;
-        hexRenderer.render(boardRenderer.vgGrid);
     }
 }
 class SetChit extends BoardBehavior {
