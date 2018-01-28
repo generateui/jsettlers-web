@@ -36,7 +36,7 @@ class Observable {
             // wrap into anonymous function to get correct closure behavior
             (function(pn) {
                 const fieldName = "_" + pn;
-                that[fieldName] = that[propertyName]; // ensure initial value is set to created field
+                that[fieldName] = that[pn]; // ensure initial value is set to created field
                 Object.defineProperty(that, pn, {
                     enumerable: true,
                     configurable: true,
@@ -47,8 +47,8 @@ class Observable {
                         that._fireChanged(pn, oldValue, value);
                     }
                 });
-                const subscribeFunctionName = propertyName + "Changed";
-                that[subscribeFunctionName] = (listenerFunction)  => that._listen(propertyName, listenerFunction);
+                const subscribeFunctionName = pn + "Changed";
+                that[subscribeFunctionName] = (listenerFunction)  => that._listen(pn, listenerFunction);
             })(propertyName);
         }
     }

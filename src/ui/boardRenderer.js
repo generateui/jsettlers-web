@@ -13,7 +13,7 @@ class HexRenderer {
             this.boardRenderer.group.remove(this.portRenderer.mesh);
         }
         if (newPort !== null) {
-            this.portRenderer = new PortRenderer(boardRenderer, newPort);
+            this.portRenderer = new PortRenderer(this.boardRenderer, newPort);
         }
     }
     chitChanged(oldChit, newChit) {
@@ -21,8 +21,8 @@ class HexRenderer {
             this.boardRenderer.group.remove(this.chitRenderer.mesh);
         }
         if (newChit !== null) {
-            this.chitRenderer = new ChitRenderer(this.hex, boardRenderer);
-            boardRenderer.group.add(this.chitRenderer.mesh);
+            this.chitRenderer = new ChitRenderer(this.hex, this.boardRenderer);
+            this.boardRenderer.group.add(this.chitRenderer.mesh);
         }
     }
     render(grid, boardRenderer) {
