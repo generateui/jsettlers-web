@@ -341,10 +341,7 @@ class BoardRenderer {
         this.nodeRenderers = new Map(); // <Node, NodeRenderer>
         this.edgeRenderers = new Map(); // <Edge, EdgeRenderer>
         
-        this.scene = new vg.Scene({
-            element: element,
-            cameraPosition: {x:0, y:150, z:150}
-        }, true);
+        this.scene = new vg.Scene(element);
 
         // TODO: use sparse maps instead
         // this constructs the cells in grid coordinate space
