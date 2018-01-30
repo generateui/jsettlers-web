@@ -254,3 +254,79 @@ class MoveRobber extends BoardBehavior {
         this.emphasizeHoveredHex.leave(boardRenderer, renderer);
     }
 }
+class BuildTown extends BoardBehavior {
+    constructor() {
+        super();
+        this.player = new Player();
+        this.player.color = 0xff0000;
+    }
+    start(boardRenderer) {
+        this.boardRenderer = boardRenderer;
+        var nodes = boardRenderer.board.getAllNodes();
+        boardRenderer.showNodes(nodes);
+    }
+    click(boardRenderer, renderer) {
+        if (renderer instanceof NodeRenderer) {
+            const node = renderer.node;
+            this.boardRenderer.board.towns.set(node, new Town(this.player, node));
+        }
+    }
+    stop(boardRenderer) {
+        boardRenderer.hideAllNodes();
+    }
+}
+class BuildCity extends BoardBehavior {
+    constructor() {
+        super();
+        this.player = new Player();
+        this.player.color = 0xff0000;
+    }
+    start(boardRenderer) {
+        this.boardRenderer = boardRenderer;
+        var nodes = boardRenderer.board.getAllNodes();
+        boardRenderer.showNodes(nodes);
+    }
+    click(boardRenderer, renderer) {
+        if (renderer instanceof NodeRenderer) {
+            const node = renderer.node;
+            this.boardRenderer.board.cities.set(node, new City(this.player, node));
+        }
+    }
+    stop(boardRenderer) {
+        boardRenderer.hideAllNodes();
+    }
+}
+class BuildRoad extends BoardBehavior {
+    constructor() {
+        super();
+        this.emphasizeHoveredObject = new EmphasizeHoveredObject();
+        this.player = new Player();
+        this.player.color = 0xff0000;
+    }
+    _showEdges() {
+        var edges = this.boardRenderer.board.getAllEdges();
+        var roadEdges = this.boardRenderer.board.roads.keys();
+        var edgesToShow = Util.except(edges, roadEdges);
+        this.boardRenderer.showEdges(edgesToShow);
+    }
+    start(boardRenderer) {
+        this.boardRenderer = boardRenderer;
+        this._showEdges();
+    }
+    click(boardRenderer, renderer) {
+        if (renderer instanceof EdgeRenderer) {
+            const edge = renderer.edge;
+            this.boardRenderer.board.roads.set(edge, new Road(this.player, edge));
+            this._showEdges();
+        }
+    }
+    stop(boardRenderer) {
+        boardRenderer.hideAllEdges();
+    }
+    enter(boardRenderer, renderer) {
+        this.emphasizeHoveredObject.enter(boardRenderer, renderer);
+    }
+    leave(boardRenderer, renderer) {
+        this.emphasizeHoveredObject.leave(boardRenderer, renderer);
+    }
+}

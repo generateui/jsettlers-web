@@ -290,12 +290,13 @@ class NodeRenderer {
         this.mesh = null;
 
         var cilinderGeometry = new THREE.CylinderGeometry(3, 3, 1, 16);
-        var edges = new THREE.EdgesGeometry(cilinderGeometry);
-        var lines = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x000000 }));
-        var material = new THREE.MeshBasicMaterial({color: 0xffff00});
+        // TODO: remove edge lines or fix problem lines don't hit in hittesting
+        // var edges = new THREE.EdgesGeometry(cilinderGeometry);
+        // var lines = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x000000 }));
+        var material = new THREE.MeshPhongMaterial({color: 0xffff00});
         var cilinder = new THREE.Mesh(cilinderGeometry, material);
         cilinder.visible = false;
-        cilinder.add(lines);
+        // cilinder.add(lines);
         var position = boardRenderer.nodeToPixel(node);
         cilinder.position.set(position.x, position.y, position.z);
         this.mesh = cilinder;
@@ -309,11 +310,11 @@ class EdgeRenderer {
         this.edge = edge;
 
         var boxGeometry = new THREE.BoxGeometry(8, 3, 3);
-        var edgesGeometry = new THREE.EdgesGeometry(boxGeometry);
-        var lines = new THREE.LineSegments(edgesGeometry, new THREE.LineBasicMaterial({ color: 0x000000 }));
-        var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+        // var edgesGeometry = new THREE.EdgesGeometry(boxGeometry);
+        // var lines = new THREE.LineSegments(edgesGeometry, new THREE.LineBasicMaterial({ color: 0x000000 }));
+        var material = new THREE.MeshLambertMaterial( {color: 0xffff00, transparent: true, opacity: 0.75} );
         var box = new THREE.Mesh(boxGeometry, material);
-        box.add(lines);
+        // box.add(lines);
         var radians = ((edge.rotation || 60)* Math.PI) / 180;
         box.rotateY(radians);
         box.visible = false;
@@ -347,6 +348,68 @@ class RobberRenderer {
         });
     }
 }
+class TownRenderer {
+    constructor(boardRenderer, town) {
+        this.boardRenderer = boardRenderer;
+        var loader = new THREE.STLLoader();
+        const that = this;
+        loader.load('models3D/town.stl', function (geometry) {
+            console.log(geometry);
+            var material = new THREE.MeshPhongMaterial({color: town.player.color});
+            var edges = new THREE.EdgesGeometry(geometry);
+            var lines = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x000000 }));
+            var group = new THREE.Mesh(geometry, material);
+            group.add(lines);
+            var p = that.boardRenderer.nodeToPixel(town.node);
+            group.rotation.x = -0.5 * Math.PI;
+            group.position.set(p.x, 2, p.z); // don't place it in the center on top of chit, add tile height
+            // TODO: move town by half width/depth
+            group.scale.set(0.25, 0.25, 0.25);
+            that.boardRenderer.scene.add(group);
+            that.group = group;
+        });
+    }
+}
+class CityRenderer {
+    constructor(boardRenderer, city) {
+        this.boardRenderer = boardRenderer;
+        var loader = new THREE.STLLoader();
+        const that = this;
+        loader.load('models3D/city.stl', function (geometry) {
+            console.log(geometry);
+            var material = new THREE.MeshPhongMaterial({color: city.player.color});
+            var edges = new THREE.EdgesGeometry(geometry);
+            var lines = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x000000 }));
+            var group = new THREE.Mesh(geometry, material);
+            group.add(lines);
+            var p = that.boardRenderer.nodeToPixel(city.node);
+            group.rotation.x = -0.5 * Math.PI;
+            group.position.set(p.x, 2, p.z); // don't place it in the center on top of chit, add tile height
+            group.scale.set(0.25, 0.25, 0.25);
+            that.boardRenderer.scene.add(group);
+            that.group = group;
+        });
+    }
+}
+class RoadRenderer {
+    constructor(boardRenderer, road) {
+        this.boardRenderer = boardRenderer;
+
+        var boxGeometry = new THREE.BoxGeometry(6, 2, 2);
+        var edgesGeometry = new THREE.EdgesGeometry(boxGeometry);
+        var lines = new THREE.LineSegments(edgesGeometry, new THREE.LineBasicMaterial({ color: 0x000000 }));
+        var material = new THREE.MeshBasicMaterial( {color: road.player.color} );
+        var box = new THREE.Mesh(boxGeometry, material);
+        box.add(lines);
+        var radians = ((road.edge.rotation || 60)* Math.PI) / 180;
+        box.rotateY(radians);
+        var position = boardRenderer.edgeToPixel(road.edge);
+        box.position.set(position.x, position.y, position.z);
+        this.mesh = box;
+        this.mesh.userData.structure = this;
+        this.boardRenderer.scene.add(box);
+    }
+}
 /* Renders a 3D hexagon board using von-grid */
 class BoardRenderer {
     constructor(element, board, behavior) {
@@ -358,12 +421,28 @@ class BoardRenderer {
             hexRenderer.hex = newValue;
         });
 
+        this.removeTownAddedSubscription = this.board.towns.added((key, value) => {
+            var townRenderer = new TownRenderer(this, value);
+            this.townRenderers.set(value, townRenderer);
+        })
+        this.removeCityAddedSubscription = this.board.cities.added((key, value) => {
+            var cityRenderer = new CityRenderer(this, value);
+            this.cityRenderers.set(value, cityRenderer);
+        })
+        this.removeRoadAddedSubscription = this.board.roads.added((key, value) => {
+            var roadRenderer = new RoadRenderer(this, value);
+            this.roadRenderers.set(value, roadRenderer);
+        })
+
         this.nodesGroup = new THREE.Group();
         this.edgesGroup = new THREE.Group();
         this.group = new THREE.Group();
         this.hexRenderers = new Map(); // <Coord, HexRenderer>
         this.nodeRenderers = new Map(); // <Node, NodeRenderer>
         this.edgeRenderers = new Map(); // <Edge, EdgeRenderer>
+        this.townRenderers = new Map(); // <Node, Town>
+        this.cityRenderers = new Map(); // <Node, City>
+        this.roadRenderers = new Map(); // <Edge, Road>
         this.robberRenderer = new RobberRenderer(this, board.robber);
         
         this.scene = new vg.Scene(element);

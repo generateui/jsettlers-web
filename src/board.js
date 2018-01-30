@@ -15,6 +15,9 @@ class Board {
         };
         this._hexes = new ObservableMap(); // <Coord, Hex>
         this.robber = new Robber(Coord3D.center);
+        this.towns = new ObservableMap(); // <Node, Town>
+        this.cities = new ObservableMap(); // <Node, City>
+        this.roads = new ObservableMap(); // <Edge, Road>
     }
     generateBoardForPlay() {
         this.hexBag = [];
