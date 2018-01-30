@@ -62,6 +62,9 @@
     </head>
     <body>
         <script src="bundle.js"></script>
+        <script type="text/javascript" src="von-grid/three.min.js"></script>
+        <script src="src/observable.js"></script>
+        <script src="src/observableMap.js"></script>
         <script src="src/hex.js"></script>
         <script src="src/board.js"></script>
         <script src="src/coord.js"></script>
@@ -70,6 +73,7 @@
         <script src="src/chit.js"></script>
         <script src="src/port.js"></script>
         <script src="src/util.js"></script>
+        <script src="src/robber.js"></script>
         <script src="src/ui/boardRenderer.js"></script>
         <script src="src/ui/boardBehavior.js"></script>
         <script src="src/ui/boardBehaviorPicker.js"></script>
@@ -77,25 +81,18 @@
         <script src="src/ui/chitTypePicker.js"></script>
         <script src="src/ui/portTypePicker.js"></script>
 
-        <script type="text/javascript" src="von-grid/lib/three.min.js"></script>
-        <script type="text/javascript" src="von-grid/lib/OrbitControls.js"></script>
-        <script type="text/javascript" src="von-grid/src/vg.js"></script>
-        <script type="text/javascript" src="von-grid/src/Board.js"></script>
-        <script type="text/javascript" src="von-grid/src/utils/Loader.js"></script>
-        <script type="text/javascript" src="von-grid/src/utils/MouseCaster.js"></script>
-        <script type="text/javascript" src="von-grid/src/utils/Scene.js"></script>
-        <script type="text/javascript" src="von-grid/src/utils/SelectionManager.js"></script>
-        <script type="text/javascript" src="von-grid/src/utils/Tools.js"></script>
-        <script type="text/javascript" src="von-grid/src/pathing/AStarFinder.js"></script>
-        <script type="text/javascript" src="von-grid/src/pathing/PathUtil.js"></script>
-        <script type="text/javascript" src="von-grid/src/grids/Cell.js"></script>
-        <script type="text/javascript" src="von-grid/src/grids/HexGrid.js"></script>
-        <script type="text/javascript" src="von-grid/src/grids/SqrGrid.js"></script>
-        <script type="text/javascript" src="von-grid/src/grids/Tile.js"></script>
-        <script type="text/javascript" src="von-grid/src/lib/LinkedList.js"></script>
-        <script type="text/javascript" src="von-grid/src/lib/Signal.js"></script>
-
-
+        <script type="text/javascript" src="von-grid/OrbitControls.js"></script>
+        <script type="text/javascript" src="von-grid/vg.js"></script>
+        <script type="text/javascript" src="von-grid/Board.js"></script>
+        <script type="text/javascript" src="von-grid/Loader.js"></script>
+        <script type="text/javascript" src="von-grid/MouseCaster.js"></script>
+        <script type="text/javascript" src="von-grid/Scene.js"></script>
+        <script type="text/javascript" src="von-grid/Tools.js"></script>
+        <script type="text/javascript" src="von-grid/Cell.js"></script>
+        <script type="text/javascript" src="von-grid/HexGrid.js"></script>
+        <script type="text/javascript" src="von-grid/Tile.js"></script>
+        <script type="text/javascript" src="von-grid/Signal.js"></script>
+        <script type="text/javascript" src="von-grid/STLLoader.js"></script>
 
         <div id="board-renderer"></div>
 
@@ -148,6 +145,7 @@
                     new ShowEdgesOfClickedHex(),
                     new ShowEdgesOfClickedNode(),
                     setPort,
+                    new MoveRobber(),
                 ];
 
                 // render the board in a 3D viewport 

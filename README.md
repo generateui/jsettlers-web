@@ -3,7 +3,7 @@
 Build settlements, roads & cities on a hexagonal grid
 
 ## Demo
-https://generateui.github.io/carcattonne/
+https://generateui.github.io/jsettlers-web/
 
 ## Dependencies
 

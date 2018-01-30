@@ -1,8 +1,10 @@
-class Hex {
+class Hex extends Observable {
     constructor(coord) {
+        super();
         this.coord = coord; // a Coord1d, Coord2d or Coord3d
         this.chit = new Chit(proto.carcattonne_data.ChitType.NONE);
         this.port = null;
+        this.makeObservable(["chit", "port"]);
     }
     static fromType(type, coord) {
         var hexType = proto.carcattonne_data.HexType;

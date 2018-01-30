@@ -26,11 +26,6 @@ class SetHex extends BoardBehavior {
         var newHex = Hex.fromType(this.hexType)
         newHex.coord = hex.coord;
         boardRenderer.board.hexes.set(hex.coord, newHex);
-        
-        // update the hex renderer
-        var hexRenderer = boardRenderer.hexRenderers.get(hex.coord);
-        hexRenderer.hex = newHex;
-        hexRenderer.render(boardRenderer.vgGrid);
     }
 }
 class SetChit extends BoardBehavior {
@@ -41,10 +36,10 @@ class SetChit extends BoardBehavior {
     }
     click(boardRenderer, renderer) {
         if (renderer instanceof ChitRenderer) {
-            renderer.setChit(new Chit(this.chitType));
+            renderer.hex.chit = new Chit(this.chitType);
         }
         if (renderer instanceof HexRenderer) {
-            renderer.chitRenderer.setChit(new Chit(this.chitType));
+            renderer.hex.chit = new Chit(this.chitType);
         }
     }
     start(boardRenderer) {
@@ -239,5 +234,23 @@ class SetPort {
             this.selectedHexPartRenderer.hovered = false;
             this.selectedHexPartRenderer = null;
         }
+    }
+}
+class MoveRobber extends BoardBehavior {
+    constructor() {
+        super();
+        this.emphasizeHoveredHex = new EmphasizeHoveredObject(r => r instanceof HexRenderer);
+    }
+    click(boardRenderer, renderer) {
+        if (renderer instanceof HexRenderer) {
+            const coord = renderer.hex.coord;
+            boardRenderer.board.robber.coord = coord;
+        }
+    }
+    enter(boardRenderer, renderer) {
+        this.emphasizeHoveredHex.enter(boardRenderer, renderer);
+    }
+    leave(boardRenderer, renderer) {
+        this.emphasizeHoveredHex.leave(boardRenderer, renderer);
     }
 }
