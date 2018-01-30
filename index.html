@@ -74,12 +74,17 @@
         <script src="src/port.js"></script>
         <script src="src/util.js"></script>
         <script src="src/robber.js"></script>
+        <script src="src/player.js"></script>
+        <script src="src/town.js"></script>
+        <script src="src/city.js"></script>
+        <script src="src/road.js"></script>
         <script src="src/ui/boardRenderer.js"></script>
         <script src="src/ui/boardBehavior.js"></script>
         <script src="src/ui/boardBehaviorPicker.js"></script>
         <script src="src/ui/hexTypePicker.js"></script>
         <script src="src/ui/chitTypePicker.js"></script>
         <script src="src/ui/portTypePicker.js"></script>
+        <script src="src/ui/playerPicker.js"></script>
 
         <script type="text/javascript" src="von-grid/OrbitControls.js"></script>
         <script type="text/javascript" src="von-grid/vg.js"></script>
@@ -115,6 +120,10 @@
                 <div class="widget-header">PortType</div>
                 <div id="port-types"></div>
             </li>
+            <li id="player-picker">
+                <div class="widget-header">Player</div>
+                <div id="players"></div>
+            </li>
         </div>
         
         <script type="text/javascript">
@@ -124,6 +133,7 @@
             var chitTypePicker = null;
             var portTypePicker = null;
             var boardBehaviorPicker = null;
+            var playerPicker = null;
 
             window.addEventListener('load', function(evt) {
                 // A design representation of a board morphable into a play board
@@ -133,6 +143,9 @@
                 const setHex = new SetHex();
                 const setChit = new SetChit();
                 const setPort = new SetPort();
+                const buildTown = new BuildTown();
+                const buildCity = new BuildCity();
+                const buildRoad = new BuildRoad();
                 const behaviors = [
                     new NoBehavior(),
                     new EmphasizeHoveredObject(),
@@ -146,6 +159,9 @@
                     new ShowEdgesOfClickedNode(),
                     setPort,
                     new MoveRobber(),
+                    buildTown,
+                    buildCity,
+                    buildRoad,
                 ];
 
                 // render the board in a 3D viewport 
@@ -159,6 +175,26 @@
                 hexTypePicker = new HexTypePicker(setHex);
                 chitTypePicker = new ChitTypePicker(setChit);
                 portTypePicker = new PortTypePicker(setPort);
+                var player1 = new Player();
+                player1.color = 0xff0000;
+                var player2 = new Player();
+                player2.color = 0x00ff00;
+                var player3 = new Player();
+                player3.color = 0x0000ff;
+                var player4 = new Player();
+                player4.color = 0xffffff;
+                var player5 = new Player();
+                player5.color = 0xffa500;
+                var player6 = new Player();
+                player6.color = 0x654321;
+                var players = [ player1, player2, player3, player4, player5, player6 ];
+                playerPicker = new PlayerPicker(players);
+
+                playerPicker.playerChanged((oldValue, newValue) => {
+                    buildTown.player = newValue;
+                    buildCity.player = newValue;
+                    buildRoad.player = newValue;
+                });
             });
         </script>
 
