@@ -73,6 +73,7 @@
         <script src="src/chit.js"></script>
         <script src="src/port.js"></script>
         <script src="src/util.js"></script>
+        <script src="src/robber.js"></script>
         <script src="src/ui/boardRenderer.js"></script>
         <script src="src/ui/boardBehavior.js"></script>
         <script src="src/ui/boardBehaviorPicker.js"></script>
@@ -91,6 +92,8 @@
         <script type="text/javascript" src="von-grid/HexGrid.js"></script>
         <script type="text/javascript" src="von-grid/Tile.js"></script>
         <script type="text/javascript" src="von-grid/Signal.js"></script>
+        <script type="text/javascript" src="von-grid/ColladaLoader.js"></script>
+        <script type="text/javascript" src="von-grid/STLLoader.js"></script>
 
         <div id="board-renderer"></div>
 
@@ -143,6 +146,7 @@
                     new ShowEdgesOfClickedHex(),
                     new ShowEdgesOfClickedNode(),
                     setPort,
+                    new MoveRobber(),
                 ];
 
                 // render the board in a 3D viewport 

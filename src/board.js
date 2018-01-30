@@ -14,6 +14,7 @@ class Board {
             hexBag: [],
         };
         this._hexes = new ObservableMap(); // <Coord, Hex>
+        this.robber = new Robber(Coord3D.center);
     }
     generateBoardForPlay() {
         this.hexBag = [];

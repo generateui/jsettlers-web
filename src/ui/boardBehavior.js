@@ -236,3 +236,21 @@ class SetPort {
         }
     }
 }
+class MoveRobber {
+    constructor() {
+    }
+    start(boardRenderer) {
+    }
+    stop(boardRenderer) {
+    }
+    click(boardRenderer, renderer) {
+        if (renderer instanceof HexRenderer) {
+            const coord = renderer.hex.coord;
+            boardRenderer.board.robber.coord = coord;
+        }
+    }
+    enter(boardRenderer, renderer) {
+    }
+    leave(boardRenderer, renderer) {
+    }
+}
