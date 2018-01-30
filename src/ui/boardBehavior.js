@@ -236,12 +236,10 @@ class SetPort {
         }
     }
 }
-class MoveRobber {
+class MoveRobber extends BoardBehavior {
     constructor() {
-    }
-    start(boardRenderer) {
-    }
-    stop(boardRenderer) {
+        super();
+        this.emphasizeHoveredHex = new EmphasizeHoveredObject(r => r instanceof HexRenderer);
     }
     click(boardRenderer, renderer) {
         if (renderer instanceof HexRenderer) {
@@ -250,7 +248,9 @@ class MoveRobber {
         }
     }
     enter(boardRenderer, renderer) {
+        this.emphasizeHoveredHex.enter(boardRenderer, renderer);
     }
     leave(boardRenderer, renderer) {
+        this.emphasizeHoveredHex.leave(boardRenderer, renderer);
     }
 }

@@ -331,7 +331,7 @@ class RobberRenderer {
         const that = this;
         loader.load('models3D/robber.stl', function (geometry) {
             console.log(geometry);
-            var material = new THREE.MeshPhongMaterial({color: 0xff0000});
+            var material = new THREE.MeshPhongMaterial({color: 0x222222});
             var group = new THREE.Mesh(geometry, material);
             group.rotation.x = -0.5 * Math.PI;
             group.position.set(6, 2, 0); // don't place it in the center on top of chit, add tile height
