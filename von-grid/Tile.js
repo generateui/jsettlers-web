@@ -3,68 +3,89 @@
 
 	@author Corey Birnbaum https://github.com/vonWolfehaus/
 */
-vg.Tile = function(settings) {
-	if (!settings.cell || !settings.geometry) {
-		throw new Error('Missing vg.Tile configuration');
-	}
+class vgTile  {
+	constructor (cell, size) {
+		this.scale = 0.96;
+		this.cell = cell;
+		// if (this.cell.tile && this.cell.tile !== this) this.cell.tile.dispose(); // remove whatever was there
+		this.cell.tile = this;
 
-	this.cell = settings.cell;
-	if (this.cell.tile && this.cell.tile !== this) this.cell.tile.dispose(); // remove whatever was there
-	this.cell.tile = this;
+		this.uniqueID = vg.generateID();
 
-	this.uniqueID = vg.generateID();
+		if (vgTile.geometry === undefined) {
+			// create base shape used for building geometry
+			var vertices = [];
+			// create the skeleton of the hex
+			for (var i = 0; i < 6; i++) {
+				const angle = (vg.TAU / 6) * i;
+				const x = size * Math.cos(angle);
+				const y = size * Math.sin(angle);
+				vertices.push(new THREE.Vector3(x, y, 0));
+			}
+			// copy the verts into a shape for the geometry to use
+			const cellShape = new THREE.Shape();
+			cellShape.moveTo(vertices[0].x, vertices[0].y);
+			for (i = 1; i < 6; i++) {
+				cellShape.lineTo(vertices[i].x, vertices[i].y);
+			}
+			cellShape.lineTo(vertices[0].x, vertices[0].y);
+			cellShape.autoClose = true;
 
-	this.geometry = settings.geometry;
-	this.material = settings.material;
-	if (!this.material) {
-		this.material = new THREE.MeshPhongMaterial({
-			color: vg.Tools.randomizeRGB('30, 30, 30', 13)
-		});
-	}
+			vgTile.geometry = new THREE.ExtrudeGeometry(cellShape, {
+				amount: 1,
+				bevelEnabled: true,
+				bevelSegments: 1,
+				steps: 1,
+				bevelSize: 0.5,
+				bevelThickness: 0.5
+			});
+		}
 
-	this.entity = null;
-	this.userData = {};
+		// this.geometry = vgTile.geometry;
 
-	this.selected = false;
-	this.highlight = '0x0084cc';
+		this.material = new THREE.MeshPhongMaterial();
+		this.entity = null;
+		this.userData = {};
 
-	this.mesh = new THREE.Mesh(this.geometry, this.material);
-	this.mesh.userData.structure = this;
+		this.selected = false;
+		this.highlight = '0x0084cc';
 
-	// create references so we can control orientation through this (Tile), instead of drilling down
-	this.position = this.mesh.position;
-	this.rotation = this.mesh.rotation;
+		this.mesh = new THREE.Mesh(vgTile.geometry, this.material);
+		this.mesh.userData.structure = this;
 
-	// rotate it to face "up" (the threejs coordinate space is Y+)
-	this.rotation.x = -90 * vg.DEG_TO_RAD;
-	this.mesh.scale.set(settings.scale, settings.scale, 1);
+		// create references so we can control orientation through this (Tile), instead of drilling down
+		this.position = this.mesh.position;
+		this.rotation = this.mesh.rotation;
 
-	if (this.material.emissive) {
-		this._emissive = this.material.emissive.getHex();
-	}
-	else {
-		this._emissive = null;
-	}
-};
+		// rotate it to face "up" (the threejs coordinate space is Y+)
+		this.rotation.x = -90 * vg.DEG_TO_RAD;
+		this.mesh.scale.set(this.scale, this.scale, 1);
 
-vg.Tile.prototype = {
-	select: function() {
+		if (this.material.emissive) {
+			this._emissive = this.material.emissive.getHex();
+		}
+		else {
+			this._emissive = null;
+		}
+	} 
+
+	select() {
 		if (this.material.emissive) {
 			this.material.emissive.setHex(this.highlight);
 		}
 		this.selected = true;
 		return this;
-	},
+	}
 
-	deselect: function() {
+	deselect() {
 		if (this._emissive !== null && this.material.emissive) {
 			this.material.emissive.setHex(this._emissive);
 		}
 		this.selected = false;
 		return this;
-	},
+	}
 
-	toggle: function() {
+	toggle() {
 		if (this.selected) {
 			this.deselect();
 		}
@@ -72,10 +93,9 @@ vg.Tile.prototype = {
 			this.select();
 		}
 		return this;
-	},
+	}
 
-	dispose: function() {
-		if (this.cell && this.cell.tile) this.cell.tile = null;
+	dispose() {
 		this.cell = null;
 		this.position = null;
 		this.rotation = null;
@@ -88,6 +108,4 @@ vg.Tile.prototype = {
 		this.geometry = null;
 		this._emissive = null;
 	}
-};
-
-vg.Tile.prototype.constructor = vg.Tile;
+}

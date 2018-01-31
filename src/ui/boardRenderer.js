@@ -445,13 +445,11 @@ class BoardRenderer {
         this.roadRenderers = new Map(); // <Edge, Road>
         this.robberRenderer = new RobberRenderer(this, board.robber);
         
-        this.scene = new vg.Scene(element);
+        this.scene = new vgScene(element);
 
         // TODO: use sparse maps instead
         // this constructs the cells in grid coordinate space
-        this.vgGrid = new vg.HexGrid({
-            cellSize: 11 // size of individual cells
-        });
+        this.vgGrid = new vgHexGrid();
         this.vgGrid.generate({
             size: 3 // size of the board
         });
@@ -459,7 +457,7 @@ class BoardRenderer {
         this.portPickerRenderer = new PortPickerRenderer(this);
         this.group.add(this.portPickerRenderer.group);
 
-        this.vgBoard = new vg.Board(this.vgGrid);
+        this.vgBoard = new vgBoard(this.vgGrid);
 
         // this will generate extruded hexagonal tiles
         this.vgBoard.generateTilemap({
@@ -490,7 +488,7 @@ class BoardRenderer {
         this.vgBoard.group.add(this.edgesGroup);
         this.vgBoard.group.add(this.group);
 
-        this.mouse = new vg.MouseCaster(this.scene.container, this.scene.camera, element);
+        this.mouse = new vg.MouseCaster(this.scene.scene, this.scene.camera, element);
 
         // target: Renderer
         this.mouse.signal.add(function(event, target) {
