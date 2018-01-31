@@ -4,7 +4,7 @@ class PlayerPicker extends Observable {
         this.player = players[0];
         this.makeObservable(["player"]);
 
-        var el = document.getElementById("players");
+        this.element = document.getElementById("players");
         var i = 1;
         var that = this;
         for (var p of players) {
@@ -33,8 +33,8 @@ class PlayerPicker extends Observable {
                 labelEl.appendChild(nameSpanEl);
                 labelEl.htmlFor = id;
     
-                el.appendChild(radioEl);
-                el.appendChild(labelEl);
+                that.element.appendChild(radioEl);
+                that.element.appendChild(labelEl);
             })(p);
 
             i++;

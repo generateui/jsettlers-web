@@ -1,7 +1,12 @@
-class BoardBehaviorPicker {
+class BoardBehaviorPicker extends Observable {
     constructor(el, boardRenderer, behaviors) {
+        super();
+        
         this.boardRenderer = boardRenderer;
         this.behaviors = behaviors || [new SetHex(), new ShowAllNodes()];
+        this.behavior = behaviors[0];
+
+        this.makeObservable(["behavior"]);
 
         for (var behavior of this.behaviors) {
             var behaviorName = behavior.constructor.name;
@@ -12,11 +17,12 @@ class BoardBehaviorPicker {
             radioEl.id = id;
             radioEl.name = "boardbehaviorPicker";
             radioEl.behavior = behavior;
+            var that = this;
             radioEl.onchange = event => {
                 var optionItem = event.target;
                 var newBehavior = optionItem.behavior;
-                this.behavior = newBehavior;
-                this.boardRenderer.behavior = newBehavior;
+                that.behavior = newBehavior;
+                that.boardRenderer.behavior = newBehavior;
             }
 
             var labelEl = document.createElement("label");

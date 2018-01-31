@@ -10,6 +10,7 @@
 	@author Corey Birnbaum https://github.com/vonWolfehaus/
  */
 vg.MouseCaster = function(group, camera, element) {
+	this.element = element;
 	this.down = false; // left click
 	this.rightDown = false;
 	// the object that was just clicked on
@@ -139,10 +140,12 @@ vg.MouseCaster.prototype = {
 		this.rightDown = evt.which === 3 ? false : this.rightDown;
 	},
 
-	_onDocumentMouseMove: function(evt) {
-		evt.preventDefault();
-		this.screenPosition.x = (evt.clientX / window.innerWidth) * 2 - 1;
-		this.screenPosition.y = -(evt.clientY / window.innerHeight) * 2 + 1;
+	_onDocumentMouseMove: function(event) {
+		event.preventDefault();
+		// this.screenPosition.x = (evt.clientX / window.innerWidth) * 2 - 1;
+		// this.screenPosition.y = -(evt.clientY / window.innerHeight) * 2 + 1;
+		this.screenPosition.x = ( ( event.clientX - this.element.offsetLeft ) / this.element.clientWidth ) * 2 - 1;
+		this.screenPosition.y = - ( ( event.clientY - this.element.offsetTop ) / this.element.clientHeight ) * 2 + 1;
 	},
 
 	_onMouseWheel: function(evt) {

@@ -2,7 +2,7 @@ class ChitTypePicker {
     constructor(setChit) {
         this._setChit = setChit || new SetChit();
         
-        var el = document.getElementById("chit-types");
+        this.element = document.getElementById("chit-types");
         var allChitTypes = proto.carcattonne_data.ChitType;
         for (var chitName in allChitTypes) {
             const chitType = allChitTypes[chitName];
@@ -36,8 +36,8 @@ class ChitTypePicker {
             labelEl.appendChild(spanEl);
             labelEl.htmlFor = id;
 
-            el.appendChild(radioEl);
-            el.appendChild(labelEl);
+            this.element.appendChild(radioEl);
+            this.element.appendChild(labelEl);
         }
     }
     _getPascalCasedName(str) {

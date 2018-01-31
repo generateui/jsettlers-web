@@ -16,7 +16,7 @@ vg.Scene = function(element) {
 		light: new THREE.DirectionalLight(0xffffff),
 		lightPosition: null,
 		cameraType: 'PerspectiveCamera',
-		cameraPosition: {x:0, y:150, z:150},
+		cameraPosition: {x:-150, y:150, z:0},
 		orthoZoom: 4
 	};
 
@@ -34,8 +34,9 @@ vg.Scene = function(element) {
 	this.renderer.setClearColor(sceneSettings.clearColor, 0);
 	this.renderer.sortObjects = sceneSettings.sortObjects;
 
-	this.width = window.innerWidth;
-	this.height = window.innerHeight;
+	this.width = element.clientWidth;
+	this.height = element.clientHeight;
+	// this.renderer.setSize(this.width, this.height);
 
 	this.orthoZoom = sceneSettings.orthoZoom;
 
@@ -49,42 +50,23 @@ vg.Scene = function(element) {
 	}
 	this.container.add(sceneSettings.light);
 
-	if (sceneSettings.cameraType === 'OrthographicCamera') {
-		var width = window.innerWidth / this.orthoZoom;
-		var height = window.innerHeight / this.orthoZoom;
-		this.camera = new THREE.OrthographicCamera(width / -2, width / 2, height / 2, height / -2, 1, 5000);
-	}
-	else {
-		this.camera = new THREE.PerspectiveCamera(50, this.width / this.height, 1, 5000);
-	}
+	this.camera = new THREE.PerspectiveCamera(50, this.width / this.height, 1, 5000);
 
-	this.contolled = true;
-	if (this.contolled) {
-		this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
-		this.controls.minDistance = controlSettings.minDistance;
-		this.controls.maxDistance = controlSettings.maxDistance;
-		this.controls.zoomSpeed = controlSettings.zoomSpeed;
-		this.controls.noZoom = controlSettings.noZoom;
-	}
+	this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+	this.controls.minDistance = controlSettings.minDistance;
+	this.controls.maxDistance = controlSettings.maxDistance;
+	this.controls.zoomSpeed = controlSettings.zoomSpeed;
+	this.controls.noZoom = controlSettings.noZoom;
 
 	if (sceneSettings.cameraPosition) {
 		this.camera.position.copy(sceneSettings.cameraPosition);
 	}
 
 	window.addEventListener('resize', function onWindowResize() {
-		this.width = window.innerWidth;
-		this.height = window.innerHeight;
-		if (this.camera.type === 'OrthographicCamera') {
-			var width = this.width / this.orthoZoom;
-			var height = this.height / this.orthoZoom;
-			this.camera.left = width / -2;
-			this.camera.right = width / 2;
-			this.camera.top = height / 2;
-			this.camera.bottom = height / -2;
-		}
-		else {
-			this.camera.aspect = this.width / this.height;
-		}
+		this.width = element.innerWidth;
+		this.height = element.innerHeight;
+		this.camera.aspect = this.width / this.height;
+
 		this.camera.updateProjectionMatrix();
 		this.renderer.setSize(this.width, this.height);
 	}.bind(this), false);

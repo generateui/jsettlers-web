@@ -2,7 +2,7 @@ class PortTypePicker {
     constructor(setPort) {
         this._setPort = setPort || new SetPort();
         
-        var el = document.getElementById("port-types");
+        this.element = document.getElementById("port-types");
         var allPortTypes = proto.carcattonne_data.PortType;
         for (var portName in allPortTypes) {
             const portType = allPortTypes[portName];
@@ -33,8 +33,8 @@ class PortTypePicker {
             labelEl.appendChild(spanEl);
             labelEl.htmlFor = id;
 
-            el.appendChild(radioEl);
-            el.appendChild(labelEl);
+            this.element.appendChild(radioEl);
+            this.element.appendChild(labelEl);
         }
     }
     _getPascalCasedName(str) {

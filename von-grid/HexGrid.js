@@ -57,9 +57,7 @@ vg.HexGrid = function(config) {
 	this._list = [];
 	this._vec3 = new THREE.Vector3();
 	this._cel = new vg.Cell();
-	this._conversionVec = new THREE.Vector3();
 	this._geoCache = [];
-	this._matCache = [];
 };
 
 vg.HexGrid.TWO_THIRDS = 2 / 3;
@@ -90,33 +88,6 @@ vg.HexGrid.prototype = {
 		return this.cells[this.cellToHash(this._cel)];
 	},
 
-	getNeighbors: function(cell, diagonal, filter) {
-		// always returns an array
-		var i, n, l = this._directions.length;
-		this._list.length = 0;
-		for (i = 0; i < l; i++) {
-			this._cel.copy(cell);
-			this._cel.add(this._directions[i]);
-			n = this.cells[this.cellToHash(this._cel)];
-			if (!n || (filter && !filter(cell, n))) {
-				continue;
-			}
-			this._list.push(n);
-		}
-		if (diagonal) {
-			for (i = 0; i < l; i++) {
-				this._cel.copy(cell);
-				this._cel.add(this._diagonals[i]);
-				n = this.cells[this.cellToHash(this._cel)];
-				if (!n || (filter && !filter(cell, n))) {
-					continue;
-				}
-				this._list.push(n);
-			}
-		}
-		return this._list;
-	},
-
 	cellToHash: function(cell) {
 		return cell.q+this._hashDelimeter+cell.r+this._hashDelimeter+cell.s;
 	},
@@ -137,14 +108,6 @@ vg.HexGrid.prototype = {
 			geo = new THREE.ExtrudeGeometry(this.cellShape, this.extrudeSettings);
 			this._geoCache[height] = geo;
 		}
-
-		/*mat = this._matCache[c.matConfig.mat_cache_id];
-		if (!mat) { // MaterialLoader? we currently only support basic stuff though. maybe later
-			mat.map = Loader.loadTexture(c.matConfig.imgURL);
-			delete c.matConfig.imgURL;
-			mat = new THREE[c.matConfig.type](c.matConfig);
-			this._matCache[c.matConfig.mat_cache_id] = mat;
-		}*/
 
 		var tile = new vg.Tile({
 			size: this.cellSize,
@@ -237,59 +200,13 @@ vg.HexGrid.prototype = {
 		this.cellShapeGeo = null;
 		this._list = null;
 		this._vec3 = null;
-		this._conversionVec = null;
 		this._geoCache = null;
-		this._matCache = null;
 	},
-
-	/*  ________________________________________________________________________
-		Hexagon-specific conversion math
-		Mostly commented out because they're inlined whenever possible to increase performance.
-		They're still here for reference.
-	 */
 
 	_createVertex: function(i) {
 		var angle = (vg.TAU / 6) * i;
 		return new THREE.Vector3((this.cellSize * Math.cos(angle)), (this.cellSize * Math.sin(angle)), 0);
 	},
-
-	/*_pixelToAxial: function(pos) {
-		var q, r; // = x, y
-		q = pos.x * ((2/3) / this.cellSize);
-		r = ((-pos.x / 3) + (vg.SQRT3/3) * pos.y) / this.cellSize;
-		this._cel.set(q, r, -q-r);
-		return this._cubeRound(this._cel);
-	},*/
-
-	/*_axialToCube: function(h) {
-		return {
-			q: h.q,
-			r: h.r,
-			s: -h.q - h.r
-		};
-	},*/
-
-	/*_cubeToAxial: function(cell) {
-		return cell; // yep
-	},*/
-
-	/*_axialToPixel: function(cell) {
-		var x, y; // = q, r
-		x = cell.q * this._cellWidth * 0.75;
-		y = (cell.s - cell.r) * this._cellLength * 0.5;
-		return {x: x, y: -y};
-	},*/
-
-	/*_hexToPixel: function(h) {
-		var x, y; // = q, r
-		x = this.cellSize * 1.5 * h.x;
-		y = this.cellSize * vg.SQRT3 * (h.y + (h.x * 0.5));
-		return {x: x, y: y};
-	},*/
-
-	/*_axialRound: function(h) {
-		return this._cubeRound(this.axialToCube(h));
-	},*/
 
 	_cubeRound: function(h) {
 		var rx = Math.round(h.q);
@@ -312,10 +229,6 @@ vg.HexGrid.prototype = {
 
 		return this._cel.set(rx, ry, rz);
 	},
-
-	/*_cubeDistance: function(a, b) {
-		return Math.max(Math.abs(a.q - b.q), Math.abs(a.r - b.r), Math.abs(a.s - b.s));
-	}*/
 };
 
 vg.HexGrid.prototype.constructor = vg.HexGrid;

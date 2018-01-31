@@ -6,7 +6,7 @@ class HexTypePicker {
     constructor(setHex) {
         this._setHex = setHex || new SetHex();
         
-        var el = document.getElementById("hexagon-types");
+        this.element = document.getElementById("hexagon-types");
         var allHexTypes = proto.carcattonne_data.HexType;
         for (var hexType in allHexTypes) {
             var id = "hextype-" + hexType.toString();
@@ -26,8 +26,8 @@ class HexTypePicker {
             labelEl.textContent = hexType.toString();
             labelEl.htmlFor = id;
 
-            el.appendChild(radioEl);
-            el.appendChild(labelEl);
+            this.element.appendChild(radioEl);
+            this.element.appendChild(labelEl);
         }
     }
 }
