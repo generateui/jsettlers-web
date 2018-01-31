@@ -16,7 +16,6 @@
 // 'utils/Loader', 'graphs/Hex', 'utils/Tools'
 class vgHexGrid {
 	constructor() {
-
 		this.size = 5; // only used for generated maps
 		this.cellSize = 11;
 		this.cells = {};
@@ -25,7 +24,6 @@ class vgHexGrid {
 		this._cellLength = (vg.SQRT3 * 0.5) * this._cellWidth;
 		// cached objects
 		this._vec3 = new THREE.Vector3();
-		this._cel = new vg.Cell();
 		
 		vgHexGrid.TWO_THIRDS = 2 / 3;
 	}
@@ -42,8 +40,24 @@ class vgHexGrid {
 		// convert a position in world space ("pixels") to cell coordinates
 		var q = pos.x * (vgHexGrid.TWO_THIRDS / this.cellSize);
 		var r = ((-pos.x / 3) + (vg.SQRT3/3) * pos.z) / this.cellSize;
-		this._cel.set(q, r, -q-r);
-		return this._cubeRound(this._cel);
+		var s = -q-r;
+
+		var rx = Math.round(q);
+		var ry = Math.round(r);
+		var rz = Math.round(s);
+
+		var xDiff = Math.abs(rx - q);
+		var yDiff = Math.abs(ry - r);
+		var zDiff = Math.abs(rz - s);
+
+		if (xDiff > yDiff && xDiff > zDiff) {
+			rx = -ry-rz;
+		} else if (yDiff > zDiff) {
+			ry = -rx-rz;
+		} else {
+			rz = -rx-ry;
+		}
+		return new vg.Cell(rx, ry, rz);
 	}
 
 	cellToHash(cell) {
@@ -67,28 +81,20 @@ class vgHexGrid {
 	}
 
 	// create a flat, hexagon-shaped grid
-	generate(config) {
-		config = config || {};
-		this.size = typeof config.size === 'undefined' ? this.size : config.size;
-		var x, y, z, c;
-		for (x = -this.size; x < this.size+1; x++) {
-			for (y = -this.size; y < this.size+1; y++) {
-				z = -x-y;
-				if (Math.abs(x) <= this.size && Math.abs(y) <= this.size && Math.abs(z) <= this.size) {
-					c = new vg.Cell(x, y, z);
-					this.add(c);
+	generate(size) {
+		for (var x = -size; x < size+1; x++) {
+			for (var y = -size; y < size+1; y++) {
+				const z = -x-y;
+				if (Math.abs(x) <= size && Math.abs(y) <= size && Math.abs(z) <= size) {
+					this.add(new vg.Cell(x, y, z));
 				}
 			}
 		}
 	}
 
 	add(cell) {
-		var h = this.cellToHash(cell);
-		if (this.cells[h]) {
-			// console.warn('A cell already exists there');
-			return;
-		}
-		this.cells[h] = cell;
+		var hash = this.cellToHash(cell);
+		this.cells[hash] = cell;
 		return cell;
 	}
 
@@ -110,25 +116,4 @@ class vgHexGrid {
 		this._geoCache = null;
 	}
 
-	_cubeRound(cell) {
-		var rx = Math.round(cell.q);
-		var ry = Math.round(cell.r);
-		var rz = Math.round(cell.s);
-
-		var xDiff = Math.abs(rx - cell.q);
-		var yDiff = Math.abs(ry - cell.r);
-		var zDiff = Math.abs(rz - cell.s);
-
-		if (xDiff > yDiff && xDiff > zDiff) {
-			rx = -ry-rz;
-		}
-		else if (yDiff > zDiff) {
-			ry = -rx-rz;
-		}
-		else {
-			rz = -rx-ry;
-		}
-
-		return this._cel.set(rx, ry, rz);
-	}
 }

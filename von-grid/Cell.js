@@ -10,7 +10,6 @@ vg.Cell = function(q, r, s) {
 	this.tile = null; // optional link to the visual representation's class instance
 	this.userData = {}; // populate with any extra data needed in your game
 	// rest of these are used by the pathfinder and overwritten at runtime, so don't touch
-	this._priority = 0;
 	this.uniqueID = vg.generateID();
 };
 
@@ -19,22 +18,6 @@ vg.Cell.prototype = {
 		this.q = q;
 		this.r = r;
 		this.s = s;
-		return this;
-	},
-
-	copy: function(cell) {
-		this.q = cell.q;
-		this.r = cell.r;
-		this.s = cell.s;
-		this.tile = cell.tile || null;
-		this.userData = cell.userData || {};
-		return this;
-	},
-
-	add: function(cell) {
-		this.q += cell.q;
-		this.r += cell.r;
-		this.s += cell.s;
 		return this;
 	},
 
