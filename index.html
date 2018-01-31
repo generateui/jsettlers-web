@@ -3,200 +3,398 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title>Carcatonne</title>
+        <title></title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <link rel="manifest" href="site.webmanifest">
+        <link rel="apple-touch-icon" href="icon.png">
+        <!-- Place favicon.ico in the root directory -->
+
+        <link rel="stylesheet" href="mui/mui.css">
+        <link rel="stylesheet" href="index.css">
+
+        <script type="text/javascript" src="mui/mui.js"></script>
+        <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
         <style>
+            /**
+            * Body CSS
+            */
+            html,
             body {
-                overflow: hidden;
+                height: 100%;
+                background-color: #eee;
             }
-            #board-renderer {
-                position: absolute;
+
+            html,
+            body,
+            input,
+            textarea,
+            buttons {
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+                text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
+            }
+
+
+            /**
+            * Layout CSS
+            */
+            #header {
+                position: fixed;
                 top: 0;
+                right: 0;
+                left: 0;
+                z-index: 2;
+                transition: left 0.2s;
+            }
+
+            #sidedrawer {
+                position: fixed;
+                top: 0;
+                bottom: 0;
+                width: 200px;
+                left: -200px;
+                overflow: auto;
+                z-index: 2;
+                background-color: #fff;
+                transition: transform 0.2s;
+            }
+            #sidedrawer2 {
+                position: fixed;
+                top: 0;
+                bottom: 0;
+                width: 200px;
+                left: -200px;
+                overflow: auto;
+                z-index: 2;
+                background-color: #fff;
+                transition: transform 0.2s;
+            }
+
+            #content-wrapper {
+                min-height: 100%;
+                overflow-x: hidden;
+                margin-left: 0px;
+                transition: margin-left 0.2s;
+
+                /* sticky bottom */
+                margin-bottom: -160px;
+                padding-bottom: 160px;
+            }
+
+            #footer {
+                height: 160px;
+                margin-left: 0px;
+                transition: margin-left 0.2s;
+            }
+
+            @media (min-width: 768px) {
+            #header {
+                left: 200px;
+            }
+
+            #sidedrawer {
+                transform: translate(200px);
+            }
+
+            #content-wrapper {
+                margin-left: 200px;
+                display: flex;
+                flex: 1 1 auto;
+                height: 100%;
+                width: 100%;
+            }
+
+            #footer {
+                margin-left: 200px;
+            }
+
+            body.hide-sidedrawer #header {
                 left: 0;
             }
-            input[type='radio'] {
-                display: none;
-            }
-            label {
-                text-align: right;
-                clear: both;
-                float: left;
-                cursor: pointer;
-                border: 2px solid transparent;
-            }
-            label > img {
-                vertical-align: middle;
-                margin-right: 0.5em;
+
+            body.hide-sidedrawer #sidedrawer {
+                transform: translate(0px);
             }
 
-            /* a label right after an input element which is checked */
-            input[type='radio']:checked+label {
-                border: 2px solid black;
-                background-color: #C4C4C4;
+            body.hide-sidedrawer #content-wrapper {
+                margin-left: 0;
             }
-            input[type='radio']+label:hover {
-                border: 2px solid grey;
-                background-color: #C4C4C4;
+
+            body.hide-sidedrawer #footer {
+                margin-left: 0;
             }
-            #map-editor-menu {
-                background-color: lightgray;
-                position: absolute;
-                float:left;
-                display: inline-flex;
-                -webkit-padding-start: 0; /* remove margin on the left */
             }
-            .widget-header {
-                font-size: large;
-                font-weight: 600;
+
+
+            /**
+            * Toggle Side drawer
+            */
+            #sidedrawer.active {
+                transform: translate(200px);
             }
-            li {
-                list-style-type:none;
-                margin: 10px;
+
+
+            /**
+            * Header CSS
+            */
+            .sidedrawer-toggle {
+                color: #fff;
+                cursor: pointer;
+                font-size: 20px;
+                line-height: 20px;
+                margin-right: 10px;
             }
-            img {
-                height: 24px;
-                width: 24px;
+
+            .sidedrawer-toggle:hover {
+                color: #fff;
+                text-decoration: none;
+            }
+
+            #vertical-menu-1 {
+                margin-top: 4em;
+                background-color: rgba(33, 150, 243, 0.75);
+                display: flex;
+                flex: 1 1 10%;
+                /* max-height: 100%; */
+            }
+            #vertical-menu-2 {
+                margin-top: 4em;
+                display: flex;
+                flex: 1 1 10%;
+                background-color: rgba(33, 150, 243, 0.5);
+            }
+            #board-renderer {
+                flex: 1 1 80%;
+            }
+
+
+            /**
+            * Footer CSS
+            */
+            #footer {
+                background-color: #0288D1;
+                color: #fff;
+            }
+
+            #footer a {
+                color: #fff;
+                text-decoration: underline;
+            }
+
+            /**
+            * Side drawer CSS
+            */
+            #sidedrawer-brand {
+                padding-left: 20px;
+            }
+
+            #sidedrawer ul {
+                list-style: none;
+            }
+
+            #sidedrawer > ul {
+                padding-left: 0px;
+            }
+
+            #sidedrawer > ul > li:first-child {
+                padding-top: 15px;
+            }
+
+            #sidedrawer strong {
+                display: block;
+                padding: 15px 22px;
+                cursor: pointer;
+            }
+
+            #sidedrawer strong:hover {
+                background-color: #E0E0E0;
+            }
+
+            #sidedrawer strong + ul > li {
+                padding: 6px 0px;
             }
         </style>
-    </head>
-    <body>
-        <script src="bundle.js"></script>
-        <script type="text/javascript" src="von-grid/three.min.js"></script>
-        <script src="src/observable.js"></script>
-        <script src="src/observableMap.js"></script>
-        <script src="src/hex.js"></script>
-        <script src="src/board.js"></script>
-        <script src="src/coord.js"></script>
-        <script src="src/node.js"></script>
-        <script src="src/edge.js"></script>
-        <script src="src/chit.js"></script>
-        <script src="src/port.js"></script>
-        <script src="src/util.js"></script>
-        <script src="src/robber.js"></script>
-        <script src="src/player.js"></script>
-        <script src="src/town.js"></script>
-        <script src="src/city.js"></script>
-        <script src="src/road.js"></script>
-        <script src="src/ui/boardRenderer.js"></script>
-        <script src="src/ui/boardBehavior.js"></script>
-        <script src="src/ui/boardBehaviorPicker.js"></script>
-        <script src="src/ui/hexTypePicker.js"></script>
-        <script src="src/ui/chitTypePicker.js"></script>
-        <script src="src/ui/portTypePicker.js"></script>
-        <script src="src/ui/playerPicker.js"></script>
+        <script>
+            var $sidedrawerEl = $('#sidedrawer');
+            jQuery(function($) {
+            var $bodyEl = $('body');
 
-        <script type="text/javascript" src="von-grid/OrbitControls.js"></script>
-        <script type="text/javascript" src="von-grid/vg.js"></script>
-        <script type="text/javascript" src="von-grid/Board.js"></script>
-        <script type="text/javascript" src="von-grid/Loader.js"></script>
-        <script type="text/javascript" src="von-grid/MouseCaster.js"></script>
-        <script type="text/javascript" src="von-grid/Scene.js"></script>
-        <script type="text/javascript" src="von-grid/Tools.js"></script>
-        <script type="text/javascript" src="von-grid/Cell.js"></script>
-        <script type="text/javascript" src="von-grid/HexGrid.js"></script>
-        <script type="text/javascript" src="von-grid/Tile.js"></script>
-        <script type="text/javascript" src="von-grid/Signal.js"></script>
-        <script type="text/javascript" src="von-grid/STLLoader.js"></script>
+                function showSidedrawer() {
+                    // show overlay
+                    var options = {
+                        onclose: function() {
+                            $sidedrawerEl
+                                .removeClass('active')
+                                .appendTo(document.body);
+                        }
+                    };
 
-        <div id="board-renderer"></div>
+                    var $overlayEl = $(mui.overlay('on', options));
 
-        <ul id="map-editor-menu">
-            <li id="board-behavior-picker">
-                <div class="widget-header">Editor mode</div>
-                <div id="behaviors"></div>
-            </li>
+                    // show element
+                    $sidedrawerEl.appendTo($overlayEl);
+                    setTimeout(function() {
+                        $sidedrawerEl.addClass('active');
+                    }, 20);
+                }
 
-            <li id="hex-type-picker">
-                <div class="widget-header">HexType</div>
-                <div id="hexagon-types"></div>
-            </li>
+                function hideSidedrawer() {
+                    $bodyEl.toggleClass('hide-sidedrawer');
+                }
 
-            <li id="chit-type-picker">
-                <div class="widget-header">ChitType</div>
-                <div id="chit-types"></div>
-            </li>
-            <li id="port-type-picker">
-                <div class="widget-header">PortType</div>
-                <div id="port-types"></div>
-            </li>
-            <li id="player-picker">
-                <div class="widget-header">Player</div>
-                <div id="players"></div>
-            </li>
-        </div>
-        
-        <script type="text/javascript">
-            var boardDesign = null;
-            var boardRenderer = null;
-            var hexTypePicker = null;
-            var chitTypePicker = null;
-            var portTypePicker = null;
-            var boardBehaviorPicker = null;
-            var playerPicker = null;
+                $('.js-show-sidedrawer').on('click', showSidedrawer);
+                $('.js-hide-sidedrawer').on('click', hideSidedrawer);
+            });
 
-            window.addEventListener('load', function(evt) {
-                // A design representation of a board morphable into a play board
-                boardDesign = new Standard4pDesign();
+            var $titleEls = $('strong', $sidedrawerEl);
 
-                // behavior to change clicked hex into selected HexType
-                const setHex = new SetHex();
-                const setChit = new SetChit();
-                const setPort = new SetPort();
-                const buildTown = new BuildTown();
-                const buildCity = new BuildCity();
-                const buildRoad = new BuildRoad();
-                const behaviors = [
-                    new NoBehavior(),
-                    new EmphasizeHoveredObject(),
-                    setHex,
-                    setChit,
-                    new CompositeBehavior(new EmphasizeHoveredObject(), new ShowAllEdges()),
-                    new ShowAllNodes(),
-                    new ShowNodesOfClickedHex(),
-                    new ShowAllEdges(),
-                    new ShowEdgesOfClickedHex(),
-                    new ShowEdgesOfClickedNode(),
-                    setPort,
-                    new MoveRobber(),
-                    buildTown,
-                    buildCity,
-                    buildRoad,
-                ];
+            $titleEls
+                .next()
+                .hide();
 
-                // render the board in a 3D viewport 
-                var brEl = document.getElementById("board-renderer");
-                boardRenderer = new BoardRenderer(brEl, boardDesign, setHex);
-
-                var bbpEl = document.getElementById("behaviors");
-                boardBehaviorPicker = new BoardBehaviorPicker(bbpEl, boardRenderer, behaviors);
-
-                // widget to let the user pick a HexType
-                hexTypePicker = new HexTypePicker(setHex);
-                chitTypePicker = new ChitTypePicker(setChit);
-                portTypePicker = new PortTypePicker(setPort);
-                var player1 = new Player();
-                player1.color = 0xff0000;
-                var player2 = new Player();
-                player2.color = 0x00ff00;
-                var player3 = new Player();
-                player3.color = 0x0000ff;
-                var player4 = new Player();
-                player4.color = 0xffffff;
-                var player5 = new Player();
-                player5.color = 0xffa500;
-                var player6 = new Player();
-                player6.color = 0x654321;
-                var players = [ player1, player2, player3, player4, player5, player6 ];
-                playerPicker = new PlayerPicker(players);
-
-                playerPicker.playerChanged((oldValue, newValue) => {
-                    buildTown.player = newValue;
-                    buildCity.player = newValue;
-                    buildRoad.player = newValue;
-                });
+            $titleEls.on('click', function() {
+                $(this).next().slideToggle(200);
             });
         </script>
+    </head>
+    <body>
+            <script src="bundle.js"></script>
+            <script type="text/javascript" src="von-grid/three.min.js"></script>
+            <script src="src/observable.js"></script>
+            <script src="src/observableMap.js"></script>
+            <script src="src/hex.js"></script>
+            <script src="src/board.js"></script>
+            <script src="src/coord.js"></script>
+            <script src="src/node.js"></script>
+            <script src="src/edge.js"></script>
+            <script src="src/chit.js"></script>
+            <script src="src/port.js"></script>
+            <script src="src/util.js"></script>
+            <script src="src/robber.js"></script>
+            <script src="src/player.js"></script>
+            <script src="src/town.js"></script>
+            <script src="src/city.js"></script>
+            <script src="src/road.js"></script>
+            <script src="src/ui/boardRenderer.js"></script>
+            <script src="src/ui/boardBehavior.js"></script>
+            <script src="src/ui/boardBehaviorPicker.js"></script>
+            <script src="src/ui/hexTypePicker.js"></script>
+            <script src="src/ui/chitTypePicker.js"></script>
+            <script src="src/ui/portTypePicker.js"></script>
+            <script src="src/ui/playerPicker.js"></script>
+    
+            <script type="text/javascript" src="von-grid/OrbitControls.js"></script>
+            <script type="text/javascript" src="von-grid/vg.js"></script>
+            <script type="text/javascript" src="von-grid/Board.js"></script>
+            <script type="text/javascript" src="von-grid/Loader.js"></script>
+            <script type="text/javascript" src="von-grid/MouseCaster.js"></script>
+            <script type="text/javascript" src="von-grid/Scene.js"></script>
+            <script type="text/javascript" src="von-grid/Tools.js"></script>
+            <script type="text/javascript" src="von-grid/Cell.js"></script>
+            <script type="text/javascript" src="von-grid/HexGrid.js"></script>
+            <script type="text/javascript" src="von-grid/Tile.js"></script>
+            <script type="text/javascript" src="von-grid/Signal.js"></script>
+            <script type="text/javascript" src="von-grid/STLLoader.js"></script>
 
+
+        <div id="sidedrawer" class="mui--no-user-select">
+            <div id="sidedrawer-brand" class="mui--appbar-line-height">
+                <span class="mui--text-title">JSettlers-web</span>
+            </div>
+            <div class="mui-divider"></div>
+            <ul>
+                <li>
+                    <strong>Play</strong>
+                    <ul>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Edit</strong>
+                    <ul>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Develop</strong>
+                    <ul>
+                        <li><a href="#">Tech demo</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div id="sidedrawer2" class="mui--no-user-select">
+            <div id="sidedrawer-brand" class="mui--appbar-line-height">
+                <span class="mui--text-title">JSettlers-web</span>
+            </div>
+            <div class="mui-divider"></div>
+            <ul>
+                <li>
+                    <strong>Derp</strong>
+                    <ul>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Edit</strong>
+                    <ul>
+                    </ul>
+                </li>
+                <li>
+                    <strong>Develop</strong>
+                    <ul>
+                        <li><a href="#">Tech demo</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <header id="header">
+            <div class="mui-appbar mui--appbar-line-height">
+                <div class="mui-container-fluid">
+                    <a class="sidedrawer-toggle mui--visible-xs-inline-block mui--visible-sm-inline-block js-show-sidedrawer">☰</a>
+                    <a class="sidedrawer-toggle mui--hidden-xs mui--hidden-sm js-hide-sidedrawer">☰</a>
+                    <span class="mui--text-title">JSettlers-web</span>
+                </div>
+            </div>
+        </header>
+
+        <div id="content-wrapper">
+            <div id="vertical-menu-1">
+                <li id="board-behavior-picker">
+                    <div class="widget-header">Behavior</div>
+                    <div id="behaviors"></div>
+                </li>
+            </div>
+            <div id="vertical-menu-2">
+                <ul>
+                    <li id="hex-type-picker" style="display: none;">
+                        <div class="widget-header">HexType</div>
+                        <div id="hexagon-types"></div>
+                    </li>
+        
+                    <li id="chit-type-picker" style="display: none;">
+                        <div class="widget-header">ChitType</div>
+                        <div id="chit-types"></div>
+                    </li>
+                    <li id="port-type-picker" style="display: none;">
+                        <div class="widget-header">PortType</div>
+                        <div id="port-types"></div>
+                    </li>
+                    <li id="player-picker" style="display: none;">
+                        <div class="widget-header">Player</div>
+                        <div id="players"></div>
+                    </li>
+                </ul>
+            </div>
+            <div id="board-renderer"></div>
+
+        </div>
+        <footer id="footer">
+            <div class="mui-container-fluid">
+                <br>
+                Made with ♥ by <a href="https://www.muicss.com">MUI</a>
+            </div>
+        </footer>
     </body>
 </html>
