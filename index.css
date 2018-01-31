@@ -50,3 +50,9 @@ img {
     height: 24px;
     width: 24px;
 }
+
+#side-logo {
+    position: relative;
+    top: 0.25em;
+    padding-right: 0.25em;
+}
