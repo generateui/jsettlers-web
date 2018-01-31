@@ -195,11 +195,11 @@ class HexPartRenderer {
 
         var texture = new THREE.TextureLoader().load("doc/images/Wheat2To1Port.png");
         const shapeGeometry = new THREE.ShapeGeometry(triangleShape);
-        shapeGeometry.faceVertexUvs[0][0][0].x = 0.5
-        shapeGeometry.faceVertexUvs[0][0][0].y = 1;
-        shapeGeometry.faceVertexUvs[0][0][1].x = 0;
-        shapeGeometry.faceVertexUvs[0][0][1].y = 0;
-        shapeGeometry.faceVertexUvs[0][0][2].x = 1;
+        shapeGeometry.faceVertexUvs[0][0][0].x = 1
+        shapeGeometry.faceVertexUvs[0][0][0].y = 0;
+        shapeGeometry.faceVertexUvs[0][0][1].x = 0.5;
+        shapeGeometry.faceVertexUvs[0][0][1].y = 1;
+        shapeGeometry.faceVertexUvs[0][0][2].x = 0;
         shapeGeometry.faceVertexUvs[0][0][2].y = 0;
         material = new THREE.MeshBasicMaterial( {map: texture} );
         this.mesh = new THREE.Mesh(shapeGeometry, material);
@@ -256,11 +256,11 @@ class PortRenderer {
 
         var texture = this._getTexture(port.type);
         const shapeGeometry = new THREE.ShapeGeometry(triangleShape);
-        shapeGeometry.faceVertexUvs[0][0][0].x = 0.5
-        shapeGeometry.faceVertexUvs[0][0][0].y = 1;
-        shapeGeometry.faceVertexUvs[0][0][1].x = 0;
-        shapeGeometry.faceVertexUvs[0][0][1].y = 0;
-        shapeGeometry.faceVertexUvs[0][0][2].x = 1;
+        shapeGeometry.faceVertexUvs[0][0][0].x = 1
+        shapeGeometry.faceVertexUvs[0][0][0].y = 0;
+        shapeGeometry.faceVertexUvs[0][0][1].x = 0.5;
+        shapeGeometry.faceVertexUvs[0][0][1].y = 1;
+        shapeGeometry.faceVertexUvs[0][0][2].x = 0;
         shapeGeometry.faceVertexUvs[0][0][2].y = 0;
         var material = new THREE.MeshBasicMaterial( {color: 0xffffff, map: texture} );
         this.mesh = new THREE.Mesh(shapeGeometry, material);
