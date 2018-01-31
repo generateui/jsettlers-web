@@ -444,18 +444,16 @@ class BoardRenderer {
         this.cityRenderers = new Map(); // <Node, City>
         this.roadRenderers = new Map(); // <Edge, Road>
         this.robberRenderer = new RobberRenderer(this, board.robber);
+        this.portPickerRenderer = new PortPickerRenderer(this);
+        this.group.add(this.portPickerRenderer.group);
         
         this.scene = new vgScene(element);
 
         // TODO: use sparse maps instead
         // this constructs the cells in grid coordinate space
         this.vgGrid = new vgHexGrid();
-        this.vgGrid.generate({
-            size: 3 // size of the board
-        });
+        this.vgGrid.generate(3);
 
-        this.portPickerRenderer = new PortPickerRenderer(this);
-        this.group.add(this.portPickerRenderer.group);
 
         this.vgBoard = new vgBoard(this.vgGrid);
 

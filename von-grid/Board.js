@@ -11,8 +11,6 @@ class vgBoard {
 		this.group = new THREE.Object3D(); // can hold all entities, also holds tileGroup, never trashed
 	
 		this.grid = grid;
-		// need to keep a resource cache around, so this Loader does that, use it instead of THREE.ImageUtils
-		vg.Loader.init();
 	
 		this.tiles = [];
 		this.tileGroup = new THREE.Object3D();
