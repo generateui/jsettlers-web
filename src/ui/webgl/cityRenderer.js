@@ -1,14 +1,15 @@
-class CityRenderer {
+class CityRenderer extends Renderer {
     constructor(boardRenderer, city) {
+        super();
         this.boardRenderer = boardRenderer;
         var loader = new THREE.STLLoader();
         const that = this;
         loader.load('models3D/city.stl', function (geometry) {
             console.log(geometry);
-            var material = new THREE.MeshPhongMaterial({color: city.player.color});
+            that.material = new THREE.MeshPhongMaterial({color: city.player.color});
             var edges = new THREE.EdgesGeometry(geometry);
             var lines = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x000000 }));
-            var group = new THREE.Mesh(geometry, material);
+            var group = new THREE.Mesh(geometry, that.material);
             group.add(lines);
             var p = that.boardRenderer.nodeToPixel(city.node);
             group.rotation.x = -0.5 * Math.PI;

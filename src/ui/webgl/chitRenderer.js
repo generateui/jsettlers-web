@@ -1,5 +1,6 @@
-class ChitRenderer {
+class ChitRenderer extends Renderer {
     constructor(hex, boardRenderer) {
+        super();
         this.hex = hex;
         this.chit = hex.chit;
 
@@ -26,7 +27,7 @@ class ChitRenderer {
         }
 
         var edges = new THREE.EdgesGeometry(cilinderGeometry);
-        this.topMaterial = new THREE.MeshBasicMaterial( {color: 0xf9f7b4, map: texture} ); //khaki
+        this.topMaterial = new THREE.MeshLambertMaterial( {color: 0xdddddd, map: texture} ); //khaki
         var sideMaterial = new THREE.MeshBasicMaterial( {color: 0xc3b091} ); //khaki
         var cilinder = new THREE.Mesh(cilinderGeometry, [this.topMaterial, sideMaterial]);
 
@@ -57,5 +58,17 @@ class ChitRenderer {
         var texture = new THREE.TextureLoader().load(imageFileName);
         texture.mapping = THREE.EquirectangularReflectionMapping;
         return texture;
+    }
+	lighten() {
+		this.topMaterial.color = new THREE.Color(0xffffff);
+	}
+	normalize() {
+		this.topMaterial.color = new THREE.Color(0xdddddd);
+	}
+	darken() {
+		this.topMaterial.color = new THREE.Color(0x444444);
+    }
+    redify() {
+		this.topMaterial.color = new THREE.Color(0xff0000);
     }
 }

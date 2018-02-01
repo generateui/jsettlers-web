@@ -1,5 +1,7 @@
-class RobberRenderer {
+class RobberRenderer extends Renderer {
     constructor(boardRenderer, robber) {
+        super();
+        
         this.boardRenderer = boardRenderer;
         var loader = new THREE.STLLoader();
         const that = this;

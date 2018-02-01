@@ -1,6 +1,8 @@
 /** Renders a hex over a hovered hex to have user select one of six triangles */
-class PortPickerRenderer {
+class PortPickerRenderer extends Renderer {
     constructor(boardRenderer) {
+        super();
+        
         this._hex = null;
         this.boardRenderer = boardRenderer;
 

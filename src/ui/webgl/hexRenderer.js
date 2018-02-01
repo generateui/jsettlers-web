@@ -1,6 +1,8 @@
 /** Renders a Hex onto a von-grid tile */
-class HexRenderer {
+class HexRenderer extends Renderer {
     constructor(boardRenderer, hex, radius) {
+		super();
+		
         this.boardRenderer = boardRenderer;
         this._hex = hex;
 
@@ -83,14 +85,16 @@ class HexRenderer {
 			HexRenderer.geometry = geometry;
 		}
 
+		this.highlight = '0x0084cc';
 		var texture = new THREE.TextureLoader().load(this._getTexture(hex));
-		this.topMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, map: texture });
-		this.material = new THREE.MeshPhongMaterial();
+		this.topMaterial = new THREE.MeshLambertMaterial({ color: 0xdddddd, map: texture });
+		// this.topMaterial.emissive = new THREE.Color(this.highlight);
+		this.material = new THREE.MeshLambertMaterial({ color: 0x0 });
+		// this.material.emissive = new THREE.Color(this.highlight);
 		this.entity = null;
 		this.userData = {};
 
 		this.selected = false;
-		this.highlight = '0x0084cc';
 
 		this.mesh = new THREE.Mesh(HexRenderer.geometry, [this.material, this.topMaterial]);
 		this.mesh.userData.structure = this;
@@ -166,31 +170,46 @@ class HexRenderer {
         this.removePortChangedSubscription();
         this.removePortChangedSubscription = this.hex.portChanged(this.portChanged);
         this.removeChitChangedSubscription = this.hex.chitChanged(this.chitChanged);
-    }
-	select() {
-		if (this.material.emissive) {
-			this.material.emissive.setHex(this.highlight);
-		}
-		this.selected = true;
-		return this;
 	}
-
-	deselect() {
-		if (this._emissive !== null && this.material.emissive) {
-			this.material.emissive.setHex(this._emissive);
+	lighten() {
+		this.topMaterial.color = new THREE.Color(0xffffff);
+		this.topMaterial.needsUpdate = true;
+		if (this.portRenderer !== null) {
+			this.portRenderer.lighten();
 		}
-		this.selected = false;
-		return this;
+		if (this.chitRenderer !== null) {
+			this.chitRenderer.lighten();
+		}
 	}
-
-	toggle() {
-		if (this.selected) {
-			this.deselect();
+	normalize() {
+		this.topMaterial.color = new THREE.Color(0xdddddd);
+		this.topMaterial.needsUpdate = true;
+		if (this.portRenderer !== null) {
+			this.portRenderer.normalize();
 		}
-		else {
-			this.select();
+		if (this.chitRenderer !== null) {
+			this.chitRenderer.normalize();
 		}
-		return this;
+	}
+	darken() {
+		this.topMaterial.color = new THREE.Color(0x444444);
+		this.topMaterial.needsUpdate = true;
+		if (this.portRenderer !== null) {
+			this.portRenderer.darken();
+		}
+		if (this.chitRenderer !== null) {
+			this.chitRenderer.darken();
+		}
+	}
+	redify() {
+		this.topMaterial.color = new THREE.Color(0xff0000);
+		this.topMaterial.needsUpdate = true;
+		if (this.portRenderer !== null) {
+			this.portRenderer.redify();
+		}
+		if (this.chitRenderer !== null) {
+			this.chitRenderer.redify();
+		}
 	}
 
 	dispose() {

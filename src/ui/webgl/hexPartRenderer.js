@@ -1,5 +1,6 @@
-class HexPartRenderer {
+class HexPartRenderer  extends Renderer{
     constructor(boardRenderer, partIndex) {
+        super();
         this.partIndex = partIndex;
         const scale = 1.05;
         const cellSize = 10;
