@@ -3,7 +3,7 @@
 	Also provides camera control.
 
  */
-class vgScene {
+class Scene {
 	constructor(element) {
 		this.renderer = new THREE.WebGLRenderer({
 			alpha: true,
@@ -43,17 +43,41 @@ class vgScene {
 			this.renderer.setSize(this.width, this.height);
 		}.bind(this), false);
 
-		this.attachTo(element);
-	}
-
-	attachTo(element) {
 		element.style.width = this.width + 'px';
 		element.style.height = this.height + 'px';
 		this.renderer.setPixelRatio(window.devicePixelRatio);
 		this.renderer.setSize(this.width, this.height);
 		element.appendChild(this.renderer.domElement);
-	}
 
+		this.mouse = new vg.MouseCaster(this.scene, this.camera, element);
+
+        this.fpsInterval = 0;
+        this.now = null;
+        this.then = null;
+        this.elapsed = null;
+	}
+    
+    startAnimating(fps) {
+        this.fpsInterval = 1000 / fps;
+        this.then = window.performance.now();
+        this.animate();
+    }
+
+    animate(newtime) {
+        window.requestAnimationFrame(this.animate.bind(this));
+        this.now = newtime;
+        this.elapsed = this.now - this.then;
+    
+        if (this.elapsed > this.fpsInterval) {
+            // Get ready for next frame by setting then=now, but...
+            // Also, adjust for fpsInterval not being multiple of 16.67
+            this.then = this.now - (this.elapsed % this.fpsInterval);
+    
+            this.mouse.update();
+            this.render();
+        }
+	}
+	
 	add(mesh) {
 		this.scene.add(mesh);
 	}

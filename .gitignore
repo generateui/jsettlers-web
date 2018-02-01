@@ -1,3 +1,9 @@
 node_modules
 
 # generated source files
+<<<<<<< HEAD
+=======
+bundle.js
+data_pb.js
+bundle.js
+>>>>>>> master
