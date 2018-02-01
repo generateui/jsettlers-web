@@ -1,3 +1,10 @@
+/** Derive from this class to make properties observable
+ * 
+ * In your constructor, call `makeObservable(["propertyName1", "propertyName2", ...])`
+ * to make tagret properties observable. 
+ * 
+ * Currently only supports properties which do not have getters or setters defined.
+ */
 class Observable {
     constructor() {
         this.listenersByProperty = {};

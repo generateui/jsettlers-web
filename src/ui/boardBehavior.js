@@ -1,5 +1,11 @@
-/* Behaviors dictate how a board should respond to user interaction
-* This default behavior does nothing 
+/* A behavior dictates how a board responds to user interaction.
+*
+* A behavior operates on an abstracted Renderer. Renderers can be implemented
+* on any UI implementation technique: WebGL, canvas, svg, DOM, text-based, ...
+* A behavior is not aware of the underlying UI implementation. Instead, it operates
+* on a defined interface for the renderers. For instance, to show all the edges
+* of a board, the `.showEdges()` method is called on a BoardRenderer. The BoardRenderer
+* instance then takes care to update his rendering to show the edges.
 */
 class BoardBehavior {
     start(boardRenderer) {} // set the behavior as active behavior on the BoardRenderer

@@ -4,10 +4,7 @@ class BoardRenderer {
         this.board = board || new Standard4pDesign();
         this._behavior = behavior || new SetHex();
 
-		this.size = 5; // size of the hexagon shape (radius)
-		this.cellSize = 11;
-		this.coords = [];
-
+		this.cellSize = 11; // size of the hexagon shape (radius)
 		this._cellWidth = this.cellSize * 2;
 		this._cellLength = (Math.SQRT3 * 0.5) * this._cellWidth;
 		
@@ -188,6 +185,5 @@ class BoardRenderer {
 	}
 
 	dispose() {
-		this.coords = null;
 	}
 }
