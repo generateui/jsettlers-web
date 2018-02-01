@@ -32,7 +32,7 @@ class BoardRenderer {
         })
 
 		this.tileGroup = new THREE.Group();
-        this.scene = new vgScene(element);
+        this.scene = new Scene(element);
         
         this.nodesGroup = new THREE.Group();
         this.edgesGroup = new THREE.Group();

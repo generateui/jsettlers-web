@@ -3,7 +3,7 @@
 	Also provides camera control.
 
  */
-class vgScene {
+class Scene {
 	constructor(element) {
 		this.renderer = new THREE.WebGLRenderer({
 			alpha: true,
