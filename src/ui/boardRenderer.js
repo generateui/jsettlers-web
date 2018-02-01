@@ -29,12 +29,11 @@ class HexRenderer {
         this.grid = grid;
         this.boardRenderer = boardRenderer;
         const coord = this.hex.coord;
-        const cell = new vg.Cell(coord.x, coord.y, coord.z);
         const color = new THREE.Color(this.hex.color);
-        const hash = grid.cellToHash(cell);
-        grid.cells[hash].tile.material.color = color;
-        grid.cells[hash].tile.mesh.userData.structure = this;
-        this.mesh = grid.cells[hash].tile.mesh;
+        const tile = boardRenderer.vgBoard.tilesByCoord.get(coord);
+        tile.material.color = color;
+        tile.mesh.userData.structure = this;
+        this.mesh = tile.mesh;
         if (this.chitRenderer === null) {
             this.chitRenderer = new ChitRenderer(this.hex, boardRenderer);
             boardRenderer.group.add(this.chitRenderer.mesh);
@@ -52,9 +51,8 @@ class HexRenderer {
         this._hex = hex;
         const color = new THREE.Color(this.hex.color);
         const coord = this.hex.coord;
-        const cell = new vg.Cell(coord.x, coord.y, coord.z);
-        const hash = this.grid.cellToHash(cell);
-        this.grid.cells[hash].tile.material.color = color;
+        const tile = boardRenderer.vgBoard.tilesByCoord.get(coord);
+        tile.material.color = color;
         this.removeChitChangedSubscription();
         this.removePortChangedSubscription();
         this.removePortChangedSubscription = this.hex.portChanged(this.portChanged);
@@ -170,7 +168,6 @@ class PortPickerRenderer {
 class HexPartRenderer {
     constructor(boardRenderer, partIndex) {
         this.partIndex = partIndex;
-        const cell = null;
         const scale = 1.05;
         const cellSize = 10;
 
@@ -234,7 +231,6 @@ class HexPartRenderer {
 class PortRenderer {
     constructor(boardRenderer, port) {
         this.port = port;
-        const cell = null;
         const scale = 1.05;
         const cellSize = 10;
 
@@ -448,19 +444,13 @@ class BoardRenderer {
         this.group.add(this.portPickerRenderer.group);
         
         this.scene = new vgScene(element);
-
-        // TODO: use sparse maps instead
-        // this constructs the cells in grid coordinate space
         this.vgGrid = new vgHexGrid();
         this.vgGrid.generate(3);
-
-
         this.vgBoard = new vgBoard(this.vgGrid);
-
-        // this will generate extruded hexagonal tiles
         this.vgBoard.generateTilemap({
             tileScale: 0.96 // you might have to scale the tile so the extruded geometry fits the cell size perfectly
         });
+        
         this.scene.add(this.vgBoard.group);
         this.scene.focusOn(this.vgBoard.group);
 
@@ -582,14 +572,9 @@ class BoardRenderer {
     nodeToPixel(node) {
         // TODO: this code is a bit barfy.
         // TODO: cache
-        var cell1 = new vg.Cell(node.coord1.x, node.coord1.y, node.coord1.z);
-        var coord1Position = this.cellToPixel(cell1);
-
-        var cell2 = new vg.Cell(node.coord2.x, node.coord2.y, node.coord2.z);
-        var coord2Position = this.cellToPixel(cell2);
-
-        var cell3 = new vg.Cell(node.coord3.x, node.coord3.y, node.coord3.z);
-        var coord3Position = this.cellToPixel(cell3);
+        var coord1Position = this.coordToPixel(node.coord1);
+        var coord2Position = this.coordToPixel(node.coord2);
+        var coord3Position = this.coordToPixel(node.coord3);
         // coordPosition is the center of a hex in world coordinates
         // the center of three world positions is the position of the node
         var centroidX = (coord1Position.x + coord2Position.x + coord3Position.x) / 3;
@@ -597,13 +582,6 @@ class BoardRenderer {
         return new THREE.Vector3(centroidX, 2, centroidZ);
     }
 
-	cellToPixel(cell) {
-        return new THREE.Vector3(
-            cell.q * this.vgGrid._cellWidth * 0.75,
-            cell.h,
-            -((cell.s - cell.r) * this.vgGrid._cellLength * 0.5)
-        );
-    }
     coordToPixel(coord) {
         return new THREE.Vector3(
             coord.x * this.vgGrid._cellWidth * 0.75,

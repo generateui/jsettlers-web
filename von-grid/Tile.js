@@ -4,11 +4,9 @@
 	@author Corey Birnbaum https://github.com/vonWolfehaus/
 */
 class vgTile  {
-	constructor (cell, size) {
+	constructor (coord, size) {
 		this.scale = 0.96;
-		this.cell = cell;
-		// if (this.cell.tile && this.cell.tile !== this) this.cell.tile.dispose(); // remove whatever was there
-		this.cell.tile = this;
+		this.coord = coord;
 
 		this.uniqueID = vg.generateID();
 
@@ -96,7 +94,7 @@ class vgTile  {
 	}
 
 	dispose() {
-		this.cell = null;
+		this.coord = null;
 		this.position = null;
 		this.rotation = null;
 		if (this.mesh.parent) this.mesh.parent.remove(this.mesh);
