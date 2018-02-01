@@ -5,12 +5,8 @@
  */
 class vgBoard {
 	constructor(grid) {
-		this.tileGroup = null; // only for tiles
-	
-		this.group = new THREE.Object3D(); // can hold all entities, also holds tileGroup, never trashed
-	
 		this.grid = grid;
-	
+		this.group = new THREE.Object3D(); // can hold all entities, also holds tileGroup, never trashed
 		this.tilesByCoord = new Map(); // <Cell, Tile>
 		this.tileGroup = new THREE.Object3D();
 		this.group.add(this.tileGroup);
@@ -37,18 +33,15 @@ class vgBoard {
 	}
 
 	removeAllTiles() {
-		if (!this.tileGroup) return;
-		var tiles = this.tileGroup.children;
-		for (var i = 0; i < tiles.length; i++) {
-			this.tileGroup.remove(tiles[i]);
+		for (var tile of this.tileGroup.children) {
+			this.tileGroup.remove(tile);
 		}
 	}
 
 	snapTileToGrid(tile) {
 		if (tile.coord) {
 			tile.position.copy(this.grid.coordToPixel(tile.coord));
-		}
-		else {
+		} else {
 			var coord = this.grid.pixelToCell(tile.position);
 			tile.position.copy(this.grid.coordToPixel(coord));
 		}
@@ -56,24 +49,11 @@ class vgBoard {
 	}
 
 	generateTilemap() {
-		this.reset();
-
 		var tiles = this.grid.generateTiles();
 		for (var tile of tiles) {
 			this.tilesByCoord.set(tile.coord, tile);
+			this.tileGroup.add(tile.mesh);
 		}
-
-		this.tileGroup = new THREE.Object3D();
-		for (var i = 0; i < tiles.length; i++) {
-			this.tileGroup.add(tiles[i].mesh);
-		}
-
-		this.group.add(this.tileGroup);
 	}
 
-	reset() {
-		// removes all tiles from the scene, but leaves the grid intact
-		this.removeAllTiles();
-		if (this.tileGroup) this.group.remove(this.tileGroup);
-	}
 }

@@ -105,5 +105,12 @@ class vgTile  {
 		this.entity = null;
 		this.geometry = null;
 		this._emissive = null;
+
+		// from vg.Board
+		this.cellShape = null;
+		this.cellGeo.dispose();
+		this.cellGeo = null;
+		this.cellShapeGeo.dispose();
+		this.cellShapeGeo = null;
 	}
 }
