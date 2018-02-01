@@ -18,22 +18,20 @@ class vgHexGrid {
 	constructor() {
 		this.size = 5; // only used for generated maps
 		this.cellSize = 11;
-		this.cells = {};
+		this.coords = [];
 
 		this._cellWidth = this.cellSize * 2;
 		this._cellLength = (vg.SQRT3 * 0.5) * this._cellWidth;
-		// cached objects
-		this._vec3 = new THREE.Vector3();
 		
 		vgHexGrid.TWO_THIRDS = 2 / 3;
 	}
 
 	// grid cell (Hex in cube coordinate space) to position in pixels/world
-	cellToPixel(cell) {
-		this._vec3.x = cell.q * this._cellWidth * 0.75;
-		this._vec3.y = 1;
-		this._vec3.z = -((cell.s - cell.r) * this._cellLength * 0.5);
-		return this._vec3;
+	coordToPixel(coord) {
+		const x = coord.x * this._cellWidth * 0.75;
+		const y = 1;
+		const z = -((coord.z - coord.y) * this._cellLength * 0.5);
+		return new THREE.Vector3(x, y, z);
 	}
 
 	pixelToCell(pos) {
@@ -57,23 +55,18 @@ class vgHexGrid {
 		} else {
 			rz = -rx-ry;
 		}
-		return new vg.Cell(rx, ry, rz);
+		return new Coord3D(rx, ry, rz);
 	}
 
-	cellToHash(cell) {
-		return cell.q + "." + cell.r + "." + cell.s;
-	}
-
-	distance(cellA, cellB) {
-		return Math.max(Math.abs(cellA.q - cellB.q), Math.abs(cellA.r - cellB.r), Math.abs(cellA.s - cellB.s));
+	distance(coord1, coord2) {
+		return Math.max(Math.abs(coord1.x - coord2.x), Math.abs(coord1.y - coord2.y), Math.abs(coord1.z - coord2.z));
 	}
 
 	generateTiles() {
 		var tiles = [];
-		for (var i in this.cells) {
-			const cell = this.cells[i];
-			const tile = new vgTile(cell, this.cellSize)
-			tile.position.copy(this.cellToPixel(cell));
+		for (var coord of this.coords) {
+			const tile = new vgTile(coord, this.cellSize)
+			tile.position.copy(this.coordToPixel(coord));
 			tile.position.y = 0;
 			tiles.push(tile);
 		}
@@ -86,34 +79,29 @@ class vgHexGrid {
 			for (var y = -size; y < size+1; y++) {
 				const z = -x-y;
 				if (Math.abs(x) <= size && Math.abs(y) <= size && Math.abs(z) <= size) {
-					this.add(new vg.Cell(x, y, z));
+					this.add(new Coord3D(x, y, z));
 				}
 			}
 		}
 	}
 
-	add(cell) {
-		var hash = this.cellToHash(cell);
-		this.cells[hash] = cell;
-		return cell;
+	add(coord) {
+		this.coords.push(coord);
 	}
 
-	remove(cell) {
-		var h = this.cellToHash(cell);
-		if (this.cells[h]) {
-			delete this.cells[h];
+	remove(coord) {
+		var index = this.coords.indexOf(coord);
+		if (index !== -1) {
+			this.coords.slice(index, 1);
 		}
 	}
 
 	dispose() {
-		this.cells = null;
+		this.coords = null;
 		this.cellShape = null;
 		this.cellGeo.dispose();
 		this.cellGeo = null;
 		this.cellShapeGeo.dispose();
 		this.cellShapeGeo = null;
-		this._vec3 = null;
-		this._geoCache = null;
 	}
-
 }

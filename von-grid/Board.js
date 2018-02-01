@@ -5,37 +5,33 @@
  */
 class vgBoard {
 	constructor(grid) {
-		this.tiles = [];
 		this.tileGroup = null; // only for tiles
 	
 		this.group = new THREE.Object3D(); // can hold all entities, also holds tileGroup, never trashed
 	
 		this.grid = grid;
 	
-		this.tiles = [];
+		this.tilesByCoord = new Map(); // <Cell, Tile>
 		this.tileGroup = new THREE.Object3D();
 		this.group.add(this.tileGroup);
 	}
 
 	addTile(tile) {
-		this.tiles.push(tile);
+		this.tilesByCoord.set(tile.coord, tile);
 
 		this.snapTileToGrid(tile);
 		tile.position.y = 0;
 
 		this.tileGroup.add(tile.mesh);
-		this.grid.add(tile.cell);
-
-		tile.cell.tile = tile;
+		this.grid.add(tile.coord);
 	}
 
 	removeTile(tile) {
 		if (!tile) return; // was already removed somewhere
-		var i = this.tiles.indexOf(tile);
-		this.grid.remove(tile.cell);
+		var i = this.tilesByCoord.indexOf(tile);
+		this.grid.remove(tile.coord);
 
-		if (i !== -1) this.tiles.splice(i, 1);
-		// this.tileGroup.remove(tile.mesh);
+		this.tilesByCoord.delete(tile.coord);
 
 		tile.dispose();
 	}
@@ -49,12 +45,12 @@ class vgBoard {
 	}
 
 	snapTileToGrid(tile) {
-		if (tile.cell) {
-			tile.position.copy(this.grid.cellToPixel(tile.cell));
+		if (tile.coord) {
+			tile.position.copy(this.grid.coordToPixel(tile.coord));
 		}
 		else {
-			var cell = this.grid.pixelToCell(tile.position);
-			tile.position.copy(this.grid.cellToPixel(cell));
+			var coord = this.grid.pixelToCell(tile.position);
+			tile.position.copy(this.grid.coordToPixel(coord));
 		}
 		return tile;
 	}
@@ -63,7 +59,9 @@ class vgBoard {
 		this.reset();
 
 		var tiles = this.grid.generateTiles();
-		this.tiles = tiles;
+		for (var tile of tiles) {
+			this.tilesByCoord.set(tile.coord, tile);
+		}
 
 		this.tileGroup = new THREE.Object3D();
 		for (var i = 0; i < tiles.length; i++) {
