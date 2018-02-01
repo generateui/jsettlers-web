@@ -27,7 +27,7 @@ class Scene {
 		this.camera = new THREE.PerspectiveCamera(50, this.width / this.height, 1, 5000);
 
 		this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
-		this.controls.minDistance = 100;
+		this.controls.minDistance = 10;
 		this.controls.maxDistance = 1000;
 		this.controls.zoomSpeed = 2;
 		this.controls.noZoom = false;

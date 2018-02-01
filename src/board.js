@@ -12,6 +12,7 @@ class Board {
              // 2. Array in form [int amount, () => CreateHex()]
              // e.g. [new Forest(), [3, () => new Mountain()]]
             hexBag: [],
+            chitBag: [],
         };
         this._hexes = new ObservableMap(); // <Coord, Hex>
         this.robber = new Robber(Coord3D.center);
@@ -19,20 +20,69 @@ class Board {
         this.cities = new ObservableMap(); // <Node, City>
         this.roads = new ObservableMap(); // <Edge, Road>
     }
-    generateBoardForPlay() {
-        this.hexBag = [];
-        for (var hex of this._config.hexBag) {
+    /** normalize the config into a simple list of hex instances */
+    static _flattenConfig(config) {
+        const items = [];
+        for (var item of config) {
             // expand config specification of hexes in hexBag
              // e.g. [new Forest(), [3, () => new Mountain()]]
-             if (Array.isArray(hex)) {
-                var array = hex;
+             if (Array.isArray(item)) {
+                var array = item;
                 var amount = array[0];
-                var createHexFunction = array[1];
-                for (var i=0; i<amount; i++){
-                    var createdHex = createHexFunction();
-                    this.hexBag.add(createdHex);
+                var createItemFunction = array[1];
+                for (var i=0; i<amount; i++) {
+                    var createdItem = createItemFunction();
+                    items.push(createdItem);
                 }
+            } else { // a hex instance
+                items.push(item);
             }
+        }
+        return items;
+    }
+    generateBoardForPlay() {
+        const bagHexes = Board._flattenConfig(this._config.hexBag);
+        const hexesToReplace = Array.from(this._hexes.values()).filter(h => h instanceof HexFromBag);
+        var i = 0;
+        while (i < hexesToReplace.length && bagHexes.length > 0) {
+            const toReplace = hexesToReplace[i];
+            const index = Math.floor(Math.random() * bagHexes.length);
+            const pick = bagHexes[index];
+            pick.coord = toReplace.coord;
+            pick.port = toReplace.port;
+            pick.chit = toReplace.chit;
+            bagHexes.splice(index, 1);
+            this.hexes.set(pick.coord, pick);
+            i++;
+        }
+        const bagChits = Board._flattenConfig(this._config.chitBag);
+        const hexesWithChitToReplace = Array.from(this._hexes.values()).filter(h => h.chit.type === ChitType.CHITFROMBAG);
+        var j = 0;
+        while (j < hexesWithChitToReplace.length&& bagChits.length > 0) {
+            const toReplace = hexesWithChitToReplace[j];
+            if (!toReplace.canHaveChit) {
+                toReplace.chit.type = ChitType.NONE;
+                j++;
+                continue;
+            }
+            const index = Math.floor(Math.random() * bagChits.length);
+            const pick = bagChits[index];
+            toReplace.chit = pick;
+            bagChits.splice(index, 1);
+            j++;
+        }
+        const bagPorts = Board._flattenConfig(this._config.portBag);
+        const hexesWithPortToReplace = Array.from(this._hexes.values()).filter(h => h.port instanceof FromBagPort);
+        var j = 0;
+        while (j < hexesWithPortToReplace.length&& bagPorts.length > 0) {
+            const toReplace = hexesWithPortToReplace[j];
+            const index = Math.floor(Math.random() * bagPorts.length);
+            const pick = bagPorts[index];
+            pick.partIndex = toReplace.port.partIndex;
+            pick.seaCoord = toReplace.port.seaCoord;
+            toReplace.port = pick;
+            bagPorts.splice(index, 1);
+            j++;
         }
     }
     placeHexes() {
@@ -75,9 +125,30 @@ class Standard4pDesign extends Board {
                 [4, () => new Pasture()],
                 [3, () => new Mountain()],
                 [3, () => new River()],
-            ]
+            ],
+            chitBag: [
+                new Chit(ChitType.CHIT2),
+                [2, () => new Chit(ChitType.CHIT3)],
+                [2, () => new Chit(ChitType.CHIT4)],
+                [2, () => new Chit(ChitType.CHIT5)],
+                [2, () => new Chit(ChitType.CHIT6)],
+                [2, () => new Chit(ChitType.CHIT8)],
+                [2, () => new Chit(ChitType.CHIT9)],
+                [2, () => new Chit(ChitType.CHIT10)],
+                [2, () => new Chit(ChitType.CHIT11)],
+                new Chit(ChitType.CHIT12),
+            ],
+            portBag: [
+                new Clay2To1Port(),
+                new Timber2To1Port(),
+                new Ore2To1Port(),
+                new Wheat2To1Port(),
+                new Sheep2To1Port(),
+                [4, () => new Any3To1Port()],
+            ],
         };
         this.placeHexes();
+        super.generateBoardForPlay();
     }
 
     generateHexes() {
@@ -87,16 +158,30 @@ class Standard4pDesign extends Board {
             ...this.getCoordsByRadius(2), 
         ];
         var seaCoords = this.getCoordsByRadius(3);
-        
+        var portsConfig = new Map();
+        portsConfig.set(new Coord3D(0,   3, -3), 1);
+        portsConfig.set(new Coord3D(2,   1, -3), 2);
+        portsConfig.set(new Coord3D(3,  -1, -2), 2);
+        portsConfig.set(new Coord3D(3,  -3,  0), 3);
+        portsConfig.set(new Coord3D(1,  -3,  2), 4);
+        portsConfig.set(new Coord3D(-1, -2,  3), 4);
+        portsConfig.set(new Coord3D(-3,  0,  3), 5);
+        portsConfig.set(new Coord3D(-3,  2 , 1), 0);
+        portsConfig.set(new Coord3D(2,   3, -1), 0);
         var hexes = [];
         for (let coord of fromBagCoords) {
             var hex = new HexFromBag(coord);
-            hex.chit = new Chit(proto.carcattonne_data.ChitType.CHITFROMBAG);
+            hex.chit = new Chit(ChitType.CHITFROMBAG);
             // hex.chit = this.getRandomChit();
             hexes.push(hex);
         }
         for (let coord of seaCoords) {
-            hexes.push(new Sea(coord));
+            const sea = new Sea(coord);
+            if (portsConfig.has(coord)) {
+                const partIndex = portsConfig.get(coord);
+                sea.port = new FromBagPort(partIndex, coord);
+            }
+            hexes.push(sea);
         }
         return hexes;
     }

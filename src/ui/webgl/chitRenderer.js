@@ -36,11 +36,11 @@ class ChitRenderer {
         this.mesh.userData.structure = this;
         this.geometry = cilinderGeometry;
 
-        const show = this.chit.chitType !== proto.carcattonne_data.ChitType.NONE;
+        const show = this.chit.type !== ChitType.NONE;
         cilinder.visible = show;
     }
     _getTexture(chit) {
-        if (chit.chitType === proto.carcattonne_data.ChitType.NONE) {
+        if (chit.type === ChitType.NONE) {
             return null;
         }
         var imageFileName = "doc/images/Chit";
@@ -48,7 +48,7 @@ class ChitRenderer {
         // special cases please :). 
         if (chit.number !== null) {
             imageFileName = imageFileName + chit.number.toString();
-        } else if (chit.chitType === proto.carcattonne_data.ChitType.CHITFROMBAG) {
+        } else if (chit.type === ChitType.CHITFROMBAG) {
             imageFileName = imageFileName + "frombag";
         } else {
             imageFileName = "Chit" + chit.number.toString();

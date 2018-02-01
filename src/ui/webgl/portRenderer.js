@@ -39,7 +39,7 @@ class PortRenderer {
         boardRenderer.group.add(this.mesh);
     }
     _getTexture(portType) {
-        var portName = Util.getEnumName(proto.carcattonne_data.PortType, portType);
+        var portName = Util.getEnumName(PortType, portType);
         var humanName = Util.getPascalCasedName(portName);
         var fileName = `doc/images/${humanName}port.png`;
         var texture = new THREE.TextureLoader().load(fileName);

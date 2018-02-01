@@ -1,9 +1,9 @@
 class Chit {
-    constructor(chitType) {
-        this.chitType = chitType;
+    constructor(type) {
+        this.type = type;
     }
     get number() {
-        switch(this.chitType) {
+        switch(this.type) {
             case proto.carcattonne_data.ChitType.CHIT2: return 2;
             case proto.carcattonne_data.ChitType.CHIT3: return 3;
             case proto.carcattonne_data.ChitType.CHIT4: return 4;
