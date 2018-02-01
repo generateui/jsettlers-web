@@ -49,7 +49,7 @@ class Scene {
 		this.renderer.setSize(this.width, this.height);
 		element.appendChild(this.renderer.domElement);
 
-		this.mouse = new vg.MouseCaster(this.scene, this.camera, element);
+		this.mouse = new MouseCaster(this.scene, this.camera, element);
 
         this.fpsInterval = 0;
         this.now = null;

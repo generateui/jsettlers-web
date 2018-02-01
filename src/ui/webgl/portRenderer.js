@@ -5,12 +5,12 @@ class PortRenderer {
         const scale = 1.05;
         const cellSize = 10;
 
-        const partIndexAngle = (vg.TAU / 6) * port.partIndex;
+        const partIndexAngle = (Math.TAU / 6) * port.partIndex;
         const partIndexX = cellSize * Math.cos(partIndexAngle);
         const partIndexY = cellSize * Math.sin(partIndexAngle);
 
         const nextPartIndex = port.partIndex == 5 ? 0 : port.partIndex + 1;
-        const nextPartIndexAngle = (vg.TAU / 6) * nextPartIndex;
+        const nextPartIndexAngle = (Math.TAU / 6) * nextPartIndex;
         const nextPartIndexX = cellSize * Math.cos(nextPartIndexAngle);
         const nextPartIndexY = cellSize * Math.sin(nextPartIndexAngle);
 
@@ -33,7 +33,7 @@ class PortRenderer {
         this.mesh = new THREE.Mesh(shapeGeometry, material);
         var position = boardRenderer.coordToPixel(port.seaCoord);
         this.mesh.position.set(position.x, 2, position.z);
-        this.mesh.rotation.x = -90 * vg.DEG_TO_RAD;
+        this.mesh.rotation.x = -90 * Math.DEG_TO_RAD;
         this.mesh.scale.set(scale, scale, 1);
         this.mesh.userData.structure = this;
         boardRenderer.group.add(this.mesh);

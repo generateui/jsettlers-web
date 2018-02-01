@@ -4,12 +4,12 @@ class HexPartRenderer {
         const scale = 1.05;
         const cellSize = 10;
 
-        const partIndexAngle = (vg.TAU / 6) * partIndex;
+        const partIndexAngle = (Math.TAU / 6) * partIndex;
         const partIndexX = cellSize * Math.cos(partIndexAngle);
         const partIndexY = cellSize * Math.sin(partIndexAngle);
 
         const nextPartIndex = partIndex == 5 ? 0 : partIndex + 1;
-        const nextPartIndexAngle = (vg.TAU / 6) * nextPartIndex;
+        const nextPartIndexAngle = (Math.TAU / 6) * nextPartIndex;
         const nextPartIndexX = cellSize * Math.cos(nextPartIndexAngle);
         const nextPartIndexY = cellSize * Math.sin(nextPartIndexAngle);
 
@@ -33,7 +33,7 @@ class HexPartRenderer {
         shapeGeometry.faceVertexUvs[0][0][2].y = 0;
         material = new THREE.MeshBasicMaterial( {map: texture} );
         this.mesh = new THREE.Mesh(shapeGeometry, material);
-        this.mesh.rotation.x = -90 * vg.DEG_TO_RAD;
+        this.mesh.rotation.x = -90 * Math.DEG_TO_RAD;
         this.mesh.position.y = 1.01;
         this.mesh.scale.set(scale, scale, 1);
         this.mesh.userData.structure = this;

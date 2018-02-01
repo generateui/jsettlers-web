@@ -9,7 +9,7 @@ class BoardRenderer {
 		this.coords = [];
 
 		this._cellWidth = this.cellSize * 2;
-		this._cellLength = (vg.SQRT3 * 0.5) * this._cellWidth;
+		this._cellLength = (Math.SQRT3 * 0.5) * this._cellWidth;
 		
 		BoardRenderer.TWO_THIRDS = 2 / 3;
 
@@ -77,13 +77,13 @@ class BoardRenderer {
             if (target === null || target === undefined) {
                 return;
             }
-            if (event === vg.MouseCaster.CLICK) {
+            if (event === MouseCaster.CLICK) {
                 this.behavior.click(this, target);
             }
-            if (event === vg.MouseCaster.OVER) {
+            if (event === MouseCaster.OVER) {
                 this.behavior.enter(this, target);
             }
-            if (event === vg.MouseCaster.OUT) {
+            if (event === MouseCaster.OUT) {
                 this.behavior.leave(this, target);
             }
         }, this);
@@ -162,7 +162,7 @@ class BoardRenderer {
 	pixelToCell(pos) {
 		// convert a position in world space ("pixels") to cell coordinates
 		var q = pos.x * (BoardRenderer.TWO_THIRDS / this.cellSize);
-		var r = ((-pos.x / 3) + (vg.SQRT3/3) * pos.z) / this.cellSize;
+		var r = ((-pos.x / 3) + (Math.SQRT3/3) * pos.z) / this.cellSize;
 		var s = -q-r;
 
 		var rx = Math.round(q);

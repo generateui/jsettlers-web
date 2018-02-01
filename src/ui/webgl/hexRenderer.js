@@ -7,14 +7,14 @@ class HexRenderer {
 		this.scale = 0.96;
 		this.coord = hex.coord;
 
-		this.uniqueID = vg.generateID();
+		this.uniqueID = Util.generateID();
 
 		if (HexRenderer.geometry === undefined) {
 			// create base shape used for building geometry
 			var vertices = [];
 			// create the skeleton of the hex
 			for (var i = 0; i < 6; i++) {
-				const angle = (vg.TAU / 6) * i;
+				const angle = (Math.TAU / 6) * i;
 				const x = radius * Math.cos(angle);
 				const y = radius * Math.sin(angle);
 				vertices.push(new THREE.Vector3(x, y, 0));
@@ -51,7 +51,7 @@ class HexRenderer {
 		this.mesh.userData.structure = this;
 
         // rotate it to face "up" (the threejs coordinate space is Y+)
-		this.mesh.rotation.x = -90 * vg.DEG_TO_RAD;
+		this.mesh.rotation.x = -90 * Math.DEG_TO_RAD;
         this.mesh.scale.set(this.scale, this.scale, 1);
         const position = boardRenderer.coordToPixel(hex.coord);
         this.mesh.position.copy(position);
