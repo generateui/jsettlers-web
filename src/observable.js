@@ -1,7 +1,13 @@
 /** Derive from this class to make properties observable
  * 
  * In your constructor, call `makeObservable(["propertyName1", "propertyName2", ...])`
- * to make tagret properties observable. 
+ * to make target properties observable. This adds `propertyName1Changed` methods to
+ * the class. To subscribe, pass in a function with an `oldValue` and `newValue` 
+ * parameter, like so:
+ * 
+ *  observableInstance.propertyName1Changed((oldValue, newValue) => {
+ *      // do something with new and/or old value
+ *  }
  * 
  * Currently only supports properties which do not have getters or setters defined.
  */
