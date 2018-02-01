@@ -1558,16 +1558,6 @@ String.prototype.hashCode = function() {
     return hash;
   };
   
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-function main() {
-
-}
-main();
-
-=======
->>>>>>> master
   var boardDesign = null;
   var boardRenderer = null;
   var hexTypePicker = null;
@@ -1656,11 +1646,8 @@ main();
         }
       });
   });
- 
-<<<<<<< HEAD
-=======
->>>>>>> 56f2efe... simplify von-grid and do another diet round
->>>>>>> master
+
+
 },{"./data_pb":1}],3:[function(require,module,exports){
 (function (global){
 var $jscomp={scope:{},getGlobal:function(a){return"undefined"!=typeof window&&window===a?a:"undefined"!=typeof global?global:a}};$jscomp.global=$jscomp.getGlobal(this);$jscomp.initSymbol=function(){$jscomp.global.Symbol||($jscomp.global.Symbol=$jscomp.Symbol);$jscomp.initSymbol=function(){}};$jscomp.symbolCounter_=0;$jscomp.Symbol=function(a){return"jscomp_symbol_"+a+$jscomp.symbolCounter_++};

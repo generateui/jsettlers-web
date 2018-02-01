@@ -21,20 +21,6 @@ String.prototype.hashCode = function() {
   var boardBehaviorPicker = null;
   var playerPicker = null;
 
-<<<<<<< HEAD
-=======
-}
-main();
-
-  var boardDesign = null;
-  var boardRenderer = null;
-  var hexTypePicker = null;
-  var chitTypePicker = null;
-  var portTypePicker = null;
-  var boardBehaviorPicker = null;
-  var playerPicker = null;
-
->>>>>>> master
   window.addEventListener('load', function(evt) {
       // A design representation of a board morphable into a play board
       boardDesign = new Standard4pDesign();
@@ -115,7 +101,4 @@ main();
         }
       });
   });
-<<<<<<< HEAD
- 
-=======
->>>>>>> master
+
