@@ -52,10 +52,10 @@ String.prototype.hashCode = function() {
 
       // render the board in a 3D viewport 
       var brEl = document.getElementById("board-renderer");
-      boardRenderer = new BoardRenderer(brEl, boardDesign, setHex);
+      window.boardRenderer = new BoardRenderer(brEl, boardDesign, setHex);
 
       var bbpEl = document.getElementById("behaviors");
-      boardBehaviorPicker = new BoardBehaviorPicker(bbpEl, boardRenderer, behaviors);
+      boardBehaviorPicker = new BoardBehaviorPicker(bbpEl, window.boardRenderer, behaviors);
 
       // widget to let the user pick a HexType
       hexTypePicker = new HexTypePicker(setHex);
