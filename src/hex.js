@@ -24,6 +24,7 @@ class Hex extends Observable {
     /** True when this hex can have a port on top of it */
     get canHavePort() { return false; }
     get canHaveChit() { return false; }
+    get canHaveRobber() { return false; }
 }
 class Desert extends Hex {
     constructor(coord) {
@@ -31,6 +32,7 @@ class Desert extends Hex {
     }
     get type() { return proto.carcattonne_data.HexType.DESERT; }
     get color() { return 0xcfa762; }
+    get canHaveRobber() { return true; }
 }
 class Sea extends Hex { 
     constructor(coord) {
@@ -48,6 +50,7 @@ class WheatField extends Hex {
     get type() { return proto.carcattonne_data.HexType.WHEATFIELD; }
     get color() { return 0xFFD700; }
     get canHaveChit() { return true; }
+    get canHaveRobber() { return true; }
 }
 class Mountain extends Hex {
     constructor(coord) {
@@ -56,6 +59,7 @@ class Mountain extends Hex {
     get type() { return proto.carcattonne_data.HexType.MOUNTAIN; }
     get color() { return 0x8A2BE2; }
     get canHaveChit() { return true; }
+    get canHaveRobber() { return true; }
  }
 class River extends Hex { 
     constructor(coord) {
@@ -64,6 +68,7 @@ class River extends Hex {
     get type() { return proto.carcattonne_data.HexType.RIVER; }
     get color() { return 0xFF3232; }
     get canHaveChit() { return true; }
+    get canHaveRobber() { return true; }
 }
 class Forest extends Hex { 
     constructor(coord) {
@@ -72,6 +77,7 @@ class Forest extends Hex {
     get type() { return proto.carcattonne_data.HexType.FOREST; }
     get color() { return 0x006400; }
     get canHaveChit() { return true; }
+    get canHaveRobber() { return true; }
 }
 class Pasture extends Hex {
     constructor(coord) {
@@ -80,6 +86,7 @@ class Pasture extends Hex {
     get type() { return proto.carcattonne_data.HexType.PASTURE; }
     get color() { return 0x00FF00; }
     get canHaveChit() { return true; }
+    get canHaveRobber() { return true; }
 }
 class NoneHex extends Hex {
     constructor(coord) {

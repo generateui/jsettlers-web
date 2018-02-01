@@ -1,3 +1,18 @@
+class Renderer {
+    darken() {
+        this.material.color = new THREE.Color(0x444444);
+    }
+    lighten() {
+        this.material.color = new THREE.Color(0xffffff);
+    }
+    normalize() {
+        this.material.color = new THREE.Color(0xdddddd);
+    }
+    redify() {
+        this.material.color = new THREE.Color(0xff0000);
+    }
+}
+
 /* Renders a 3D hexagon board using von-grid */
 class BoardRenderer {
     constructor(element, board, behavior) {
@@ -86,6 +101,31 @@ class BoardRenderer {
         }, this);
 
         this.scene.startAnimating(30);
+    }
+
+    lightenHexes(hexes) {
+        for (var hex of hexes) {
+            const renderer = this.hexRenderers.get(hex.coord);
+            renderer.lighten();
+        }
+    }
+    darkenHexes(hexes) {
+        for (var hex of hexes) {
+            const renderer = this.hexRenderers.get(hex.coord);
+            renderer.darken();
+        }
+    }
+    normalizeHexes(hexes) {
+        for (var hex of hexes) {
+            const renderer = this.hexRenderers.get(hex.coord);
+            renderer.normalize();
+        }
+    }
+    redifyHexes(hexes) {
+        for (var hex of hexes) {
+            const renderer = this.hexRenderers.get(hex.coord);
+            renderer.redify();
+        }
     }
 
     addMesh(mesh) {

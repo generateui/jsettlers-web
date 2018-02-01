@@ -144,26 +144,19 @@ class ShowEdgesOfClickedNode extends BoardBehavior {
 class EmphasizeHoveredObject extends BoardBehavior {
     constructor(rendererFilter) { // a function: bool filter(renderer);
         super();
-        this._oldHsl = null;
         this._rendererFilter = rendererFilter || function(r) { return true; };
     }
     enter(boardRenderer, renderer) {
         if (!this._rendererFilter(renderer)) {
             return;
         }
-        if (renderer.mesh.material.color !== undefined) {
-            var hsl = renderer.mesh.material.color.getHSL();
-            renderer.mesh.material.color.setHSL(hsl.h, hsl.s, 0.1);
-            this._oldHsl = {h: hsl.h, s: hsl.s, l: hsl.l};
-        }
+        renderer.darken();
     }
     leave(boardRenderer, renderer) {
         if (!this._rendererFilter(renderer)) {
             return;
         }
-        if (this._oldHsl !== null && renderer.mesh.material.color !== undefined) {
-            renderer.mesh.material.color.setHSL(this._oldHsl.h, this._oldHsl.s, 0.5);
-        }
+        renderer.normalize();
     }
 }
 /** Dispatches behavior onto given behaviors */
@@ -255,9 +248,20 @@ class MoveRobber extends BoardBehavior {
     }
     enter(boardRenderer, renderer) {
         this.emphasizeHoveredHex.enter(boardRenderer, renderer);
+        var all = Array.from(boardRenderer.board.hexes.values());
+        var possible = all.filter(h => h.canHaveRobber);
+        const robberHex = boardRenderer.board.hexes.get(boardRenderer.board.robber.coord);
+        // possible = Util.except(possible, [robberHex]);
+        boardRenderer.redifyHexes([robberHex]);
+        const notPossible = Util.except(all, possible);
+        boardRenderer.lightenHexes(possible);
+        boardRenderer.darkenHexes(notPossible);
     }
     leave(boardRenderer, renderer) {
         this.emphasizeHoveredHex.leave(boardRenderer, renderer);
+    }
+    stop(boardRenderer) {
+        boardRenderer.normalizeHexes(boardRenderer.board.hexes.values());
     }
 }
 class BuildTown extends BoardBehavior {

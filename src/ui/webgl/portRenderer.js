@@ -1,6 +1,8 @@
 /** Renders a port on a hexagon using a triangle and a cylinder */
-class PortRenderer {
+class PortRenderer extends Renderer {
     constructor(boardRenderer, port) {
+        super();
+        
         this.port = port;
         const scale = 1.05;
         const cellSize = 10;
@@ -29,8 +31,8 @@ class PortRenderer {
         shapeGeometry.faceVertexUvs[0][0][1].y = 1;
         shapeGeometry.faceVertexUvs[0][0][2].x = 0;
         shapeGeometry.faceVertexUvs[0][0][2].y = 0;
-        var material = new THREE.MeshBasicMaterial( {color: 0xffffff, map: texture} );
-        this.mesh = new THREE.Mesh(shapeGeometry, material);
+        this.material = new THREE.MeshLambertMaterial( {color: 0xdddddd, map: texture} );
+        this.mesh = new THREE.Mesh(shapeGeometry, this.material);
         var position = boardRenderer.coordToPixel(port.seaCoord);
         this.mesh.position.set(position.x, 2, position.z);
         this.mesh.rotation.x = -90 * Math.DEG_TO_RAD;
