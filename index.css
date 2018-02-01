@@ -4,6 +4,10 @@ body {
 #board-renderer {
     top: 0;
     left: 0;
+<<<<<<< HEAD
+=======
+    background-color: #000;
+>>>>>>> master
 }
 input[type='radio'] {
     display: none;
@@ -55,4 +59,8 @@ img {
     position: relative;
     top: 0.25em;
     padding-right: 0.25em;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> master
