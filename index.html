@@ -260,51 +260,55 @@
         </script>
     </head>
     <body>
-            <script src="bundle.js"></script>
-            <script type="text/javascript" src="von-grid/three.min.js"></script>
-            <script src="src/observable.js"></script>
-            <script src="src/observableMap.js"></script>
-            <script src="src/hex.js"></script>
-            <script src="src/board.js"></script>
-            <script src="src/coord.js"></script>
-            <script src="src/node.js"></script>
-            <script src="src/edge.js"></script>
-            <script src="src/chit.js"></script>
-            <script src="src/port.js"></script>
-            <script src="src/util.js"></script>
-            <script src="src/robber.js"></script>
-            <script src="src/player.js"></script>
-            <script src="src/town.js"></script>
-            <script src="src/city.js"></script>
-            <script src="src/road.js"></script>
-            <script src="src/ui/boardRenderer.js"></script>
-            <script src="src/ui/boardBehavior.js"></script>
-            <script src="src/ui/boardBehaviorPicker.js"></script>
-            <script src="src/ui/hexTypePicker.js"></script>
-            <script src="src/ui/chitTypePicker.js"></script>
-            <script src="src/ui/portTypePicker.js"></script>
-            <script src="src/ui/playerPicker.js"></script>
-            <script src="src/ui/webgl/boardRenderer.js"></script>
-            <script src="src/ui/webgl/chitRenderer.js"></script>
-            <script src="src/ui/webgl/cityRenderer.js"></script>
-            <script src="src/ui/webgl/edgeRenderer.js"></script>
-            <script src="src/ui/webgl/hexPartRenderer.js"></script>
-            <script src="src/ui/webgl/hexRenderer.js"></script>
-            <script src="src/ui/webgl/nodeRenderer.js"></script>
-            <script src="src/ui/webgl/portPickerRenderer.js"></script>
-            <script src="src/ui/webgl/portRenderer.js"></script>
-            <script src="src/ui/webgl/roadRenderer.js"></script>
-            <script src="src/ui/webgl/robberRenderer.js"></script>
-            <script src="src/ui/webgl/townRenderer.js"></script>
-            <script src="src/ui/webgl/scene.js"></script>
+        <script src="bundle.js"></script>
+        <script src="src/generic/math.js"></script>
+
+        <script type="text/javascript" src="von-grid/three.min.js"></script>
+        <script src="src/generic/observable.js"></script>
+        <script src="src/generic/observableMap.js"></script>
+        <script src="src/hex.js"></script>
+        <script src="src/board.js"></script>
+        <script src="src/coord.js"></script>
+        <script src="src/node.js"></script>
+        <script src="src/edge.js"></script>
+        <script src="src/chit.js"></script>
+        <script src="src/port.js"></script>
+        <script src="src/util.js"></script>
+        <script src="src/robber.js"></script>
+        <script src="src/player.js"></script>
+        <script src="src/town.js"></script>
+        <script src="src/city.js"></script>
+        <script src="src/road.js"></script>
+        <script src="src/ui/boardBehavior.js"></script>
+        <script src="src/ui/boardBehaviorPicker.js"></script>
+        <script src="src/ui/hexTypePicker.js"></script>
+        <script src="src/ui/chitTypePicker.js"></script>
+        <script src="src/ui/portTypePicker.js"></script>
+        <script src="src/ui/playerPicker.js"></script>
+        <script src="src/ui/webgl/boardRenderer.js"></script>
+        <script src="src/ui/webgl/chitRenderer.js"></script>
+        <script src="src/ui/webgl/cityRenderer.js"></script>
+        <script src="src/ui/webgl/edgeRenderer.js"></script>
+        <script src="src/ui/webgl/hexPartRenderer.js"></script>
+        <script src="src/ui/webgl/hexRenderer.js"></script>
+        <script src="src/ui/webgl/nodeRenderer.js"></script>
+        <script src="src/ui/webgl/portPickerRenderer.js"></script>
+        <script src="src/ui/webgl/portRenderer.js"></script>
+        <script src="src/ui/webgl/roadRenderer.js"></script>
+        <script src="src/ui/webgl/robberRenderer.js"></script>
+        <script src="src/ui/webgl/townRenderer.js"></script>
+        <script src="src/ui/webgl/scene.js"></script>
+
+        <script type="text/javascript" src="von-grid/OrbitControls.js"></script>
+        <script type="text/javascript" src="von-grid/MouseCaster.js"></script>
+        <script type="text/javascript" src="von-grid/Signal.js"></script>
+        <script type="text/javascript" src="von-grid/STLLoader.js"></script>
+        <script>
+            const ChitType = proto.carcattonne_data.ChitType;
+            const PortType = proto.carcattonne_data.PortType;
+            const HexType = proto.carcattonne_data.HexType;
+        </script>
     
-            <script type="text/javascript" src="von-grid/OrbitControls.js"></script>
-            <script type="text/javascript" src="von-grid/vg.js"></script>
-            <script type="text/javascript" src="von-grid/MouseCaster.js"></script>
-            <script type="text/javascript" src="von-grid/Signal.js"></script>
-            <script type="text/javascript" src="von-grid/STLLoader.js"></script>
-
-
         <div id="sidedrawer" class="mui--no-user-select">
             <div id="sidedrawer-brand" class="mui--appbar-line-height">
                     <img id="side-logo" src="https://raw.githubusercontent.com/jdmonin/JSettlers2/master/doc/graf/Logo24.png">

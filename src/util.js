@@ -37,4 +37,9 @@ class Util {
         }
         return result;
      }
+
+     static generateID() {
+		return Math.random().toString(36).slice(2) + Date.now();
+	}
+
 }

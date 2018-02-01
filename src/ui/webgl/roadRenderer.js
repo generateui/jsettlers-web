@@ -2,6 +2,7 @@ class RoadRenderer {
     constructor(boardRenderer, road) {
         this.boardRenderer = boardRenderer;
 
+        // TODO: cache
         var boxGeometry = new THREE.BoxGeometry(6, 2, 2);
         var edgesGeometry = new THREE.EdgesGeometry(boxGeometry);
         var lines = new THREE.LineSegments(edgesGeometry, new THREE.LineBasicMaterial({ color: 0x000000 }));
