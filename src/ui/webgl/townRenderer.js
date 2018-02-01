@@ -15,7 +15,7 @@ class TownRenderer {
             group.position.set(p.x, 2, p.z); // don't place it in the center on top of chit, add tile height
             // TODO: move town by half width/depth
             group.scale.set(0.25, 0.25, 0.25);
-            that.boardRenderer.scene.add(group);
+            that.boardRenderer.addMesh(group);
             that.group = group;
         });
     }

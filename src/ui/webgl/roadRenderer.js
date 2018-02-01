@@ -14,6 +14,6 @@ class RoadRenderer {
         box.position.set(position.x, position.y, position.z);
         this.mesh = box;
         this.mesh.userData.structure = this;
-        this.boardRenderer.scene.add(box);
+        this.boardRenderer.addMesh(box);
     }
 }

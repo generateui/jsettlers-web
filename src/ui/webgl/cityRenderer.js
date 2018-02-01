@@ -14,7 +14,7 @@ class CityRenderer {
             group.rotation.x = -0.5 * Math.PI;
             group.position.set(p.x, 2, p.z); // don't place it in the center on top of chit, add tile height
             group.scale.set(0.25, 0.25, 0.25);
-            that.boardRenderer.scene.add(group);
+            that.boardRenderer.addMesh(group);
             that.group = group;
         });
     }

@@ -4,6 +4,15 @@ class BoardRenderer {
         this.board = board || new Standard4pDesign();
         this._behavior = behavior || new SetHex();
 
+		this.size = 5; // size of the hexagon shape (radius)
+		this.cellSize = 11;
+		this.coords = [];
+
+		this._cellWidth = this.cellSize * 2;
+		this._cellLength = (vg.SQRT3 * 0.5) * this._cellWidth;
+		
+		BoardRenderer.TWO_THIRDS = 2 / 3;
+
         this.removeChangedSubscription = this.board.hexes.changed((key, oldValue, newValue) => {
             var hexRenderer = this.hexRenderers.get(oldValue.coord);
             hexRenderer.hex = newValue;
@@ -22,6 +31,9 @@ class BoardRenderer {
             this.roadRenderers.set(value, roadRenderer);
         })
 
+		this.tileGroup = new THREE.Group();
+        this.scene = new vgScene(element);
+        
         this.nodesGroup = new THREE.Group();
         this.edgesGroup = new THREE.Group();
         this.group = new THREE.Group();
@@ -35,18 +47,13 @@ class BoardRenderer {
         this.portPickerRenderer = new PortPickerRenderer(this);
         this.group.add(this.portPickerRenderer.group);
         
-        this.scene = new vgScene(element);
-        this.vgGrid = new vgHexGrid();
-        this.vgGrid.generate(3);
-        this.vgGrid.generateTilemap();
-        
-        this.scene.add(this.vgGrid.group);
-        this.scene.focusOn(this.vgGrid.group);
+        this.scene.scene.add(this.group);
+        // this.scene.focusOn(this.group);
 
         for (var [coord, hex] of this.board.hexes) {
-            var hexRenderer = new HexRenderer(hex, this)
-            hexRenderer.render(this.vgGrid, this);
+            var hexRenderer = new HexRenderer(this, hex, this.cellSize);
             this.hexRenderers.set(hex.coord, hexRenderer);
+			this.tileGroup.add(hexRenderer.mesh);
         }
         // TODO: we probably want to make this lazy
         for (var node of this.board.getAllNodes()) {
@@ -61,14 +68,11 @@ class BoardRenderer {
             this.edgeRenderers.set(edge, edgeRenderer);
         }
 
-        this.vgGrid.group.add(this.nodesGroup);
-        this.vgGrid.group.add(this.edgesGroup);
-        this.vgGrid.group.add(this.group);
+        this.group.add(this.tileGroup);
+        this.group.add(this.edgesGroup);
+        this.group.add(this.nodesGroup);
 
-        this.mouse = new vg.MouseCaster(this.scene.scene, this.scene.camera, element);
-
-        // target: Renderer
-        this.mouse.signal.add(function(event, target) {
+        this.scene.mouse.signal.add(function(event, target) {
             // target here is the userData supplied object set in Renderers
             if (target === null || target === undefined) {
                 return;
@@ -84,36 +88,11 @@ class BoardRenderer {
             }
         }, this);
 
-        // this.update();
-        this.frameCount = 0;
-        this.fpsInterval = 0;
-        this.startTime = null;
-        this.now = null;
-        this.then = null;
-        this.elapsed = null;
-        this.startAnimating(30);
-    }
-    
-    startAnimating(fps) {
-        this.fpsInterval = 1000 / fps;
-        this.then = window.performance.now();
-        this.startTime = this.then;
-        this.animate();
+        this.scene.startAnimating(30);
     }
 
-    animate(newtime) {
-        window.requestAnimationFrame(this.animate.bind(this));
-        this.now = newtime;
-        this.elapsed = this.now - this.then;
-    
-        if (this.elapsed > this.fpsInterval) {
-            // Get ready for next frame by setting then=now, but...
-            // Also, adjust for fpsInterval not being multiple of 16.67
-            this.then = this.now - (this.elapsed % this.fpsInterval);
-    
-            this.mouse.update();
-            this.scene.render();
-        }
+    addMesh(mesh) {
+        this.scene.scene.add(mesh);
     }
 
     get behavior() { return this._behavior; }
@@ -152,7 +131,6 @@ class BoardRenderer {
     }
 
     nodeToPixel(node) {
-        // TODO: this code is a bit barfy.
         // TODO: cache
         var coord1Position = this.coordToPixel(node.coord1);
         var coord2Position = this.coordToPixel(node.coord2);
@@ -164,13 +142,6 @@ class BoardRenderer {
         return new THREE.Vector3(centroidX, 2, centroidZ);
     }
 
-    coordToPixel(coord) {
-        return new THREE.Vector3(
-            coord.x * this.vgGrid._cellWidth * 0.75,
-            1,
-            -((coord.z - coord.y) * this.vgGrid._cellLength * 0.5)
-        );
-    }
     edgeToPixel(edge) {
         var edge1Position = this.nodeToPixel(edge.node1);
         var edge2Position = this.nodeToPixel(edge.node2);
@@ -178,4 +149,45 @@ class BoardRenderer {
         var centroidZ = (edge1Position.z + edge2Position.z) / 2;
         return new THREE.Vector3(centroidX, 3, centroidZ);
     }
+
+
+	// coord to position in pixels/world
+	coordToPixel(coord) {
+		const x = coord.x * this._cellWidth * 0.75;
+		const y = 1;
+		const z = -((coord.z - coord.y) * this._cellLength * 0.5);
+		return new THREE.Vector3(x, y, z);
+	}
+
+	pixelToCell(pos) {
+		// convert a position in world space ("pixels") to cell coordinates
+		var q = pos.x * (BoardRenderer.TWO_THIRDS / this.cellSize);
+		var r = ((-pos.x / 3) + (vg.SQRT3/3) * pos.z) / this.cellSize;
+		var s = -q-r;
+
+		var rx = Math.round(q);
+		var ry = Math.round(r);
+		var rz = Math.round(s);
+
+		var xDiff = Math.abs(rx - q);
+		var yDiff = Math.abs(ry - r);
+		var zDiff = Math.abs(rz - s);
+
+		if (xDiff > yDiff && xDiff > zDiff) {
+			rx = -ry-rz;
+		} else if (yDiff > zDiff) {
+			ry = -rx-rz;
+		} else {
+			rz = -rx-ry;
+		}
+		return new Coord3D(rx, ry, rz);
+	}
+
+	distance(coord1, coord2) {
+		return Math.max(Math.abs(coord1.x - coord2.x), Math.abs(coord1.y - coord2.y), Math.abs(coord1.z - coord2.z));
+	}
+
+	dispose() {
+		this.coords = null;
+	}
 }

@@ -10,7 +10,7 @@ class RobberRenderer {
             group.rotation.x = -0.5 * Math.PI;
             group.position.set(6, 2, 0); // don't place it in the center on top of chit, add tile height
             group.scale.set(0.4, 0.4, 0.4);
-            that.boardRenderer.scene.add(group);
+            that.boardRenderer.addMesh(group);
             that.group = group;
         });
 
