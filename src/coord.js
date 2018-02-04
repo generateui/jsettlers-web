@@ -1,3 +1,7 @@
+var proto = require("../data_pb");
+import {Node} from "./node.js";
+import {Edge} from "./edge.js";
+
 // relative location of a hex on a hexagonal grid
 class Coord {
     // get neighbors;
@@ -7,6 +11,7 @@ class Coord {
 
 class Coord1D extends Coord {
     constructor(id) { // integer id of a hex
+        super();
         this.id = id;
         this.map1Dto3D = new Map([
             [ new Coord1D(0x77), new Coord3D(0,0,0)] // Todo: where to keep mapping?
@@ -16,7 +21,7 @@ class Coord1D extends Coord {
         return new Coord1D(data.getId()); 
     }
     get data() { 
-        var data = new proto.carcattonne_data.Coord1D();
+        var data = new proto.Coord1D();
         data.setId(this.id);
         return data;
     }
@@ -26,6 +31,7 @@ class Coord1D extends Coord {
 
 class Coord2D extends Coord {
     constructor(r, c) { 
+        super();
         this.r = r; // row
         this.c = c; // column
     }
@@ -43,7 +49,7 @@ class Coord2D extends Coord {
  * 
  * TODO: document (pointy | flat). Is this impl dependent on it?
  */
-class Coord3D extends Coord {
+export class Coord3D extends Coord {
     constructor(x, y, z) {
         super();
         
@@ -65,7 +71,7 @@ class Coord3D extends Coord {
         return new Coord3D(data.getX(), data.getY(), data.getZ());
     }
     get data() {
-        let data = new proto.carcattonne_data.Coord3D();
+        let data = new proto.Coord3D();
         data.setX(this.x);
         data.setY(this.y);
         data.setZ(this.z);

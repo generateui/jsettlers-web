@@ -1,4 +1,13 @@
-class Board {
+var proto = require("../data_pb");
+
+import {ObservableMap} from "./generic/observableMap.js"; 
+import {Robber} from "./robber.js";
+import {Chit} from "./chit.js";
+import {Forest, WheatField, River, Sea, Mountain, Pasture, Desert, HexFromBag} from "./hex.js";
+import {Coord3D} from "./coord.js";
+import {Any3To1Port, Clay2To1Port, Any4To1Port, FromBagPort, Ore2To1Port, Sheep2To1Port, Timber2To1Port, Wheat2To1Port} from "./port.js";
+
+export class Board {
     constructor(config) {
         this._config = config || {
             
@@ -56,12 +65,12 @@ class Board {
             i++;
         }
         const bagChits = Board._flattenConfig(this._config.chitBag);
-        const hexesWithChitToReplace = Array.from(this._hexes.values()).filter(h => h.chit.type === ChitType.CHITFROMBAG);
+        const hexesWithChitToReplace = Array.from(this._hexes.values()).filter(h => h.chit.type === proto.ChitType.CHITFROMBAG);
         var j = 0;
         while (j < hexesWithChitToReplace.length&& bagChits.length > 0) {
             const toReplace = hexesWithChitToReplace[j];
             if (!toReplace.canHaveChit) {
-                toReplace.chit.type = ChitType.NONE;
+                toReplace.chit.type = proto.ChitType.CHITNONE;
                 j++;
                 continue;
             }
@@ -92,7 +101,7 @@ class Board {
     }
     getAllNodes() {
         var nodes = new Set();
-        for (var hex of this._hexes.values()) {
+        for (var hex of this._hexes.map.values()) {
             for (var node of hex.coord.nodes) {
                 nodes.add(node);
             }
@@ -101,7 +110,7 @@ class Board {
     }
     getAllEdges() {
         var edges = new Set();
-        for (var hex of this._hexes.values()) {
+        for (var hex of this._hexes.map.values()) {
             for (var edge of hex.coord.edges) {
                 edges.add(edge);
             }
@@ -113,7 +122,7 @@ class Board {
         this._hexes[coord] = hex;
     }
 }
-class Standard4pDesign extends Board {
+export class Standard4pDesign extends Board {
     constructor() {
         super();
         this._config = {
@@ -127,16 +136,16 @@ class Standard4pDesign extends Board {
                 [3, () => new River()],
             ],
             chitBag: [
-                new Chit(ChitType.CHIT2),
-                [2, () => new Chit(ChitType.CHIT3)],
-                [2, () => new Chit(ChitType.CHIT4)],
-                [2, () => new Chit(ChitType.CHIT5)],
-                [2, () => new Chit(ChitType.CHIT6)],
-                [2, () => new Chit(ChitType.CHIT8)],
-                [2, () => new Chit(ChitType.CHIT9)],
-                [2, () => new Chit(ChitType.CHIT10)],
-                [2, () => new Chit(ChitType.CHIT11)],
-                new Chit(ChitType.CHIT12),
+                new Chit(proto.ChitType.CHIT2),
+                [2, () => new Chit(proto.ChitType.CHIT3)],
+                [2, () => new Chit(proto.ChitType.CHIT4)],
+                [2, () => new Chit(proto.ChitType.CHIT5)],
+                [2, () => new Chit(proto.ChitType.CHIT6)],
+                [2, () => new Chit(proto.ChitType.CHIT8)],
+                [2, () => new Chit(proto.ChitType.CHIT9)],
+                [2, () => new Chit(proto.ChitType.CHIT10)],
+                [2, () => new Chit(proto.ChitType.CHIT11)],
+                new Chit(proto.ChitType.CHIT12),
             ],
             portBag: [
                 new Clay2To1Port(),
@@ -171,7 +180,7 @@ class Standard4pDesign extends Board {
         var hexes = [];
         for (let coord of fromBagCoords) {
             var hex = new HexFromBag(coord);
-            hex.chit = new Chit(ChitType.CHITFROMBAG);
+            hex.chit = new Chit(proto.ChitType.CHITFROMBAG);
             // hex.chit = this.getRandomChit();
             hexes.push(hex);
         }

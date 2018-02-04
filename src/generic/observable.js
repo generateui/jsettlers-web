@@ -11,7 +11,7 @@
  * 
  * Currently only supports properties which do not have getters or setters defined.
  */
-class Observable {
+export class Observable {
     constructor() {
         this.listenersByProperty = {};
     }

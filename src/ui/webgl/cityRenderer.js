@@ -1,4 +1,6 @@
-class CityRenderer extends Renderer {
+import {Renderer} from "./renderer.js";
+
+export class CityRenderer extends Renderer {
     constructor(boardRenderer, city) {
         super();
         this.boardRenderer = boardRenderer;

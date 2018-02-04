@@ -1,4 +1,6 @@
-class Edge {
+import {Node} from "./node.js";
+
+export class Edge {
     constructor(coord1, coord2) {
         var hash = Edge._getHash(coord1, coord2);
         if (Edge._cache.has(hash)) {

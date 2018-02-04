@@ -1,6 +1,5 @@
 node_modules
 
 # generated source files
-bundle.js
+dist/build.js
 data_pb.js
-bundle.js

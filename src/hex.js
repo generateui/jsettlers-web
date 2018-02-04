@@ -1,13 +1,17 @@
-class Hex extends Observable {
+var proto = require("../data_pb");
+import {Observable} from "./generic/observable.js";
+import {Chit} from "./chit.js";
+
+export class Hex extends Observable {
     constructor(coord) {
         super();
         this.coord = coord; // a Coord1d, Coord2d or Coord3d
-        this.chit = new Chit(proto.carcattonne_data.ChitType.NONE);
+        this.chit = new Chit(proto.ChitType.NONE);
         this.port = null;
         this.makeObservable(["chit", "port"]);
     }
     static fromType(type, coord) {
-        var hexType = proto.carcattonne_data.HexType;
+        var hexType = proto.HexType;
         switch (type) {
             case hexType.NONE: return new NoneHex(coord);
             case hexType.DESERT: return new Desert(coord);
@@ -26,80 +30,80 @@ class Hex extends Observable {
     get canHaveChit() { return false; }
     get canHaveRobber() { return false; }
 }
-class Desert extends Hex {
+export class Desert extends Hex {
     constructor(coord) {
         super(coord);
     }
-    get type() { return proto.carcattonne_data.HexType.DESERT; }
+    get type() { return proto.HexType.DESERT; }
     get color() { return 0xcfa762; }
     get canHaveRobber() { return true; }
 }
-class Sea extends Hex { 
+export class Sea extends Hex { 
     constructor(coord) {
         super(coord);
     }
-    get type() { return proto.carcattonne_data.HexType.SEA; }
+    get type() { return proto.HexType.SEA; }
     get color() { return 0x1E90FF; }
     get canHavePort() { return true; }
     get canHaveChit() { return true; }
 }
-class WheatField extends Hex { 
+export class WheatField extends Hex { 
     constructor(coord) {
         super(coord);
     }
-    get type() { return proto.carcattonne_data.HexType.WHEATFIELD; }
+    get type() { return proto.HexType.WHEATFIELD; }
     get color() { return 0xFFD700; }
     get canHaveChit() { return true; }
     get canHaveRobber() { return true; }
 }
-class Mountain extends Hex {
+export class Mountain extends Hex {
     constructor(coord) {
         super(coord);
     }
-    get type() { return proto.carcattonne_data.HexType.MOUNTAIN; }
+    get type() { return proto.HexType.MOUNTAIN; }
     get color() { return 0x8A2BE2; }
     get canHaveChit() { return true; }
     get canHaveRobber() { return true; }
  }
-class River extends Hex { 
+ export class River extends Hex { 
     constructor(coord) {
         super(coord);
     }
-    get type() { return proto.carcattonne_data.HexType.RIVER; }
+    get type() { return proto.HexType.RIVER; }
     get color() { return 0xFF3232; }
     get canHaveChit() { return true; }
     get canHaveRobber() { return true; }
 }
-class Forest extends Hex { 
+export class Forest extends Hex { 
     constructor(coord) {
         super(coord);
     }
-    get type() { return proto.carcattonne_data.HexType.FOREST; }
+    get type() { return proto.HexType.FOREST; }
     get color() { return 0x006400; }
     get canHaveChit() { return true; }
     get canHaveRobber() { return true; }
 }
-class Pasture extends Hex {
+export class Pasture extends Hex {
     constructor(coord) {
         super(coord);
     }
-    get type() { return proto.carcattonne_data.HexType.PASTURE; }
+    get type() { return proto.HexType.PASTURE; }
     get color() { return 0x00FF00; }
     get canHaveChit() { return true; }
     get canHaveRobber() { return true; }
 }
-class NoneHex extends Hex {
+export class NoneHex extends Hex {
     constructor(coord) {
         super(coord);
     }
-    get type() { return proto.carcattonne_data.HexType.NONE; }
+    get type() { return proto.HexType.NONE; }
     get color() { return 0xC0C0C0; }
 }
-class HexFromBag extends Hex {
+export class HexFromBag extends Hex {
     constructor(coord) {
         super(coord);
     }
-    get type() { return proto.carcattonne_data.HexType.HEXFROMBAG; }
+    get type() { return proto.HexType.HEXFROMBAG; }
     get color() { return 0x808080; }
     get canHaveChit() { return true; }
     get canHavePort() { return true; }

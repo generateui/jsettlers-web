@@ -1,5 +1,7 @@
+import {Edge} from "./edge.js";
+
 /** Combination of 3 hexagon locations (Coords) */
-class Node {
+export class Node {
     constructor(coord1, coord2, coord3) { /* Coord */
         var hash = Node._getHash(coord1, coord2, coord3);
         if (this.constructor._cache.has(hash)) {
@@ -39,7 +41,7 @@ class Node {
             ((c3.hash.hashCode() / 3) >> 0);
     }
     get data() {
-        var data = new proto.carcattonne_data.Node();
+        var data = new proto.Node();
         data.setCoord1(this.coord1.data);
         data.setCoord2(this.coord1.data);
         return data;

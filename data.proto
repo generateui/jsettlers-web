@@ -49,7 +49,7 @@ message Hex {
 		HEXFROMBAG = 8; // the hex is picked from a bag
 	}
 	enum ChitType {
-		None = 0; // the hex does not have a chit
+		ChitNone = 0; // the hex does not have a chit
 		Chit2 = 1;
 		Chit3 = 2;
 		Chit4 = 3;

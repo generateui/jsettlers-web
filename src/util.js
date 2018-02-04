@@ -1,4 +1,4 @@
-class Util {
+export class Util {
     static getPascalCasedName(text) {
         return text.replace(/\w+/g, w => w[0].toUpperCase() + w.slice(1).toLowerCase());
     }
