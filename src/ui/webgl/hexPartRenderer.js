@@ -1,4 +1,9 @@
-class HexPartRenderer  extends Renderer{
+var proto = require("../../../data_pb");
+
+import {Renderer} from "./renderer.js";
+import {Util} from "../../util.js";
+
+export class HexPartRenderer  extends Renderer{
     constructor(boardRenderer, partIndex) {
         super();
         this.partIndex = partIndex;
@@ -53,7 +58,7 @@ class HexPartRenderer  extends Renderer{
         this.mesh.material.color = hovered ? new THREE.Color(0xaaaaaa) : new THREE.Color(0xffffff);
     }
     set portType(portType) {
-        var portName = Util.getEnumName(proto.carcattonne_data.PortType, portType);
+        var portName = Util.getEnumName(proto.PortType, portType);
         var humanName = Util.getPascalCasedName(portName);
         var fileName = `doc/images/${humanName}port.png`;
         var texture = new THREE.TextureLoader().load(fileName);

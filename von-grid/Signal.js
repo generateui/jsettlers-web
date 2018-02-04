@@ -1,4 +1,4 @@
-class SignalBinding {
+export class SignalBinding {
     constructor(signal, listener, isOnce, listenerContext, priority) {
         /**
         * @property _listener - Handler function bound to the signal.
@@ -116,7 +116,7 @@ class SignalBinding {
 * @class Signal
 * @constructor
 */
-class Signal {
+export class Signal {
     constructor() {
 
         /**

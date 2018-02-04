@@ -7,7 +7,25 @@
 * of a board, the `.showEdges()` method is called on a BoardRenderer. The BoardRenderer
 * instance then takes care to update his rendering to show the edges.
 */
-class BoardBehavior {
+var proto = require("../../data_pb");
+import {Player, User} from "../player.js";
+import {RobberRenderer} from "./webgl/robberRenderer.js";
+import {ChitRenderer} from "./webgl/chitRenderer.js";
+import {HexRenderer} from "./webgl/hexRenderer.js";
+import {PortRenderer} from "./webgl/portRenderer.js";
+import {NodeRenderer} from "./webgl/nodeRenderer.js";
+import {EdgeRenderer} from "./webgl/edgeRenderer.js";
+import {PortPickerRenderer} from "./webgl/portPickerRenderer.js";
+import {HexPartRenderer} from "./webgl/hexPartRenderer.js";
+import {Hex} from "../hex.js";
+import {Chit} from "../chit.js";
+import {Port} from "../port.js";
+import {Util} from "../util.js";
+import {Road} from "../road.js";
+import {Town} from "../town.js";
+import {City} from "../city.js";
+
+export class BoardBehavior {
     start(boardRenderer) {} // set the behavior as active behavior on the BoardRenderer
     click(boardRenderer, renderer) { }
     enter(boardRenderer, renderer) { }
@@ -15,13 +33,13 @@ class BoardBehavior {
     stop(boardRenderer) {} // unset the behavior
 }
 /** Don't respond to any user input at all */
-class NoBehavior extends BoardBehavior { }
+export class NoBehavior extends BoardBehavior { }
 /* Sets a hex to target clicked hexagon location */
-class SetHex extends BoardBehavior {
+export class SetHex extends BoardBehavior {
     constructor() {
         super();
         // the hextype to use for the setted hex
-        this.hexType = proto.carcattonne_data.HexType.FOREST; 
+        this.hexType = proto.HexType.FOREST; 
     }
     click(boardRenderer, renderer) {
         var hex = renderer.hex;
@@ -34,11 +52,11 @@ class SetHex extends BoardBehavior {
         boardRenderer.board.hexes.set(hex.coord, newHex);
     }
 }
-class SetChit extends BoardBehavior {
+export class SetChit extends BoardBehavior {
     constructor() {
         super();
         this.composite = new EmphasizeHoveredObject(r => r.chit !== undefined || r.hex !== undefined);
-        this.chitType = proto.carcattonne_data.ChitType.HEXFROMBAG;
+        this.chitType = proto.ChitType.HEXFROMBAG;
     }
     click(boardRenderer, renderer) {
         if (renderer instanceof ChitRenderer) {
@@ -62,7 +80,7 @@ class SetChit extends BoardBehavior {
     }
 }
 /** Shows all the nodes of all the hexes of the board */
-class ShowAllNodes extends BoardBehavior {
+export class ShowAllNodes extends BoardBehavior {
     start(boardRenderer) {
         var nodes = boardRenderer.board.getAllNodes();
         boardRenderer.showNodes(nodes);
@@ -72,7 +90,7 @@ class ShowAllNodes extends BoardBehavior {
     }
 }
 /** Shows all nodes of clicked hex */
-class ShowNodesOfClickedHex extends BoardBehavior {
+export class ShowNodesOfClickedHex extends BoardBehavior {
     constructor() {
         super();
     }
@@ -91,7 +109,7 @@ class ShowNodesOfClickedHex extends BoardBehavior {
     }
 }
 
-class ShowAllEdges extends BoardBehavior {
+export class ShowAllEdges extends BoardBehavior {
     start(boardRenderer) {
         var allEdges = boardRenderer.board.getAllEdges();
         boardRenderer.showEdges(allEdges);
@@ -100,7 +118,7 @@ class ShowAllEdges extends BoardBehavior {
         boardRenderer.hideAllEdges();
     }
 }
-class ShowEdgesOfClickedHex extends BoardBehavior {
+export class ShowEdgesOfClickedHex extends BoardBehavior {
     start(boardRenderer) {
         boardRenderer.hideAllEdges();
     }
@@ -112,7 +130,7 @@ class ShowEdgesOfClickedHex extends BoardBehavior {
         boardRenderer.hideAllEdges();
     }
 }
-class ShowEdgesOfClickedNode extends BoardBehavior {
+export class ShowEdgesOfClickedNode extends BoardBehavior {
     constructor() {
         super();
         let isNodeRenderer = r => r.node !== undefined;
@@ -141,7 +159,7 @@ class ShowEdgesOfClickedNode extends BoardBehavior {
     }
 }
 /** Changes color of hovered object */
-class EmphasizeHoveredObject extends BoardBehavior {
+export class EmphasizeHoveredObject extends BoardBehavior {
     constructor(rendererFilter) { // a function: bool filter(renderer);
         super();
         this._rendererFilter = rendererFilter || function(r) { return true; };
@@ -160,7 +178,7 @@ class EmphasizeHoveredObject extends BoardBehavior {
     }
 }
 /** Dispatches behavior onto given behaviors */
-class CompositeBehavior extends BoardBehavior {
+export class CompositeBehavior extends BoardBehavior {
     constructor(...behaviors) {
         super();
         this.behaviors = behaviors;
@@ -191,11 +209,11 @@ class CompositeBehavior extends BoardBehavior {
         }
     }
 }
-class SetPort {
+export class SetPort {
     constructor() {
         this.selectedHexPartRenderer = null;
         this.selectedHexRenderer = null;
-        this._portType = proto.carcattonne_data.PortType.Clay2To1;
+        this._portType = proto.PortType.Clay2To1;
     }
     get portType() {
         return this._portType;
@@ -235,7 +253,7 @@ class SetPort {
         }
     }
 }
-class MoveRobber extends BoardBehavior {
+export class MoveRobber extends BoardBehavior {
     constructor() {
         super();
         this.emphasizeHoveredHex = new EmphasizeHoveredObject(r => r instanceof HexRenderer);
@@ -264,10 +282,10 @@ class MoveRobber extends BoardBehavior {
         boardRenderer.normalizeHexes(boardRenderer.board.hexes.values());
     }
 }
-class BuildTown extends BoardBehavior {
+export class BuildTown extends BoardBehavior {
     constructor() {
         super();
-        this.player = new Player();
+        this.player = new Player({color: 0xff0000});
         this.player.color = 0xff0000;
     }
     start(boardRenderer) {
@@ -285,7 +303,7 @@ class BuildTown extends BoardBehavior {
         boardRenderer.hideAllNodes();
     }
 }
-class BuildCity extends BoardBehavior {
+export class BuildCity extends BoardBehavior {
     constructor() {
         super();
         this.player = new Player();
@@ -306,7 +324,7 @@ class BuildCity extends BoardBehavior {
         boardRenderer.hideAllNodes();
     }
 }
-class BuildRoad extends BoardBehavior {
+export class BuildRoad extends BoardBehavior {
     constructor() {
         super();
         this.emphasizeHoveredObject = new EmphasizeHoveredObject();
@@ -315,7 +333,7 @@ class BuildRoad extends BoardBehavior {
     }
     _showEdges() {
         var edges = this.boardRenderer.board.getAllEdges();
-        var roadEdges = this.boardRenderer.board.roads.keys();
+        var roadEdges = this.boardRenderer.board.roads.map.keys();
         var edgesToShow = Util.except(edges, roadEdges);
         this.boardRenderer.showEdges(edgesToShow);
     }

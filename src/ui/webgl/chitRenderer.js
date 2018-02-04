@@ -1,4 +1,7 @@
-class ChitRenderer extends Renderer {
+var proto = require("../../../data_pb");
+import {Renderer} from "./renderer.js";
+
+export class ChitRenderer extends Renderer {
     constructor(hex, boardRenderer) {
         super();
         this.hex = hex;
@@ -37,11 +40,11 @@ class ChitRenderer extends Renderer {
         this.mesh.userData.structure = this;
         this.geometry = cilinderGeometry;
 
-        const show = this.chit.type !== ChitType.NONE;
+        const show = this.chit.type !== proto.ChitType.CHITNONE && this.chit.type !== undefined;
         cilinder.visible = show;
     }
     _getTexture(chit) {
-        if (chit.type === ChitType.NONE) {
+        if (chit.type === proto.ChitType.CHITNONE || chit.type === undefined) {
             return null;
         }
         var imageFileName = "doc/images/Chit";
@@ -49,7 +52,7 @@ class ChitRenderer extends Renderer {
         // special cases please :). 
         if (chit.number !== null) {
             imageFileName = imageFileName + chit.number.toString();
-        } else if (chit.type === ChitType.CHITFROMBAG) {
+        } else if (chit.type === proto.ChitType.CHITFROMBAG) {
             imageFileName = imageFileName + "frombag";
         } else {
             imageFileName = "Chit" + chit.number.toString();

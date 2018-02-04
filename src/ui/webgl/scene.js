@@ -1,9 +1,13 @@
+import {MouseCaster} from "../../../von-grid/MouseCaster.js";
+// import {OrbitControls} from "../../../von-grid/OrbitControls.js";
+// var OrbitControls = require("../../../von-grid/OrbitControls.js")(THREE);
+
 /*
 	Sets up and manages a THREEjs container, camera, and light, making it easy to get going.
 	Also provides camera control.
 
  */
-class Scene {
+export class Scene {
 	constructor(element) {
 		this.renderer = new THREE.WebGLRenderer({
 			alpha: true,

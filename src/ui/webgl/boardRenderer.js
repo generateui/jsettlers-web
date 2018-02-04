@@ -1,20 +1,18 @@
-class Renderer {
-    darken() {
-        this.material.color = new THREE.Color(0x444444);
-    }
-    lighten() {
-        this.material.color = new THREE.Color(0xffffff);
-    }
-    normalize() {
-        this.material.color = new THREE.Color(0xdddddd);
-    }
-    redify() {
-        this.material.color = new THREE.Color(0xff0000);
-    }
-}
+import {Scene} from "./scene.js";
+import {RobberRenderer} from "./robberRenderer.js";
+import {ChitRenderer} from "./chitRenderer.js";
+import {HexRenderer} from "./hexRenderer.js";
+import {PortRenderer} from "./portRenderer.js";
+import {NodeRenderer} from "./nodeRenderer.js";
+import {EdgeRenderer} from "./edgeRenderer.js";
+import {TownRenderer} from "./townRenderer.js";
+import {RoadRenderer} from "./roadRenderer.js";
+import {CityRenderer} from "./cityRenderer.js";
+import {PortPickerRenderer} from "./portPickerRenderer.js";
+import {MouseCaster} from "../../../von-grid/MouseCaster.js";
 
 /* Renders a 3D hexagon board using von-grid */
-class BoardRenderer {
+export class BoardRenderer {
     constructor(element, board, behavior) {
         this.board = board || new Standard4pDesign();
         this._behavior = behavior || new SetHex();
@@ -62,7 +60,7 @@ class BoardRenderer {
         this.scene.scene.add(this.group);
         // this.scene.focusOn(this.group);
 
-        for (var [coord, hex] of this.board.hexes) {
+        for (var [coord, hex] of this.board.hexes.map) {
             var hexRenderer = new HexRenderer(this, hex, this.cellSize);
             this.hexRenderers.set(hex.coord, hexRenderer);
 			this.tileGroup.add(hexRenderer.mesh);

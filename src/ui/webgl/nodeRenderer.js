@@ -1,7 +1,9 @@
+import {Renderer} from "./renderer.js";
+
 /** Renders a Node as a large yellow cilinder positioned at the Node
  * This renderer enables user selection of a node.
  */
-class NodeRenderer extends Renderer {
+export class NodeRenderer extends Renderer {
     constructor(node, boardRenderer) {
         super();
         

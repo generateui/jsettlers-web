@@ -1,3 +1,5 @@
 node_modules
 
 # generated source files
+dist/build.js
+data_pb.js

@@ -1,3 +1,6 @@
+import {Signal} from "./Signal.js";
+import * as THREE from 'three';
+
 /*
 	Translates mouse interactivity into 3D positions, so we can easily pick objects in the scene.
 
@@ -9,7 +12,7 @@
 
 	@author Corey Birnbaum https://github.com/vonWolfehaus/
  */
-class MouseCaster {
+export class MouseCaster {
 	constructor(group, camera, element) {
 		this.element = element;
 		this.down = false; // left click

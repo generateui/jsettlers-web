@@ -1,5 +1,8 @@
+import {Renderer} from "./renderer.js";
+import {HexPartRenderer} from "./hexPartRenderer.js";
+
 /** Renders a hex over a hovered hex to have user select one of six triangles */
-class PortPickerRenderer extends Renderer {
+export class PortPickerRenderer extends Renderer {
     constructor(boardRenderer) {
         super();
         

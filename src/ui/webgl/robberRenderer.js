@@ -1,4 +1,6 @@
-class RobberRenderer extends Renderer {
+import {Renderer} from "./renderer.js";
+
+export class RobberRenderer extends Renderer {
     constructor(boardRenderer, robber) {
         super();
         

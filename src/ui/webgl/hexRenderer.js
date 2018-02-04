@@ -1,5 +1,12 @@
+var proto = require("../../../data_pb");
+
+import {Renderer} from "./renderer.js";
+import {ChitRenderer} from "./chitRenderer.js";
+import {PortRenderer} from "./portRenderer.js";
+import {Util} from "../../util.js";
+
 /** Renders a Hex onto a von-grid tile */
-class HexRenderer extends Renderer {
+export class HexRenderer extends Renderer {
     constructor(boardRenderer, hex, radius) {
 		super();
 		
@@ -131,7 +138,7 @@ class HexRenderer extends Renderer {
         this.removeChitChangedSubscription = hex.chitChanged(this.chitChanged.bind(this));
 	}
 	_getTexture(hex) {
-		var name = Util.getEnumName(proto.carcattonne_data.HexType, hex.type);
+		var name = Util.getEnumName(proto.HexType, hex.type);
 		name = name.toLowerCase();
 		return `doc/images/${name}.jpg`;
 	}

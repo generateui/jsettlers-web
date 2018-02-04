@@ -1,5 +1,7 @@
+import {Renderer} from "./renderer.js";
+
 /** Renders a Node as a large yellow rectangular box positioned at given Edge */
-class EdgeRenderer extends Renderer {
+export class EdgeRenderer extends Renderer {
     constructor(edge, boardRenderer) {
         super();
         this.edge = edge;
