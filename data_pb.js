@@ -1511,7 +1511,7 @@ proto.carcattonne_data.HexType = {
  * @enum {number}
  */
 proto.carcattonne_data.ChitType = {
-  NONE: 0,
+  CHITNONE: 0,
   CHIT2: 1,
   CHIT3: 2,
   CHIT4: 3,
