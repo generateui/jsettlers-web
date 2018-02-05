@@ -38,7 +38,7 @@ message Hex {
 	PortType port = 4;
 }
 	enum HexType {
-		NONE = 0; // Used for boards that have fixed amount of hexagons
+		NONEHEX = 0; // Used for boards that have fixed amount of hexagons
 		RIVER = 1; // clay
 		MOUNTAIN = 2; // ore
 		PASTURE = 3; // sheep

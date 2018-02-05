@@ -122,8 +122,7 @@ export class HexRenderer extends Renderer {
         this.portRenderer = null;
         this.chitRenderer = null;
 
-        const color = new THREE.Color(this.hex.color);
-        this.material.color = color;
+        this.material.color = new THREE.Color(this.hex.color);
         this.mesh.userData.structure = this;
 
         if (this.chitRenderer === null) {
@@ -170,13 +169,12 @@ export class HexRenderer extends Renderer {
 		const texture = this._getTexture(hex);
 		this.topMaterial.map = new THREE.TextureLoader().load(texture);
 		this.topMaterial.needsUpdate = true;
-        const color = new THREE.Color(this.hex.color);
-        const coord = this.hex.coord;
-        this.material.color = color;
+        this.material.color = new THREE.Color(this.hex.color);
+        this.material.needsUpdate = true;
         this.removeChitChangedSubscription();
         this.removePortChangedSubscription();
-        this.removePortChangedSubscription = this.hex.portChanged(this.portChanged);
-        this.removeChitChangedSubscription = this.hex.chitChanged(this.chitChanged);
+        this.removePortChangedSubscription = hex.portChanged(this.portChanged.bind(this));
+        this.removeChitChangedSubscription = hex.chitChanged(this.chitChanged.bind(this));
 	}
 	lighten() {
 		this.topMaterial.color = new THREE.Color(0xffffff);
