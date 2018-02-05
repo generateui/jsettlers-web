@@ -60,7 +60,8 @@ export class SetChit extends BoardBehavior {
     }
     click(boardRenderer, renderer) {
         if (renderer instanceof ChitRenderer) {
-            renderer.hex.chit = new Chit(this.chitType);
+            const hex = boardRenderer.board.hexes.get(renderer.coord);
+            hex.chit = new Chit(this.chitType);
         }
         if (renderer instanceof HexRenderer) {
             renderer.hex.chit = new Chit(this.chitType);

@@ -4,7 +4,7 @@
         <input type="radio" :id="`hexType-${ht}`" name="hexTypePicker">
         <label 
             :for="`hexType-${ht}`"
-            :click="click(ht)">
+            @click="click(ht)">
             <img :src="`doc/images/${key.toLowerCase()}24.png`">
             {{key}}
         </label>

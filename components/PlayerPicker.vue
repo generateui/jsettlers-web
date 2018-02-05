@@ -4,7 +4,7 @@
         <input type="radio" :id="`player${p.user.name}`" name="playerPicker">
         <label 
             :for="`player${p.user.name}`"
-            :click="click(p)" 
+            @click="click(p)" 
             :class="{active: player === p}">
             <span :style="{color: toCssColor(p.color)}">⬛ </span>
             {{p.user.name}}

@@ -4,7 +4,7 @@
         <input type="radio" :id="ct" name="chitTypePicker">
         <label 
             :for="ct" 
-            :click="click(ct)">
+            @click="click(ct)">
             <img :src="`doc/images/${key.toLowerCase()}.png`">
             {{key}}
         </label>
@@ -25,7 +25,6 @@ export default {
   },
   methods: {
       click(chitType) {
-        console.log(chitType);
           this.$data.chitType = chitType;
           this.$emit('chitTypeChanged', chitType);
       }

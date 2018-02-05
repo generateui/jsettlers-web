@@ -125,10 +125,9 @@ export class HexRenderer extends Renderer {
         this.material.color = new THREE.Color(this.hex.color);
         this.mesh.userData.structure = this;
 
-        if (this.chitRenderer === null) {
-            this.chitRenderer = new ChitRenderer(this.hex, boardRenderer);
-            boardRenderer.group.add(this.chitRenderer.mesh);
-        }
+		this.chitRenderer = new ChitRenderer(this.hex.chit, this.hex.coord, boardRenderer);
+		boardRenderer.group.add(this.chitRenderer.mesh);
+			
         if (this.hex.port !== null) {
             this.portRenderer = new PortRenderer(boardRenderer, this.hex.port);
         }
@@ -150,13 +149,7 @@ export class HexRenderer extends Renderer {
         }
     }
     chitChanged(oldChit, newChit) {
-        if (this.chitRenderer !== null) {
-            this.boardRenderer.group.remove(this.chitRenderer.mesh);
-        }
-        if (newChit !== null) {
-            this.chitRenderer = new ChitRenderer(this.hex, this.boardRenderer);
-            this.boardRenderer.group.add(this.chitRenderer.mesh);
-        }
+		this.chitRenderer.chit = newChit;
     }
 
     dispose() {

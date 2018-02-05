@@ -2,7 +2,7 @@
   <ul>
     <li v-for="(pt, key) in portTypes" v-bind:key="key">
         <input type="radio" :id="`port-${pt}`" name="portTypePicker">
-        <label :for="`port-${pt}`" :click="click(pt)">
+        <label :for="`port-${pt}`" @click="click(pt)">
             <img :src="'doc/images/' + key.toLowerCase() + 'port.png'">
             {{key.toLowerCase()}}
         </label>
