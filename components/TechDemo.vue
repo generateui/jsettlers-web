@@ -84,6 +84,7 @@
                     buildTown,
                     buildCity,
                     buildRoad,
+                    new bb.RemoveHex,
                 ],
                 pickedBehavior: new bb.NoBehavior(),
                 

@@ -359,3 +359,16 @@ export class BuildRoad extends BoardBehavior {
         this.emphasizeHoveredObject.leave(boardRenderer, renderer);
     }
 }
+export class RemoveHex extends BoardBehavior {
+    click(boardRenderer, renderer) {
+        if (renderer instanceof HexRenderer) {
+            boardRenderer.board.hexes.delete(renderer.hex.coord);
+        }
+        if (renderer instanceof ChitRenderer) {
+            boardRenderer.board.hexes.delete(renderer.coord);
+        }
+        if (renderer instanceof PortRenderer) {
+            boardRenderer.board.hexes.delete(renderer.port.seaCoord);
+        }
+    }
+}

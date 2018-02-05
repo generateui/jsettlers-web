@@ -27,6 +27,11 @@ export class BoardRenderer {
             var hexRenderer = this.hexRenderers.get(oldValue.coord);
             hexRenderer.hex = newValue;
         });
+        this.removeDeletedSubscription = this.board.hexes.deleted(key => {
+            var hexRenderer = this.hexRenderers.get(key);
+			this.tileGroup.remove(hexRenderer.mesh);
+            hexRenderer.dispose(hexRenderer);
+        });
 
         this.removeTownAddedSubscription = this.board.towns.added((key, value) => {
             var townRenderer = new TownRenderer(this, value);

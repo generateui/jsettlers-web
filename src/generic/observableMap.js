@@ -11,6 +11,7 @@ export class ObservableMap {
         this._changeListeners = [];
         this._addListeners = [];
         this._clearListeners = [];
+        this._deleteListeners = [];
     }
     get(key) {
         return this.map.get(key);
@@ -33,6 +34,15 @@ export class ObservableMap {
             for (var listener of this._addListeners) {
                 listener(key, value);
             }
+        }
+    }
+    delete(key) {
+        if (!this.map.has(key)) {
+            return;
+        }
+        this.map.delete(key);
+        for (var listener of this._deleteListeners) {
+            listener(key);
         }
     }
     clear() {
@@ -68,5 +78,12 @@ export class ObservableMap {
             this._clearListeners.splice(index, 1);
         }
     }
-
+    deleted(deleteHandler) {
+        this._deleteListeners.push(deleteHandler);
+        const that = this;
+        return () => {
+            var index = this._deleteListeners.indexOf(deleteHandler);
+            this._deleteListeners.splice(index, 1);
+        }
+    }
 }

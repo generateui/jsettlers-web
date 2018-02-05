@@ -98,7 +98,6 @@ export class HexRenderer extends Renderer {
 		// this.topMaterial.emissive = new THREE.Color(this.highlight);
 		this.material = new THREE.MeshLambertMaterial({ color: 0x0 });
 		// this.material.emissive = new THREE.Color(this.highlight);
-		this.entity = null;
 		this.userData = {};
 
 		this.selected = false;
@@ -113,14 +112,7 @@ export class HexRenderer extends Renderer {
         this.mesh.position.copy(position);
         this.mesh.position.y = 0;
 
-		if (this.material.emissive) {
-			this._emissive = this.material.emissive.getHex();
-		} else {
-			this._emissive = null;
-		}
-
         this.portRenderer = null;
-        this.chitRenderer = null;
 
         this.material.color = new THREE.Color(this.hex.color);
         this.mesh.userData.structure = this;
@@ -212,20 +204,22 @@ export class HexRenderer extends Renderer {
 
 	dispose() {
 		this.coord = null;
-		if (this.mesh.parent) this.mesh.parent.remove(this.mesh);
 		this.mesh.userData.structure = null;
 		this.mesh = null;
+		this.boardRenderer.group.remove(this.chitRenderer.mesh);
+		this.chitRenderer.dispose();
+		this.chitRenderer = null;
+		if (this.portRenderer != null) {
+			this.boardRenderer.group.remove(this.portRenderer.mesh);
+			this.portRenderer.dispose();
+			this.portRenderer = null;
+		}
 		this.material = null;
+		this.topMaterial = null;
 		this.userData = null;
-		this.entity = null;
 		this.geometry = null;
-		this._emissive = null;
-
-		// from vg.Board
-		this.cellShape = null;
-		this.cellGeo.dispose();
-		this.cellGeo = null;
-		this.cellShapeGeo.dispose();
-		this.cellShapeGeo = null;
+		this.boardRenderer = null;
+		this.removePortChangedSubscription();
+		this.removeChitChangedSubscription();
 	}
 }

@@ -74,4 +74,10 @@ export class ChitRenderer extends Renderer {
     redify() {
 		this.topMaterial.color = new THREE.Color(0xff0000);
     }
+    dispose() {
+        this.topMaterial = null;
+        this.mesh = null;
+        this.coord = null;
+        this._chit = null;
+    }
 }
