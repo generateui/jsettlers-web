@@ -34,8 +34,8 @@ export class ChitRenderer extends Renderer {
             ChitRenderer.sideMaterial = new THREE.MeshBasicMaterial( {color: 0xc3b091} ); //khaki
         }
 
-        var texture = this._getTexture(this._chit);
-        this.topMaterial = new THREE.MeshLambertMaterial( {color: 0xdddddd, map: texture} );
+        this.texture = this._getTexture(this._chit);
+        this.topMaterial = new THREE.MeshLambertMaterial( {color: 0xdddddd, map: this.texture} );
         this.mesh = new THREE.Mesh(ChitRenderer.geometry, [this.topMaterial, ChitRenderer.sideMaterial]);
 
         var position = boardRenderer.coordToPixel(coord);
@@ -76,6 +76,9 @@ export class ChitRenderer extends Renderer {
     }
     dispose() {
         this.topMaterial = null;
+        if (this.texture !== null) {
+            this.texture.dispose();
+        }
         this.mesh = null;
         this.coord = null;
         this._chit = null;

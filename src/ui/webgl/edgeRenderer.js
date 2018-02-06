@@ -6,11 +6,11 @@ export class EdgeRenderer extends Renderer {
         super();
         this.edge = edge;
 
-        var boxGeometry = new THREE.BoxGeometry(8, 3, 3);
+        this.geometry = new THREE.BoxGeometry(8, 3, 3);
         // var edgesGeometry = new THREE.EdgesGeometry(boxGeometry);
         // var lines = new THREE.LineSegments(edgesGeometry, new THREE.LineBasicMaterial({ color: 0x000000 }));
         this.material = new THREE.MeshLambertMaterial( {color: 0xffff00, transparent: true, opacity: 0.75} );
-        var box = new THREE.Mesh(boxGeometry, this.material);
+        var box = new THREE.Mesh(this.geometry, this.material);
         // box.add(lines);
         var radians = ((edge.rotation || 60)* Math.PI) / 180;
         box.rotateY(radians);
@@ -22,5 +22,10 @@ export class EdgeRenderer extends Renderer {
     }
     normalize() {
         this.material.color = new THREE.Color(0xffff00);
+    }
+    dispose() {
+        this.geometry.dispose();
+        this.material.dispose();
+        this.mesh = null;
     }
 }

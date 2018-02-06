@@ -117,9 +117,62 @@ export class Board {
         }
         return edges;
     }
+    getCoordsByRadius(radius) {
+        if (radius === 0) {
+            return new Set( [Coord3D.center] );
+        }
+        var aCoord = new Coord3D(0, radius, -radius);
+        var coords = new Set();
+        this.addNeighborsRecursively(coords, aCoord, c => c.radius === radius);
+        return coords;
+    }
+    addNeighborsRecursively(coords, coord, shouldAdd) {
+        if (shouldAdd(coord)) {
+            coords.add(coord);
+        }
+        for (var neighbor of coord.neighbors) {
+            if (!coords.has(neighbor) && shouldAdd(neighbor)) {
+                this.addNeighborsRecursively(coords, neighbor, shouldAdd);
+            }
+        }
+    }
     get hexes() { return this._hexes; }
     setHex(coord, hex) {
         this._hexes[coord] = hex;
+    }
+}
+export class JustSomeSea extends Board {
+    constructor() {
+        super();
+        
+        var coords = [
+            ...super.getCoordsByRadius(0),
+            ...super.getCoordsByRadius(1),
+            ...super.getCoordsByRadius(2), 
+        ];
+        for (let coord of coords) {
+            this._hexes.set(coord, new Sea(coord));
+        }
+        this.name = "Just some sea";
+    }
+}
+export class TheGreatForest extends Board {
+    constructor() {
+        super();
+        
+        var coords = [
+            ...super.getCoordsByRadius(0),
+            ...super.getCoordsByRadius(1),
+            ...super.getCoordsByRadius(2), 
+        ];
+        for (let coord of coords) {
+            if (coord == Coord3D.center) {
+                this._hexes.set(coord, new WheatField(coord));
+            } else {
+                this._hexes.set(coord, new Forest(coord));
+            }
+        }
+        this.name = "The great forest";
     }
 }
 export class Standard4pDesign extends Board {
@@ -156,17 +209,18 @@ export class Standard4pDesign extends Board {
                 [4, () => new Any3To1Port()],
             ],
         };
+        this.name = "Standard 4p";
         this.placeHexes();
-        super.generateBoardForPlay();
+        // super.generateBoardForPlay();
     }
 
     generateHexes() {
         var fromBagCoords = [
-            ...this.getCoordsByRadius(0),
-            ...this.getCoordsByRadius(1),
-            ...this.getCoordsByRadius(2), 
+            ...super.getCoordsByRadius(0),
+            ...super.getCoordsByRadius(1),
+            ...super.getCoordsByRadius(2), 
         ];
-        var seaCoords = this.getCoordsByRadius(3);
+        var seaCoords = super.getCoordsByRadius(3);
         var portsConfig = new Map();
         portsConfig.set(new Coord3D(0,   3, -3), 1);
         portsConfig.set(new Coord3D(2,   1, -3), 2);
@@ -181,7 +235,6 @@ export class Standard4pDesign extends Board {
         for (let coord of fromBagCoords) {
             var hex = new HexFromBag(coord);
             hex.chit = new Chit(proto.ChitType.CHITFROMBAG);
-            // hex.chit = this.getRandomChit();
             hexes.push(hex);
         }
         for (let coord of seaCoords) {
@@ -202,24 +255,5 @@ export class Standard4pDesign extends Board {
         min = Math.ceil(min);
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive 
-    }
-    getCoordsByRadius(radius) {
-        if (radius === 0) {
-            return new Set( [Coord3D.center] );
-        }
-        var aCoord = new Coord3D(0, radius, -radius);
-        var coords = new Set();
-        this.addNeighborsRecursively(coords, aCoord, c => c.radius === radius);
-        return coords;
-    }
-    addNeighborsRecursively(coords, coord, shouldAdd) {
-        if (shouldAdd(coord)) {
-            coords.add(coord);
-        }
-        for (var neighbor of coord.neighbors) {
-            if (!coords.has(neighbor) && shouldAdd(neighbor)) {
-                this.addNeighborsRecursively(coords, neighbor, shouldAdd);
-            }
-        }
     }
 }

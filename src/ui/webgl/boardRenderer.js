@@ -10,12 +10,13 @@ import {RoadRenderer} from "./roadRenderer.js";
 import {CityRenderer} from "./cityRenderer.js";
 import {PortPickerRenderer} from "./portPickerRenderer.js";
 import {MouseCaster} from "../../../von-grid/MouseCaster.js";
+import {NoBehavior} from "../BoardBehavior.js";
 
 /* Renders a 3D hexagon board using von-grid */
 export class BoardRenderer {
     constructor(element, board, behavior) {
         this.board = board || new Standard4pDesign();
-        this._behavior = behavior || new SetHex();
+        this._behavior = behavior || new NoBehavior();
 
 		this.cellSize = 11; // size of the hexagon shape (radius)
 		this._cellWidth = this.cellSize * 2;
@@ -23,30 +24,7 @@ export class BoardRenderer {
 		
 		BoardRenderer.TWO_THIRDS = 2 / 3;
 
-        this.removeChangedSubscription = this.board.hexes.changed((key, oldValue, newValue) => {
-            var hexRenderer = this.hexRenderers.get(oldValue.coord);
-            hexRenderer.hex = newValue;
-        });
-        this.removeDeletedSubscription = this.board.hexes.deleted(key => {
-            var hexRenderer = this.hexRenderers.get(key);
-			this.tileGroup.remove(hexRenderer.mesh);
-            hexRenderer.dispose(hexRenderer);
-        });
-
-        this.removeTownAddedSubscription = this.board.towns.added((key, value) => {
-            var townRenderer = new TownRenderer(this, value);
-            this.townRenderers.set(value, townRenderer);
-        })
-        this.removeCityAddedSubscription = this.board.cities.added((key, value) => {
-            var cityRenderer = new CityRenderer(this, value);
-            this.cityRenderers.set(value, cityRenderer);
-        })
-        this.removeRoadAddedSubscription = this.board.roads.added((key, value) => {
-            var roadRenderer = new RoadRenderer(this, value);
-            this.roadRenderers.set(value, roadRenderer);
-        })
-
-		this.tileGroup = new THREE.Group();
+		this.tilesGroup = new THREE.Group();
         this.scene = new Scene(element);
         
         this.nodesGroup = new THREE.Group();
@@ -63,27 +41,8 @@ export class BoardRenderer {
         this.group.add(this.portPickerRenderer.group);
         
         this.scene.scene.add(this.group);
-        // this.scene.focusOn(this.group);
 
-        for (var [coord, hex] of this.board.hexes.map) {
-            var hexRenderer = new HexRenderer(this, hex, this.cellSize);
-            this.hexRenderers.set(hex.coord, hexRenderer);
-			this.tileGroup.add(hexRenderer.mesh);
-        }
-        // TODO: we probably want to make this lazy
-        for (var node of this.board.getAllNodes()) {
-            var nodeRenderer = new NodeRenderer(node, this);
-            this.nodesGroup.add(nodeRenderer.mesh);
-            this.nodeRenderers.set(node, nodeRenderer)
-        }
-        // TODO: we probably want to make this lazy
-        for (var edge of this.board.getAllEdges()) {
-            var edgeRenderer = new EdgeRenderer(edge, this);
-            this.edgesGroup.add(edgeRenderer.mesh);
-            this.edgeRenderers.set(edge, edgeRenderer);
-        }
-
-        this.group.add(this.tileGroup);
+        this.group.add(this.tilesGroup);
         this.group.add(this.edgesGroup);
         this.group.add(this.nodesGroup);
 
@@ -103,7 +62,82 @@ export class BoardRenderer {
             }
         }, this);
 
+        this.initialize();
         this.scene.startAnimating(30);
+    }
+    initialize() {
+        this.scene.paused = true;
+
+        this.removeChangedSubscription = this.board.hexes.changed((key, oldValue, newValue) => {
+            var hexRenderer = this.hexRenderers.get(oldValue.coord);
+            hexRenderer.hex = newValue;
+        });
+        this.removeDeletedSubscription = this.board.hexes.deleted(key => {
+            var hexRenderer = this.hexRenderers.get(key);
+            this.tilesGroup.remove(hexRenderer.mesh);
+            this.hexRenderers.delete(key);
+            hexRenderer.dispose();
+        });
+
+        this.removeTownAddedSubscription = this.board.towns.added((key, value) => {
+            var townRenderer = new TownRenderer(this, value);
+            this.townRenderers.set(value, townRenderer);
+        })
+        this.removeCityAddedSubscription = this.board.cities.added((key, value) => {
+            var cityRenderer = new CityRenderer(this, value);
+            this.cityRenderers.set(value, cityRenderer);
+        })
+        this.removeRoadAddedSubscription = this.board.roads.added((key, value) => {
+            var roadRenderer = new RoadRenderer(this, value);
+            this.roadRenderers.set(value, roadRenderer);
+        })
+
+        for (var [coord, hex] of this.board.hexes.map) {
+            var hexRenderer = new HexRenderer(this, hex, this.cellSize);
+            this.hexRenderers.set(hex.coord, hexRenderer);
+			this.tilesGroup.add(hexRenderer.mesh);
+        }
+        // TODO: we probably want to make this lazy
+        for (var node of this.board.getAllNodes()) {
+            var nodeRenderer = new NodeRenderer(node, this);
+            this.nodesGroup.add(nodeRenderer.mesh);
+            this.nodeRenderers.set(node, nodeRenderer)
+        }
+        // TODO: we probably want to make this lazy
+        for (var edge of this.board.getAllEdges()) {
+            var edgeRenderer = new EdgeRenderer(edge, this);
+            this.edgesGroup.add(edgeRenderer.mesh);
+            this.edgeRenderers.set(edge, edgeRenderer);
+        }
+        this.scene.paused = false;
+    }
+    setBoard(board) {
+        this.reset();
+        this.board = board;
+        this.initialize();
+    }
+    reset() {
+        // https://stackoverflow.com/questions/33152132
+        this.removeChangedSubscription();
+        this.removeDeletedSubscription();
+        this.removeTownAddedSubscription();
+        this.removeCityAddedSubscription();
+        this.removeRoadAddedSubscription();
+
+        this.disposeRenderers(this.hexRenderers, this.tilesGroup);
+        this.disposeRenderers(this.nodeRenderers, this.nodesGroup);
+        this.disposeRenderers(this.edgeRenderers, this.edgesGroup);
+        this.disposeRenderers(this.townRenderers, this.scene.scene);
+        this.disposeRenderers(this.cityRenderers, this.scene.scene);
+        this.disposeRenderers(this.roadRenderers, this.scene.scene);
+    }
+
+    disposeRenderers(renderers, group) {
+        for (var renderer of renderers.values()) {
+            group.remove(renderer.mesh);
+            renderer.dispose();
+        }
+        renderers.clear();
     }
 
     lightenHexes(hexes) {

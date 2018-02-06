@@ -43,8 +43,8 @@ export class PortRenderer extends Renderer {
             PortRenderer.geometries[port.partIndex] = shapeGeometry;
         }
 
-        var texture = this._getTexture(port.type);
-        this.material = new THREE.MeshLambertMaterial( {color: 0xdddddd, map: texture} );
+        this.texture = this._getTexture(port.type);
+        this.material = new THREE.MeshLambertMaterial( {color: 0xdddddd, map: this.texture} );
         this.mesh = new THREE.Mesh(PortRenderer.geometries[port.partIndex], this.material);
         var position = boardRenderer.coordToPixel(port.seaCoord);
         this.mesh.position.set(position.x, 2, position.z);
@@ -61,8 +61,10 @@ export class PortRenderer extends Renderer {
         return texture;
     }
     dispose() {
+        this.texture.dispose();
         this.mesh.userData.structure = null;
         this.mesh = null;
+        this.material.dispose();
         this.material = null;
     }
 }

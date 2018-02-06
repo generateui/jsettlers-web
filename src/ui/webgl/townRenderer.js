@@ -23,4 +23,7 @@ export class TownRenderer extends Renderer {
             that.group = group;
         });
     }
+    dispose() {
+        // this.material = null;
+    }
 }

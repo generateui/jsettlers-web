@@ -1,5 +1,6 @@
 <template>
     <div id="board-previewer-wrapper">
+        <h2>{{board.name}}</h2>
         <div id="mode">
             <input type="radio" id="design" name="mode" value="design">
             <label for="design">design</label>
@@ -12,12 +13,27 @@
 </template>
 
 <script>
+    import {Standard4pDesign} from "../src/board.js";
+    import {BoardRenderer} from "../src/ui/webgl/boardRenderer.js";
+    
+    var boardRenderer = null;
+
     export default {
         name: 'board-preview',
+        props: {
+            board: {
+                type: Object
+            }
+        },
         mounted: function() {
             var boardDesign = new Standard4pDesign();
             var brEl = document.getElementById("bp-board-renderer");
-            window.boardRenderer = new BoardRenderer(brEl, boardDesign);
+            boardRenderer = new BoardRenderer(brEl, boardDesign);
+        },
+        watch: { 
+            board: function(newBoard, oldBoard) {
+                boardRenderer.setBoard(newBoard);
+            }
         }
     }
 </script>

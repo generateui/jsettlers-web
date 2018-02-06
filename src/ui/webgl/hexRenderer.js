@@ -93,8 +93,8 @@ export class HexRenderer extends Renderer {
 		}
 
 		this.highlight = '0x0084cc';
-		var texture = new THREE.TextureLoader().load(this._getTexture(hex));
-		this.topMaterial = new THREE.MeshLambertMaterial({ color: 0xdddddd, map: texture });
+		this.texture = new THREE.TextureLoader().load(this._getTexture(hex));
+		this.topMaterial = new THREE.MeshLambertMaterial({ color: 0xdddddd, map: this.texture });
 		// this.topMaterial.emissive = new THREE.Color(this.highlight);
 		this.material = new THREE.MeshLambertMaterial({ color: 0x0 });
 		// this.material.emissive = new THREE.Color(this.highlight);
@@ -209,6 +209,9 @@ export class HexRenderer extends Renderer {
 		this.boardRenderer.group.remove(this.chitRenderer.mesh);
 		this.chitRenderer.dispose();
 		this.chitRenderer = null;
+		if (this.texture !== null) {
+			this.texture.dispose();
+		}
 		if (this.portRenderer != null) {
 			this.boardRenderer.group.remove(this.portRenderer.mesh);
 			this.portRenderer.dispose();
