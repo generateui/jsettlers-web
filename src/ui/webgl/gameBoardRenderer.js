@@ -4,31 +4,37 @@ import {TownRenderer} from "./townRenderer.js";
 import {RoadRenderer} from "./roadRenderer.js";
 import {CityRenderer} from "./cityRenderer.js";
 import {Game} from "../../game.js";
+import { NoBehavior } from "../BoardBehavior";
 
-export class GameBoardRenderer extends BoardRenderer {
-    constructor(game, gameBoardBehavior) {
-        super();
-
+export class GameBoardRenderer {
+    constructor(element, game, gameBoardBehavior) {
+        this.gameBoard = game.gameBoard;
         // TODO: override behavior too?
-        this.gameBoardBehavior = gameBoardBehavior;
+        this.gameBoardBehavior = gameBoardBehavior || new NoBehavior();
         this._game = game;
+        this.boardRenderer = new BoardRenderer(element, game.gameBoard);
 
         this.townRenderers = new Map(); // <Node, Town>
         this.cityRenderers = new Map(); // <Node, City>
         this.roadRenderers = new Map(); // <Edge, Road>
-        this.robberRenderer = new RobberRenderer(this, board.robber);
+        this.robberRenderer = new RobberRenderer(this, this.gameBoard.robber);
+
+        this.initialize();
+    }
+    addMesh(mesh) {
+        this.boardRenderer.addMesh(mesh);
     }
     initialize() {
-        super.initialize();
-        this.removeTownAddedSubscription = this.board.towns.added((key, value) => {
+        this.boardRenderer.initialize();
+        this.removeTownAddedSubscription = this.gameBoard.towns.added((key, value) => {
             var townRenderer = new TownRenderer(this, value);
             this.townRenderers.set(value, townRenderer);
         });
-        this.removeCityAddedSubscription = this.board.cities.added((key, value) => {
+        this.removeCityAddedSubscription = this.gameBoard.cities.added((key, value) => {
             var cityRenderer = new CityRenderer(this, value);
             this.cityRenderers.set(value, cityRenderer);
         });
-        this.removeRoadAddedSubscription = this.board.roads.added((key, value) => {
+        this.removeRoadAddedSubscription = this.gameBoard.roads.added((key, value) => {
             var roadRenderer = new RoadRenderer(this, value);
             this.roadRenderers.set(value, roadRenderer);
         });
@@ -40,6 +46,6 @@ export class GameBoardRenderer extends BoardRenderer {
         this.removeTownAddedSubscription();
         this.removeCityAddedSubscription();
         this.removeRoadAddedSubscription();
-        super.reset();
+        this.boardRenderer.reset();
     }
 }

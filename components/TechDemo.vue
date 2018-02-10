@@ -51,7 +51,8 @@
     import * as bb from "../src/ui/boardBehavior.js";
     import * as gbb from "../src/ui/gameBoardBehavior.js";
     import {Standard4pDesign} from "../src/board.js";
-    import {BoardRenderer} from "../src/ui/webgl/boardRenderer.js";
+    import {GameBoardRenderer} from "../src/ui/webgl/gameBoardRenderer.js";
+    import {Game} from "../src/game.js";
 
     const setHex = new bb.SetHex();
     const setChit = new bb.SetChit();
@@ -127,7 +128,8 @@
             // // A design representation of a board morphable into a play board
             const boardDesign = new Standard4pDesign();
             var brEl = this.$refs["board-renderer"];
-            boardRenderer = new BoardRenderer(brEl, boardDesign, setHex);
+            const game = new Game();
+            boardRenderer = new GameBoardRenderer(brEl, game, setHex);
         }
     }
 

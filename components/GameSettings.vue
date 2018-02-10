@@ -47,9 +47,9 @@
 <script>
 import BoardPreview from './BoardPreview.vue';
 import {User} from '../src/player.js';
-import { Standard4pDesign, JustSomeSea, TheGreatForest } from '../src/board';
-import { GameSettings } from '../src/Game.js';
-import { Player } from '../src/Player.js';
+import { Standard4pDesign, JustSomeSea, TheGreatForest } from '../src/board.js';
+import { GameSettings } from '../src/game.js';
+import { Player } from '../src/player.js';
 
 const boards = [
   Standard4pDesign.descriptor,
@@ -94,11 +94,11 @@ export default {
     startGame() {
       const gameSettings = new GameSettings({
         boardDescriptor: this.$data.board,
-        bots: this.$data.bots,
+        bots: this.$data.selectedBots,
         players: [new Player({ user: this.$data.user })]
       });
       window.gameSettings = gameSettings; // how to pass in an object to receiving router component?
-      this.$router.push({ path:"/play-test-game/game"});
+      this.$router.push({ name:"game", params: {settings: gameSettings } });
     }
   }
 }

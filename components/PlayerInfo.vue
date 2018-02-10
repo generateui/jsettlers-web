@@ -1,6 +1,6 @@
 <template>
     <div id="wrapper">
-        <div id="background-wrapper"  v-bind:style="{ borderColor: toCssColor(player.color), backgroundColor: toCssRgbaColor(player.color, 0.25) }">
+        <div id="background-wrapper"  v-bind:style="{ borderColor: player.color.css, backgroundColor: player.color.toCssRgba(0.25) }">
             <div id="player-name">{{player.user.name}}</div>
             <div id="towns" class="stock-info">
                 <img src="doc/images/Town48.png" />

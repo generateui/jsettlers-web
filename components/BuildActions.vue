@@ -45,7 +45,7 @@
 
 <script>
     import DiceView from "./DiceView.vue";
-    import {Dice, Die} from "../src/dice.js";
+    import {Dice} from "../src/dice.js";
 
     export default {
         components: {
@@ -65,14 +65,13 @@
     display: flex;
     flex-direction: row;
     vertical-align: baseline;
-    height: 50px;
+    height: 64px;
 }
 .build-button { 
     margin: 0.25em;
     align-self: end;
 }
 .build-button:hover {
-    /* transform: scale(1.2); */
     filter: drop-shadow(0px 0px 12px #fff);
 }
 #end-turn {

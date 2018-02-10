@@ -34,7 +34,7 @@ const routes = [
   { path: "/play-test-game", component: PlayTestGame,
     children: [
       { path: "", component: GameSettings },
-      { path: "game", component: Game },
+      { path: "game", name: "game", component: Game, props: true },
       { path: "welcome", component: Welcome },
     ]
   },
