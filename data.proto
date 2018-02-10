@@ -72,3 +72,12 @@ message Hex {
 		Any4To1 = 6; // The default 4:1 trading ability
 		FromBag = 7;
 	}
+enum ResourceType {
+	Timber = 0;
+	Wheat = 1;
+	Ore = 2;
+	Sheep = 3;
+	Brick = 4;
+	Gold = 5;
+	Unknown = 6; // in opponents' list of resources to reduce spying
+}

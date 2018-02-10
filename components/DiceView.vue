@@ -1,0 +1,31 @@
+<template>
+    <div>
+        <die-view id="first" v-bind:die="dice.die1"></die-view>
+        <die-view id="second" v-bind:die="dice.die2"></die-view>
+    </div>
+</template>
+
+<script>
+    import DieView from "./DieView.vue";
+
+    export default {
+        components: {
+            DieView
+        },
+        name: 'dice-view',
+        props: {
+            dice: {
+                type: Object
+            }
+        }
+    }
+</script>
+
+<style scoped>
+    #first {
+
+    }
+    #second {
+        /* margin-left: 0.5em; */
+    }
+</style>

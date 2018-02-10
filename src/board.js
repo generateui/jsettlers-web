@@ -7,6 +7,18 @@ import {Forest, WheatField, River, Sea, Mountain, Pasture, Desert, HexFromBag} f
 import {Coord3D} from "./coord.js";
 import {Any3To1Port, Clay2To1Port, Any4To1Port, FromBagPort, Ore2To1Port, Sheep2To1Port, Timber2To1Port, Wheat2To1Port} from "./port.js";
 
+export class BoardDescriptor {
+    constructor(config) {
+        this.id = config.id; // integer
+        this.name = config.name;
+        this.author = config.author;
+        this.createBoard = config.createBoard;
+        
+        // prevent Vue.js from altering this member
+        Object.defineProperty(this, "createFunction", {configurable: false});
+    }
+}
+
 export class Board {
     constructor(config) {
         this._config = config || {
@@ -28,6 +40,20 @@ export class Board {
         this.towns = new ObservableMap(); // <Node, Town>
         this.cities = new ObservableMap(); // <Node, City>
         this.roads = new ObservableMap(); // <Edge, Road>
+    }
+    static create(id) {
+        if (Board.factoryCache === undefined) {
+            const cache = new Map();
+            cache.set(Standard4pDesign.descriptor.id, Standard4pDesign.descriptor);
+            cache.set(JustSomeSea.descriptor.id, JustSomeSea.descriptor);
+            cache.set(TheGreatForest.descriptor.id, TheGreatForest.descriptor);
+            Board.factoryCache = cache;
+        }
+        if (Board.factoryCache.has(id)) {
+            const descriptor = Board.factoryCache.get(id);
+            return descriptor.createBoard();
+        }
+        throw new Error(`Board with id [${id}] not found`);
     }
     /** normalize the config into a simple list of hex instances */
     static _flattenConfig(config) {
@@ -144,7 +170,7 @@ export class Board {
 export class JustSomeSea extends Board {
     constructor() {
         super();
-        
+
         var coords = [
             ...super.getCoordsByRadius(0),
             ...super.getCoordsByRadius(1),
@@ -153,13 +179,18 @@ export class JustSomeSea extends Board {
         for (let coord of coords) {
             this._hexes.set(coord, new Sea(coord));
         }
-        this.name = "Just some sea";
     }
 }
+JustSomeSea.descriptor = new BoardDescriptor({
+    id: 1,
+    name: "Just some sea",
+    author: "Ruud Poutsma",
+    createBoard: function(config) { return new JustSomeSea() }
+});
 export class TheGreatForest extends Board {
     constructor() {
         super();
-        
+
         var coords = [
             ...super.getCoordsByRadius(0),
             ...super.getCoordsByRadius(1),
@@ -172,12 +203,19 @@ export class TheGreatForest extends Board {
                 this._hexes.set(coord, new Forest(coord));
             }
         }
-        this.name = "The great forest";
     }
 }
+TheGreatForest.descriptor = new BoardDescriptor({
+    id: 2,
+    name: "The great forest",
+    author: "Ruud Poutsma",
+    createBoard: function(config) { return new TheGreatForest() }
+});
+
 export class Standard4pDesign extends Board {
     constructor() {
         super();
+
         this._config = {
             hexes: this.generateHexes(),
             hexBag: [
@@ -209,7 +247,6 @@ export class Standard4pDesign extends Board {
                 [4, () => new Any3To1Port()],
             ],
         };
-        this.name = "Standard 4p";
         this.placeHexes();
         // super.generateBoardForPlay();
     }
@@ -257,3 +294,9 @@ export class Standard4pDesign extends Board {
         return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive 
     }
 }
+Standard4pDesign.descriptor = new BoardDescriptor({
+    id: 0,
+    name: "Standard 4p",
+    author: "Ruud Poutsma",
+    createBoard: function(config) { return new Standard4pDesign() }
+});
