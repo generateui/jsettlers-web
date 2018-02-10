@@ -10,6 +10,11 @@ String.prototype.hashCode = function() {
   }
   return hash;
 };
+String.prototype.toPascalCase = function() {
+  const firstLetter = this[0].toUpperCase();
+  const rest = this.substring(1, this.length).toLowerCase();
+  return firstLetter + rest;
+}
 
 var proto = require("./data_pb");
 

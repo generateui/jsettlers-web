@@ -1,7 +1,7 @@
 <template>
     <div id="wrapper">
         <div class="column" v-for="(resources, key) in bank.resources" :key="key">
-            <img :src="`doc/images/${key}Card.png`" />
+            <img :src="`doc/images/${key.toPascalCase()}Card.png`" />
             <div>{{resources.length}}</div>
         </div>
         <div class="column">
