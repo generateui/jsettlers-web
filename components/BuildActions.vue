@@ -62,10 +62,10 @@
 
 <style scoped>
 #build-actions {
-    display: flex;
-    flex-direction: row;
-    vertical-align: baseline;
+    display: grid;
     height: 64px;
+    grid-template-columns: repeat(8, 48px) auto;
+    grid-template-rows: repeat(9, 64px);
 }
 .build-button { 
     margin: 0.25em;
@@ -74,15 +74,13 @@
 .build-button:hover {
     filter: drop-shadow(0px 0px 12px #fff);
 }
-#end-turn {
-    float: right;
-}
 .trade {
     width: 24px;
     height: 24px;
 }
 #build-city {
-    flex: 0 0 auto;
+    grid-column-start: 1;
+    grid-row-start: 1;
     display: grid;
     grid-template-columns: 24px 24px;
     grid-template-rows: 24px 24px 24px 48px;
@@ -117,7 +115,8 @@
     }
 
 #build-town {
-    flex: 0 0 auto;
+    grid-column-start: 2;
+    grid-row-start: 1;
     display: grid;
     grid-template-columns: 24px 24px;
     grid-template-rows: 24px 24px 48px;
@@ -147,7 +146,8 @@
         grid-row-start: 1;
     }
 #build-road {
-    flex: 0 0 auto;
+    grid-column-start: 3;
+    grid-row-start: 1;
     display: grid;
     grid-template-columns: 24px 24px;
     grid-template-rows: 24px 48px;
@@ -169,7 +169,8 @@
         grid-row-start: 1;
     }
 #buy-development-card {
-    flex: 0 0 auto;
+    grid-column-start: 4;
+    grid-row-start: 1;
     display: grid;
     grid-template-columns: 24px 24px;
     grid-template-rows: 24px 24px 48px;
@@ -195,19 +196,23 @@
         grid-row-start: 1;
     }
 #play-developmentCard {
-    flex: 0 0 auto;
+    grid-column-start: 5;
+    grid-row-start: 1;
 }
 #trade-player {
-    flex: 0 0 auto;
+    grid-column-start: 6;
+    grid-row-start: 1;
 }
 #trade-bank {
-    flex: 0 0 auto;
+    grid-column-start: 7;
+    grid-row-start: 1;
 }
 #end-turn {
-    flex: 0 0 auto;
+    grid-column-start: 8;
+    grid-row-start: 1;
 }
 #dice-view {
-    flex: 1 1 auto;
-    align-self: bottom;
+    grid-column-start: 9;
+    grid-row-start: 1;
 }
 </style>
