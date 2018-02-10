@@ -93,12 +93,11 @@ export class HexRenderer extends Renderer {
 		}
 
 		this.highlight = '0x0084cc';
-		var texture = new THREE.TextureLoader().load(this._getTexture(hex));
-		this.topMaterial = new THREE.MeshLambertMaterial({ color: 0xdddddd, map: texture });
+		this.texture = new THREE.TextureLoader().load(this._getTexture(hex));
+		this.topMaterial = new THREE.MeshLambertMaterial({ color: 0xdddddd, map: this.texture });
 		// this.topMaterial.emissive = new THREE.Color(this.highlight);
 		this.material = new THREE.MeshLambertMaterial({ color: 0x0 });
 		// this.material.emissive = new THREE.Color(this.highlight);
-		this.entity = null;
 		this.userData = {};
 
 		this.selected = false;
@@ -113,23 +112,14 @@ export class HexRenderer extends Renderer {
         this.mesh.position.copy(position);
         this.mesh.position.y = 0;
 
-		if (this.material.emissive) {
-			this._emissive = this.material.emissive.getHex();
-		} else {
-			this._emissive = null;
-		}
-
         this.portRenderer = null;
-        this.chitRenderer = null;
 
-        const color = new THREE.Color(this.hex.color);
-        this.material.color = color;
+        this.material.color = new THREE.Color(this.hex.color);
         this.mesh.userData.structure = this;
 
-        if (this.chitRenderer === null) {
-            this.chitRenderer = new ChitRenderer(this.hex, boardRenderer);
-            boardRenderer.group.add(this.chitRenderer.mesh);
-        }
+		this.chitRenderer = new ChitRenderer(this.hex.chit, this.hex.coord, boardRenderer);
+		boardRenderer.group.add(this.chitRenderer.mesh);
+			
         if (this.hex.port !== null) {
             this.portRenderer = new PortRenderer(boardRenderer, this.hex.port);
         }
@@ -151,13 +141,7 @@ export class HexRenderer extends Renderer {
         }
     }
     chitChanged(oldChit, newChit) {
-        if (this.chitRenderer !== null) {
-            this.boardRenderer.group.remove(this.chitRenderer.mesh);
-        }
-        if (newChit !== null) {
-            this.chitRenderer = new ChitRenderer(this.hex, this.boardRenderer);
-            this.boardRenderer.group.add(this.chitRenderer.mesh);
-        }
+		this.chitRenderer.chit = newChit;
     }
 
     dispose() {
@@ -170,13 +154,12 @@ export class HexRenderer extends Renderer {
 		const texture = this._getTexture(hex);
 		this.topMaterial.map = new THREE.TextureLoader().load(texture);
 		this.topMaterial.needsUpdate = true;
-        const color = new THREE.Color(this.hex.color);
-        const coord = this.hex.coord;
-        this.material.color = color;
+        this.material.color = new THREE.Color(this.hex.color);
+        this.material.needsUpdate = true;
         this.removeChitChangedSubscription();
         this.removePortChangedSubscription();
-        this.removePortChangedSubscription = this.hex.portChanged(this.portChanged);
-        this.removeChitChangedSubscription = this.hex.chitChanged(this.chitChanged);
+        this.removePortChangedSubscription = hex.portChanged(this.portChanged.bind(this));
+        this.removeChitChangedSubscription = hex.chitChanged(this.chitChanged.bind(this));
 	}
 	lighten() {
 		this.topMaterial.color = new THREE.Color(0xffffff);
@@ -221,20 +204,25 @@ export class HexRenderer extends Renderer {
 
 	dispose() {
 		this.coord = null;
-		if (this.mesh.parent) this.mesh.parent.remove(this.mesh);
 		this.mesh.userData.structure = null;
 		this.mesh = null;
+		this.boardRenderer.group.remove(this.chitRenderer.mesh);
+		this.chitRenderer.dispose();
+		this.chitRenderer = null;
+		if (this.texture !== null) {
+			this.texture.dispose();
+		}
+		if (this.portRenderer != null) {
+			this.boardRenderer.group.remove(this.portRenderer.mesh);
+			this.portRenderer.dispose();
+			this.portRenderer = null;
+		}
 		this.material = null;
+		this.topMaterial = null;
 		this.userData = null;
-		this.entity = null;
 		this.geometry = null;
-		this._emissive = null;
-
-		// from vg.Board
-		this.cellShape = null;
-		this.cellGeo.dispose();
-		this.cellGeo = null;
-		this.cellShapeGeo.dispose();
-		this.cellShapeGeo = null;
+		this.boardRenderer = null;
+		this.removePortChangedSubscription();
+		this.removeChitChangedSubscription();
 	}
 }

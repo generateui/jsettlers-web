@@ -4,8 +4,8 @@
         <input type="radio" :id="`hexType-${ht}`" name="hexTypePicker">
         <label 
             :for="`hexType-${ht}`"
-            v-on:click="click(ht)">
-            <!-- <img v-bind:src="'doc/images/' + key.toLowerCase() + '.png'"> -->
+            @click="click(ht)">
+            <img :src="`doc/images/${key.toLowerCase()}24.png`">
             {{key}}
         </label>
     </li>
@@ -33,7 +33,8 @@ export default {
 </script>
 
 <style scoped>
-.active {
-    background-color: blueviolet;
+img {
+  height: 21px;
+  width: 24px;
 }
 </style>

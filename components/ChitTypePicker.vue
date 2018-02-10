@@ -1,11 +1,11 @@
 <template>
   <ul>
-    <li v-for="(ct, key) in chitTypes" v-bind:key="key">
-        <input type="radio" v-bind:id="ct" name="chitTypePicker">
+    <li v-for="(ct, key) in chitTypes" :key="key">
+        <input type="radio" :id="ct" name="chitTypePicker">
         <label 
             :for="ct" 
-            v-on:click="click(ct)">
-            <img v-bind:src="'doc/images/' + key.toLowerCase() + '.png'">
+            @click="click(ct)">
+            <img :src="`doc/images/${key.toLowerCase()}.png`">
             {{key}}
         </label>
     </li>
@@ -25,7 +25,6 @@ export default {
   },
   methods: {
       click(chitType) {
-        console.log(chitType);
           this.$data.chitType = chitType;
           this.$emit('chitTypeChanged', chitType);
       }

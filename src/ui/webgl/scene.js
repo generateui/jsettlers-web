@@ -58,7 +58,9 @@ export class Scene {
         this.fpsInterval = 0;
         this.now = null;
         this.then = null;
-        this.elapsed = null;
+		this.elapsed = null;
+		
+		this.paused = false;
 	}
     
     startAnimating(fps) {
@@ -72,7 +74,7 @@ export class Scene {
         this.now = newtime;
         this.elapsed = this.now - this.then;
     
-        if (this.elapsed > this.fpsInterval) {
+        if (this.elapsed > this.fpsInterval && !this.paused) {
             // Get ready for next frame by setting then=now, but...
             // Also, adjust for fpsInterval not being multiple of 16.67
             this.then = this.now - (this.elapsed % this.fpsInterval);

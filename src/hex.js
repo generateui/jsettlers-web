@@ -1,19 +1,20 @@
 var proto = require("../data_pb");
 import {Observable} from "./generic/observable.js";
 import {Chit} from "./chit.js";
+// import {proto} from "../data_pb.js";
 
 export class Hex extends Observable {
     constructor(coord) {
         super();
         this.coord = coord; // a Coord1d, Coord2d or Coord3d
-        this.chit = new Chit(proto.ChitType.NONE);
+        this.chit = new Chit(proto.ChitType.NONEHEX);
         this.port = null;
         this.makeObservable(["chit", "port"]);
     }
     static fromType(type, coord) {
         var hexType = proto.HexType;
         switch (type) {
-            case hexType.NONE: return new NoneHex(coord);
+            case hexType.NONEHEX: return new NoneHex(coord);
             case hexType.DESERT: return new Desert(coord);
             case hexType.SEA: return new Sea(coord);
             case hexType.FOREST: return new Forest(coord);
@@ -96,7 +97,7 @@ export class NoneHex extends Hex {
     constructor(coord) {
         super(coord);
     }
-    get type() { return proto.HexType.NONE; }
+    get type() { return proto.HexType.NONEHEX; }
     get color() { return 0xC0C0C0; }
 }
 export class HexFromBag extends Hex {

@@ -7,6 +7,18 @@ import {Forest, WheatField, River, Sea, Mountain, Pasture, Desert, HexFromBag} f
 import {Coord3D} from "./coord.js";
 import {Any3To1Port, Clay2To1Port, Any4To1Port, FromBagPort, Ore2To1Port, Sheep2To1Port, Timber2To1Port, Wheat2To1Port} from "./port.js";
 
+export class BoardDescriptor {
+    constructor(config) {
+        this.id = config.id; // integer
+        this.name = config.name;
+        this.author = config.author;
+        this.createBoard = config.createBoard;
+        
+        // prevent Vue.js from altering this member
+        Object.defineProperty(this, "createFunction", {configurable: false});
+    }
+}
+
 export class Board {
     constructor(config) {
         this._config = config || {
@@ -28,6 +40,20 @@ export class Board {
         this.towns = new ObservableMap(); // <Node, Town>
         this.cities = new ObservableMap(); // <Node, City>
         this.roads = new ObservableMap(); // <Edge, Road>
+    }
+    static create(id) {
+        if (Board.factoryCache === undefined) {
+            const cache = new Map();
+            cache.set(Standard4pDesign.descriptor.id, Standard4pDesign.descriptor);
+            cache.set(JustSomeSea.descriptor.id, JustSomeSea.descriptor);
+            cache.set(TheGreatForest.descriptor.id, TheGreatForest.descriptor);
+            Board.factoryCache = cache;
+        }
+        if (Board.factoryCache.has(id)) {
+            const descriptor = Board.factoryCache.get(id);
+            return descriptor.createBoard();
+        }
+        throw new Error(`Board with id [${id}] not found`);
     }
     /** normalize the config into a simple list of hex instances */
     static _flattenConfig(config) {
@@ -117,14 +143,79 @@ export class Board {
         }
         return edges;
     }
+    getCoordsByRadius(radius) {
+        if (radius === 0) {
+            return new Set( [Coord3D.center] );
+        }
+        var aCoord = new Coord3D(0, radius, -radius);
+        var coords = new Set();
+        this.addNeighborsRecursively(coords, aCoord, c => c.radius === radius);
+        return coords;
+    }
+    addNeighborsRecursively(coords, coord, shouldAdd) {
+        if (shouldAdd(coord)) {
+            coords.add(coord);
+        }
+        for (var neighbor of coord.neighbors) {
+            if (!coords.has(neighbor) && shouldAdd(neighbor)) {
+                this.addNeighborsRecursively(coords, neighbor, shouldAdd);
+            }
+        }
+    }
     get hexes() { return this._hexes; }
     setHex(coord, hex) {
         this._hexes[coord] = hex;
     }
 }
+export class JustSomeSea extends Board {
+    constructor() {
+        super();
+
+        var coords = [
+            ...super.getCoordsByRadius(0),
+            ...super.getCoordsByRadius(1),
+            ...super.getCoordsByRadius(2), 
+        ];
+        for (let coord of coords) {
+            this._hexes.set(coord, new Sea(coord));
+        }
+    }
+}
+JustSomeSea.descriptor = new BoardDescriptor({
+    id: 1,
+    name: "Just some sea",
+    author: "Ruud Poutsma",
+    createBoard: function(config) { return new JustSomeSea() }
+});
+export class TheGreatForest extends Board {
+    constructor() {
+        super();
+
+        var coords = [
+            ...super.getCoordsByRadius(0),
+            ...super.getCoordsByRadius(1),
+            ...super.getCoordsByRadius(2), 
+        ];
+        for (let coord of coords) {
+            if (coord == Coord3D.center) {
+                this._hexes.set(coord, new WheatField(coord));
+            } else {
+                this._hexes.set(coord, new Forest(coord));
+            }
+        }
+    }
+}
+TheGreatForest.descriptor = new BoardDescriptor({
+    id: 2,
+    name: "The great forest",
+    author: "Ruud Poutsma",
+    createBoard: function(config) { return new TheGreatForest() }
+});
+
 export class Standard4pDesign extends Board {
     constructor() {
         super();
+
         this._config = {
             hexes: this.generateHexes(),
             hexBag: [
@@ -157,16 +248,16 @@ export class Standard4pDesign extends Board {
             ],
         };
         this.placeHexes();
-        super.generateBoardForPlay();
+        // super.generateBoardForPlay();
     }
 
     generateHexes() {
         var fromBagCoords = [
-            ...this.getCoordsByRadius(0),
-            ...this.getCoordsByRadius(1),
-            ...this.getCoordsByRadius(2), 
+            ...super.getCoordsByRadius(0),
+            ...super.getCoordsByRadius(1),
+            ...super.getCoordsByRadius(2), 
         ];
-        var seaCoords = this.getCoordsByRadius(3);
+        var seaCoords = super.getCoordsByRadius(3);
         var portsConfig = new Map();
         portsConfig.set(new Coord3D(0,   3, -3), 1);
         portsConfig.set(new Coord3D(2,   1, -3), 2);
@@ -181,7 +272,6 @@ export class Standard4pDesign extends Board {
         for (let coord of fromBagCoords) {
             var hex = new HexFromBag(coord);
             hex.chit = new Chit(proto.ChitType.CHITFROMBAG);
-            // hex.chit = this.getRandomChit();
             hexes.push(hex);
         }
         for (let coord of seaCoords) {
@@ -203,23 +293,10 @@ export class Standard4pDesign extends Board {
         max = Math.floor(max);
         return Math.floor(Math.random() * (max - min + 1)) + min; //The maximum is inclusive and the minimum is inclusive 
     }
-    getCoordsByRadius(radius) {
-        if (radius === 0) {
-            return new Set( [Coord3D.center] );
-        }
-        var aCoord = new Coord3D(0, radius, -radius);
-        var coords = new Set();
-        this.addNeighborsRecursively(coords, aCoord, c => c.radius === radius);
-        return coords;
-    }
-    addNeighborsRecursively(coords, coord, shouldAdd) {
-        if (shouldAdd(coord)) {
-            coords.add(coord);
-        }
-        for (var neighbor of coord.neighbors) {
-            if (!coords.has(neighbor) && shouldAdd(neighbor)) {
-                this.addNeighborsRecursively(coords, neighbor, shouldAdd);
-            }
-        }
-    }
 }
+Standard4pDesign.descriptor = new BoardDescriptor({
+    id: 0,
+    name: "Standard 4p",
+    author: "Ruud Poutsma",
+    createBoard: function(config) { return new Standard4pDesign() }
+});

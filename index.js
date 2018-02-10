@@ -22,8 +22,30 @@ require("./von-grid/STLLoader.js");
 
 import Vue from 'vue';
 import App from './App.vue';
+import VueRouter from 'vue-router';
+import PlayTestGame from './components/PlayTestGame.vue';
+import TechDemo from './components/TechDemo.vue';
+import Welcome from './components/Welcome.vue';
+import Game from './components/Game.vue';
+import GameSettings from './components/GameSettings.vue';
 
-new Vue({ // eslint-disable-line no-new
-  el: '#app',
-  render: (h) => h(App)
+const routes = [
+  { path: "/", component: Welcome },
+  { path: "/play-test-game", component: PlayTestGame,
+    children: [
+      { path: "", component: GameSettings },
+      { path: "game", component: Game },
+      { path: "welcome", component: Welcome },
+    ]
+  },
+  { path: "/tech-demo", component: TechDemo },
+];
+
+const router = new VueRouter({
+  routes
 });
+Vue.use(VueRouter);
+new Vue({ // eslint-disable-line no-new
+  router,
+  render: (h) => h(App)
+}).$mount("#app");

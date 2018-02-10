@@ -10,7 +10,9 @@
                 <li>
                     <strong>Play</strong>
                     <ul>
-                        <li><a id="play-test-game" href="#play-test-game">Play a test game</a></li>
+                        <li>
+                            <router-link to="/play-test-game">play test game</router-link>
+                        </li>
                     </ul>
                 </li>
                 <li>
@@ -21,14 +23,16 @@
                 <li>
                     <strong>Develop</strong>
                     <ul>
-                        <li><a id="tech-demo" href="#tech-demo">Tech demo</a></li>
+                        <li>
+                            <router-link to="/tech-demo">Tech demo</router-link>
+                        </li>
                     </ul>
                 </li>
             </ul>
         </div>
 
         <div id="content-wrapper">
-            <tech-demo></tech-demo>
+            <router-view></router-view>
         </div>
 
     </div>
@@ -36,8 +40,10 @@
 </template>
 
 <script>
+    import Welcome from './components/Welcome.vue';
     import Hello from './components/Hello.vue';
     import TechDemo from './components/TechDemo.vue';
+    import VueRouter from 'vue-router';
 
     export default {
         name: 'app',

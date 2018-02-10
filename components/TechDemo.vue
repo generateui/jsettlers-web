@@ -49,15 +49,16 @@
     import PlayerPicker from './PlayerPicker.vue'
     import PortTypePicker from './PortTypePicker.vue'
     import * as bb from "../src/ui/boardBehavior.js";
+    import * as gbb from "../src/ui/gameBoardBehavior.js";
     import {Standard4pDesign} from "../src/board.js";
     import {BoardRenderer} from "../src/ui/webgl/boardRenderer.js";
 
     const setHex = new bb.SetHex();
     const setChit = new bb.SetChit();
     const setPort = new bb.SetPort();
-    const buildTown = new bb.BuildTown();
-    const buildCity = new bb.BuildCity();
-    const buildRoad = new bb.BuildRoad();
+    const buildTown = new gbb.BuildTown();
+    const buildCity = new gbb.BuildCity();
+    const buildRoad = new gbb.BuildRoad();
     var boardRenderer = null;
 
     export default {
@@ -80,10 +81,11 @@
                     new bb.ShowEdgesOfClickedHex(),
                     new bb.ShowEdgesOfClickedNode(),
                     setPort,
-                    new bb.MoveRobber(),
+                    new gbb.MoveRobber(),
                     buildTown,
                     buildCity,
                     buildRoad,
+                    new bb.RemoveHex,
                 ],
                 pickedBehavior: new bb.NoBehavior(),
                 
@@ -131,7 +133,7 @@
 
 </script>
 
-<style>
+<style scoped>
 #wrapper {
     display: flex;
     flex-direction: row;
@@ -189,7 +191,7 @@ input[type='radio']+label:hover {
 }
 li {
     list-style-type:none;
-    margin: 10px;
+    padding: 0;
 }
 img {
     height: 24px;
