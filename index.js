@@ -1,23 +1,3 @@
-String.prototype.hashCode = function() {
-  var hash = 0, i, charCode;
-  if (this.length === 0) {
-      return 0;
-  }
-  for (i = 0; i < this.length; i++) {
-    charCode = this.charCodeAt(i);
-    hash  = ((hash << 5) - hash) + charCode;
-    hash |= 0;
-  }
-  return hash;
-};
-String.prototype.toPascalCase = function() {
-  const firstLetter = this[0].toUpperCase();
-  const rest = this.substring(1, this.length).toLowerCase();
-  return firstLetter + rest;
-}
-
-var proto = require("./data_pb");
-
 require("./src/generic/math.js");
 
 require("./von-grid/OrbitControls.js");

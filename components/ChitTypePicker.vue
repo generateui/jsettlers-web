@@ -1,5 +1,5 @@
 <template>
-  <ul>
+  <ul class="toggle-button">
     <li v-for="(ct, key) in chitTypes" :key="key">
         <input type="radio" :id="ct" name="chitTypePicker">
         <label 

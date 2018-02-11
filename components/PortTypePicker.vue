@@ -1,5 +1,5 @@
 <template>
-  <ul>
+  <ul class="toggle-button">
     <li v-for="(pt, key) in portTypes" v-bind:key="key">
         <input type="radio" :id="`port-${pt}`" name="portTypePicker">
         <label :for="`port-${pt}`" @click="click(pt)">
