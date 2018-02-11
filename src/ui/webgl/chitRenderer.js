@@ -59,7 +59,7 @@ export class ChitRenderer extends Renderer {
             return null;
         }
         const name = Util.getEnumName(proto.ChitType, chit.type);
-        var texture = new THREE.TextureLoader().load(`doc/images/${name}.png`);
+        var texture = new THREE.TextureLoader().load(`doc/images/${name.toPascalCase()}.png`);
         return texture;
     }
 	lighten() {
