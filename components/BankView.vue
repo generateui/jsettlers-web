@@ -1,6 +1,6 @@
 <template>
     <div id="wrapper">
-        <div class="column" v-for="(resources, key) in bank.resources" :key="key">
+        <div class="column" v-for="(resources, key) in bank.resources" v-if="!isUnknown(key)" :key="key">
             <img :src="`doc/images/${key.toPascalCase()}Card.png`" />
             <div>{{resources.length}}</div>
         </div>
@@ -12,11 +12,17 @@
 </template>
 
 <script>
+    var proto = require("../data_pb");
     export default {
         name: 'bank-view',
         props: {
             bank: {
                 type: Object
+            }
+        },
+        methods: {
+            isUnknown: function(resourceType) {
+                return proto.ResourceType[resourceType] === proto.ResourceType.UNKNOWN;
             }
         }
     }

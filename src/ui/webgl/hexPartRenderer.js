@@ -30,6 +30,7 @@ export class HexPartRenderer  extends Renderer{
         triangleShape.autoClose = true;
 
         var texture = new THREE.TextureLoader().load("doc/images/Wheat2To1Port.png");
+        texture.minFilter = THREE.LinearFilter;
         const shapeGeometry = new THREE.ShapeGeometry(triangleShape);
         shapeGeometry.faceVertexUvs[0][0][0].x = 1
         shapeGeometry.faceVertexUvs[0][0][0].y = 0;

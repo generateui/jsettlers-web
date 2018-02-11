@@ -8,7 +8,6 @@ export class RobberRenderer extends Renderer {
         var loader = new THREE.STLLoader();
         const that = this;
         loader.load('models3D/robber.stl', function (geometry) {
-            console.log(geometry);
             var material = new THREE.MeshPhongMaterial({color: 0x222222});
             var group = new THREE.Mesh(geometry, material);
             group.rotation.x = -0.5 * Math.PI;

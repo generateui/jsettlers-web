@@ -44,6 +44,7 @@ export class PortRenderer extends Renderer {
         }
 
         this.texture = this._getTexture(port.type);
+        this.texture.minFilter = THREE.LinearFilter;
         this.material = new THREE.MeshLambertMaterial( {color: 0xdddddd, map: this.texture} );
         this.mesh = new THREE.Mesh(PortRenderer.geometries[port.partIndex], this.material);
         var position = boardRenderer.coordToPixel(port.seaCoord);

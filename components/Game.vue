@@ -116,10 +116,6 @@
             game.player = player;
             this.$data.game = game;
         },
-        beforeMount: function() {
-            console.log("test");
-
-        },
         mounted: function() {
             var brEl = document.getElementById("game-board-renderer");
             const game = this.$data.game;
