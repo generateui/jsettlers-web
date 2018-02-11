@@ -10,6 +10,11 @@ String.prototype.hashCode = function() {
   }
   return hash;
 };
+String.prototype.toPascalCase = function() {
+  const firstLetter = this[0].toUpperCase();
+  const rest = this.substring(1, this.length).toLowerCase();
+  return firstLetter + rest;
+}
 
 var proto = require("./data_pb");
 
@@ -34,7 +39,7 @@ const routes = [
   { path: "/play-test-game", component: PlayTestGame,
     children: [
       { path: "", component: GameSettings },
-      { path: "game", component: Game },
+      { path: "game", name: "game", component: Game, props: true },
       { path: "welcome", component: Welcome },
     ]
   },

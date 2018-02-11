@@ -7,6 +7,7 @@ import {EdgeRenderer} from "./edgeRenderer.js";
 import {PortPickerRenderer} from "./portPickerRenderer.js";
 import {MouseCaster} from "../../../von-grid/MouseCaster.js";
 import {NoBehavior} from "../BoardBehavior.js";
+import {Standard4pDesign} from "../../board.js";
 
 /* Renders a 3D hexagon board using von-grid */
 export class BoardRenderer {

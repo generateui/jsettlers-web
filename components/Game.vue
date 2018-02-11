@@ -2,30 +2,26 @@
   <div id="game">
     <div id="left">
         <div id="players">
-            <div v-for="player in settings.players">
+            <div v-for="player in game.players">
                 <player-info v-bind:player="player"></player-info>
             </div>
         </div>
-        <bank-view id="bank" v-bind:bank="settings.bank"></bank-view>
+        <bank-view id="bank" v-bind:bank="game.bank"></bank-view>
 
         <div id="tabs">
             <button class="tab-button" @click="doShowActions()">actions</button>
             <button class="tab-button" @click="doShowChat()">chat</button>
         </div>
         <div id="tab-content">
-            <action-log v-if="showActions" id="action-log"></action-log>
-            <div v-if="showChats" id="chats">
-                
-            </div>
+            <action-log v-if="showActions" id="action-log" v-bind:game="game"></action-log>
+            <div v-if="showChats" id="chats"></div>
         </div>
-        
-        
     </div>
 
     <div id="right">
         <div id="game-board-renderer"></div>
         <build-actions></build-actions>
-        <player-assets v-bind:player="settings.playingPlayer"></player-assets>
+        <player-assets v-bind:player="game.playingPlayer"></player-assets>
     </div>
 
   </div>
@@ -41,32 +37,25 @@
     import DiceView from "./DiceView.vue";
     import {Game} from "../src/game.js";
     import {Bank} from "../src/bank.js";
-    import {BoardRenderer} from "../src/ui/webgl/boardRenderer.js";
+    import {GameBoardRenderer} from "../src/ui/webgl/gameBoardRenderer.js";
     import {Player, User} from "../src/player.js";
     import { Standard4pDesign, BoardDescriptor } from '../src/board.js';
 
-    const players = [
-        new Player({ color: 0xff0000, user: new User({name: "derpy"}) }),
-        new Player({ color: 0x00ff00, user: new User({name: "derpy2"}) }),
-        new Player({ color: 0x0000ff, user: new User({name: "derpy3"}) }),
-        new Player({ color: 0xffffff, user: new User({name: "derpy4"}) })
-    ];
-    
     export default {
         name: 'game',
         components: {
             PlayerInfo, PlayerAssets, BuildActions, BankView, ActionLog, DiceView
         },
+        props: {
+            settings: {
+                type: Object
+            }
+        },
         data() {
             return {
-                settings: {
-                    boardDescriptor: Standard4pDesign.descriptor,
-                    players: players,
-                    playingPlayer: players[0],
-                    bank: new Bank()
-                },
                 showActions: true,
-                showChat: false
+                showChat: false,
+                game: null
             }
         },
         methods: {
@@ -79,14 +68,39 @@
                 this.$data.showChat = true;
             },
         },
-        mounted: function() {
-            const settings = this.$data.settings;
+        created: function() {
+            const settings = this.$props.settings;
             const board = settings.boardDescriptor.createBoard();
             board.generateBoardForPlay();
             const game = new Game();
+            for (var bot of settings.bots) {
+                var botPlayer = new Player({
+                    user: new User({
+                        name: bot.name,
+                        id: bot.id
+                    })
+                });
+                game.players.push(botPlayer);
+            }
             game.gameBoard = board;
+            const playingPlayer = settings.players[0];
+            game.players.push(playingPlayer);
+
+            var iterator = Player.colors[Symbol.iterator]();
+            for(var player of game.players) {
+                player.color = iterator.next().value;
+            }
+            game.playingPlayer = playingPlayer;
+            this.$data.game = game;
+        },
+        beforeMount: function() {
+            console.log("test");
+
+        },
+        mounted: function() {
             var brEl = document.getElementById("game-board-renderer");
-            const boardRenderer = new BoardRenderer(brEl, board);
+            const game = this.$data.game;
+            const boardRenderer = new GameBoardRenderer(brEl, game);
         }
     }
 </script>
@@ -113,6 +127,7 @@
 
 #bank {
     display: inline-flex;
+    flex: 0 0 auto;
 }
 #tabs {
     flex: 0 0 auto;

@@ -33,6 +33,67 @@ export class Player extends Observable {
 
         this.makeObservable(["user"]);
     }
+    static get colors() {
+        if (Player._colors === undefined) {
+            Player._colors = [Color.red, Color.green, Color.blue, Color.white, Color.brown, Color.orange];
+        }
+        return Player._colors;
+    }
+}
+export class Color {
+    constructor(integer) {
+        this.integer = integer;
+    }
+    static get red() {
+        if (Color._red === undefined) {
+            Color._red = new Color(0xff0000);
+        }
+        return Color._red;
+    }
+    static get green() {
+        if (Color._green === undefined) {
+            Color._green = new Color(0x00ff00);
+        }
+        return Color._green;
+    }
+    static get blue() {
+        if (Color._blue === undefined) {
+            Color._blue = new Color(0x0000ff);
+        }
+        return Color._blue;
+    }
+    static get white() {
+        if (Color._white === undefined) {
+            Color._white = new Color(0xff0000);
+        }
+        return Color._white;
+    }
+    static get brown() {
+        if (Color._brown === undefined) {
+            Color._brown = new Color(0xff0000);
+        }
+        return Color._brown;
+    }
+    static get orange() {
+        if (Color._orange === undefined) {
+            Color._orange = new Color(0xff0000);
+        }
+        return Color._orange;
+    }
+    /** returns color in #000000 format */
+    get css() {
+        if (this._cssString === undefined) {
+            this._cssString = '#' + ('00000' + (this.integer | 0).toString(16)).substr(-6);
+        }
+        return this._cssString;
+    }
+    /** returns color in rgba(r, g, b, alpha) format */
+    toCssRgba(alpha) {
+        const r = (this.integer & 0xff0000) >> 16;
+        const g = (this.integer & 0x00ff00) >> 8;
+        const b = (this.integer & 0x0000ff);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
 }
 export class User {
     constructor(config) {
