@@ -23,5 +23,15 @@ export class Game extends Observable {
         this.board = null;
         this.developmentCards = []; // TODO: observable array
         this.bank = new Bank();
+        this.actions = [];
+    }
+    
+    getPlayerById(id) {
+        for (var player of this.players) {
+            if (player.id === id) {
+                return player;
+            }
+        }
+        return null;
     }
 }

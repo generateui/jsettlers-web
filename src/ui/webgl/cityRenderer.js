@@ -8,7 +8,7 @@ export class CityRenderer extends Renderer {
         const that = this;
         loader.load('models3D/city.stl', function (geometry) {
             console.log(geometry);
-            that.material = new THREE.MeshPhongMaterial({color: city.player.color});
+            that.material = new THREE.MeshPhongMaterial({color: city.player.color.integer});
             that.geometry = new THREE.EdgesGeometry(geometry);
             that.lines = new THREE.LineSegments(that.geometry, new THREE.LineBasicMaterial({ color: 0x000000 }));
             var mesh = new THREE.Mesh(that.geometry, that.material);

@@ -14,7 +14,7 @@
             <button class="tab-button" @click="doShowPerformAction()">action</button>
         </div>
         <div id="tab-content">
-            <action-log v-if="showActions" id="action-log" v-bind:game="game"></action-log>
+            <action-log v-if="showActions" id="action-log" v-bind:actions="game.actions"></action-log>
             <div v-if="showChats" id="chats"></div>
             <debug-perform-actions v-if="showPerformActions" v-bind:game="game" v-on:behaviorChanged="behaviorChanged"></debug-perform-actions>
         </div>
@@ -107,8 +107,11 @@
             game.players.push(player);
 
             var iterator = Player.colors[Symbol.iterator]();
+            var playerId = 0;
             for(var p of game.players) {
                 p.color = iterator.next().value;
+                p.id = playerId;
+                playerId++;
             }
             game.player = player;
             this.$data.game = game;

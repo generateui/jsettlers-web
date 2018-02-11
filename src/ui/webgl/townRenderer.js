@@ -9,7 +9,7 @@ export class TownRenderer extends Renderer {
         const that = this;
         loader.load('models3D/town.stl', function (geometry) {
             console.log(geometry);
-            that.material = new THREE.MeshPhongMaterial({color: town.player.color});
+            that.material = new THREE.MeshPhongMaterial({color: town.player.color.integer});
             var edges = new THREE.EdgesGeometry(geometry);
             var lines = new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: 0x000000 }));
             var group = new THREE.Mesh(geometry, that.material);

@@ -10,7 +10,7 @@ export class RoadRenderer extends Renderer {
         var boxGeometry = new THREE.BoxGeometry(6, 2, 2);
         this.geometry = new THREE.EdgesGeometry(boxGeometry);
         var lines = new THREE.LineSegments(this.geometry, new THREE.LineBasicMaterial({ color: 0x000000 }));
-        this.material = new THREE.MeshBasicMaterial( {color: road.player.color} );
+        this.material = new THREE.MeshBasicMaterial( {color: road.player.color.integer} );
         var box = new THREE.Mesh(boxGeometry, this.material);
         box.add(lines);
         var radians = ((road.edge.rotation || 60)* Math.PI) / 180;

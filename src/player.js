@@ -10,6 +10,7 @@ export class Player extends Observable {
 
         config = config || {};
 
+        this.id = config.id;
         this.color = config.color || 0x000000;
         this.user = config.user || new User();
         this.maxHandResources = 7;

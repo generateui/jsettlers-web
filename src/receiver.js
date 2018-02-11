@@ -6,6 +6,8 @@ export class Receiver {
         this.game = null;
     }
     receive(action) {
+        action.setReferences(this.game);
         action.perform(this.game);
+        this.game.actions.push(action);
     }
 }

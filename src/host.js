@@ -21,10 +21,7 @@ export class HostAtClient {
         const a = actionMessage;
         if (a.hasBuildtown()) {
             const btData = a.getBuildtown();
-            const bt = new BuildTown();
-            const node = Node.fromData(btData.getNode());
-            bt.node = node;
-            return bt;
+            return BuildTown.fromData(btData);
         }
     }
 }

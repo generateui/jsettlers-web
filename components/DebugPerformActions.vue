@@ -4,8 +4,8 @@
             <ul>
                 <li>
                     <img src="doc/images/Town48.png" style="height:24px; width: 24px;">
-                    <select>
-                        <option v-for="player in game.players" v-model="selectedPlayer">{{player.user.name}}</option>
+                    <select v-model="selectedPlayer">
+                        <option v-for="player in game.players" v-bind:value="player" v-bind:key="player.id">{{player.user.name}}</option>
                     </select>
                     <button @click="buildTown()">build town</button>
                 </li>
@@ -38,9 +38,12 @@
             buildTown: function() {
                 const player = this.$data.selectedPlayer;
                 const clicked = function(node) {
+                    var actionIds = new proto.ActionIds();
+                    actionIds.setPlayerid(this.$data.selectedPlayer.id);
                     var action = new proto.GameAction();
                     var bt = new proto.BuildTown();
                     bt.setNode(node.data);
+                    bt.setActionids(actionIds);
                     action.setBuildtown(bt);
                     this.$data.host.send(action);
                     const noBehavior = new bb.NoBehavior();
