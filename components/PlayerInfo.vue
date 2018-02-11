@@ -39,17 +39,6 @@
             player: {
                 type: Object
             }
-        },
-        methods: {
-            toCssColor(integer) {
-                return '#' + ('00000' + (integer | 0).toString(16)).substr(-6);
-            },
-            toCssRgbaColor(integer, alpha) {
-                const r = (integer & 0xff0000) >> 16;
-                const g = (integer & 0x00ff00) >> 8;
-                const b = (integer & 0x0000ff);
-                return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-            }
         }
     }
 </script>

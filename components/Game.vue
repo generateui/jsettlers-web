@@ -11,17 +11,19 @@
         <div id="tabs">
             <button class="tab-button" @click="doShowActions()">actions</button>
             <button class="tab-button" @click="doShowChat()">chat</button>
+            <button class="tab-button" @click="doShowPerformAction()">action</button>
         </div>
         <div id="tab-content">
             <action-log v-if="showActions" id="action-log" v-bind:game="game"></action-log>
             <div v-if="showChats" id="chats"></div>
+            <debug-perform-actions v-if="showPerformActions" v-bind:game="game" v-on:behaviorChanged="behaviorChanged"></debug-perform-actions>
         </div>
     </div>
 
     <div id="right">
         <div id="game-board-renderer"></div>
-        <build-actions></build-actions>
-        <player-assets v-bind:player="game.playingPlayer"></player-assets>
+        <actions></actions>
+        <player-assets v-bind:player="game.player"></player-assets>
     </div>
 
   </div>
@@ -31,20 +33,26 @@
 <script>
     import PlayerInfo from "./PlayerInfo.vue";
     import PlayerAssets from "./PlayerAssets.vue";
-    import BuildActions from "./BuildActions.vue";
+    import Actions from "./Actions.vue";
     import BankView from "./BankView.vue";
     import ActionLog from "./ActionLog.vue";
     import DiceView from "./DiceView.vue";
+    import DebugPerformActions from "./DebugPerformActions.vue";
+
     import {Game} from "../src/game.js";
     import {Bank} from "../src/bank.js";
     import {BoardRenderer} from "../src/ui/webgl/boardRenderer.js";
     import {Player, User} from "../src/player.js";
     import { Standard4pDesign, BoardDescriptor } from '../src/board.js';
 
+    var boardRenderer = null;
+    var receiver = null;
+    var host = null;
+
     export default {
         name: 'game',
         components: {
-            PlayerInfo, PlayerAssets, BuildActions, BankView, ActionLog, DiceView
+            PlayerInfo, PlayerAssets, Actions, BankView, ActionLog, DiceView, DebugPerformActions
         },
         props: {
             settings: {
@@ -53,20 +61,32 @@
         },
         data() {
             return {
-                showActions: true,
+                showActions: false,
                 showChat: false,
-                game: null
+                showPerformActions: true,
+                game: null,
+                selectedPlayer: null,
             }
         },
         methods: {
             doShowActions: function() {
                 this.$data.showActions = true;
                 this.$data.showChat = false;
+                this.$data.showPerformActions = false;
             },
             doShowChat: function() {
                 this.$data.showActions = false;
                 this.$data.showChat = true;
+                this.$data.showPerformActions = false;
             },
+            doShowPerformAction: function() {
+                this.$data.showActions = false;
+                this.$data.showChat = false;
+                this.$data.showPerformActions = true;
+            },
+            behaviorChanged: function(behavior) {
+                boardRenderer.behavior = behavior;
+            }
         },
         created: function() {
             const settings = this.$props.settings;
@@ -83,14 +103,14 @@
                 game.players.push(botPlayer);
             }
             game.board = board;
-            const playingPlayer = settings.players[0];
-            game.players.push(playingPlayer);
+            const player = settings.players[0];
+            game.players.push(player);
 
             var iterator = Player.colors[Symbol.iterator]();
-            for(var player of game.players) {
-                player.color = iterator.next().value;
+            for(var p of game.players) {
+                p.color = iterator.next().value;
             }
-            game.playingPlayer = playingPlayer;
+            game.player = player;
             this.$data.game = game;
         },
         beforeMount: function() {
@@ -100,7 +120,8 @@
         mounted: function() {
             var brEl = document.getElementById("game-board-renderer");
             const game = this.$data.game;
-            const boardRenderer = new BoardRenderer(brEl, game.board);
+            boardRenderer = new BoardRenderer(brEl, game.board);
+            
         }
     }
 </script>
@@ -138,6 +159,7 @@
 #tab-content {
     flex: 1 1 auto;
     overflow-y: scroll;
+    color: white;
 }
 #right{
   flex: 9;

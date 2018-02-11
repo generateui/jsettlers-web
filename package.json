@@ -21,7 +21,7 @@
   "homepage": "https://github.com/geluso/carcattonne#readme",
   "dependencies": {
     "google-protobuf": "^3.4.0",
-    "protobufjs": "^6.8.0",
+    "protobufjs": "^6.8.4",
     "three-js": "^79.0.0",
     "vue": "^2.0.1"
   },

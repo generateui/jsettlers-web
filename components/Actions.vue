@@ -1,5 +1,5 @@
 <template>
-    <div id="build-actions">
+    <div id="actions">
         <div id="build-town" class="build-button">
             <img id="town-trade1" class="trade" src="doc/images/Trade48.png" />
             <img id="town-trade2" class="trade" src="doc/images/Trade48.png" />
@@ -51,7 +51,7 @@
         components: {
             DiceView
         },
-        name: 'build-actions',
+        name: 'actions',
         data() {
             return {
                 dice: new Dice()
@@ -61,11 +61,12 @@
 </script>
 
 <style scoped>
-#build-actions {
+#actions {
     display: grid;
     height: 64px;
     grid-template-columns: repeat(8, 48px) auto;
     grid-template-rows: repeat(9, 64px);
+    grid-column-gap: 1em;
 }
 .build-button { 
     margin: 0.25em;

@@ -18,7 +18,8 @@ export class Game extends Observable {
 
         this.robber = new Robber(Coord3D.center);
         this.players = [];
-        this.playerOnTurn = null;
+        this.player = null; // the player at the front-end
+        this.playerOnTurn = null; // the player whose turn it is
         this.board = null;
         this.developmentCards = []; // TODO: observable array
         this.bank = new Bank();

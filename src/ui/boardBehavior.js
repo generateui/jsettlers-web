@@ -301,10 +301,9 @@ export class MoveRobber extends BoardBehavior {
     }
 }
 export class BuildTown extends BoardBehavior {
-    constructor() {
+    constructor(player) {
         super();
-        this.player = new Player({color: 0xff0000});
-        this.player.color = 0xff0000;
+        this.player = player || new Player({color: 0xff0000});
     }
     start(boardRenderer) {
         this.boardRenderer = boardRenderer;
@@ -315,6 +314,27 @@ export class BuildTown extends BoardBehavior {
         if (renderer instanceof NodeRenderer) {
             const node = renderer.node;
             this.boardRenderer.board.towns.set(node, new Town(this.player, node));
+        }
+    }
+    stop(boardRenderer) {
+        boardRenderer.hideAllNodes();
+    }
+}
+export class BuildTown2 extends BoardBehavior {
+    constructor(player, clickedFunction) {
+        super();
+        this.clickedFunction = clickedFunction;
+        this.player = player || new Player({color: 0xff0000});
+    }
+    start(boardRenderer) {
+        this.boardRenderer = boardRenderer;
+        var nodes = boardRenderer.board.getAllNodes();
+        boardRenderer.showNodes(nodes);
+    }
+    click(boardRenderer, renderer) {
+        if (renderer instanceof NodeRenderer) {
+            const node = renderer.node;
+            this.clickedFunction(node);
         }
     }
     stop(boardRenderer) {
