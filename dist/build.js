@@ -376,7 +376,7 @@ if (module.hot) {(function () {  var hotAPI = require("vue-hot-reload-api")
     hotAPI.reload("data-v-7c630aba", __vue__options__)
   }
 })()}
-},{"../src/board.js":82,"../src/ui/webgl/boardRenderer.js":104,"vue":79,"vue-hot-reload-api":77,"vueify/lib/insert-css":80}],6:[function(require,module,exports){
+},{"../src/board.js":82,"../src/ui/webgl/boardRenderer.js":102,"vue":79,"vue-hot-reload-api":77,"vueify/lib/insert-css":80}],6:[function(require,module,exports){
 var __vueify_style_dispose__ = require("vueify/lib/insert-css").insert("#build-actions[data-v-88691e32] {\r\n    display: grid;\r\n    height: 64px;\r\n    grid-template-columns: repeat(8, 48px) auto;\r\n    grid-template-rows: repeat(9, 64px);\r\n}\r\n.build-button[data-v-88691e32] { \r\n    margin: 0.25em;\r\n    align-self: end;\r\n}\r\n.build-button[data-v-88691e32]:hover {\r\n    filter: drop-shadow(0px 0px 12px #fff);\r\n}\r\n.trade[data-v-88691e32] {\r\n    width: 24px;\r\n    height: 24px;\r\n}\r\n#build-city[data-v-88691e32] {\r\n    grid-column-start: 1;\r\n    grid-row-start: 1;\r\n    display: grid;\r\n    grid-template-columns: 24px 24px;\r\n    grid-template-rows: 24px 24px 24px 48px;\r\n}\r\n    #build-city-button[data-v-88691e32] {\r\n        grid-column-start: 1;\r\n        grid-column-end: 2;\r\n        grid-row-start: 4;\r\n        grid-row-end: 4;\r\n        width: 48px;\r\n        height: 48px;\r\n    }\r\n    #city-trade1[data-v-88691e32] {\r\n        grid-column-start: 1;\r\n        grid-row-start: 3;\r\n    }\r\n    #city-trade2[data-v-88691e32] {\r\n        grid-column-start: 2;\r\n        grid-row-start: 3;\r\n    }\r\n    #city-trade3[data-v-88691e32] {\r\n        grid-column-start: 1;\r\n        grid-row-start: 2;\r\n    }\r\n    #city-trade4[data-v-88691e32] {\r\n        grid-column-start: 2;\r\n        grid-row-start: 2;\r\n    }\r\n    #city-trade5[data-v-88691e32] {\r\n        grid-column-start: 1;\r\n        grid-row-start: 1;\r\n    }\r\n\r\n#build-town[data-v-88691e32] {\r\n    grid-column-start: 2;\r\n    grid-row-start: 1;\r\n    display: grid;\r\n    grid-template-columns: 24px 24px;\r\n    grid-template-rows: 24px 24px 48px;\r\n}\r\n    #build-town-button[data-v-88691e32] {\r\n        grid-column-start: 1;\r\n        grid-column-end: 2;\r\n        grid-row-start: 3;\r\n        grid-row-end: 3;\r\n        width: 48px;\r\n        height: 48px;\r\n    }\r\n    #town-trade1[data-v-88691e32] {\r\n        grid-column-start: 1;\r\n        grid-row-start: 2;\r\n    }\r\n    #town-trade2[data-v-88691e32] {\r\n        grid-column-start: 2;\r\n        grid-row-start: 2;\r\n    }\r\n    #town-trade3[data-v-88691e32] {\r\n        grid-column-start: 1;\r\n        grid-row-start: 1;\r\n    }\r\n    #town-trade4[data-v-88691e32] {\r\n        grid-column-start: 2;\r\n        grid-row-start: 1;\r\n    }\r\n#build-road[data-v-88691e32] {\r\n    grid-column-start: 3;\r\n    grid-row-start: 1;\r\n    display: grid;\r\n    grid-template-columns: 24px 24px;\r\n    grid-template-rows: 24px 48px;\r\n}\r\n    #build-road-button[data-v-88691e32] {\r\n        grid-column-start: 1;\r\n        grid-column-end: 2;\r\n        grid-row-start: 2;\r\n        grid-row-end: 2;\r\n        width: 48px;\r\n        height: 48px;\r\n    }\r\n    #road-trade1[data-v-88691e32] {\r\n        grid-column-start: 1;\r\n        grid-row-start: 1;\r\n    }\r\n    #road-trade2[data-v-88691e32] {\r\n        grid-column-start: 2;\r\n        grid-row-start: 1;\r\n    }\r\n#buy-development-card[data-v-88691e32] {\r\n    grid-column-start: 4;\r\n    grid-row-start: 1;\r\n    display: grid;\r\n    grid-template-columns: 24px 24px;\r\n    grid-template-rows: 24px 24px 48px;\r\n}\r\n    #buy-development-card-button[data-v-88691e32] {\r\n        grid-column-start: 1;\r\n        grid-column-end: 2;\r\n        grid-row-start: 3;\r\n        grid-row-end: 3;\r\n        width: 48px;\r\n        height: 48px;\r\n    }\r\n    #buy-development-card-trade1[data-v-88691e32] {\r\n        grid-column-start: 1;\r\n        grid-row-start: 2;\r\n    }\r\n    #buy-development-card-trade2[data-v-88691e32] {\r\n        grid-column-start: 2;\r\n        grid-row-start: 2;\r\n    }\r\n    #buy-development-card-trade3[data-v-88691e32] {\r\n        grid-column-start: 1;\r\n        grid-row-start: 1;\r\n    }\r\n#play-developmentCard[data-v-88691e32] {\r\n    grid-column-start: 5;\r\n    grid-row-start: 1;\r\n}\r\n#trade-player[data-v-88691e32] {\r\n    grid-column-start: 6;\r\n    grid-row-start: 1;\r\n}\r\n#trade-bank[data-v-88691e32] {\r\n    grid-column-start: 7;\r\n    grid-row-start: 1;\r\n}\r\n#end-turn[data-v-88691e32] {\r\n    grid-column-start: 8;\r\n    grid-row-start: 1;\r\n}\r\n#dice-view[data-v-88691e32] {\r\n    grid-column-start: 9;\r\n    grid-row-start: 1;\r\n}")
 ;(function(){
 "use strict";
@@ -453,7 +453,7 @@ exports.default = {
 if (module.exports.__esModule) module.exports = module.exports.default
 var __vue__options__ = (typeof module.exports === "function"? module.exports.options: module.exports)
 if (__vue__options__.functional) {console.error("[vueify] functional components are not supported and should be defined in plain js files using render functions.")}
-__vue__options__.render = function render () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('ul',_vm._l((_vm.chitTypes),function(ct,key){return _c('li',{key:key},[_c('input',{attrs:{"type":"radio","id":ct,"name":"chitTypePicker"}}),_vm._v(" "),_c('label',{attrs:{"for":ct},on:{"click":function($event){_vm.click(ct)}}},[_c('img',{attrs:{"src":("doc/images/" + (key.toLowerCase()) + ".png")}}),_vm._v("\n          "+_vm._s(key)+"\n      ")])])}))}
+__vue__options__.render = function render () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('ul',{staticClass:"toggle-button"},_vm._l((_vm.chitTypes),function(ct,key){return _c('li',{key:key},[_c('input',{attrs:{"type":"radio","id":ct,"name":"chitTypePicker"}}),_vm._v(" "),_c('label',{attrs:{"for":ct},on:{"click":function($event){_vm.click(ct)}}},[_c('img',{attrs:{"src":("doc/images/" + (key.toLowerCase()) + ".png")}}),_vm._v("\n          "+_vm._s(key)+"\n      ")])])}))}
 __vue__options__.staticRenderFns = []
 __vue__options__._scopeId = "data-v-15c84690"
 if (module.hot) {(function () {  var hotAPI = require("vue-hot-reload-api")
@@ -615,7 +615,7 @@ var _game = require("../src/game.js");
 
 var _bank = require("../src/bank.js");
 
-var _gameBoardRenderer = require("../src/ui/webgl/gameBoardRenderer.js");
+var _boardRenderer = require("../src/ui/webgl/boardRenderer.js");
 
 var _player = require("../src/player.js");
 
@@ -687,7 +687,7 @@ exports.default = {
             }
         }
 
-        game.gameBoard = board;
+        game.board = board;
         var playingPlayer = settings.players[0];
         game.players.push(playingPlayer);
 
@@ -726,7 +726,7 @@ exports.default = {
     mounted: function mounted() {
         var brEl = document.getElementById("game-board-renderer");
         var game = this.$data.game;
-        var boardRenderer = new _gameBoardRenderer.GameBoardRenderer(brEl, game);
+        var boardRenderer = new _boardRenderer.BoardRenderer(brEl, game.board);
     }
 };
 })()
@@ -747,7 +747,7 @@ if (module.hot) {(function () {  var hotAPI = require("vue-hot-reload-api")
     hotAPI.reload("data-v-3588e0aa", __vue__options__)
   }
 })()}
-},{"../src/bank.js":81,"../src/board.js":82,"../src/game.js":89,"../src/player.js":95,"../src/ui/webgl/gameBoardRenderer.js":108,"./ActionLog.vue":3,"./BankView.vue":4,"./BuildActions.vue":6,"./DiceView.vue":8,"./PlayerAssets.vue":15,"./PlayerInfo.vue":16,"babel-runtime/core-js/get-iterator":23,"vue":79,"vue-hot-reload-api":77,"vueify/lib/insert-css":80}],11:[function(require,module,exports){
+},{"../src/bank.js":81,"../src/board.js":82,"../src/game.js":89,"../src/player.js":95,"../src/ui/webgl/boardRenderer.js":102,"./ActionLog.vue":3,"./BankView.vue":4,"./BuildActions.vue":6,"./DiceView.vue":8,"./PlayerAssets.vue":15,"./PlayerInfo.vue":16,"babel-runtime/core-js/get-iterator":23,"vue":79,"vue-hot-reload-api":77,"vueify/lib/insert-css":80}],11:[function(require,module,exports){
 var __vueify_style_dispose__ = require("vueify/lib/insert-css").insert("#play-test-game[data-v-f4701526] {\r\n  display: flex;\r\n  flex: 1 1 auto;\r\n  flex-direction: row;\r\n}\r\n#left[data-v-f4701526] {\r\n  flex: 1;\r\n  display: flex;\r\n  flex: 1 1 auto;\r\n  flex-direction: column;\r\n  background-color: var(--main-background-color-dark);\r\n  padding: 1em;\r\n}\r\n#right[data-v-f4701526]{\r\n  flex: 4;\r\n  background-color: black;\r\n}\r\n#board-list[data-v-f4701526] {\r\n  padding: 1em;\r\n  flex: 1;\r\n  height: 100%;\r\n  border: 1px solid black;\r\n}\r\n#board-preview[data-v-f4701526] {\r\n  flex: 4;\r\n  width: 100%;\r\n  height: 100%;\r\n}\r\n#bot-picker-wrapper[data-v-f4701526] {\r\n  flex: 1;\r\n  display: flex;\r\n  flex: 1 1 auto;\r\n  flex-direction: row;\r\n  padding: 1em;\r\n  border: 1px solid black;\r\n}\r\n  #bot-list-wrapper[data-v-f4701526] {\r\n    flex: 1;\r\n  }\r\n  #selected-bot-list-wrapper[data-v-f4701526]{\r\n    flex:1;\r\n  }\r\n#board-list[data-v-f4701526] {\r\n  overflow-y: scroll;\r\n}\r\n\r\nli[data-v-f4701526]:hover {\r\n  background-color: grey;\r\n  cursor: pointer;\r\n}\r\ninput[type=\"text\"][data-v-f4701526] {\r\n  padding: 0.5em;\r\n}\r\ninput[type=\"button\"][data-v-f4701526] {\r\n  height: 4em;\r\n}")
 ;(function(){
 'use strict';
@@ -907,7 +907,7 @@ exports.default = {
 if (module.exports.__esModule) module.exports = module.exports.default
 var __vue__options__ = (typeof module.exports === "function"? module.exports.options: module.exports)
 if (__vue__options__.functional) {console.error("[vueify] functional components are not supported and should be defined in plain js files using render functions.")}
-__vue__options__.render = function render () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('ul',_vm._l((_vm.hexTypes),function(ht,key){return _c('li',{key:key},[_c('input',{attrs:{"type":"radio","id":("hexType-" + ht),"name":"hexTypePicker"}}),_vm._v(" "),_c('label',{attrs:{"for":("hexType-" + ht)},on:{"click":function($event){_vm.click(ht)}}},[_c('img',{attrs:{"src":("doc/images/" + (key.toLowerCase()) + "24.png")}}),_vm._v("\n          "+_vm._s(key)+"\n      ")])])}))}
+__vue__options__.render = function render () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('ul',{staticClass:"toggle-button"},_vm._l((_vm.hexTypes),function(ht,key){return _c('li',{key:key},[_c('input',{attrs:{"type":"radio","id":("hexType-" + ht),"name":"hexTypePicker"}}),_vm._v(" "),_c('label',{attrs:{"for":("hexType-" + ht)},on:{"click":function($event){_vm.click(ht)}}},[_c('img',{attrs:{"src":("doc/images/" + (key.toLowerCase()) + "24.png")}}),_vm._v("\n          "+_vm._s(key)+"\n      ")])])}))}
 __vue__options__.staticRenderFns = []
 __vue__options__._scopeId = "data-v-5048c84a"
 if (module.hot) {(function () {  var hotAPI = require("vue-hot-reload-api")
@@ -1075,7 +1075,7 @@ exports.default = {
 if (module.exports.__esModule) module.exports = module.exports.default
 var __vue__options__ = (typeof module.exports === "function"? module.exports.options: module.exports)
 if (__vue__options__.functional) {console.error("[vueify] functional components are not supported and should be defined in plain js files using render functions.")}
-__vue__options__.render = function render () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('ul',_vm._l((_vm.players),function(p){return _c('li',[_c('input',{attrs:{"type":"radio","id":("player" + (p.user.name)),"name":"playerPicker"}}),_vm._v(" "),_c('label',{class:{active: _vm.player === p},attrs:{"for":("player" + (p.user.name))},on:{"click":function($event){_vm.click(p)}}},[_c('span',{style:({color: _vm.toCssColor(p.color)})},[_vm._v("⬛ ")]),_vm._v("\n          "+_vm._s(p.user.name)+"\n      ")])])}))}
+__vue__options__.render = function render () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('ul',{staticClass:"toggle-button"},_vm._l((_vm.players),function(p){return _c('li',[_c('input',{attrs:{"type":"radio","id":("player" + (p.user.name)),"name":"playerPicker"}}),_vm._v(" "),_c('label',{class:{active: _vm.player === p},attrs:{"for":("player" + (p.user.name))},on:{"click":function($event){_vm.click(p)}}},[_c('span',{style:({color: _vm.toCssColor(p.color)})},[_vm._v("⬛ ")]),_vm._v("\n          "+_vm._s(p.user.name)+"\n      ")])])}))}
 __vue__options__.staticRenderFns = []
 __vue__options__._scopeId = "data-v-a8dc3df2"
 if (module.hot) {(function () {  var hotAPI = require("vue-hot-reload-api")
@@ -1119,7 +1119,7 @@ exports.default = {
 if (module.exports.__esModule) module.exports = module.exports.default
 var __vue__options__ = (typeof module.exports === "function"? module.exports.options: module.exports)
 if (__vue__options__.functional) {console.error("[vueify] functional components are not supported and should be defined in plain js files using render functions.")}
-__vue__options__.render = function render () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('ul',_vm._l((_vm.portTypes),function(pt,key){return _c('li',{key:key},[_c('input',{attrs:{"type":"radio","id":("port-" + pt),"name":"portTypePicker"}}),_vm._v(" "),_c('label',{attrs:{"for":("port-" + pt)},on:{"click":function($event){_vm.click(pt)}}},[_c('img',{attrs:{"src":'doc/images/' + key.toLowerCase() + 'port.png'}}),_vm._v("\n          "+_vm._s(key.toLowerCase())+"\n      ")])])}))}
+__vue__options__.render = function render () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('ul',{staticClass:"toggle-button"},_vm._l((_vm.portTypes),function(pt,key){return _c('li',{key:key},[_c('input',{attrs:{"type":"radio","id":("port-" + pt),"name":"portTypePicker"}}),_vm._v(" "),_c('label',{attrs:{"for":("port-" + pt)},on:{"click":function($event){_vm.click(pt)}}},[_c('img',{attrs:{"src":'doc/images/' + key.toLowerCase() + 'port.png'}}),_vm._v("\n          "+_vm._s(key.toLowerCase())+"\n      ")])])}))}
 __vue__options__.staticRenderFns = []
 __vue__options__._scopeId = "data-v-33f6a101"
 if (module.hot) {(function () {  var hotAPI = require("vue-hot-reload-api")
@@ -1133,7 +1133,7 @@ if (module.hot) {(function () {  var hotAPI = require("vue-hot-reload-api")
   }
 })()}
 },{"../data_pb":21,"vue":79,"vue-hot-reload-api":77}],19:[function(require,module,exports){
-var __vueify_style_dispose__ = require("vueify/lib/insert-css").insert("#wrapper[data-v-53ef5a5e] {\r\n    display: flex;\r\n    flex-direction: row;\r\n    height: 100%;\r\n    width: 100%;\r\n}\r\n#vertical-menu-1[data-v-53ef5a5e] {\r\n    background-color: rgba(33, 150, 243, 0.75);\r\n    display: flex;\r\n    height: 100%;\r\n    flex: 1;\r\n}\r\n#vertical-menu-2[data-v-53ef5a5e] {\r\n    background-color: rgba(33, 150, 243, 0.5);\r\n    display: flex;\r\n    height: 100%;\r\n    flex: 1;\r\n}\r\n#board-renderer[data-v-53ef5a5e] {\r\n    top: 0;\r\n    left: 0;\r\n    background-color: #000;\r\n    display: flex;\r\n    flex: 8;\r\n    height: 100%;\r\n    width: 100%;\r\n}\r\ninput[type='radio'][data-v-53ef5a5e] {\r\n    display: none;\r\n}\r\nlabel[data-v-53ef5a5e] {\r\n    text-align: right;\r\n    clear: both;\r\n    float: left;\r\n    cursor: pointer;\r\n    border: 2px solid transparent;\r\n}\r\nlabel > img[data-v-53ef5a5e] {\r\n    vertical-align: middle;\r\n    margin-right: 0.5em;\r\n}\r\n\r\n/* a label right after an input element which is checked */\r\ninput[type='radio']:checked+label[data-v-53ef5a5e] {\r\n    border: 2px solid black;\r\n    background-color: #C4C4C4;\r\n}\r\ninput[type='radio']+label[data-v-53ef5a5e]:hover {\r\n    border: 2px solid grey;\r\n    background-color: #C4C4C4;\r\n}\r\n.widget-header[data-v-53ef5a5e] {\r\n    font-size: large;\r\n    font-weight: 600;\r\n}\r\nli[data-v-53ef5a5e] {\r\n    list-style-type:none;\r\n    padding: 0;\r\n}\r\nimg[data-v-53ef5a5e] {\r\n    height: 24px;\r\n    width: 24px;\r\n}")
+var __vueify_style_dispose__ = require("vueify/lib/insert-css").insert("#wrapper[data-v-53ef5a5e] {\r\n    display: grid;\r\n    grid-template-columns: 15% 15% 70%;\r\n    grid-template-rows: 100%;\r\n    height: 100%;\r\n    width: 100%;\r\n}\r\n#vertical-menu-1[data-v-53ef5a5e] {\r\n    background-color: rgba(33, 150, 243, 0.75);\r\n    grid-row-start: 1;\r\n    grid-column-start: 1;\r\n    height: 100%;\r\n}\r\n#vertical-menu-2[data-v-53ef5a5e] {\r\n    background-color: rgba(33, 150, 243, 0.5);\r\n    grid-row-start: 1;\r\n    grid-column-start: 2;\r\n    height: 100%;\r\n}\r\n#board-renderer[data-v-53ef5a5e] {\r\n    background-color: #000;\r\n    grid-row-start: 1;\r\n    grid-column-start: 3;\r\n    height: 100%;\r\n}\n.toggle-button li > input[type='radio'] {\r\n    display: none;\r\n}\r\n.toggle-button li > label {\r\n    text-align: right;\r\n    clear: both;\r\n    float: left;\r\n    cursor: pointer;\r\n    border: 2px solid transparent;\r\n}\r\n.toggle-button li > label > img {\r\n    vertical-align: middle;\r\n    margin-right: 0.5em;\r\n}\r\n\r\n/* a label right after an input element which is checked */\r\n.toggle-button li > input[type='radio']:checked+label {\r\n    border: 2px solid black;\r\n    background-color: #C4C4C4;\r\n}\r\n.toggle-button li > input[type='radio']+label:hover {\r\n    border: 2px solid grey;\r\n    background-color: #C4C4C4;\r\n}\r\n.widget-header {\r\n    font-size: large;\r\n    font-weight: 600;\r\n}\r\n.toggle-button > li {\r\n    list-style-type:none;\r\n    padding: 0;\r\n}\r\n.toggle-button > li > label > img {\r\n    height: 24px;\r\n    width: 24px;\r\n}")
 ;(function(){
 'use strict';
 
@@ -1161,13 +1161,9 @@ var _boardBehavior = require('../src/ui/boardBehavior.js');
 
 var bb = _interopRequireWildcard(_boardBehavior);
 
-var _gameBoardBehavior = require('../src/ui/gameBoardBehavior.js');
-
-var gbb = _interopRequireWildcard(_gameBoardBehavior);
-
 var _board = require('../src/board.js');
 
-var _gameBoardRenderer = require('../src/ui/webgl/gameBoardRenderer.js');
+var _boardRenderer = require('../src/ui/webgl/boardRenderer.js');
 
 var _game = require('../src/game.js');
 
@@ -1181,9 +1177,9 @@ var proto = require("../data_pb");
 var setHex = new bb.SetHex();
 var setChit = new bb.SetChit();
 var setPort = new bb.SetPort();
-var buildTown = new gbb.BuildTown();
-var buildCity = new gbb.BuildCity();
-var buildRoad = new gbb.BuildRoad();
+var buildTown = new bb.BuildTown();
+var buildCity = new bb.BuildCity();
+var buildRoad = new bb.BuildRoad();
 var boardRenderer = null;
 
 exports.default = {
@@ -1194,7 +1190,7 @@ exports.default = {
     data: function data() {
         return {
             setChit: setChit,
-            behaviors: [new bb.NoBehavior(), new bb.EmphasizeHoveredObject(), setHex, setChit, new bb.CompositeBehavior(new bb.EmphasizeHoveredObject(), new bb.ShowAllEdges()), new bb.ShowAllNodes(), new bb.ShowNodesOfClickedHex(), new bb.ShowAllEdges(), new bb.ShowEdgesOfClickedHex(), new bb.ShowEdgesOfClickedNode(), setPort, new gbb.MoveRobber(), buildTown, buildCity, buildRoad, new bb.RemoveHex()],
+            behaviors: [new bb.NoBehavior(), new bb.EmphasizeHoveredObject(), setHex, setChit, new bb.CompositeBehavior(new bb.EmphasizeHoveredObject(), new bb.ShowAllEdges()), new bb.ShowAllNodes(), new bb.ShowNodesOfClickedHex(), new bb.ShowAllEdges(), new bb.ShowEdgesOfClickedHex(), new bb.ShowEdgesOfClickedNode(), setPort, new bb.MoveRobber(), buildTown, buildCity, buildRoad, new bb.RemoveHex()],
             pickedBehavior: new bb.NoBehavior()
 
         };
@@ -1234,16 +1230,16 @@ exports.default = {
     },
     mounted: function mounted() {
         var boardDesign = new _board.Standard4pDesign();
+        boardDesign.generateBoardForPlay();
         var brEl = this.$refs["board-renderer"];
-        var game = new _game.Game();
-        boardRenderer = new _gameBoardRenderer.GameBoardRenderer(brEl, game, setHex);
+        boardRenderer = new _boardRenderer.BoardRenderer(brEl, boardDesign, setHex);
     }
 };
 })()
 if (module.exports.__esModule) module.exports = module.exports.default
 var __vue__options__ = (typeof module.exports === "function"? module.exports.options: module.exports)
 if (__vue__options__.functional) {console.error("[vueify] functional components are not supported and should be defined in plain js files using render functions.")}
-__vue__options__.render = function render () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{attrs:{"id":"wrapper"}},[_c('div',{attrs:{"id":"vertical-menu-1"}},[_c('li',{attrs:{"id":"board-behavior-picker"}},[_c('div',{staticClass:"widget-header"},[_vm._v("Behavior "+_vm._s(_vm.pickedBehavior.constructor.name))]),_vm._v(" "),_c('div',{attrs:{"id":"behaviors"}},[_c('ul',_vm._l((_vm.behaviors),function(behavior){return _c('li',{key:behavior.constructor.name},[_c('input',{attrs:{"type":"radio","name":"boardbehaviorPicker","id":("behavior-" + (behavior.constructor.name))}}),_vm._v(" "),_c('label',{attrs:{"for":("behavior-" + (behavior.constructor.name))},on:{"click":function($event){_vm.click(behavior)}}},[_vm._v("\n                            "+_vm._s(behavior.constructor.name)+"\n                        ")])])}))])])]),_vm._v(" "),_c('div',{attrs:{"id":"vertical-menu-2"}},[(_vm.showHexTypePicker)?_c('hex-type-picker',{on:{"hexTypeChanged":_vm.hexTypeChanged}}):_vm._e(),_vm._v(" "),(_vm.pickedBehavior===_vm.setChit)?_c('chit-type-picker',{on:{"chitTypeChanged":_vm.chitTypeChanged}}):_vm._e(),_vm._v(" "),(_vm.showPlayerPicker)?_c('player-picker',{on:{"playerChanged":_vm.playerChanged}}):_vm._e(),_vm._v(" "),(_vm.showPortTypePicker)?_c('port-type-picker',{on:{"portTypeChanged":_vm.portTypeChanged}}):_vm._e()],1),_vm._v(" "),_c('div',{ref:"board-renderer",attrs:{"id":"board-renderer"}})])}
+__vue__options__.render = function render () {var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('div',{attrs:{"id":"wrapper"}},[_c('div',{attrs:{"id":"vertical-menu-1"}},[_c('h2',[_vm._v("Behaviors:")]),_vm._v(" "),_c('h3',[_vm._v(_vm._s(_vm.pickedBehavior.constructor.name))]),_vm._v(" "),_c('ul',{staticClass:"toggle-button"},_vm._l((_vm.behaviors),function(behavior){return _c('li',{key:behavior.constructor.name},[_c('input',{attrs:{"type":"radio","name":"boardbehaviorPicker","id":("behavior-" + (behavior.constructor.name))}}),_vm._v(" "),_c('label',{attrs:{"for":("behavior-" + (behavior.constructor.name))},on:{"click":function($event){_vm.click(behavior)}}},[_vm._v("\n                    "+_vm._s(behavior.constructor.name)+"\n                ")])])}))]),_vm._v(" "),_c('div',{attrs:{"id":"vertical-menu-2"}},[(_vm.showHexTypePicker)?_c('hex-type-picker',{on:{"hexTypeChanged":_vm.hexTypeChanged}}):_vm._e(),_vm._v(" "),(_vm.pickedBehavior===_vm.setChit)?_c('chit-type-picker',{on:{"chitTypeChanged":_vm.chitTypeChanged}}):_vm._e(),_vm._v(" "),(_vm.showPlayerPicker)?_c('player-picker',{on:{"playerChanged":_vm.playerChanged}}):_vm._e(),_vm._v(" "),(_vm.showPortTypePicker)?_c('port-type-picker',{on:{"portTypeChanged":_vm.portTypeChanged}}):_vm._e()],1),_vm._v(" "),_c('div',{ref:"board-renderer",attrs:{"id":"board-renderer"}})])}
 __vue__options__.staticRenderFns = []
 __vue__options__._scopeId = "data-v-53ef5a5e"
 if (module.hot) {(function () {  var hotAPI = require("vue-hot-reload-api")
@@ -1257,7 +1253,7 @@ if (module.hot) {(function () {  var hotAPI = require("vue-hot-reload-api")
     hotAPI.reload("data-v-53ef5a5e", __vue__options__)
   }
 })()}
-},{"../data_pb":21,"../src/board.js":82,"../src/game.js":89,"../src/ui/boardBehavior.js":102,"../src/ui/gameBoardBehavior.js":103,"../src/ui/webgl/gameBoardRenderer.js":108,"./ChitTypePicker.vue":7,"./HexTypePicker.vue":13,"./PlayerPicker.vue":17,"./PortTypePicker.vue":18,"vue":79,"vue-hot-reload-api":77,"vueify/lib/insert-css":80}],20:[function(require,module,exports){
+},{"../data_pb":21,"../src/board.js":82,"../src/game.js":89,"../src/ui/boardBehavior.js":101,"../src/ui/webgl/boardRenderer.js":102,"./ChitTypePicker.vue":7,"./HexTypePicker.vue":13,"./PlayerPicker.vue":17,"./PortTypePicker.vue":18,"vue":79,"vue-hot-reload-api":77,"vueify/lib/insert-css":80}],20:[function(require,module,exports){
 ;(function(){
 'use strict';
 
@@ -2725,28 +2721,6 @@ var _GameSettings2 = _interopRequireDefault(_GameSettings);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-String.prototype.hashCode = function () {
-  var hash = 0,
-      i,
-      charCode;
-  if (this.length === 0) {
-    return 0;
-  }
-  for (i = 0; i < this.length; i++) {
-    charCode = this.charCodeAt(i);
-    hash = (hash << 5) - hash + charCode;
-    hash |= 0;
-  }
-  return hash;
-};
-String.prototype.toPascalCase = function () {
-  var firstLetter = this[0].toUpperCase();
-  var rest = this.substring(1, this.length).toLowerCase();
-  return firstLetter + rest;
-};
-
-var proto = require("./data_pb");
-
 require("./src/generic/math.js");
 
 require("./von-grid/OrbitControls.js");
@@ -2769,7 +2743,7 @@ new _vue2.default({ // eslint-disable-line no-new
   }
 }).$mount("#app");
 
-},{"./App.vue":2,"./components/Game.vue":10,"./components/GameSettings.vue":11,"./components/PlayTestGame.vue":14,"./components/TechDemo.vue":19,"./components/Welcome.vue":20,"./data_pb":21,"./src/generic/math.js":90,"./von-grid/MouseCaster.js":120,"./von-grid/OrbitControls.js":121,"./von-grid/STLLoader.js":122,"./von-grid/Signal.js":123,"vue":79,"vue-router":78}],23:[function(require,module,exports){
+},{"./App.vue":2,"./components/Game.vue":10,"./components/GameSettings.vue":11,"./components/PlayTestGame.vue":14,"./components/TechDemo.vue":19,"./components/Welcome.vue":20,"./src/generic/math.js":90,"./von-grid/MouseCaster.js":117,"./von-grid/OrbitControls.js":118,"./von-grid/STLLoader.js":119,"./von-grid/Signal.js":120,"vue":79,"vue-router":78}],23:[function(require,module,exports){
 module.exports = { "default": require("core-js/library/fn/get-iterator"), __esModule: true };
 },{"core-js/library/fn/get-iterator":24}],24:[function(require,module,exports){
 require('../modules/web.dom.iterable');
@@ -18789,10 +18763,7 @@ var Game = exports.Game = function (_Observable) {
         _this.robber = new _robber.Robber(_coord.Coord3D.center);
         _this.players = [];
         _this.playerOnTurn = null;
-        _this.gameBoard = null;
-        _this.towns = new _observableMap.ObservableMap(); // <Node, Town>
-        _this.cities = new _observableMap.ObservableMap(); // <Node, City>
-        _this.roads = new _observableMap.ObservableMap(); // <Edge, Road>
+        _this.board = null;
         _this.developmentCards = []; // TODO: observable array
         _this.bank = new _bank.Bank();
         return _this;
@@ -19805,7 +19776,7 @@ var User = exports.User = function User(config) {
     this.id = config.id || 0;
 };
 
-},{"../data_pb":21,"./developmentCard.js":86,"./generic/observable.js":91,"./resource.js":97,"./util.js":119}],96:[function(require,module,exports){
+},{"../data_pb":21,"./developmentCard.js":86,"./generic/observable.js":91,"./resource.js":97,"./util.js":116}],96:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -20509,7 +20480,7 @@ var Town = exports.Town = function Town(player, node) {
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
-exports.RemoveHex = exports.SetPort = exports.CompositeBehavior = exports.EmphasizeHoveredObject = exports.ShowEdgesOfClickedNode = exports.ShowEdgesOfClickedHex = exports.ShowAllEdges = exports.ShowNodesOfClickedHex = exports.ShowAllNodes = exports.SetChit = exports.SetHex = exports.NoBehavior = exports.BoardBehavior = undefined;
+exports.BuildRoad = exports.BuildCity = exports.BuildTown = exports.MoveRobber = exports.RemoveHex = exports.SetPort = exports.CompositeBehavior = exports.EmphasizeHoveredObject = exports.ShowEdgesOfClickedNode = exports.ShowEdgesOfClickedHex = exports.ShowAllEdges = exports.ShowNodesOfClickedHex = exports.ShowAllNodes = exports.SetChit = exports.SetHex = exports.NoBehavior = exports.BoardBehavior = undefined;
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -20526,6 +20497,12 @@ var _portRenderer = require("./webgl/portRenderer.js");
 var _nodeRenderer = require("./webgl/nodeRenderer.js");
 
 var _edgeRenderer = require("./webgl/edgeRenderer.js");
+
+var _cityRenderer = require("./webgl/cityRenderer.js");
+
+var _townRenderer = require("./webgl/townRenderer.js");
+
+var _roadRenderer = require("./webgl/roadRenderer.js");
 
 var _portPickerRenderer = require("./webgl/portPickerRenderer.js");
 
@@ -21143,696 +21120,18 @@ var RemoveHex = exports.RemoveHex = function (_BoardBehavior11) {
     return RemoveHex;
 }(BoardBehavior);
 
-},{"../../data_pb":21,"../chit.js":83,"../city.js":84,"../hex.js":93,"../player.js":95,"../port.js":96,"../road.js":98,"../town.js":100,"../util.js":119,"./webgl/chitRenderer.js":105,"./webgl/edgeRenderer.js":107,"./webgl/hexPartRenderer.js":109,"./webgl/hexRenderer.js":110,"./webgl/nodeRenderer.js":111,"./webgl/portPickerRenderer.js":112,"./webgl/portRenderer.js":113,"./webgl/robberRenderer.js":116}],102:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.RemoveHex = exports.SetPort = exports.CompositeBehavior = exports.EmphasizeHoveredObject = exports.ShowEdgesOfClickedNode = exports.ShowEdgesOfClickedHex = exports.ShowAllEdges = exports.ShowNodesOfClickedHex = exports.ShowAllNodes = exports.SetChit = exports.SetHex = exports.NoBehavior = exports.BoardBehavior = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _player = require("../player.js");
-
-var _robberRenderer = require("./webgl/robberRenderer.js");
-
-var _chitRenderer = require("./webgl/chitRenderer.js");
-
-var _hexRenderer = require("./webgl/hexRenderer.js");
-
-var _portRenderer = require("./webgl/portRenderer.js");
-
-var _nodeRenderer = require("./webgl/nodeRenderer.js");
-
-var _edgeRenderer = require("./webgl/edgeRenderer.js");
-
-var _portPickerRenderer = require("./webgl/portPickerRenderer.js");
-
-var _hexPartRenderer = require("./webgl/hexPartRenderer.js");
-
-var _hex = require("../hex.js");
-
-var _chit = require("../chit.js");
-
-var _port = require("../port.js");
-
-var _util = require("../util.js");
-
-var _road = require("../road.js");
-
-var _town = require("../town.js");
-
-var _city = require("../city.js");
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-/* A behavior dictates how a board responds to user interaction.
-*
-* A behavior operates on an abstracted Renderer. Renderers can be implemented
-* on any UI implementation technique: WebGL, canvas, svg, DOM, text-based, ...
-* A behavior is not aware of the underlying UI implementation. Instead, it operates
-* on a defined interface for the renderers. For instance, to show all the edges
-* of a board, the `.showEdges()` method is called on a BoardRenderer. The BoardRenderer
-* instance then takes care to update his rendering to show the edges.
-*/
-var proto = require("../../data_pb");
-
-var BoardBehavior = exports.BoardBehavior = function () {
-    function BoardBehavior() {
-        _classCallCheck(this, BoardBehavior);
-    }
-
-    _createClass(BoardBehavior, [{
-        key: "start",
-        value: function start(boardRenderer) {} // set the behavior as active behavior on the BoardRenderer
-
-    }, {
-        key: "click",
-        value: function click(boardRenderer, renderer) {}
-    }, {
-        key: "enter",
-        value: function enter(boardRenderer, renderer) {}
-    }, {
-        key: "leave",
-        value: function leave(boardRenderer, renderer) {}
-    }, {
-        key: "stop",
-        value: function stop(boardRenderer) {} // unset the behavior
-
-    }]);
-
-    return BoardBehavior;
-}();
-/** Don't respond to any user input at all */
-
-
-var NoBehavior = exports.NoBehavior = function (_BoardBehavior) {
-    _inherits(NoBehavior, _BoardBehavior);
-
-    function NoBehavior() {
-        _classCallCheck(this, NoBehavior);
-
-        return _possibleConstructorReturn(this, (NoBehavior.__proto__ || Object.getPrototypeOf(NoBehavior)).apply(this, arguments));
-    }
-
-    return NoBehavior;
-}(BoardBehavior);
-/* Sets a hex to target clicked hexagon location */
-
-
-var SetHex = exports.SetHex = function (_BoardBehavior2) {
-    _inherits(SetHex, _BoardBehavior2);
-
-    function SetHex() {
-        _classCallCheck(this, SetHex);
-
-        // the hextype to use for the setted hex
-        var _this2 = _possibleConstructorReturn(this, (SetHex.__proto__ || Object.getPrototypeOf(SetHex)).call(this));
-
-        _this2.hexType = proto.HexType.FOREST;
-        return _this2;
-    }
-
-    _createClass(SetHex, [{
-        key: "click",
-        value: function click(boardRenderer, renderer) {
-            var hex = renderer.hex;
-            if (hex === undefined) {
-                return;
-            }
-            // create and set the new hex to the board
-            var newHex = _hex.Hex.fromType(this.hexType);
-            newHex.coord = hex.coord;
-            boardRenderer.board.hexes.set(hex.coord, newHex);
-        }
-    }]);
-
-    return SetHex;
-}(BoardBehavior);
-
-var SetChit = exports.SetChit = function (_BoardBehavior3) {
-    _inherits(SetChit, _BoardBehavior3);
-
-    function SetChit() {
-        _classCallCheck(this, SetChit);
-
-        var _this3 = _possibleConstructorReturn(this, (SetChit.__proto__ || Object.getPrototypeOf(SetChit)).call(this));
-
-        _this3.composite = new EmphasizeHoveredObject(function (r) {
-            return r.chit !== undefined || r.hex !== undefined;
-        });
-        _this3.chitType = proto.ChitType.HEXFROMBAG;
-        return _this3;
-    }
-
-    _createClass(SetChit, [{
-        key: "click",
-        value: function click(boardRenderer, renderer) {
-            if (renderer instanceof _chitRenderer.ChitRenderer) {
-                var hex = boardRenderer.board.hexes.get(renderer.coord);
-                hex.chit = new _chit.Chit(this.chitType);
-            }
-            if (renderer instanceof _hexRenderer.HexRenderer) {
-                renderer.hex.chit = new _chit.Chit(this.chitType);
-            }
-        }
-    }, {
-        key: "start",
-        value: function start(boardRenderer) {
-            this.composite.start(boardRenderer);
-        }
-    }, {
-        key: "enter",
-        value: function enter(boardRenderer, renderer) {
-            this.composite.enter(boardRenderer, renderer);
-        }
-    }, {
-        key: "leave",
-        value: function leave(boardRenderer, renderer) {
-            this.composite.leave(boardRenderer, renderer);
-        }
-    }, {
-        key: "stop",
-        value: function stop(boardRenderer) {
-            this.composite.stop(boardRenderer);
-        }
-    }]);
-
-    return SetChit;
-}(BoardBehavior);
-/** Shows all the nodes of all the hexes of the board */
-
-
-var ShowAllNodes = exports.ShowAllNodes = function (_BoardBehavior4) {
-    _inherits(ShowAllNodes, _BoardBehavior4);
-
-    function ShowAllNodes() {
-        _classCallCheck(this, ShowAllNodes);
-
-        return _possibleConstructorReturn(this, (ShowAllNodes.__proto__ || Object.getPrototypeOf(ShowAllNodes)).apply(this, arguments));
-    }
-
-    _createClass(ShowAllNodes, [{
-        key: "start",
-        value: function start(boardRenderer) {
-            var nodes = boardRenderer.board.getAllNodes();
-            boardRenderer.showNodes(nodes);
-        }
-    }, {
-        key: "stop",
-        value: function stop(boardRenderer) {
-            boardRenderer.hideAllNodes();
-        }
-    }]);
-
-    return ShowAllNodes;
-}(BoardBehavior);
-/** Shows all nodes of clicked hex */
-
-
-var ShowNodesOfClickedHex = exports.ShowNodesOfClickedHex = function (_BoardBehavior5) {
-    _inherits(ShowNodesOfClickedHex, _BoardBehavior5);
-
-    function ShowNodesOfClickedHex() {
-        _classCallCheck(this, ShowNodesOfClickedHex);
-
-        return _possibleConstructorReturn(this, (ShowNodesOfClickedHex.__proto__ || Object.getPrototypeOf(ShowNodesOfClickedHex)).call(this));
-    }
-
-    _createClass(ShowNodesOfClickedHex, [{
-        key: "start",
-        value: function start(boardRenderer) {
-            boardRenderer.hideAllNodes();
-        }
-    }, {
-        key: "click",
-        value: function click(boardRenderer, renderer) {
-            if (renderer.hex === undefined) {
-                return;
-            }
-            var nodes = renderer.hex.coord.nodes;
-            boardRenderer.showNodes(nodes);
-        }
-    }, {
-        key: "stop",
-        value: function stop(boardRenderer) {
-            boardRenderer.hideAllNodes();
-        }
-    }]);
-
-    return ShowNodesOfClickedHex;
-}(BoardBehavior);
-
-var ShowAllEdges = exports.ShowAllEdges = function (_BoardBehavior6) {
-    _inherits(ShowAllEdges, _BoardBehavior6);
-
-    function ShowAllEdges() {
-        _classCallCheck(this, ShowAllEdges);
-
-        return _possibleConstructorReturn(this, (ShowAllEdges.__proto__ || Object.getPrototypeOf(ShowAllEdges)).apply(this, arguments));
-    }
-
-    _createClass(ShowAllEdges, [{
-        key: "start",
-        value: function start(boardRenderer) {
-            var allEdges = boardRenderer.board.getAllEdges();
-            boardRenderer.showEdges(allEdges);
-        }
-    }, {
-        key: "stop",
-        value: function stop(boardRenderer) {
-            boardRenderer.hideAllEdges();
-        }
-    }]);
-
-    return ShowAllEdges;
-}(BoardBehavior);
-
-var ShowEdgesOfClickedHex = exports.ShowEdgesOfClickedHex = function (_BoardBehavior7) {
-    _inherits(ShowEdgesOfClickedHex, _BoardBehavior7);
-
-    function ShowEdgesOfClickedHex() {
-        _classCallCheck(this, ShowEdgesOfClickedHex);
-
-        return _possibleConstructorReturn(this, (ShowEdgesOfClickedHex.__proto__ || Object.getPrototypeOf(ShowEdgesOfClickedHex)).apply(this, arguments));
-    }
-
-    _createClass(ShowEdgesOfClickedHex, [{
-        key: "start",
-        value: function start(boardRenderer) {
-            boardRenderer.hideAllEdges();
-        }
-    }, {
-        key: "click",
-        value: function click(boardRenderer, renderer) {
-            var edges = renderer.hex.coord.edges;
-            boardRenderer.showEdges(edges);
-        }
-    }, {
-        key: "stop",
-        value: function stop(boardRenderer) {
-            boardRenderer.hideAllEdges();
-        }
-    }]);
-
-    return ShowEdgesOfClickedHex;
-}(BoardBehavior);
-
-var ShowEdgesOfClickedNode = exports.ShowEdgesOfClickedNode = function (_BoardBehavior8) {
-    _inherits(ShowEdgesOfClickedNode, _BoardBehavior8);
-
-    function ShowEdgesOfClickedNode() {
-        _classCallCheck(this, ShowEdgesOfClickedNode);
-
-        var _this8 = _possibleConstructorReturn(this, (ShowEdgesOfClickedNode.__proto__ || Object.getPrototypeOf(ShowEdgesOfClickedNode)).call(this));
-
-        var isNodeRenderer = function isNodeRenderer(r) {
-            return r.node !== undefined;
-        };
-        _this8.composite = new CompositeBehavior(new ShowAllNodes(), new EmphasizeHoveredObject(isNodeRenderer));
-        return _this8;
-    }
-
-    _createClass(ShowEdgesOfClickedNode, [{
-        key: "start",
-        value: function start(boardRenderer) {
-            this.composite.start(boardRenderer);
-        }
-    }, {
-        key: "enter",
-        value: function enter(boardRenderer, renderer) {
-            this.composite.enter(boardRenderer, renderer);
-        }
-    }, {
-        key: "leave",
-        value: function leave(boardRenderer, renderer) {
-            this.composite.leave(boardRenderer, renderer);
-        }
-    }, {
-        key: "click",
-        value: function click(boardRenderer, renderer) {
-            if (renderer.node === undefined) {
-                return;
-            }
-            var edges = renderer.node.edges;
-            boardRenderer.showEdges(edges);
-        }
-    }, {
-        key: "stop",
-        value: function stop(boardRenderer) {
-            this.composite.stop(boardRenderer);
-        }
-    }]);
-
-    return ShowEdgesOfClickedNode;
-}(BoardBehavior);
-/** Changes color of hovered object */
-
-
-var EmphasizeHoveredObject = exports.EmphasizeHoveredObject = function (_BoardBehavior9) {
-    _inherits(EmphasizeHoveredObject, _BoardBehavior9);
-
-    function EmphasizeHoveredObject(rendererFilter) {
-        _classCallCheck(this, EmphasizeHoveredObject);
-
-        var _this9 = _possibleConstructorReturn(this, (EmphasizeHoveredObject.__proto__ || Object.getPrototypeOf(EmphasizeHoveredObject)).call(this)); // a function: bool filter(renderer);
-
-
-        _this9._rendererFilter = rendererFilter || function (r) {
-            return true;
-        };
-        return _this9;
-    }
-
-    _createClass(EmphasizeHoveredObject, [{
-        key: "enter",
-        value: function enter(boardRenderer, renderer) {
-            if (!this._rendererFilter(renderer)) {
-                return;
-            }
-            renderer.darken();
-        }
-    }, {
-        key: "leave",
-        value: function leave(boardRenderer, renderer) {
-            if (!this._rendererFilter(renderer)) {
-                return;
-            }
-            renderer.normalize();
-        }
-    }]);
-
-    return EmphasizeHoveredObject;
-}(BoardBehavior);
-/** Dispatches behavior onto given behaviors */
-
-
-var CompositeBehavior = exports.CompositeBehavior = function (_BoardBehavior10) {
-    _inherits(CompositeBehavior, _BoardBehavior10);
-
-    function CompositeBehavior() {
-        _classCallCheck(this, CompositeBehavior);
-
-        var _this10 = _possibleConstructorReturn(this, (CompositeBehavior.__proto__ || Object.getPrototypeOf(CompositeBehavior)).call(this));
-
-        for (var _len = arguments.length, behaviors = Array(_len), _key = 0; _key < _len; _key++) {
-            behaviors[_key] = arguments[_key];
-        }
-
-        _this10.behaviors = behaviors;
-        return _this10;
-    }
-
-    _createClass(CompositeBehavior, [{
-        key: "start",
-        value: function start(boardRenderer) {
-            var _iteratorNormalCompletion = true;
-            var _didIteratorError = false;
-            var _iteratorError = undefined;
-
-            try {
-                for (var _iterator = this.behaviors[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                    var behavior = _step.value;
-
-                    behavior.start(boardRenderer);
-                }
-            } catch (err) {
-                _didIteratorError = true;
-                _iteratorError = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion && _iterator.return) {
-                        _iterator.return();
-                    }
-                } finally {
-                    if (_didIteratorError) {
-                        throw _iteratorError;
-                    }
-                }
-            }
-        }
-    }, {
-        key: "stop",
-        value: function stop(boardRenderer) {
-            var _iteratorNormalCompletion2 = true;
-            var _didIteratorError2 = false;
-            var _iteratorError2 = undefined;
-
-            try {
-                for (var _iterator2 = this.behaviors[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                    var behavior = _step2.value;
-
-                    behavior.stop(boardRenderer);
-                }
-            } catch (err) {
-                _didIteratorError2 = true;
-                _iteratorError2 = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion2 && _iterator2.return) {
-                        _iterator2.return();
-                    }
-                } finally {
-                    if (_didIteratorError2) {
-                        throw _iteratorError2;
-                    }
-                }
-            }
-        }
-    }, {
-        key: "click",
-        value: function click(boardRenderer, renderer) {
-            var _iteratorNormalCompletion3 = true;
-            var _didIteratorError3 = false;
-            var _iteratorError3 = undefined;
-
-            try {
-                for (var _iterator3 = this.behaviors[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                    var behavior = _step3.value;
-
-                    behavior.click(boardRenderer, renderer);
-                }
-            } catch (err) {
-                _didIteratorError3 = true;
-                _iteratorError3 = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                        _iterator3.return();
-                    }
-                } finally {
-                    if (_didIteratorError3) {
-                        throw _iteratorError3;
-                    }
-                }
-            }
-        }
-    }, {
-        key: "enter",
-        value: function enter(boardRenderer, renderer) {
-            var _iteratorNormalCompletion4 = true;
-            var _didIteratorError4 = false;
-            var _iteratorError4 = undefined;
-
-            try {
-                for (var _iterator4 = this.behaviors[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                    var behavior = _step4.value;
-
-                    behavior.enter(boardRenderer, renderer);
-                }
-            } catch (err) {
-                _didIteratorError4 = true;
-                _iteratorError4 = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion4 && _iterator4.return) {
-                        _iterator4.return();
-                    }
-                } finally {
-                    if (_didIteratorError4) {
-                        throw _iteratorError4;
-                    }
-                }
-            }
-        }
-    }, {
-        key: "leave",
-        value: function leave(boardRenderer, renderer) {
-            var _iteratorNormalCompletion5 = true;
-            var _didIteratorError5 = false;
-            var _iteratorError5 = undefined;
-
-            try {
-                for (var _iterator5 = this.behaviors[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-                    var behavior = _step5.value;
-
-                    behavior.leave(boardRenderer, renderer);
-                }
-            } catch (err) {
-                _didIteratorError5 = true;
-                _iteratorError5 = err;
-            } finally {
-                try {
-                    if (!_iteratorNormalCompletion5 && _iterator5.return) {
-                        _iterator5.return();
-                    }
-                } finally {
-                    if (_didIteratorError5) {
-                        throw _iteratorError5;
-                    }
-                }
-            }
-        }
-    }]);
-
-    return CompositeBehavior;
-}(BoardBehavior);
-
-var SetPort = exports.SetPort = function () {
-    function SetPort() {
-        _classCallCheck(this, SetPort);
-
-        this.selectedHexPartRenderer = null;
-        this.selectedHexRenderer = null;
-        this._portType = proto.PortType.Clay2To1;
-    }
-
-    _createClass(SetPort, [{
-        key: "start",
-        value: function start(boardRenderer) {
-            this.portPickerRenderer = boardRenderer.portPickerRenderer;
-            boardRenderer.portPickerRenderer.visible = true;
-        }
-    }, {
-        key: "stop",
-        value: function stop(boardRenderer) {
-            boardRenderer.portPickerRenderer.visible = false;
-        }
-    }, {
-        key: "click",
-        value: function click(boardRenderer, renderer) {
-            if (this.selectedHexRenderer != null) {
-                var newPort = _port.Port.fromType(this.portType, this.selectedHexPartRenderer.partIndex, this.selectedHexRenderer.hex.coord);
-                this.selectedHexRenderer.hex.port = newPort;
-            }
-        }
-    }, {
-        key: "enter",
-        value: function enter(boardRenderer, renderer) {
-            if (renderer instanceof _hexRenderer.HexRenderer) {
-                boardRenderer.portPickerRenderer.visible = renderer.hex.canHavePort;
-                boardRenderer.portPickerRenderer.hex = renderer.hex;
-                this.selectedHexRenderer = renderer;
-            }
-            if (renderer instanceof _hexPartRenderer.HexPartRenderer) {
-                this.selectedHexPartRenderer = renderer;
-                this.selectedHexPartRenderer.hovered = true;
-            }
-        }
-    }, {
-        key: "leave",
-        value: function leave(boardRenderer, renderer) {
-            if (this.selectedHexPartRenderer != null) {
-                this.selectedHexPartRenderer.hovered = false;
-                this.selectedHexPartRenderer = null;
-            }
-        }
-    }, {
-        key: "portType",
-        get: function get() {
-            return this._portType;
-        },
-        set: function set(portType) {
-            this._portType = portType;
-            this.portPickerRenderer.portType = this.portType;
-        }
-    }]);
-
-    return SetPort;
-}();
-
-var RemoveHex = exports.RemoveHex = function (_BoardBehavior11) {
-    _inherits(RemoveHex, _BoardBehavior11);
-
-    function RemoveHex() {
-        _classCallCheck(this, RemoveHex);
-
-        return _possibleConstructorReturn(this, (RemoveHex.__proto__ || Object.getPrototypeOf(RemoveHex)).apply(this, arguments));
-    }
-
-    _createClass(RemoveHex, [{
-        key: "click",
-        value: function click(boardRenderer, renderer) {
-            if (renderer instanceof _hexRenderer.HexRenderer) {
-                boardRenderer.board.hexes.delete(renderer.hex.coord);
-            }
-            if (renderer instanceof _chitRenderer.ChitRenderer) {
-                boardRenderer.board.hexes.delete(renderer.coord);
-            }
-            if (renderer instanceof _portRenderer.PortRenderer) {
-                boardRenderer.board.hexes.delete(renderer.port.seaCoord);
-            }
-        }
-    }]);
-
-    return RemoveHex;
-}(BoardBehavior);
-
-},{"../../data_pb":21,"../chit.js":83,"../city.js":84,"../hex.js":93,"../player.js":95,"../port.js":96,"../road.js":98,"../town.js":100,"../util.js":119,"./webgl/chitRenderer.js":105,"./webgl/edgeRenderer.js":107,"./webgl/hexPartRenderer.js":109,"./webgl/hexRenderer.js":110,"./webgl/nodeRenderer.js":111,"./webgl/portPickerRenderer.js":112,"./webgl/portRenderer.js":113,"./webgl/robberRenderer.js":116}],103:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.BuildRoad = exports.BuildCity = exports.BuildTown = exports.MoveRobber = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _boardBehavior = require("./boardBehavior.js");
-
-var _player = require("../player.js");
-
-var _robberRenderer = require("./webgl/robberRenderer.js");
-
-var _chitRenderer = require("./webgl/chitRenderer.js");
-
-var _hexRenderer = require("./webgl/hexRenderer.js");
-
-var _hex = require("../hex.js");
-
-var _util = require("../util.js");
-
-var _road = require("../road.js");
-
-var _town = require("../town.js");
-
-var _city = require("../city.js");
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-var proto = require("../../data_pb");
-
-var MoveRobber = exports.MoveRobber = function (_BoardBehavior) {
-    _inherits(MoveRobber, _BoardBehavior);
+var MoveRobber = exports.MoveRobber = function (_BoardBehavior12) {
+    _inherits(MoveRobber, _BoardBehavior12);
 
     function MoveRobber() {
         _classCallCheck(this, MoveRobber);
 
-        var _this = _possibleConstructorReturn(this, (MoveRobber.__proto__ || Object.getPrototypeOf(MoveRobber)).call(this));
+        var _this12 = _possibleConstructorReturn(this, (MoveRobber.__proto__ || Object.getPrototypeOf(MoveRobber)).call(this));
 
-        _this.emphasizeHoveredHex = new _boardBehavior.EmphasizeHoveredObject(function (r) {
+        _this12.emphasizeHoveredHex = new EmphasizeHoveredObject(function (r) {
             return r instanceof _hexRenderer.HexRenderer;
         });
-        return _this;
+        return _this12;
     }
 
     _createClass(MoveRobber, [{
@@ -21871,19 +21170,19 @@ var MoveRobber = exports.MoveRobber = function (_BoardBehavior) {
     }]);
 
     return MoveRobber;
-}(_boardBehavior.BoardBehavior);
+}(BoardBehavior);
 
-var BuildTown = exports.BuildTown = function (_BoardBehavior2) {
-    _inherits(BuildTown, _BoardBehavior2);
+var BuildTown = exports.BuildTown = function (_BoardBehavior13) {
+    _inherits(BuildTown, _BoardBehavior13);
 
     function BuildTown() {
         _classCallCheck(this, BuildTown);
 
-        var _this2 = _possibleConstructorReturn(this, (BuildTown.__proto__ || Object.getPrototypeOf(BuildTown)).call(this));
+        var _this13 = _possibleConstructorReturn(this, (BuildTown.__proto__ || Object.getPrototypeOf(BuildTown)).call(this));
 
-        _this2.player = new _player.Player({ color: 0xff0000 });
-        _this2.player.color = 0xff0000;
-        return _this2;
+        _this13.player = new _player.Player({ color: 0xff0000 });
+        _this13.player.color = 0xff0000;
+        return _this13;
     }
 
     _createClass(BuildTown, [{
@@ -21896,7 +21195,7 @@ var BuildTown = exports.BuildTown = function (_BoardBehavior2) {
     }, {
         key: "click",
         value: function click(boardRenderer, renderer) {
-            if (renderer instanceof NodeRenderer) {
+            if (renderer instanceof _nodeRenderer.NodeRenderer) {
                 var node = renderer.node;
                 this.boardRenderer.board.towns.set(node, new _town.Town(this.player, node));
             }
@@ -21909,19 +21208,19 @@ var BuildTown = exports.BuildTown = function (_BoardBehavior2) {
     }]);
 
     return BuildTown;
-}(_boardBehavior.BoardBehavior);
+}(BoardBehavior);
 
-var BuildCity = exports.BuildCity = function (_BoardBehavior3) {
-    _inherits(BuildCity, _BoardBehavior3);
+var BuildCity = exports.BuildCity = function (_BoardBehavior14) {
+    _inherits(BuildCity, _BoardBehavior14);
 
     function BuildCity() {
         _classCallCheck(this, BuildCity);
 
-        var _this3 = _possibleConstructorReturn(this, (BuildCity.__proto__ || Object.getPrototypeOf(BuildCity)).call(this));
+        var _this14 = _possibleConstructorReturn(this, (BuildCity.__proto__ || Object.getPrototypeOf(BuildCity)).call(this));
 
-        _this3.player = new _player.Player();
-        _this3.player.color = 0xff0000;
-        return _this3;
+        _this14.player = new _player.Player();
+        _this14.player.color = 0xff0000;
+        return _this14;
     }
 
     _createClass(BuildCity, [{
@@ -21934,7 +21233,7 @@ var BuildCity = exports.BuildCity = function (_BoardBehavior3) {
     }, {
         key: "click",
         value: function click(boardRenderer, renderer) {
-            if (renderer instanceof NodeRenderer) {
+            if (renderer instanceof _nodeRenderer.NodeRenderer) {
                 var node = renderer.node;
                 this.boardRenderer.board.cities.set(node, new _city.City(this.player, node));
             }
@@ -21947,20 +21246,20 @@ var BuildCity = exports.BuildCity = function (_BoardBehavior3) {
     }]);
 
     return BuildCity;
-}(_boardBehavior.BoardBehavior);
+}(BoardBehavior);
 
-var BuildRoad = exports.BuildRoad = function (_BoardBehavior4) {
-    _inherits(BuildRoad, _BoardBehavior4);
+var BuildRoad = exports.BuildRoad = function (_BoardBehavior15) {
+    _inherits(BuildRoad, _BoardBehavior15);
 
     function BuildRoad() {
         _classCallCheck(this, BuildRoad);
 
-        var _this4 = _possibleConstructorReturn(this, (BuildRoad.__proto__ || Object.getPrototypeOf(BuildRoad)).call(this));
+        var _this15 = _possibleConstructorReturn(this, (BuildRoad.__proto__ || Object.getPrototypeOf(BuildRoad)).call(this));
 
-        _this4.emphasizeHoveredObject = new _boardBehavior.EmphasizeHoveredObject();
-        _this4.player = new _player.Player();
-        _this4.player.color = 0xff0000;
-        return _this4;
+        _this15.emphasizeHoveredObject = new EmphasizeHoveredObject();
+        _this15.player = new _player.Player();
+        _this15.player.color = 0xff0000;
+        return _this15;
     }
 
     _createClass(BuildRoad, [{
@@ -21980,7 +21279,7 @@ var BuildRoad = exports.BuildRoad = function (_BoardBehavior4) {
     }, {
         key: "click",
         value: function click(boardRenderer, renderer) {
-            if (renderer instanceof EdgeRenderer) {
+            if (renderer instanceof _edgeRenderer.EdgeRenderer) {
                 var edge = renderer.edge;
                 this.boardRenderer.board.roads.set(edge, new _road.Road(this.player, edge));
                 this._showEdges();
@@ -22004,9 +21303,9 @@ var BuildRoad = exports.BuildRoad = function (_BoardBehavior4) {
     }]);
 
     return BuildRoad;
-}(_boardBehavior.BoardBehavior);
+}(BoardBehavior);
 
-},{"../../data_pb":21,"../city.js":84,"../hex.js":93,"../player.js":95,"../road.js":98,"../town.js":100,"../util.js":119,"./boardBehavior.js":102,"./webgl/chitRenderer.js":105,"./webgl/hexRenderer.js":110,"./webgl/robberRenderer.js":116}],104:[function(require,module,exports){
+},{"../../data_pb":21,"../chit.js":83,"../city.js":84,"../hex.js":93,"../player.js":95,"../port.js":96,"../road.js":98,"../town.js":100,"../util.js":116,"./webgl/chitRenderer.js":103,"./webgl/cityRenderer.js":104,"./webgl/edgeRenderer.js":105,"./webgl/hexPartRenderer.js":106,"./webgl/hexRenderer.js":107,"./webgl/nodeRenderer.js":108,"./webgl/portPickerRenderer.js":109,"./webgl/portRenderer.js":110,"./webgl/roadRenderer.js":112,"./webgl/robberRenderer.js":113,"./webgl/townRenderer.js":115}],102:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22020,6 +21319,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _scene = require("./scene.js");
 
+var _robberRenderer = require("./robberRenderer.js");
+
 var _chitRenderer = require("./chitRenderer.js");
 
 var _hexRenderer = require("./hexRenderer.js");
@@ -22030,11 +21331,17 @@ var _nodeRenderer = require("./nodeRenderer.js");
 
 var _edgeRenderer = require("./edgeRenderer.js");
 
+var _cityRenderer = require("./cityRenderer.js");
+
+var _townRenderer = require("./townRenderer.js");
+
+var _roadRenderer = require("./roadRenderer.js");
+
 var _portPickerRenderer = require("./portPickerRenderer.js");
 
 var _MouseCaster = require("../../../von-grid/MouseCaster.js");
 
-var _BoardBehavior = require("../BoardBehavior.js");
+var _boardBehavior = require("../boardBehavior.js");
 
 var _board = require("../../board.js");
 
@@ -22042,11 +21349,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /* Renders a 3D hexagon board using von-grid */
 var BoardRenderer = exports.BoardRenderer = function () {
-    function BoardRenderer(element, board, behavior) {
+    function BoardRenderer(element, board, behavior, handleBehavior) {
         _classCallCheck(this, BoardRenderer);
 
         this.board = board || new _board.Standard4pDesign();
-        this._behavior = behavior || new _BoardBehavior.NoBehavior();
+        this._behavior = behavior || new _boardBehavior.NoBehavior();
 
         this.cellSize = 11; // size of the hexagon shape (radius)
         this._cellWidth = this.cellSize * 2;
@@ -22063,6 +21370,10 @@ var BoardRenderer = exports.BoardRenderer = function () {
         this.hexRenderers = new Map(); // <Coord, HexRenderer>
         this.nodeRenderers = new Map(); // <Node, NodeRenderer>
         this.edgeRenderers = new Map(); // <Edge, EdgeRenderer>
+        this.townRenderers = new Map(); // <Node, Town>
+        this.cityRenderers = new Map(); // <Node, City>
+        this.roadRenderers = new Map(); // <Edge, Road>
+        this.robberRenderer = new _robberRenderer.RobberRenderer(this, this.board.robber);
         this.portPickerRenderer = new _portPickerRenderer.PortPickerRenderer(this);
         this.group.add(this.portPickerRenderer.group);
 
@@ -22195,6 +21506,19 @@ var BoardRenderer = exports.BoardRenderer = function () {
                 }
             }
 
+            this.removeTownAddedSubscription = this.board.towns.added(function (key, value) {
+                var townRenderer = new _townRenderer.TownRenderer(_this, value);
+                _this.townRenderers.set(value, townRenderer);
+            });
+            this.removeCityAddedSubscription = this.board.cities.added(function (key, value) {
+                var cityRenderer = new _cityRenderer.CityRenderer(_this, value);
+                _this.cityRenderers.set(value, cityRenderer);
+            });
+            this.removeRoadAddedSubscription = this.board.roads.added(function (key, value) {
+                var roadRenderer = new _roadRenderer.RoadRenderer(_this, value);
+                _this.roadRenderers.set(value, roadRenderer);
+            });
+
             this.scene.paused = false;
         }
     }, {
@@ -22214,6 +21538,12 @@ var BoardRenderer = exports.BoardRenderer = function () {
             this.disposeRenderers(this.hexRenderers, this.tilesGroup);
             this.disposeRenderers(this.nodeRenderers, this.nodesGroup);
             this.disposeRenderers(this.edgeRenderers, this.edgesGroup);
+            this.disposeRenderers(this.townRenderers, this.scene.scene);
+            this.disposeRenderers(this.cityRenderers, this.scene.scene);
+            this.disposeRenderers(this.roadRenderers, this.scene.scene);
+            this.removeTownAddedSubscription();
+            this.removeCityAddedSubscription();
+            this.removeRoadAddedSubscription();
         }
     }, {
         key: "disposeRenderers",
@@ -22556,7 +21886,9 @@ var BoardRenderer = exports.BoardRenderer = function () {
         }
     }, {
         key: "dispose",
-        value: function dispose() {}
+        value: function dispose() {
+            // TODO
+        }
     }, {
         key: "behavior",
         get: function get() {
@@ -22572,7 +21904,7 @@ var BoardRenderer = exports.BoardRenderer = function () {
     return BoardRenderer;
 }();
 
-},{"../../../von-grid/MouseCaster.js":120,"../../board.js":82,"../BoardBehavior.js":101,"./chitRenderer.js":105,"./edgeRenderer.js":107,"./hexRenderer.js":110,"./nodeRenderer.js":111,"./portPickerRenderer.js":112,"./portRenderer.js":113,"./scene.js":117}],105:[function(require,module,exports){
+},{"../../../von-grid/MouseCaster.js":117,"../../board.js":82,"../boardBehavior.js":101,"./chitRenderer.js":103,"./cityRenderer.js":104,"./edgeRenderer.js":105,"./hexRenderer.js":107,"./nodeRenderer.js":108,"./portPickerRenderer.js":109,"./portRenderer.js":110,"./roadRenderer.js":112,"./robberRenderer.js":113,"./scene.js":114,"./townRenderer.js":115}],103:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22656,7 +21988,7 @@ var ChitRenderer = exports.ChitRenderer = function (_Renderer) {
                 return null;
             }
             var name = _util.Util.getEnumName(proto.ChitType, chit.type);
-            var texture = new THREE.TextureLoader().load("doc/images/" + name + ".png");
+            var texture = new THREE.TextureLoader().load("doc/images/" + name.toPascalCase() + ".png");
             return texture;
         }
     }, {
@@ -22706,7 +22038,7 @@ var ChitRenderer = exports.ChitRenderer = function (_Renderer) {
     return ChitRenderer;
 }(_renderer.Renderer);
 
-},{"../../../data_pb":21,"../../util.js":119,"./renderer.js":114}],106:[function(require,module,exports){
+},{"../../../data_pb":21,"../../util.js":116,"./renderer.js":111}],104:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22738,10 +22070,10 @@ var CityRenderer = exports.CityRenderer = function (_Renderer) {
         loader.load('models3D/city.stl', function (geometry) {
             console.log(geometry);
             that.material = new THREE.MeshPhongMaterial({ color: city.player.color });
-            that.geometry = new THREE.EdgesGeometry(that.geometry);
+            that.geometry = new THREE.EdgesGeometry(geometry);
             that.lines = new THREE.LineSegments(that.geometry, new THREE.LineBasicMaterial({ color: 0x000000 }));
             var mesh = new THREE.Mesh(that.geometry, that.material);
-            mesh.add(lines);
+            mesh.add(that.lines);
             var p = that.boardRenderer.nodeToPixel(city.node);
             mesh.rotation.x = -0.5 * Math.PI;
             mesh.position.set(p.x, 2, p.z); // don't place it in the center on top of chit, add tile height
@@ -22765,7 +22097,7 @@ var CityRenderer = exports.CityRenderer = function (_Renderer) {
     return CityRenderer;
 }(_renderer.Renderer);
 
-},{"./renderer.js":114}],107:[function(require,module,exports){
+},{"./renderer.js":111}],105:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -22827,91 +22159,7 @@ var EdgeRenderer = exports.EdgeRenderer = function (_Renderer) {
     return EdgeRenderer;
 }(_renderer.Renderer);
 
-},{"./renderer.js":114}],108:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-    value: true
-});
-exports.GameBoardRenderer = undefined;
-
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-var _boardRenderer = require("./boardRenderer.js");
-
-var _robberRenderer = require("./robberRenderer.js");
-
-var _townRenderer = require("./townRenderer.js");
-
-var _roadRenderer = require("./roadRenderer.js");
-
-var _cityRenderer = require("./cityRenderer.js");
-
-var _game = require("../../game.js");
-
-var _BoardBehavior = require("../BoardBehavior");
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-var GameBoardRenderer = exports.GameBoardRenderer = function () {
-    function GameBoardRenderer(element, game, gameBoardBehavior) {
-        _classCallCheck(this, GameBoardRenderer);
-
-        this.gameBoard = game.gameBoard;
-        // TODO: override behavior too?
-        this.gameBoardBehavior = gameBoardBehavior || new _BoardBehavior.NoBehavior();
-        this._game = game;
-        this.boardRenderer = new _boardRenderer.BoardRenderer(element, game.gameBoard);
-
-        this.townRenderers = new Map(); // <Node, Town>
-        this.cityRenderers = new Map(); // <Node, City>
-        this.roadRenderers = new Map(); // <Edge, Road>
-        this.robberRenderer = new _robberRenderer.RobberRenderer(this, this.gameBoard.robber);
-
-        this.initialize();
-    }
-
-    _createClass(GameBoardRenderer, [{
-        key: "addMesh",
-        value: function addMesh(mesh) {
-            this.boardRenderer.addMesh(mesh);
-        }
-    }, {
-        key: "initialize",
-        value: function initialize() {
-            var _this = this;
-
-            this.boardRenderer.initialize();
-            this.removeTownAddedSubscription = this.gameBoard.towns.added(function (key, value) {
-                var townRenderer = new _townRenderer.TownRenderer(_this, value);
-                _this.townRenderers.set(value, townRenderer);
-            });
-            this.removeCityAddedSubscription = this.gameBoard.cities.added(function (key, value) {
-                var cityRenderer = new _cityRenderer.CityRenderer(_this, value);
-                _this.cityRenderers.set(value, cityRenderer);
-            });
-            this.removeRoadAddedSubscription = this.gameBoard.roads.added(function (key, value) {
-                var roadRenderer = new _roadRenderer.RoadRenderer(_this, value);
-                _this.roadRenderers.set(value, roadRenderer);
-            });
-        }
-    }, {
-        key: "reset",
-        value: function reset() {
-            this.disposeRenderers(this.townRenderers, this.scene.scene);
-            this.disposeRenderers(this.cityRenderers, this.scene.scene);
-            this.disposeRenderers(this.roadRenderers, this.scene.scene);
-            this.removeTownAddedSubscription();
-            this.removeCityAddedSubscription();
-            this.removeRoadAddedSubscription();
-            this.boardRenderer.reset();
-        }
-    }]);
-
-    return GameBoardRenderer;
-}();
-
-},{"../../game.js":89,"../BoardBehavior":101,"./boardRenderer.js":104,"./cityRenderer.js":106,"./roadRenderer.js":115,"./robberRenderer.js":116,"./townRenderer.js":118}],109:[function(require,module,exports){
+},{"./renderer.js":111}],106:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -23013,7 +22261,7 @@ var HexPartRenderer = exports.HexPartRenderer = function (_Renderer) {
     return HexPartRenderer;
 }(_renderer.Renderer);
 
-},{"../../../data_pb":21,"../../util.js":119,"./renderer.js":114}],110:[function(require,module,exports){
+},{"../../../data_pb":21,"../../util.js":116,"./renderer.js":111}],107:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -23291,7 +22539,7 @@ var HexRenderer = exports.HexRenderer = function (_Renderer) {
 	return HexRenderer;
 }(_renderer.Renderer);
 
-},{"../../../data_pb":21,"../../util.js":119,"./chitRenderer.js":105,"./portRenderer.js":113,"./renderer.js":114}],111:[function(require,module,exports){
+},{"../../../data_pb":21,"../../util.js":116,"./chitRenderer.js":103,"./portRenderer.js":110,"./renderer.js":111}],108:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -23350,7 +22598,7 @@ var NodeRenderer = exports.NodeRenderer = function (_Renderer) {
     return NodeRenderer;
 }(_renderer.Renderer);
 
-},{"./renderer.js":114}],112:[function(require,module,exports){
+},{"./renderer.js":111}],109:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -23433,7 +22681,7 @@ var PortPickerRenderer = exports.PortPickerRenderer = function (_Renderer) {
     return PortPickerRenderer;
 }(_renderer.Renderer);
 
-},{"./hexPartRenderer.js":109,"./renderer.js":114}],113:[function(require,module,exports){
+},{"./hexPartRenderer.js":106,"./renderer.js":111}],110:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -23535,7 +22783,7 @@ var PortRenderer = exports.PortRenderer = function (_Renderer) {
     return PortRenderer;
 }(_renderer.Renderer);
 
-},{"../../../data_pb":21,"../../util.js":119,"./renderer.js":114}],114:[function(require,module,exports){
+},{"../../../data_pb":21,"../../util.js":116,"./renderer.js":111}],111:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -23576,7 +22824,7 @@ var Renderer = exports.Renderer = function () {
     return Renderer;
 }();
 
-},{}],115:[function(require,module,exports){
+},{}],112:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -23635,7 +22883,7 @@ var RoadRenderer = exports.RoadRenderer = function (_Renderer) {
     return RoadRenderer;
 }(_renderer.Renderer);
 
-},{"./renderer.js":114}],116:[function(require,module,exports){
+},{"./renderer.js":111}],113:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -23684,7 +22932,7 @@ var RobberRenderer = exports.RobberRenderer = function (_Renderer) {
     return RobberRenderer;
 }(_renderer.Renderer);
 
-},{"./renderer.js":114}],117:[function(require,module,exports){
+},{"./renderer.js":111}],114:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -23813,7 +23061,7 @@ var Scene = exports.Scene = function () {
 	return Scene;
 }();
 
-},{"../../../von-grid/MouseCaster.js":120}],118:[function(require,module,exports){
+},{"../../../von-grid/MouseCaster.js":117}],115:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -23870,7 +23118,7 @@ var TownRenderer = exports.TownRenderer = function (_Renderer) {
     return TownRenderer;
 }(_renderer.Renderer);
 
-},{"./renderer.js":114}],119:[function(require,module,exports){
+},{"./renderer.js":111}],116:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -24010,7 +23258,7 @@ var Util = exports.Util = function () {
     return Util;
 }();
 
-},{}],120:[function(require,module,exports){
+},{}],117:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -24215,7 +23463,7 @@ var MouseCaster = exports.MouseCaster = function () {
 	return MouseCaster;
 }();
 
-},{"./Signal.js":123,"three":124}],121:[function(require,module,exports){
+},{"./Signal.js":120,"three":121}],118:[function(require,module,exports){
 'use strict';
 
 /**
@@ -24858,7 +24106,7 @@ THREE.OrbitControls = function (object, domElement) {
 THREE.OrbitControls.prototype = Object.create(THREE.EventDispatcher.prototype);
 THREE.OrbitControls.prototype.constructor = THREE.OrbitControls;
 
-},{}],122:[function(require,module,exports){
+},{}],119:[function(require,module,exports){
 'use strict';
 
 /**
@@ -25148,7 +24396,7 @@ THREE.STLLoader.prototype = {
 
 };
 
-},{}],123:[function(require,module,exports){
+},{}],120:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -25656,7 +24904,7 @@ var Signal = exports.Signal = function () {
     return Signal;
 }();
 
-},{}],124:[function(require,module,exports){
+},{}],121:[function(require,module,exports){
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
 	typeof define === 'function' && define.amd ? define(['exports'], factory) :

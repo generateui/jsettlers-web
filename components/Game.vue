@@ -37,7 +37,7 @@
     import DiceView from "./DiceView.vue";
     import {Game} from "../src/game.js";
     import {Bank} from "../src/bank.js";
-    import {GameBoardRenderer} from "../src/ui/webgl/gameBoardRenderer.js";
+    import {BoardRenderer} from "../src/ui/webgl/boardRenderer.js";
     import {Player, User} from "../src/player.js";
     import { Standard4pDesign, BoardDescriptor } from '../src/board.js';
 
@@ -82,7 +82,7 @@
                 });
                 game.players.push(botPlayer);
             }
-            game.gameBoard = board;
+            game.board = board;
             const playingPlayer = settings.players[0];
             game.players.push(playingPlayer);
 
@@ -100,7 +100,7 @@
         mounted: function() {
             var brEl = document.getElementById("game-board-renderer");
             const game = this.$data.game;
-            const boardRenderer = new GameBoardRenderer(brEl, game);
+            const boardRenderer = new BoardRenderer(brEl, game.board);
         }
     }
 </script>

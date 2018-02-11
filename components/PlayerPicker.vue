@@ -1,5 +1,5 @@
 <template>
-  <ul>
+  <ul class="toggle-button">
     <li v-for="p in players">
         <input type="radio" :id="`player${p.user.name}`" name="playerPicker">
         <label 

@@ -1,5 +1,5 @@
 <template>
-  <ul>
+  <ul class="toggle-button">
     <li v-for="(ht, key) in hexTypes" v-bind:key="key">
         <input type="radio" :id="`hexType-${ht}`" name="hexTypePicker">
         <label 

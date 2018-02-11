@@ -1,17 +1,21 @@
 import {Scene} from "./scene.js";
+import {RobberRenderer} from "./robberRenderer.js";
 import {ChitRenderer} from "./chitRenderer.js";
 import {HexRenderer} from "./hexRenderer.js";
 import {PortRenderer} from "./portRenderer.js";
 import {NodeRenderer} from "./nodeRenderer.js";
 import {EdgeRenderer} from "./edgeRenderer.js";
+import {CityRenderer} from "./cityRenderer.js";
+import {TownRenderer} from "./townRenderer.js";
+import {RoadRenderer} from "./roadRenderer.js";
 import {PortPickerRenderer} from "./portPickerRenderer.js";
 import {MouseCaster} from "../../../von-grid/MouseCaster.js";
-import {NoBehavior} from "../BoardBehavior.js";
+import {NoBehavior} from "../boardBehavior.js";
 import {Standard4pDesign} from "../../board.js";
 
 /* Renders a 3D hexagon board using von-grid */
 export class BoardRenderer {
-    constructor(element, board, behavior) {
+    constructor(element, board, behavior, handleBehavior) {
         this.board = board || new Standard4pDesign();
         this._behavior = behavior || new NoBehavior();
 
@@ -30,6 +34,10 @@ export class BoardRenderer {
         this.hexRenderers = new Map(); // <Coord, HexRenderer>
         this.nodeRenderers = new Map(); // <Node, NodeRenderer>
         this.edgeRenderers = new Map(); // <Edge, EdgeRenderer>
+        this.townRenderers = new Map(); // <Node, Town>
+        this.cityRenderers = new Map(); // <Node, City>
+        this.roadRenderers = new Map(); // <Edge, Road>
+        this.robberRenderer = new RobberRenderer(this, this.board.robber);
         this.portPickerRenderer = new PortPickerRenderer(this);
         this.group.add(this.portPickerRenderer.group);
         
@@ -89,6 +97,19 @@ export class BoardRenderer {
             this.edgesGroup.add(edgeRenderer.mesh);
             this.edgeRenderers.set(edge, edgeRenderer);
         }
+        this.removeTownAddedSubscription = this.board.towns.added((key, value) => {
+            var townRenderer = new TownRenderer(this, value);
+            this.townRenderers.set(value, townRenderer);
+        });
+        this.removeCityAddedSubscription = this.board.cities.added((key, value) => {
+            var cityRenderer = new CityRenderer(this, value);
+            this.cityRenderers.set(value, cityRenderer);
+        });
+        this.removeRoadAddedSubscription = this.board.roads.added((key, value) => {
+            var roadRenderer = new RoadRenderer(this, value);
+            this.roadRenderers.set(value, roadRenderer);
+        });
+
         this.scene.paused = false;
     }
     setBoard(board) {
@@ -104,6 +125,12 @@ export class BoardRenderer {
         this.disposeRenderers(this.hexRenderers, this.tilesGroup);
         this.disposeRenderers(this.nodeRenderers, this.nodesGroup);
         this.disposeRenderers(this.edgeRenderers, this.edgesGroup);
+        this.disposeRenderers(this.townRenderers, this.scene.scene);
+        this.disposeRenderers(this.cityRenderers, this.scene.scene);
+        this.disposeRenderers(this.roadRenderers, this.scene.scene);
+        this.removeTownAddedSubscription();
+        this.removeCityAddedSubscription();
+        this.removeRoadAddedSubscription();
     }
 
     disposeRenderers(renderers, group) {
@@ -198,7 +225,6 @@ export class BoardRenderer {
         return new THREE.Vector3(centroidX, 3, centroidZ);
     }
 
-
 	// coord to position in pixels/world
 	coordToPixel(coord) {
 		const x = coord.x * this._cellWidth * 0.75;
@@ -236,5 +262,6 @@ export class BoardRenderer {
 	}
 
 	dispose() {
+        // TODO
 	}
 }

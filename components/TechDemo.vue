@@ -1,21 +1,21 @@
 <template>
     <div id="wrapper">
         <div id="vertical-menu-1">
-            <li id="board-behavior-picker">
-                <div class="widget-header">Behavior {{pickedBehavior.constructor.name}}</div>
-                <div id="behaviors">
-                    <ul>
-                        <li v-for="behavior in behaviors" v-bind:key="behavior.constructor.name">
-                            <input type="radio" name="boardbehaviorPicker" :id="`behavior-${behavior.constructor.name}`">
-                            <label 
-                                v-bind:for="`behavior-${behavior.constructor.name}`"
-                                v-on:click="click(behavior)">
-                                {{behavior.constructor.name}}
-                            </label>
-                        </li>
-                    </ul>
-                </div>
-            </li>
+            <h2>Behaviors:</h2>
+            <h3>{{pickedBehavior.constructor.name}}</h3>
+            <ul class="toggle-button">
+                <li v-for="behavior in behaviors" v-bind:key="behavior.constructor.name">
+                    <input 
+                        type="radio" 
+                        name="boardbehaviorPicker" 
+                        :id="`behavior-${behavior.constructor.name}`">
+                    <label 
+                        v-bind:for="`behavior-${behavior.constructor.name}`"
+                        v-on:click="click(behavior)">
+                        {{behavior.constructor.name}}
+                    </label>
+                </li>
+            </ul>
         </div>
         <div id="vertical-menu-2">
             <hex-type-picker
@@ -49,17 +49,16 @@
     import PlayerPicker from './PlayerPicker.vue'
     import PortTypePicker from './PortTypePicker.vue'
     import * as bb from "../src/ui/boardBehavior.js";
-    import * as gbb from "../src/ui/gameBoardBehavior.js";
     import {Standard4pDesign} from "../src/board.js";
-    import {GameBoardRenderer} from "../src/ui/webgl/gameBoardRenderer.js";
+    import {BoardRenderer} from "../src/ui/webgl/boardRenderer.js";
     import {Game} from "../src/game.js";
 
     const setHex = new bb.SetHex();
     const setChit = new bb.SetChit();
     const setPort = new bb.SetPort();
-    const buildTown = new gbb.BuildTown();
-    const buildCity = new gbb.BuildCity();
-    const buildRoad = new gbb.BuildRoad();
+    const buildTown = new bb.BuildTown();
+    const buildCity = new bb.BuildCity();
+    const buildRoad = new bb.BuildRoad();
     var boardRenderer = null;
 
     export default {
@@ -82,7 +81,7 @@
                     new bb.ShowEdgesOfClickedHex(),
                     new bb.ShowEdgesOfClickedNode(),
                     setPort,
-                    new gbb.MoveRobber(),
+                    new bb.MoveRobber(),
                     buildTown,
                     buildCity,
                     buildRoad,
@@ -127,9 +126,9 @@
         mounted: function() {
             // // A design representation of a board morphable into a play board
             const boardDesign = new Standard4pDesign();
+            boardDesign.generateBoardForPlay();
             var brEl = this.$refs["board-renderer"];
-            const game = new Game();
-            boardRenderer = new GameBoardRenderer(brEl, game, setHex);
+            boardRenderer = new BoardRenderer(brEl, boardDesign, setHex);
         }
     }
 
@@ -137,53 +136,55 @@
 
 <style scoped>
 #wrapper {
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: 15% 15% 70%;
+    grid-template-rows: 100%;
     height: 100%;
     width: 100%;
 }
 #vertical-menu-1 {
     background-color: rgba(33, 150, 243, 0.75);
-    display: flex;
+    grid-row-start: 1;
+    grid-column-start: 1;
     height: 100%;
-    flex: 1;
 }
 #vertical-menu-2 {
     background-color: rgba(33, 150, 243, 0.5);
-    display: flex;
+    grid-row-start: 1;
+    grid-column-start: 2;
     height: 100%;
-    flex: 1;
 }
 #board-renderer {
-    top: 0;
-    left: 0;
     background-color: #000;
-    display: flex;
-    flex: 8;
+    grid-row-start: 1;
+    grid-column-start: 3;
     height: 100%;
-    width: 100%;
 }
-input[type='radio'] {
+
+</style>
+
+<style>
+.toggle-button li > input[type='radio'] {
     display: none;
 }
-label {
+.toggle-button li > label {
     text-align: right;
     clear: both;
     float: left;
     cursor: pointer;
     border: 2px solid transparent;
 }
-label > img {
+.toggle-button li > label > img {
     vertical-align: middle;
     margin-right: 0.5em;
 }
 
 /* a label right after an input element which is checked */
-input[type='radio']:checked+label {
+.toggle-button li > input[type='radio']:checked+label {
     border: 2px solid black;
     background-color: #C4C4C4;
 }
-input[type='radio']+label:hover {
+.toggle-button li > input[type='radio']+label:hover {
     border: 2px solid grey;
     background-color: #C4C4C4;
 }
@@ -191,13 +192,12 @@ input[type='radio']+label:hover {
     font-size: large;
     font-weight: 600;
 }
-li {
+.toggle-button > li {
     list-style-type:none;
     padding: 0;
 }
-img {
+.toggle-button > li > label > img {
     height: 24px;
     width: 24px;
 }
-
 </style>
