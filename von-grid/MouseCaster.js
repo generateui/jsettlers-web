@@ -39,7 +39,6 @@ export class MouseCaster {
 		// behind-the-scenes stuff you shouldn't worry about
 		this._camera = camera;
 		this._raycaster = new THREE.Raycaster();
-		// this._preventDefault = false;
 
 		element = element || document;
 
@@ -102,17 +101,8 @@ export class MouseCaster {
 		this.allHits = intersects;
 	}
 
-	// preventDefault() {
-	// 	this._preventDefault = true;
-	// }
-
 	_onDocumentMouseDown(evt) {
 		evt = evt || window.event;
-		// evt.preventDefault();
-		// if (this._preventDefault) {
-		// 	this._preventDefault = false;
-		// 	return false;
-		// }
 		if (this.pickedObject) {
 			this.selectedObject = this.pickedObject;
 		}
@@ -126,11 +116,6 @@ export class MouseCaster {
 	}
 
 	_onDocumentMouseUp(evt) {
-		// evt.preventDefault();
-		// if (this._preventDefault) {
-		// 	this._preventDefault = false;
-		// 	return false;
-		// }
 		this.shift = evt.shiftKey;
 		this.ctrl = evt.ctrlKey;
 
@@ -144,7 +129,6 @@ export class MouseCaster {
 	}
 
 	_onDocumentMouseMove(event) {
-		// event.preventDefault();
 		// this.screenPosition.x = (evt.clientX / window.innerWidth) * 2 - 1;
 		// this.screenPosition.y = -(evt.clientY / window.innerHeight) * 2 + 1;
 		this.screenPosition.x = ( ( event.clientX - this.element.offsetLeft ) / this.element.clientWidth ) * 2 - 1;
@@ -155,7 +139,6 @@ export class MouseCaster {
 		if (!this.active) {
 			return;
 		}
-		// evt.preventDefault();
 		evt.stopPropagation();
 
 		var delta = 0;

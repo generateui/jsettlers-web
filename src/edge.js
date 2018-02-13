@@ -1,4 +1,6 @@
+var proto = require("../data_pb");
 import {Node} from "./node.js";
+import {Coord} from "./coord.js";
 
 export class Edge {
     constructor(coord1, coord2) {
@@ -63,6 +65,17 @@ export class Edge {
     }
     static _getHash(coord1, coord2) {
         return ((coord1.hash.hashCode() / 2) >> 0) + ((coord2.hash.hashCode() / 2) >> 0);
+    }
+    static fromData(data) {
+        const coord1 = Coord.fromData(data.getCoord1());
+        const coord2 = Coord.fromData(data.getCoord2());
+        return new Edge(coord1, coord2);
+    }
+    get data() {
+        const data = new proto.Edge();
+        data.setCoord1(this.coord1.data);
+        data.setCoord2(this.coord2.data);
+        return data;
     }
 }
 Edge._cache = new Map();

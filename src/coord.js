@@ -8,12 +8,12 @@ export class Coord {
     // get nodes();
     // get edges();
     static fromData(data) {
-        if (data.hasCoord1d()) {
+        if (data.hasCoord1D()) {
             // not implemented
-        } else if (data.hasCoord2d()) {
+        } else if (data.hasCoord2D()) {
             // not implemented
-        } else if (data.hasCoord3d()) {
-            return Coord3D.fromData(data.getCoord3d());
+        } else if (data.hasCoord3D()) {
+            return Coord3D.fromData(data.getCoord3D());
         }
     }
 }
@@ -80,12 +80,12 @@ export class Coord3D extends Coord {
         return new Coord3D(data.getX(), data.getY(), data.getZ());
     }
     get data() {
-        const coord = new proto.Coord();
-        let data = new proto.Coord3D();
+        const data = new proto.Coord3D();
         data.setX(this.x);
         data.setY(this.y);
         data.setZ(this.z);
-        coord.setCoord3d(data);
+        const coord = new proto.Coord();
+        coord.setCoord3D(data);
         return coord;
     }
     /** <Coord3D>[6] */

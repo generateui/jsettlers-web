@@ -4,10 +4,17 @@
             <ul>
                 <li>
                     <img src="doc/images/Town48.png" style="height:24px; width: 24px;">
-                    <select v-model="selectedPlayer">
-                        <option v-for="player in game.players" v-bind:value="player" v-bind:key="player.id">{{player.user.name}}</option>
+                    <select v-model="player">
+                        <option v-for="p in game.players" v-bind:value="p" v-bind:key="p.id">{{p.user.name}}</option>
                     </select>
                     <button @click="buildTown()">build town</button>
+                </li>
+                <li>
+                    <img src="doc/images/Road48.png" style="height:24px; width: 24px;">
+                    <select v-model="player">
+                        <option v-for="p in game.players" v-bind:value="p" v-bind:key="p.id">{{p.user.name}}</option>
+                    </select>
+                    <button @click="buildRoad()">build road</button>
                 </li>
             </ul>
         </li>
@@ -15,10 +22,11 @@
 </template>
 
 <script>
-    var proto = require("../data_pb");
     import * as bb from "../src/ui/boardBehavior.js";
     import {Receiver} from "../src/receiver.js";
     import {HostAtClient} from "../src/host.js";
+    import {BuildTown} from "../src/actions/buildTown.js";
+    import {BuildRoad} from "../src/actions/buildRoad.js";
 
     export default {
         name: 'debug-perform-actions',
@@ -31,36 +39,43 @@
             return {
                 receiver: null,
                 host: null,
-                selectedPlayer: null,
+                player: null,
             }
         },
         methods: {
-            buildTown: function() {
-                const player = this.$data.selectedPlayer;
-                const clicked = function(node) {
-                    var actionIds = new proto.ActionIds();
-                    actionIds.setPlayerid(this.$data.selectedPlayer.id);
-                    var action = new proto.GameAction();
-                    var bt = new proto.BuildTown();
-                    bt.setNode(node.data);
-                    bt.setActionids(actionIds);
-                    action.setBuildtown(bt);
-                    this.$data.host.send(action);
-                    const noBehavior = new bb.NoBehavior();
-                    this.$emit('behaviorChanged', noBehavior);
-                }.bind(this);
-                const behavior = new bb.BuildTown2(player, clicked);
+            buildTown: async function() {
+                const behavior = new bb.BuildTown2(this.$data.player);
+                const createActionData = (player, node) => BuildTown.createData(player, node);
+                this.act(behavior, createActionData);
+            },
+            buildRoad: function() {
+                const behavior = new bb.BuildRoad2(this.$data.player);
+                const createAction = (player, edge) => BuildRoad.createData(this.$data.player, edge);
+                this.act(behavior, createAction);
+            },
+            act: async function(behavior, createAction) {
+                // Set the board to the new behavior
                 this.$emit('behaviorChanged', behavior);
-                // set behavior
-                // register clicked node
-                // unset behavior
-                // fire action
+                try {
+                    // await the behavior for completion (e.g. a click on the board on some renderer)
+                    const result = await behavior.promise;
+                    // create some data
+                    const action = createAction(this.$data.player, result);
+                    // send the data
+                    await this.$data.host.send(action);
+                } catch (error) {
+                    // add it to game errors?
+                    alert(error.message);
+                } finally {
+                    this.$emit('behaviorChanged', new bb.NoBehavior());
+                }
             }
         },
         mounted: function() {
             const receiver = new Receiver();
-            receiver.game = this.$props.game;
-            this.$data.host = new HostAtClient(receiver);
+            const game = this.$props.game;
+            receiver.game = game;
+            this.$data.host = new HostAtClient(receiver, game);
             this.$data.receiver = receiver;
         }
     }

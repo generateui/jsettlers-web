@@ -321,10 +321,21 @@ export class BuildTown extends BoardBehavior {
     }
 }
 export class BuildTown2 extends BoardBehavior {
-    constructor(player, clickedFunction) {
+    constructor(player) {
         super();
-        this.clickedFunction = clickedFunction;
         this.player = player || new Player({color: 0xff0000});
+        this.ok = null;
+        this.fail = null;
+        const that = this;
+        this.promise = new Promise((ok, fail) => {
+            that.ok = ok;
+            that.fail = fail;
+        });
+        document.addEventListener('keydown', function(event) {
+            if(event.keyCode == 27) {
+                that.fail(new Error("Cancelled building a new town"));
+            }
+        });
     }
     start(boardRenderer) {
         this.boardRenderer = boardRenderer;
@@ -334,7 +345,8 @@ export class BuildTown2 extends BoardBehavior {
     click(boardRenderer, renderer) {
         if (renderer instanceof NodeRenderer) {
             const node = renderer.node;
-            this.clickedFunction(node);
+            // this.clickedFunction(node);
+            this.ok(node);
         }
     }
     stop(boardRenderer) {
@@ -368,6 +380,7 @@ export class BuildRoad extends BoardBehavior {
         this.emphasizeHoveredObject = new EmphasizeHoveredObject();
         this.player = new Player();
         this.player.color = 0xff0000;
+
     }
     _showEdges() {
         var edges = this.boardRenderer.board.getAllEdges();
@@ -384,6 +397,50 @@ export class BuildRoad extends BoardBehavior {
             const edge = renderer.edge;
             this.boardRenderer.board.roads.set(edge, new Road(this.player, edge));
             this._showEdges();
+        }
+    }
+    stop(boardRenderer) {
+        boardRenderer.hideAllEdges();
+    }
+    enter(boardRenderer, renderer) {
+        this.emphasizeHoveredObject.enter(boardRenderer, renderer);
+    }
+    leave(boardRenderer, renderer) {
+        this.emphasizeHoveredObject.leave(boardRenderer, renderer);
+    }
+}
+export class BuildRoad2 extends BoardBehavior {
+    constructor(player, clickHandler) {
+        super();
+        this.clickHandler = clickHandler;
+        this.emphasizeHoveredObject = new EmphasizeHoveredObject();
+        this.ok = null;
+        this.fail = null;
+        const that = this;
+        this.promise = new Promise((ok, fail) => {
+            that.ok = ok;
+            that.fail = fail;
+        });
+        document.addEventListener('keydown', function(event) {
+            if(event.keyCode == 27) {
+                that.fail(new Error("Cancelled building a new town"));
+            }
+        });
+    }
+    _showEdges() {
+        var edges = this.boardRenderer.board.getAllEdges();
+        var roadEdges = this.boardRenderer.board.roads.map.keys();
+        var edgesToShow = Util.except(edges, roadEdges);
+        this.boardRenderer.showEdges(edgesToShow);
+    }
+    start(boardRenderer) {
+        this.boardRenderer = boardRenderer;
+        this._showEdges();
+    }
+    click(boardRenderer, renderer) {
+        if (renderer instanceof EdgeRenderer) {
+            const edge = renderer.edge;
+            this.ok(edge);            
         }
     }
     stop(boardRenderer) {

@@ -3,9 +3,10 @@ package carcattonne_data;
 
 message Coord {
 	oneof coord_oneof {
-		Coord1D coord1D = 1;
-		Coord2D coord2D = 2;
-		Coord3D coord3D = 3;
+		// snake_casing used here generates expected "coord1D" instead of "coord1d"
+		Coord1D coord1_d = 1;
+		Coord2D coord2_d = 2;
+		Coord3D coord3_d = 3;
 	}
 }
 	message Coord1D {
@@ -32,9 +33,10 @@ message Edge {
 }
 
 message Hex {
-	HexType Type = 1;
+	HexType type = 1;
 	Coord coord = 2;
 	ChitType chit = 3;
+	// TODO: I saw implementations having multiple ports per hex. Make this repeated?
 	PortType port = 4;
 }
 	enum HexType {
@@ -81,26 +83,30 @@ enum ResourceType {
 	Gold = 5;
 	Unknown = 6; // in opponents' list of resources to reduce spying
 }
-message ActionIds {
-	int32 id = 1;
-	int32 gameId = 2;
-	int32 playerId = 3;
-	int32 userId = 4;
-	int32 turnId = 5;
-	int32 gamePhaseId = 6;
-	int32 turnPhaseId = 7;
-}
 message BuildTown {
-	ActionIds actionIds = 1;
-	Node node = 2;
+	Node node = 1;
 }
 message BuildRoad {
-	ActionIds actionIds = 1;
-	Edge edge = 2;
+	Edge edge = 1;
+}
+// a client requests to perform a game action
+message GameActionRequest {
+	int32 request_id = 1; // client-generated id to match response with request to update state
+	oneof action {
+		BuildTown build_town = 8;
+		BuildRoad build_road = 9;
+	}
 }
 message GameAction {
+	int32 id = 1;
+	int32 game_id = 2;
+	int32 player_id = 3;
+	int32 user_id = 4;
+	int32 turn_id = 5;
+	int32 game_phase_id = 6;
+	int32 turn_phase_id = 7;
 	oneof action {
-		BuildTown buildTown = 1;
-		BuildRoad buildRoad = 2;
+		BuildTown build_town = 8;
+		BuildRoad build_road = 9;
 	}
 }
