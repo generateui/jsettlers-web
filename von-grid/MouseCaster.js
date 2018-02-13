@@ -156,4 +156,22 @@ export class MouseCaster {
 		}
 		this.signal.dispatch(MouseCaster.WHEEL, this.wheel);
 	}
+
+	dispose() {
+		this.element.removeEventListener('mousemove', this._onDocumentMouseMove.bind(this), {capture: false, passive: true});
+		this.element.removeEventListener('mousedown', this._onDocumentMouseDown.bind(this), {capture: false, passive: true});
+		this.element.removeEventListener('mouseup', this._onDocumentMouseUp.bind(this), {capture: false, passive: true});
+		this.element.removeEventListener('mousewheel', this._onMouseWheel.bind(this), {capture: false, passive: true});
+		this.element.removeEventListener('DOMMouseScroll', this._onMouseWheel.bind(this), {capture: false, passive: true}); // firefox
+		this.pickedObject = null;
+		this.selectedObject = null;
+		this.allHits = null;
+		this.position = null;
+		this.screenPosition = null;
+		this.group = null;
+		this._camera = null;
+		this._raycaster = null;
+		this.signal.dispose();
+		this.signal = null;
+	}
 }

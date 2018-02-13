@@ -63,6 +63,12 @@
                 const rest = this.substring(1, this.length).toLowerCase();
                 return firstLetter + rest;
             };
+            Array.prototype.remove = function(item) {
+                const index = this.indexOf(item);
+                if (index !== -1) {
+                    this.splice(index, 1);
+                }
+            }
         </script>
         <script type="text/javascript" src="dist/build.js"></script>
 

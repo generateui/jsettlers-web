@@ -39,15 +39,27 @@
     import DiceView from "./DiceView.vue";
     import DebugPerformActions from "./DebugPerformActions.vue";
 
-    import {Game} from "../src/game.js";
+    import {Game, GameSettings} from "../src/game.js";
     import {Bank} from "../src/bank.js";
     import {BoardRenderer} from "../src/ui/webgl/boardRenderer.js";
     import {Player, User} from "../src/player.js";
-    import { Standard4pDesign, BoardDescriptor } from '../src/board.js';
+    import { Standard4pDesign, JustSomeSea, TheGreatForest, BoardDescriptor } from '../src/board.js';
 
     var boardRenderer = null;
     var receiver = null;
     var host = null;
+
+    const boards = [
+        Standard4pDesign.descriptor,
+        JustSomeSea.descriptor,
+        TheGreatForest.descriptor,
+    ];
+    const bots = [
+        { name: "SimpleBot", id: 0 },
+        { name: "EvenSimpelerBot", id: 1 },
+        { name: "DerpyBot", id: 2 },
+        { name: "DerpierBot", id: 3 },
+    ];
 
     export default {
         name: 'game',
@@ -56,7 +68,14 @@
         },
         props: {
             settings: {
-                type: Object
+                type: Object,
+                default: function() {
+                    return new GameSettings({
+                        boardDescriptor: boards[0],
+                        bots: [bots[1], bots[2], bots[3]],
+                        players: [new Player({ user: new User({name: "player 1"}) })],
+                    })
+                }
             }
         },
         data() {
@@ -121,6 +140,9 @@
             const game = this.$data.game;
             boardRenderer = new BoardRenderer(brEl, game.board);
             
+        },
+        destroyed: function() {
+            boardRenderer.dispose();
         }
     }
 </script>

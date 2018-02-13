@@ -16,6 +16,13 @@
                     </select>
                     <button @click="buildRoad()">build road</button>
                 </li>
+                <li>
+                    <img src="doc/images/City48.png" style="height:24px; width: 24px;">
+                    <select v-model="player">
+                        <option v-for="p in game.players" v-bind:value="p" v-bind:key="p.id">{{p.user.name}}</option>
+                    </select>
+                    <button @click="buildCity()">build city</button>
+                </li>
             </ul>
         </li>
     </ul>
@@ -23,10 +30,13 @@
 
 <script>
     import * as bb from "../src/ui/boardBehavior.js";
+    import * as gb from "../src/ui/gameBehavior.js";
     import {Receiver} from "../src/receiver.js";
     import {HostAtClient} from "../src/host.js";
     import {BuildTown} from "../src/actions/buildTown.js";
     import {BuildRoad} from "../src/actions/buildRoad.js";
+    import {BuildCity} from "../src/actions/buildCity.js";
+    import {KeyListener} from "../src/ui/keyListener.js";
 
     export default {
         name: 'debug-perform-actions',
@@ -40,17 +50,23 @@
                 receiver: null,
                 host: null,
                 player: null,
+                keyListener: new KeyListener(),
             }
         },
         methods: {
             buildTown: async function() {
-                const behavior = new bb.BuildTown2(this.$data.player);
+                const behavior = new gb.BuildTown(this.$data.player, this.$data.keyListener);
                 const createActionData = (player, node) => BuildTown.createData(player, node);
                 this.act(behavior, createActionData);
             },
             buildRoad: function() {
-                const behavior = new bb.BuildRoad2(this.$data.player);
+                const behavior = new gb.BuildRoad(this.$data.player, this.$data.keyListener);
                 const createAction = (player, edge) => BuildRoad.createData(this.$data.player, edge);
+                this.act(behavior, createAction);
+            },
+            buildCity: function() {
+                const behavior = new gb.BuildCity(this.$data.player, this.$data.keyListener);
+                const createAction = (player, node) => BuildCity.createData(this.$data.player, node);
                 this.act(behavior, createAction);
             },
             act: async function(behavior, createAction) {

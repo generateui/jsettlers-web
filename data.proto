@@ -89,12 +89,16 @@ message BuildTown {
 message BuildRoad {
 	Edge edge = 1;
 }
+message BuildCity {
+	Node node = 1;
+}
 // a client requests to perform a game action
 message GameActionRequest {
 	int32 request_id = 1; // client-generated id to match response with request to update state
 	oneof action {
-		BuildTown build_town = 8;
-		BuildRoad build_road = 9;
+		BuildTown build_town = 2;
+		BuildRoad build_road = 3;
+		BuildCity build_city = 4;
 	}
 }
 message GameAction {
@@ -108,5 +112,6 @@ message GameAction {
 	oneof action {
 		BuildTown build_town = 8;
 		BuildRoad build_road = 9;
+		BuildCity build_city = 10;
 	}
 }

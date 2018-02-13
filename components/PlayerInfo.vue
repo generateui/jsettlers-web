@@ -4,15 +4,15 @@
             <div id="player-name">{{player.user.name}}</div>
             <div id="towns" class="stock-info">
                 <img src="doc/images/Town48.png" />
-                <span>{{player.towns.size}}</span>
+                <span>{{player.stock.towns}}</span>
             </div>
             <div id="cities" class="stock-info">
                 <img src="doc/images/City48.png" />
-                <span>{{player.cities.size}}</span>
+                <span>{{player.stock.cities}}</span>
             </div>
             <div id="roads" class="stock-info">
                 <img src="doc/images/Road48.png" />
-                <span>{{player.roads.size}}</span>
+                <span>{{player.stock.roads}}</span>
             </div>
             <div id="developmentCards" class="stock-info">
                 <img src="doc/images/DevelopmentCard48.png" />

@@ -3,6 +3,7 @@ var proto = require("../data_pb");
 import {GameAction} from "./actions/gameAction.js";
 import {BuildTown} from "./actions/buildTown.js";
 import {BuildRoad} from "./actions/buildRoad.js";
+import {BuildCity} from "./actions/buildCity.js";
 import {Node} from "./node.js";
 
 export class HostAtClient {
@@ -26,21 +27,22 @@ export class HostAtClient {
         //
         // this.receiver.receive(action);
         return new Promise((ok, fail) => {
-            const random = Math.random();
-            if (random > 0.5) {
-                fail(new Error(`random: ${random.toString()}`))
-            } else {
+            // const random = Math.random();
+            // if (random > 0.5) {
+                // fail(new Error(`random: ${random.toString()}`))
+            // } else {
                 GameAction.setReferences(action, this.game);
                 action.perform(this.game);
                 this.game.actions.push(action);
                 ok();
-            }
+            // }
         });
     }
     createAction(actionMessage) {
         const a = actionMessage;
         if (a.hasBuildTown()) { return BuildTown.fromData(a.getBuildTown()); }
         if (a.hasBuildRoad()) { return BuildRoad.fromData(a.getBuildRoad()); }
+        if (a.hasBuildCity()) { return BuildCity.fromData(a.getBuildCity()); }
         throw new Error("Unsupported action in HostAtClient");
     }
 }

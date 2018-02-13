@@ -10,7 +10,8 @@ export class BuildRoad extends GameAction {
     }
     perform(game) {
         const road = new Road(this.player, this.edge);
-        game.board.roads.set(road.edge, road);
+        road.addToPlayer(this.player);
+        road.addToBoard(game.board);
     }
     static fromData(data) {
         const edge = Edge.fromData(data.getEdge())

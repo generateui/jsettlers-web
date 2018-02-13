@@ -29,8 +29,8 @@ export class HexPartRenderer  extends Renderer{
         triangleShape.lineTo(0, 0);
         triangleShape.autoClose = true;
 
-        var texture = new THREE.TextureLoader().load("doc/images/Wheat2To1Port.png");
-        texture.minFilter = THREE.LinearFilter;
+        this.texture = new THREE.TextureLoader().load("doc/images/Wheat2To1Port.png");
+        this.texture.minFilter = THREE.LinearFilter;
         const shapeGeometry = new THREE.ShapeGeometry(triangleShape);
         shapeGeometry.faceVertexUvs[0][0][0].x = 1
         shapeGeometry.faceVertexUvs[0][0][0].y = 0;
@@ -38,8 +38,8 @@ export class HexPartRenderer  extends Renderer{
         shapeGeometry.faceVertexUvs[0][0][1].y = 1;
         shapeGeometry.faceVertexUvs[0][0][2].x = 0;
         shapeGeometry.faceVertexUvs[0][0][2].y = 0;
-        material = new THREE.MeshBasicMaterial( {map: texture} );
-        this.mesh = new THREE.Mesh(shapeGeometry, material);
+        this.material = new THREE.MeshBasicMaterial( {map: this.texture} );
+        this.mesh = new THREE.Mesh(shapeGeometry, this.material);
         this.mesh.rotation.x = -90 * Math.DEG_TO_RAD;
         this.mesh.position.y = 1.01;
         this.mesh.scale.set(scale, scale, 1);
@@ -65,5 +65,10 @@ export class HexPartRenderer  extends Renderer{
         var texture = new THREE.TextureLoader().load(fileName);
         this.mesh.material.map = texture;
         this.mesh.material.needsUpdate = true;
+    }
+    dispose() {
+        this.texture.dispose();
+        this.material = null;
+        this.mesh = null;
     }
 }

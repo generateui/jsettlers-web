@@ -34,9 +34,9 @@ export class BoardRenderer {
         this.hexRenderers = new Map(); // <Coord, HexRenderer>
         this.nodeRenderers = new Map(); // <Node, NodeRenderer>
         this.edgeRenderers = new Map(); // <Edge, EdgeRenderer>
-        this.townRenderers = new Map(); // <Node, Town>
-        this.cityRenderers = new Map(); // <Node, City>
-        this.roadRenderers = new Map(); // <Edge, Road>
+        this.townRenderers = new Map(); // <Node, TownRenderer>
+        this.cityRenderers = new Map(); // <Node, CityRenderer>
+        this.roadRenderers = new Map(); // <Edge, RoadRenderer>
         this.robberRenderer = new RobberRenderer(this, this.board.robber);
         this.portPickerRenderer = new PortPickerRenderer(this);
         this.group.add(this.portPickerRenderer.group);
@@ -79,6 +79,11 @@ export class BoardRenderer {
             this.hexRenderers.delete(key);
             hexRenderer.dispose();
         });
+        this.removeTownDeletedSubscription = this.board.towns.deleted(key => {
+            const townRenderer = this.townRenderers.get(key);
+            this.townRenderers.delete(key);
+            townRenderer.dispose();
+        });
 
         for (var [coord, hex] of this.board.hexes.map) {
             var hexRenderer = new HexRenderer(this, hex, this.cellSize);
@@ -99,15 +104,15 @@ export class BoardRenderer {
         }
         this.removeTownAddedSubscription = this.board.towns.added((key, value) => {
             var townRenderer = new TownRenderer(this, value);
-            this.townRenderers.set(value, townRenderer);
+            this.townRenderers.set(key, townRenderer);
         });
         this.removeCityAddedSubscription = this.board.cities.added((key, value) => {
             var cityRenderer = new CityRenderer(this, value);
-            this.cityRenderers.set(value, cityRenderer);
+            this.cityRenderers.set(key, cityRenderer);
         });
         this.removeRoadAddedSubscription = this.board.roads.added((key, value) => {
             var roadRenderer = new RoadRenderer(this, value);
-            this.roadRenderers.set(value, roadRenderer);
+            this.roadRenderers.set(key, roadRenderer);
         });
 
         this.scene.paused = false;
@@ -168,6 +173,9 @@ export class BoardRenderer {
 
     addMesh(mesh) {
         this.scene.scene.add(mesh);
+    }
+    removeMesh(mesh) {
+        this.scene.scene.remove(mesh);
     }
 
     get behavior() { return this._behavior; }
@@ -262,6 +270,28 @@ export class BoardRenderer {
 	}
 
 	dispose() {
-        // TODO
+        this._behavior.stop(this);
+        this._behavior = null;
+        this.reset();
+
+        this.robberRenderer.dispose();
+        this.robberRenderer = null;
+        this.group.remove(this.portPickerRenderer.group);
+        this.portPickerRenderer.dispose();
+        
+        this.hexRenderers = null; // <Coord, HexRenderer>
+        this.nodeRenderers = null; // <Node, NodeRenderer>
+        this.edgeRenderers = null; // <Edge, EdgeRenderer>
+        this.townRenderers = null; // <Node, Town>
+        this.cityRenderers = null; // <Node, City>
+        this.roadRenderers = null; // <Edge, Road>
+
+        this.nodesGroup = null;
+        this.edgesGroup = null;
+        this.group = null;
+        this.board = null;
+        this.tilesGroup = null;
+        this.scene.dispose();
+        this.scene = null;
 	}
 }

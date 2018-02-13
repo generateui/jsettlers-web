@@ -1,5 +1,6 @@
 import {Observable} from "./generic/observable.js";
 import {Util} from "./util.js";
+import {Stock} from "./stock.js";
 import {Resource, Timber, Wheat, Ore, Sheep, Brick, Gold, ResourceList} from "./resource.js";
 import {DevelopmentCard, YearOfPlenty, Monopoly, Soldier, VictoryPoint, RoadBuilding} from "./developmentCard.js";
 var proto = require("../data_pb");
@@ -16,14 +17,17 @@ export class Player extends Observable {
         this.maxHandResources = 7;
         this.developmentCards = [
             new Soldier(), new YearOfPlenty(), new Monopoly(), new VictoryPoint(), new RoadBuilding()
-        ]; // TODO: ObseravbleArray
+        ]; // TODO: ObservableArray
         this.resources = [{}, {}, {}, {}, {}, {}, {}, {}];
         this.victoryPoints = [{},{},{}];
+        this.stock = new Stock();
         this.towns = new Map(); // <Node, Town>
         this.cities = new Map(); // <Node, City>
         this.roads = new Map(); // <Edge, Road>
         this.victoryPoints = []; // <Edge, Road>
-        // this.resources = [new Timber(),new Timber(),new Timber(),new Timber(),new Timber(),new Wheat(),new Wheat(),new Brick()];
+        this.producers = new Map(); // <Node, Piece> (Piece = Town | City)
+        this.nodePieces = new Map(); // <Node, Piece> (Piece = Town | City)
+        this.edgePieces = new Map(); // <Edge, Piece> (Piece = Road)
         this.resources = new ResourceList(); // <ResourceType, Resources[]>
         this.resources[proto.ResourceType.TIMBER] =  [new Timber(), new Timber(), new Timber()];
         this.resources[proto.ResourceType.WHEAT] = [new Wheat(), new Wheat()];

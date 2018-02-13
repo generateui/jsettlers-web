@@ -10,7 +10,8 @@ export class BuildTown extends GameAction {
     }
     perform(game) {
         const town = new Town(this.player, this.node);
-        game.board.towns.set(this.node, town);
+        town.addToPlayer(this.player);
+        town.addToBoard(game.board);
     }
     static fromData(data) {
         const node = Node.fromData(data.getNode());

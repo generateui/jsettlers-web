@@ -40,6 +40,8 @@ export class Board {
         this.towns = new ObservableMap(); // <Node, Town>
         this.cities = new ObservableMap(); // <Node, City>
         this.roads = new ObservableMap(); // <Edge, Road>
+        this.nodePieces = new Map(); // <Node, Piece> Piece = Town | City
+        this.edgePieces = new Map(); // <Edge, Piece> Piece = Road | ??
     }
     static create(id) {
         if (Board.factoryCache === undefined) {

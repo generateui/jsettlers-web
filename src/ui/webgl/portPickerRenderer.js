@@ -45,4 +45,21 @@ export class PortPickerRenderer extends Renderer {
     set visible(visible) {
         this.group.visible = visible;
     }
+    dispose() {
+        this._hex = null;
+        this.boardRenderer = null;
+        this.group.remove(this.hexPart0);
+        this.group.remove(this.hexPart1);
+        this.group.remove(this.hexPart2);
+        this.group.remove(this.hexPart3);
+        this.group.remove(this.hexPart4);
+        this.group.remove(this.hexPart5);
+        this.hexPart0.dispose();
+        this.hexPart1.dispose();
+        this.hexPart2.dispose();
+        this.hexPart3.dispose();
+        this.hexPart4.dispose();
+        this.hexPart5.dispose();
+        this.group = null;
+    }
 }
