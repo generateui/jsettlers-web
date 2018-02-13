@@ -35,4 +35,10 @@ export class BuyDevelopmentCard extends GameAction {
     perform(game) {
         this.player.developmentCards.push(this.developmentCard);
     }
+    performServer(host) {
+        const index = host.random.intFromZero(host.developmentCards.length);
+        const developmentCard = host.developmentCards[index];
+        host.developmentCards.remove(developmentCard);
+        this.developmentCard = developmentCard;
+    }
 }

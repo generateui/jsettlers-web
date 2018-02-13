@@ -6,11 +6,24 @@ import {BuildRoad} from "./actions/buildRoad.js";
 import {BuildCity} from "./actions/buildCity.js";
 import {BuyDevelopmentCard} from "./actions/buyDevelopmentCard.js";
 import {Node} from "./node.js";
+import { YearOfPlenty, Soldier, Monopoly, RoadBuilding, VictoryPoint } from "./developmentCard";
+import { ClientRandom } from "./random";
 
 export class HostAtClient {
     constructor(receiver, game) {
         this.receiver = receiver;
         this.game = game;
+        this.random = new ClientRandom();
+        this.developmentCards = [
+            new Soldier(), new Soldier(), new Soldier(), new Soldier(),
+            new Soldier(), new Soldier(), new Soldier(), new Soldier(),
+            new Soldier(), new Soldier(), new Soldier(), new Soldier(),
+            new Soldier(), new Soldier(),
+            new YearOfPlenty(), new YearOfPlenty(), 
+            new Monopoly(), new Monopoly(),
+            new RoadBuilding(), new RoadBuilding(),
+            new VictoryPoint(), new VictoryPoint(), new VictoryPoint(), new VictoryPoint(), new VictoryPoint(),
+        ];
     }
     send(actionMessage) {
         const binary = actionMessage.serializeBinary();
@@ -33,6 +46,7 @@ export class HostAtClient {
                 // fail(new Error(`random: ${random.toString()}`))
             // } else {
                 GameAction.setReferences(action, this.game);
+                action.performServer(this);
                 action.perform(this.game);
                 this.game.actions.push(action);
                 ok();

@@ -10,4 +10,5 @@ export class GameAction {
     static setReferences(action, game) {
         action.player = game.getPlayerById(action.playerId);
     }
+    performServer(host) { }
 }
