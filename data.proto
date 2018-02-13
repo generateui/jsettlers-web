@@ -92,6 +92,9 @@ message BuildRoad {
 message BuildCity {
 	Node node = 1;
 }
+message BuyDevelopmentCard {
+	DevelopmentCard development_card = 1;
+}
 // a client requests to perform a game action
 message GameActionRequest {
 	int32 request_id = 1; // client-generated id to match response with request to update state
@@ -99,6 +102,7 @@ message GameActionRequest {
 		BuildTown build_town = 2;
 		BuildRoad build_road = 3;
 		BuildCity build_city = 4;
+		BuyDevelopmentCard buy_development_card = 5;
 	}
 }
 message GameAction {
@@ -113,5 +117,30 @@ message GameAction {
 		BuildTown build_town = 8;
 		BuildRoad build_road = 9;
 		BuildCity build_city = 10;
+		BuyDevelopmentCard buy_development_card = 11;
 	}
 }
+message DevelopmentCard {
+	int32 player_id = 1;
+	int32 turn_bought_index = 2;
+	int32 turn_played_index = 3;
+	oneof development_card {
+		VictoryPoint victory_point = 4;
+		YearOfPlenty year_of_plenty = 5;
+		Soldier soldier = 6;
+		Monopoly monopoly = 7;
+		RoadBuilding road_building = 8;
+	}
+}
+message VictoryPoint { }
+message YearOfPlenty {
+	ResourceType resource_type1 = 1;
+	ResourceType resource_type2 = 2;
+}
+message Soldier {
+	Coord coord = 1;
+}
+message Monopoly {
+	ResourceType resource_type = 1;
+}
+message RoadBuilding { }

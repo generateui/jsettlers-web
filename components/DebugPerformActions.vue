@@ -1,27 +1,30 @@
 <template>
     <ul id="perform-action">
         <li>
+            <div>
+                <span>perform action for player: </span>
+                <select v-model="player">
+                    <option v-for="p in game.players" v-bind:value="p" v-bind:key="p.id">{{p.user.name}}</option>
+                </select>
+            </div>
+        </li>
+        <li>
             <ul>
                 <li>
                     <img src="doc/images/Town48.png" style="height:24px; width: 24px;">
-                    <select v-model="player">
-                        <option v-for="p in game.players" v-bind:value="p" v-bind:key="p.id">{{p.user.name}}</option>
-                    </select>
                     <button @click="buildTown()">build town</button>
                 </li>
                 <li>
                     <img src="doc/images/Road48.png" style="height:24px; width: 24px;">
-                    <select v-model="player">
-                        <option v-for="p in game.players" v-bind:value="p" v-bind:key="p.id">{{p.user.name}}</option>
-                    </select>
                     <button @click="buildRoad()">build road</button>
                 </li>
                 <li>
                     <img src="doc/images/City48.png" style="height:24px; width: 24px;">
-                    <select v-model="player">
-                        <option v-for="p in game.players" v-bind:value="p" v-bind:key="p.id">{{p.user.name}}</option>
-                    </select>
                     <button @click="buildCity()">build city</button>
+                </li>
+                <li>
+                    <img src="doc/images/DevelopmentCard.png" style="height:24px; width: 24px;">
+                    <button @click="buyDevelopmentCard()">buy devcard</button>
                 </li>
             </ul>
         </li>
@@ -36,6 +39,7 @@
     import {BuildTown} from "../src/actions/buildTown.js";
     import {BuildRoad} from "../src/actions/buildRoad.js";
     import {BuildCity} from "../src/actions/buildCity.js";
+    import {BuyDevelopmentCard} from "../src/actions/buyDevelopmentCard.js";
     import {KeyListener} from "../src/ui/keyListener.js";
 
     export default {
@@ -57,19 +61,31 @@
             buildTown: async function() {
                 const behavior = new gb.BuildTown(this.$data.player, this.$data.keyListener);
                 const createActionData = (player, node) => BuildTown.createData(player, node);
-                this.act(behavior, createActionData);
+                this.behaveThenAct(behavior, createActionData);
             },
             buildRoad: function() {
                 const behavior = new gb.BuildRoad(this.$data.player, this.$data.keyListener);
                 const createAction = (player, edge) => BuildRoad.createData(this.$data.player, edge);
-                this.act(behavior, createAction);
+                this.behaveThenAct(behavior, createAction);
             },
             buildCity: function() {
                 const behavior = new gb.BuildCity(this.$data.player, this.$data.keyListener);
                 const createAction = (player, node) => BuildCity.createData(this.$data.player, node);
-                this.act(behavior, createAction);
+                this.behaveThenAct(behavior, createAction);
             },
-            act: async function(behavior, createAction) {
+            buyDevelopmentCard: function() {
+                const createAction = (player) => BuyDevelopmentCard.createData(player, null);
+                this.act(createAction);
+            },
+            act: async function(createAction) {
+                try {
+                    const action = createAction(this.$data.player);
+                    await this.$data.host.send(action);
+                } catch (error) {
+                    alert(error.message);
+                }
+            },
+            behaveThenAct: async function(behavior, createAction) {
                 // Set the board to the new behavior
                 this.$emit('behaviorChanged', behavior);
                 try {

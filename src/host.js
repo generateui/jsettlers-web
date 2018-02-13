@@ -4,6 +4,7 @@ import {GameAction} from "./actions/gameAction.js";
 import {BuildTown} from "./actions/buildTown.js";
 import {BuildRoad} from "./actions/buildRoad.js";
 import {BuildCity} from "./actions/buildCity.js";
+import {BuyDevelopmentCard} from "./actions/buyDevelopmentCard.js";
 import {Node} from "./node.js";
 
 export class HostAtClient {
@@ -43,6 +44,7 @@ export class HostAtClient {
         if (a.hasBuildTown()) { return BuildTown.fromData(a.getBuildTown()); }
         if (a.hasBuildRoad()) { return BuildRoad.fromData(a.getBuildRoad()); }
         if (a.hasBuildCity()) { return BuildCity.fromData(a.getBuildCity()); }
+        if (a.hasBuyDevelopmentCard()) { return BuyDevelopmentCard.fromData(a.getBuyDevelopmentCard()); }
         throw new Error("Unsupported action in HostAtClient");
     }
 }
