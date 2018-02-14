@@ -88,6 +88,13 @@ export class ResourceList {
         }
         return result;
     }
+    static fromArray(array) {
+        var result = new ResourceList();
+        for (var resource of array) {
+            result[resource.type].push(resource);
+        }
+        return result;
+    }
     add(resourceList) {
         for (var resourceType in resourceList.ResourceType) {
             for (var resource of resourceList[resourceType]) {
@@ -136,5 +143,13 @@ export class ResourceList {
             }
         }
         return amount;
+    }
+    moveFrom(source, toMove) {
+        for (var resourceType in toMove) {
+            for (var resource of toMove[resourceType]) {
+                this[resourceType].push(resource);
+                source[resourceType].remove(resource);
+            }
+        }
     }
 }

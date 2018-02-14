@@ -18,6 +18,8 @@ export class Player extends Observable {
         this.developmentCards = [
             new Soldier(), new YearOfPlenty(), new Monopoly(), new VictoryPoint(), new RoadBuilding()
         ]; // TODO: ObservableArray
+        this.playedDevelopmentCards = [];
+        this.roadBuildingTokens = 2;
         this.resources = [{}, {}, {}, {}, {}, {}, {}, {}];
         this.victoryPoints = [{},{},{}];
         this.stock = new Stock();

@@ -22,7 +22,7 @@
 
     <div id="right">
         <div id="game-board-renderer"></div>
-        <actions></actions>
+        <actions v-bind:game="game"></actions>
         <player-assets v-bind:player="game.player"></player-assets>
     </div>
 

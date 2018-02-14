@@ -16,8 +16,10 @@
             <img id="build-city-button" src="doc/images/City48.png" />
         </div>
         <div id="build-road" class="build-button">
-            <img id="road-trade1" class="trade" src="doc/images/Trade48.png" />
-            <img id="road-trade2" class="trade" src="doc/images/Trade48.png" />
+            <!-- <img id="road-trade1" class="trade" src="doc/images/Trade48.png" /> -->
+            <!-- <img id="road-trade2" class="trade" src="doc/images/Trade48.png" /> -->
+            <img id="road-token1" class="trade" src="doc/images/RoadBuildingToken.png" />
+            <img id="road-token2" class="trade" src="doc/images/RoadBuildingToken.png" />
             <img id="build-road-button" src="doc/images/Road48.png" />
         </div>
         <div id="buy-development-card" class="build-button">
@@ -50,6 +52,11 @@
     export default {
         components: {
             DiceView
+        },
+        props: {
+            game: {
+                type: Object
+            }
         },
         name: 'actions',
         data() {
@@ -166,6 +173,14 @@
         grid-row-start: 1;
     }
     #road-trade2 {
+        grid-column-start: 2;
+        grid-row-start: 1;
+    }
+    #road-token1 {
+        grid-column-start: 1;
+        grid-row-start: 1;
+    }
+    #road-token2 {
         grid-column-start: 2;
         grid-row-start: 1;
     }

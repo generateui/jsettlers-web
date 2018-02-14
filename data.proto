@@ -95,6 +95,9 @@ message BuildCity {
 message BuyDevelopmentCard {
 	DevelopmentCard development_card = 1;
 }
+message PlayDevelopmentCard {
+	DevelopmentCard development_card = 1;
+}
 // a client requests to perform a game action
 message GameActionRequest {
 	int32 request_id = 1; // client-generated id to match response with request to update state
@@ -103,6 +106,7 @@ message GameActionRequest {
 		BuildRoad build_road = 3;
 		BuildCity build_city = 4;
 		BuyDevelopmentCard buy_development_card = 5;
+		PlayDevelopmentCard play_development_card = 6;
 	}
 }
 message GameAction {
@@ -118,6 +122,7 @@ message GameAction {
 		BuildRoad build_road = 9;
 		BuildCity build_city = 10;
 		BuyDevelopmentCard buy_development_card = 11;
+		PlayDevelopmentCard play_development_card = 12;
 	}
 }
 message DevelopmentCard {

@@ -34,4 +34,13 @@ export class Game extends Observable {
         }
         return null;
     }
+    getOpponents(player) {
+        const opponents = [];
+        for (var opponent of this.players) {
+            if (opponent.id !== player.id) {
+                opponents.push(opponent);
+            }
+        }
+        return opponents;
+    }
 }

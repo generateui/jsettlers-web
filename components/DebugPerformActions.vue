@@ -26,6 +26,10 @@
                     <img src="doc/images/DevelopmentCard.png" style="height:24px; width: 24px;">
                     <button @click="buyDevelopmentCard()">buy devcard</button>
                 </li>
+                <li>
+                    <monopoly-dialog v-if="show" v-on:close="closeMonopolyDialog"></monopoly-dialog>
+                    
+                </li>
             </ul>
         </li>
     </ul>
@@ -76,6 +80,9 @@
             buyDevelopmentCard: function() {
                 const createAction = (player) => BuyDevelopmentCard.createData(player, null);
                 this.act(createAction);
+            },
+            playDevelopmentCard: function() {
+
             },
             act: async function(createAction) {
                 try {

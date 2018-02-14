@@ -1,5 +1,7 @@
 <template>
     <div id="player-assets">
+        <monopoly-dialog v-if="showMonopolyDialog" v-on:close="closeMonopolyDialog"></monopoly-dialog>
+        <year-of-plenty-dialog v-if="showYearOfPlentyDialog" v-on:close="closeYearOfPlentyDialog"></year-of-plenty-dialog>
         <div id="resources">
             <div id="resourceType" v-for="(resources, key) in player.resources" :key="key">
                 <img v-for="resource in resources"  :src="`doc/images/${resource.name}Card.png`" />
@@ -7,7 +9,8 @@
         </div>
         <div id="developmentCards">
             <img v-for="developmentCard in player.developmentCards" 
-                :src="`doc/images/${developmentCard.name}.png`" />
+                :src="`doc/images/${developmentCard.name}.png`"
+                @dblclick="playDevelopmentCard(developmentCard)" />
         </div>
         <div id="victoryPoints"></div>
         <div id="ports"></div>
@@ -15,11 +18,41 @@
 </template>
 
 <script>
+    import MonopolyDialog from './MonopolyDialog.vue';
+    import YearOfPlentyDialog from './YearOfPlentyDialog.vue';
+    import { Monopoly } from '../src/developmentCard.js';
+
     export default {
         name: 'player-assets',
+        components: {MonopolyDialog, YearOfPlentyDialog},
         props: {
             player: {
                 type: Object
+            },
+            host: {
+                type: Object
+            }
+        },
+        data() {
+            return {
+                showMonopolyDialog: false,
+                showYearOfPlentyDialog: false,
+            }
+        },
+        methods: {
+            playDevelopmentCard(developmentCard) {
+                const typeName = developmentCard.constructor.name;
+                if (typeName === "Monopoly") {
+                    this.$data.showMonopolyDialog = true;
+                } else if (typeName === "YearOfPlenty") {
+                    this.$data.showYearOfPlentyDialog = true;
+                }
+            },
+            closeMonopolyDialog() {
+                this.$data.showMonopolyDialog = false;
+            },
+            closeYearOfPlentyDialog() {
+                this.$data.showYearOfPlentyDialog = false;
             }
         }
     }
