@@ -19,7 +19,7 @@ export class Player extends Observable {
             new Soldier(), new YearOfPlenty(), new Monopoly(), new VictoryPoint(), new RoadBuilding()
         ]; // TODO: ObservableArray
         this.playedDevelopmentCards = [];
-        this.roadBuildingTokens = 2;
+        this.roadBuildingTokens = 0;
         this.resources = [{}, {}, {}, {}, {}, {}, {}, {}];
         this.victoryPoints = [{},{},{}];
         this.stock = new Stock();
@@ -30,13 +30,14 @@ export class Player extends Observable {
         this.producers = new Map(); // <Node, Piece> (Piece = Town | City)
         this.nodePieces = new Map(); // <Node, Piece> (Piece = Town | City)
         this.edgePieces = new Map(); // <Edge, Piece> (Piece = Road)
-        this.resources = new ResourceList(); // <ResourceType, Resources[]>
-        this.resources[proto.ResourceType.TIMBER] =  [new Timber(), new Timber(), new Timber()];
-        this.resources[proto.ResourceType.WHEAT] = [new Wheat(), new Wheat()];
-        this.resources[proto.ResourceType.ORE] = [new Ore(), new Ore()];
-        this.resources[proto.ResourceType.SHEEP] = [new Sheep(), new Sheep()];
-        this.resources[proto.ResourceType.BRICK] = [new Brick(), new Brick()];
-        this.resources[proto.ResourceType.GOLD] = [new Gold(), new Gold()];
+        this.resources = new ResourceList([
+            new Timber(), new Timber(), new Timber(),
+            new Wheat(), new Wheat(),
+            new Ore(), new Ore(),
+            new Sheep(), new Sheep(),
+            new Brick(), new Brick(),
+            new Gold(), new Gold()
+        ]);
 
         this.makeObservable(["user"]);
     }

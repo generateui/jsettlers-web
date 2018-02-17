@@ -23,7 +23,7 @@
             <slot name="footer">
               <span v-if="resourceType === null">No resource type chosen yet</span>
               <span v-if="resourceType !== null">You selected {{getName(resourceType)}}.</span>
-              <button class="modal-default-button" @click="$emit('close')" :disabled="resourceType === null">
+              <button class="modal-default-button" @click="$emit('close', resourceType)" :disabled="resourceType === null">
                 <span v-if="resourceType === null">Can't do...</span>
                 <span v-if="resourceType !== null">Mono the {{getName(resourceType)}}!</span>
               </button>

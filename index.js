@@ -13,22 +13,26 @@ import TechDemo from './components/TechDemo.vue';
 import Welcome from './components/Welcome.vue';
 import Game from './components/Game.vue';
 import GameSettings from './components/GameSettings.vue';
+import Attribution from './components/doc/Attribution.vue';
+import VueMarkdown from 'vue-markdown';
 
 const routes = [
   { path: "/", component: Welcome },
+  { path: "welcome", component: Welcome },
+  { path: "/tech-demo", component: TechDemo },
+  { path: "/attribution", component: Attribution },
   { path: "/play-test-game", component: PlayTestGame,
     children: [
       { path: "", component: GameSettings },
       { path: "game", name: "game", component: Game, props: true },
-      { path: "welcome", component: Welcome },
     ]
   },
-  { path: "/tech-demo", component: TechDemo },
 ];
 
 const router = new VueRouter({
   routes
 });
+Vue.use(VueMarkdown);
 Vue.use(VueRouter);
 new Vue({ // eslint-disable-line no-new
   router,

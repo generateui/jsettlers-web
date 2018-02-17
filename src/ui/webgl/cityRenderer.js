@@ -23,7 +23,7 @@ export class CityRenderer extends Renderer {
     dispose() {
         this.geometry.dispose();
         this.material.dispose();
-        this.lines.dispose();
+        this.lines = null;
         this.mesh = null;
     }
 }

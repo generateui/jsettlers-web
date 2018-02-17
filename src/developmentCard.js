@@ -19,12 +19,14 @@ export class DevelopmentCard {
         developmentCard.playerId = data.getPlayerId();
         developmentCard.turnBoughtIndex = data.getTurnBoughtIndex();
         developmentCard.turnPlayedIndex = data.getTurnPlayedIndex();
+        return developmentCard;
     }
-    get data() {
+    // calling super.property does not work in es6
+    _getData() {
         const data = new proto.DevelopmentCard();
         data.setPlayerId(this.player.id);
         data.setTurnBoughtIndex(this.turnBoughtIndex);
-        data.setTurnPlayedtIndex(this.turnPlayedIndex);
+        data.setTurnPlayedIndex(this.turnPlayedIndex);
         return data;
     }
 }
@@ -41,18 +43,16 @@ export class YearOfPlenty extends DevelopmentCard {
         return yop;
     }
     get data() {
-        const data = super.data;
+        const data = super._getData();
         const yop = new proto.YearOfPlenty();
         yop.setResourceType1(this.resourceType1);
-        yop.setResourceType1(this.resourceType2);
+        yop.setResourceType2(this.resourceType2);
         data.setYearOfPlenty(yop);
         return data;
     }
     play(game, player) {
-        const resource1 = Resource.fromType(this.resourceType1);
-        const resource2 = Resource.fromType(this.resourceType2);
-        player.resources[proto.resourceType1].push(resource1);
-        player.resources[proto.resourceType2].push(resource2);
+        player.resources.add(this.resourceType1);
+        player.resources.add(this.resourceType2);
     }
     get name() { return "YearOfPlenty"; }
 }
@@ -69,14 +69,14 @@ export class Monopoly extends DevelopmentCard {
     get data() {
         const monopoly = new proto.Monopoly();
         monopoly.setResourceType(this.resourceType);
-        const data = super.data;
+        const data = super._getData();
         data.setMonopoly(monopoly);
         return data;
     }
     play(game, player) {
         for (var opponent of game.getOpponents(player)) {
-            const resourcesOfType = opponent.resources[this.resourceType];
-            const toMove = ResourceList.fromArray(resourcesOfType);
+            const resourcesOfType = opponent.resources.of(this.resourceType);
+            const toMove = new ResourceList(resourcesOfType);
             player.resources.moveFrom(opponent.resources, toMove);
         }
     }
@@ -95,7 +95,7 @@ export class Soldier extends DevelopmentCard {
     get data() {
         const soldier = new proto.Soldier();
         soldier.setCoord(this.coord.data);
-        const data = super.data;
+        const data = super._getData();
         data.setSoldier(soldier);
         return data;
     }
@@ -107,13 +107,14 @@ export class Soldier extends DevelopmentCard {
 export class VictoryPoint extends DevelopmentCard {
     constructor() {
         super();
+        this.victoryPoints = 1;
     }
     play(game, player) {
         player.victoryPoints.push(this);
     }
     get data() { 
         const vp = new proto.VictoryPoint();
-        const data = super.data;
+        const data = super._getData();
         data.setVictoryPoint(vp);
         return data;
     }
@@ -129,7 +130,7 @@ export class RoadBuilding extends DevelopmentCard {
     }
     get data() { 
         const roadBuilding = new proto.RoadBuilding();
-        const data = super.data;
+        const data = super._getData();
         data.setRoadBuilding(roadBuilding);
         return data;
     }

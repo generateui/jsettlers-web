@@ -18,9 +18,9 @@
         <div id="build-road" class="build-button">
             <!-- <img id="road-trade1" class="trade" src="doc/images/Trade48.png" /> -->
             <!-- <img id="road-trade2" class="trade" src="doc/images/Trade48.png" /> -->
-            <img id="road-token1" class="trade" src="doc/images/RoadBuildingToken.png" />
-            <img id="road-token2" class="trade" src="doc/images/RoadBuildingToken.png" />
-            <img id="build-road-button" src="doc/images/Road48.png" />
+            <img id="road-token1" v-if="game.player.roadBuildingTokens > 0" class="trade" src="doc/images/RoadBuildingToken.png" />
+            <img id="road-token2" v-if="game.player.roadBuildingTokens > 1" class="trade" src="doc/images/RoadBuildingToken.png" />
+            <img id="build-road-button" src="doc/images/Road48.png" @click="buildRoad" />
         </div>
         <div id="buy-development-card" class="build-button">
             <img id="buy-development-card-trade1" class="trade trade1" src="doc/images/Trade48.png" />
@@ -28,9 +28,9 @@
             <img id="buy-development-card-trade3" class="trade trade3" src="doc/images/Trade48.png" />
             <img id="buy-development-card-button" src="doc/images/BuyDevelopmentCard48.png" />
         </div>
-        <div id="play-developmentCard" class="build-button">
+        <!-- <div id="play-developmentCard" class="build-button">
             <img src="doc/images/PlayDevelopmentCard48.png" />
-        </div>
+        </div> -->
         <div id="trade-player" class="build-button">
             <img src="doc/images/TradePlayer48.png" />
         </div>
@@ -46,6 +46,8 @@
 </template>
 
 <script>
+    import * as gb from "../src/ui/gameBehavior.js";
+    import {BuildRoad} from "../src/actions/buildRoad.js";
     import DiceView from "./DiceView.vue";
     import {Dice} from "../src/dice.js";
 
@@ -56,12 +58,23 @@
         props: {
             game: {
                 type: Object
+            },
+            keyListener: {
+                type: Object
             }
         },
         name: 'actions',
         data() {
             return {
                 dice: new Dice()
+            }
+        },
+        methods: {
+            buildRoad: function() {
+                const player = this.$props.game.player;
+                const behavior = new gb.BuildRoad(player, this.$props.keyListener);
+                const createAction = (player, edge) => BuildRoad.createData(player, edge);
+                this.$emit("action", behavior, createAction);
             }
         }
     }

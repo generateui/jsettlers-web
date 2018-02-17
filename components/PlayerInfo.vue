@@ -19,22 +19,36 @@
                 <span>{{player.developmentCards.length}}</span>
             </div>
             <div id="victoryPoints" class="stock-info">
-                <img src="doc/images/VictoryPoint48.png" />
-                <span>{{player.victoryPoints.length}}</span>
+                <popper trigger="hover" :options="{placement: 'right'}">
+                    <div class="popper vps">
+                        <div v-for="vp in player.victoryPoints" class="vp">
+                            <img  :src="`doc/images/${vp.name}48.png`" class="vp-image" />
+                            <span v-if="vp.victoryPoints > 1" class="vp-count">{{vp.victoryPoints}}</span>
+                        </div>
+                    </div>
+                    <div slot="reference">
+                        <img src="doc/images/VictoryPoint48.png" class="image" />
+                        <span>{{player.victoryPoints.length}}</span>
+                    </div>
+                </popper>
             </div>
             <div id="resources">
                 <!-- TODO: diff opponent & playing player -->
-                <div v-for="resource in player.resources">
-                    <img src="doc/images/BlankResourceCard48.png" />
-                </div>
+                <!-- <div > -->
+                    <img v-for="n in player.resources.length" src="doc/images/BlankResourceCard48.png" />
+                <!-- </div> -->
             </div>
         </div>
     </div>
 </template>
 
 <script>
+    import Popper from 'vue-popperjs';
+    // require('vue-popperjs/dist/css/vue-popper.css');
+    
     export default {
         name: 'player-info',
+        components: {Popper},
         props: {
             player: {
                 type: Object
@@ -44,10 +58,44 @@
 </script>
 
 <style scoped>
+h3 {
+    color: white;
+}
 .stock-info > img {
     /* font-size: 10px; */
     width: 2em;
     height: 2em;
+}
+.image {
+    height: 32px;
+    width: 32px;
+}
+.vp-image {
+    width: 32px;
+    height: auto;
+    grid-column-start: 1;
+    grid-row-start: 1;
+}
+.vp-count {
+    background: rgba(255,255,255,0.6);
+    grid-column-start: 1;
+    grid-row-start: 1;
+    font-size: 14px;
+    font-weight: 900;
+    border-radius: 50%;
+    margin-top: 8px;
+    margin-left: 8px;
+    height: 18px;
+    width: 18px;
+}
+.vps {
+    display: inline-flex;
+    background-color: black;
+}
+.vp {
+    display: grid;
+    grid-template-columns: auto;
+    grid-template-rows: auto;
 }
 .stock-info span {
     vertical-align: super;

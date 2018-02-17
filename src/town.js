@@ -3,6 +3,7 @@ export class Town {
         this.node = node;
         this.player = player;
         this.victoryPoints = 1;
+        this.name = "town";
     }
     addToPlayer(player) {
         player.towns.set(this.node, this);

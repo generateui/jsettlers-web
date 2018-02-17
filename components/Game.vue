@@ -16,14 +16,14 @@
         <div id="tab-content">
             <action-log v-if="showActions" id="action-log" v-bind:actions="game.actions"></action-log>
             <div v-if="showChats" id="chats"></div>
-            <debug-perform-actions v-if="showPerformActions" v-bind:game="game" v-on:behaviorChanged="behaviorChanged"></debug-perform-actions>
+            <debug-perform-actions v-if="showPerformActions" v-bind:game="game" v-bind:host="host" v-on:behaviorChanged="behaviorChanged"></debug-perform-actions>
         </div>
     </div>
 
     <div id="right">
         <div id="game-board-renderer"></div>
-        <actions v-bind:game="game"></actions>
-        <player-assets v-bind:player="game.player"></player-assets>
+        <actions v-bind:game="game" v-on:action="action" v-bind:keyListener="keyListener"></actions>
+        <player-assets v-bind:player="game.player" v-on:action="performAction"></player-assets>
     </div>
 
   </div>
@@ -39,11 +39,14 @@
     import DiceView from "./DiceView.vue";
     import DebugPerformActions from "./DebugPerformActions.vue";
 
+    import {HostAtClient} from "../src/host.js";
     import {Game, GameSettings} from "../src/game.js";
     import {Bank} from "../src/bank.js";
     import {BoardRenderer} from "../src/ui/webgl/boardRenderer.js";
     import {Player, User} from "../src/player.js";
     import { Standard4pDesign, JustSomeSea, TheGreatForest, BoardDescriptor } from '../src/board.js';
+    import {KeyListener} from "../src/ui/keyListener.js";
+    import * as bb from "../src/ui/boardBehavior.js";
 
     var boardRenderer = null;
     var receiver = null;
@@ -85,6 +88,8 @@
                 showPerformActions: true,
                 game: null,
                 selectedPlayer: null,
+                host: null,
+                keyListener: new KeyListener(),
             }
         },
         methods: {
@@ -103,8 +108,43 @@
                 this.$data.showChat = false;
                 this.$data.showPerformActions = true;
             },
+            action: function(behavior, createAction) {
+                this.behaveThenAct(behavior, createAction);
+            },
             behaviorChanged: function(behavior) {
                 boardRenderer.behavior = behavior;
+            },
+            performAction: async function(action) {
+                try {
+                    await this.$data.host.send(action);
+                } catch (error) {
+                    alert(error.message);
+                }
+            },
+            act: async function(createAction) {
+                try {
+                    const action = createAction(this.$data.player);
+                    await this.$data.host.send(action);
+                } catch (error) {
+                    alert(error.message);
+                }
+            },
+            behaveThenAct: async function(behavior, createAction) {
+                // Set the board to the new behavior
+                boardRenderer.behavior = behavior;
+                try {
+                    // await the behavior for completion (e.g. a click on the board on some renderer)
+                    const result = await behavior.promise;
+                    // create some data
+                    const action = createAction(this.$data.game.player, result);
+                    // send the data
+                    await this.$data.host.send(action);
+                } catch (error) {
+                    // add it to game errors?
+                    alert(error.message);
+                } finally {
+                    boardRenderer.behavior = new bb.NoBehavior();
+                }
             }
         },
         created: function() {
@@ -139,7 +179,7 @@
             var brEl = document.getElementById("game-board-renderer");
             const game = this.$data.game;
             boardRenderer = new BoardRenderer(brEl, game.board);
-            
+            this.$data.host = new HostAtClient(game);
         },
         destroyed: function() {
             boardRenderer.dispose();

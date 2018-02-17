@@ -2,6 +2,8 @@ export class City {
     constructor(player, node) {
         this.player = player;
         this.node = node;
+        this.victoryPoints = 2;
+        this.name = "City";
     }
     addToPlayer(player) {
         player.cities.set(this.node, this);

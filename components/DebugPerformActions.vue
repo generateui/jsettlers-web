@@ -51,12 +51,14 @@
         props: {
             game: {
                 type: Object
+            },
+            host: {
+                type: Object
             }
         },
         data() {
             return {
                 receiver: null,
-                host: null,
                 player: null,
                 keyListener: new KeyListener(),
             }
@@ -87,7 +89,7 @@
             act: async function(createAction) {
                 try {
                     const action = createAction(this.$data.player);
-                    await this.$data.host.send(action);
+                    await this.$props.host.send(action);
                 } catch (error) {
                     alert(error.message);
                 }
@@ -101,7 +103,7 @@
                     // create some data
                     const action = createAction(this.$data.player, result);
                     // send the data
-                    await this.$data.host.send(action);
+                    await this.$props.host.send(action);
                 } catch (error) {
                     // add it to game errors?
                     alert(error.message);
@@ -110,13 +112,6 @@
                 }
             }
         },
-        mounted: function() {
-            const receiver = new Receiver();
-            const game = this.$props.game;
-            receiver.game = game;
-            this.$data.host = new HostAtClient(receiver, game);
-            this.$data.receiver = receiver;
-        }
     }
 </script>
 

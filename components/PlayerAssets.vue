@@ -1,10 +1,16 @@
 <template>
     <div id="player-assets">
-        <monopoly-dialog v-if="showMonopolyDialog" v-on:close="closeMonopolyDialog"></monopoly-dialog>
-        <year-of-plenty-dialog v-if="showYearOfPlentyDialog" v-on:close="closeYearOfPlentyDialog"></year-of-plenty-dialog>
+        <monopoly-dialog 
+            v-if="showMonopolyDialog" 
+            v-on:close="closeMonopolyDialog">
+        </monopoly-dialog>
+        <year-of-plenty-dialog 
+            v-if="showYearOfPlentyDialog" 
+            v-on:close="closeYearOfPlentyDialog">
+        </year-of-plenty-dialog>
         <div id="resources">
-            <div id="resourceType" v-for="(resources, key) in player.resources" :key="key">
-                <img v-for="resource in resources"  :src="`doc/images/${resource.name}Card.png`" />
+            <div id="resourceType" v-for="resourceType in player.resources.types" :key="key">
+                <img v-for="resource in player.resources.of(resourceType)"  :src="`doc/images/${resource.name}Card.png`" />
             </div>
         </div>
         <div id="developmentCards">
@@ -21,6 +27,7 @@
     import MonopolyDialog from './MonopolyDialog.vue';
     import YearOfPlentyDialog from './YearOfPlentyDialog.vue';
     import { Monopoly } from '../src/developmentCard.js';
+    import {PlayDevelopmentCard} from "../src/actions/playDevelopmentCard.js";
 
     export default {
         name: 'player-assets',
@@ -37,22 +44,53 @@
             return {
                 showMonopolyDialog: false,
                 showYearOfPlentyDialog: false,
+                developmentCard: null,
             }
         },
         methods: {
             playDevelopmentCard(developmentCard) {
+                this.$data.developmentCard = developmentCard;
+                // instanceof don't work here
                 const typeName = developmentCard.constructor.name;
                 if (typeName === "Monopoly") {
                     this.$data.showMonopolyDialog = true;
                 } else if (typeName === "YearOfPlenty") {
                     this.$data.showYearOfPlentyDialog = true;
+                } else if (typeName === "RoadBuilding") {
+                    const rb = this.$data.developmentCard;
+                    const player = this.$props.player;
+                    rb.player = player;
+                    const playRoadBuilding = PlayDevelopmentCard.createData(player, rb);
+                    this.$emit('action', playRoadBuilding)
+                } else if (typeName === "VictoryPoint") {
+                    const vp = this.$data.developmentCard;
+                    const player = this.$props.player;
+                    vp.player = player;
+                    const playVp = PlayDevelopmentCard.createData(player, vp);
+                    this.$emit('action', playVp)
                 }
             },
-            closeMonopolyDialog() {
+            closeMonopolyDialog(resourceType) {
                 this.$data.showMonopolyDialog = false;
+                if (resourceType === null) {
+                    return;
+                }
+                const player = this.$props.player;
+                const monopoly = this.$data.developmentCard;
+                monopoly.resourceType = resourceType;
+                monopoly.player = player;
+                const playMonopoly = PlayDevelopmentCard.createData(player, monopoly);
+                this.$emit('action', playMonopoly)
             },
-            closeYearOfPlentyDialog() {
+            closeYearOfPlentyDialog(resourceTypes) {
                 this.$data.showYearOfPlentyDialog = false;
+                const yop = this.$data.developmentCard;
+                yop.resourceType1 = resourceTypes[0];
+                yop.resourceType2 = resourceTypes[1];
+                const player = this.$props.player;
+                yop.player = player;
+                const playYop = PlayDevelopmentCard.createData(player, yop);
+                this.$emit('action', playYop)
             }
         }
     }
@@ -63,9 +101,6 @@
     display: inline-flex;
     background-color: black;
     padding-left: 67px;
-}
-#resources {
-
 }
 #resourceType {
     padding-left: 100px;

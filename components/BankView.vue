@@ -1,8 +1,8 @@
 <template>
     <div id="wrapper">
-        <div class="column" v-for="(resources, key) in bank.resources" v-if="!isUnknown(key)" :key="key">
-            <img :src="`doc/images/${key.toPascalCase()}Card.png`" />
-            <div>{{resources.length}}</div>
+        <div class="column" v-for="resourceType in bank.resources.types" v-if="!isUnknown(key)" :key="key">
+            <img :src="`doc/images/${resourceType.toPascalCase()}Card.png`" />
+            <div>{{bank.resources.of(resourceType).length}}</div>
         </div>
         <div class="column">
             <img src="doc/images/DevelopmentCard.png" />

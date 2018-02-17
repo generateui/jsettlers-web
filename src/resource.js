@@ -1,4 +1,5 @@
 var proto = require("../data_pb");
+import {Util} from "./util.js";
 
 export class Resource {
     static fromType(resourceType) {
@@ -64,10 +65,12 @@ export class Gold extends Resource {
 
 /** Stores resources per resourceType */
 export class ResourceList {
-    constructor() {
-        for (var resourceType in proto.ResourceType) {
-            this[resourceType] = [];
+    constructor(item) {
+        this._map = new Map(); // <ResourceType (string), Resource[]>
+        if (item === undefined) {
+            return;
         }
+        this.add(item);
     }
     /** singleton instance for empty resource list */
     static get empty() {
@@ -76,79 +79,143 @@ export class ResourceList {
         }
         return ResourceList._empty;
     }
-    /** Constructor to cerate new instance from given resourceList instance */
-    static from(resourceList) {
-        var result = new ResourceList();
-        for (var resourceType in proto.ResourceType) {
-            for (var resource of this[resourceType]) {
-                // This assumes Reource does not have any state
-                const copy = Resource.fromType(resource.type);
-                result[resourceType].push(copy);
-            }
+    static onlyWithTypes(types) {
+        const result = new ResourceList();
+        for (var resourceType of types) {
+            const resourceTypeString = Util.getEnumName(proto.ResourceType, resourceType);
+            // TODO: mechanism to exclude other types from being added and error when tried
+            result._map.set(resourceTypeString, []);            
         }
         return result;
     }
-    static fromArray(array) {
-        var result = new ResourceList();
-        for (var resource of array) {
-            result[resource.type].push(resource);
+    _addSafe(resource) {
+        const resourceTypeString = Util.getEnumName(proto.ResourceType, resource.type);
+        if (!this._map.has(resourceTypeString)) {
+            this._map.set(resourceTypeString, [resource]);
+        } else {
+            this._map.get(resourceTypeString).push(resource);
         }
-        return result;
     }
-    add(resourceList) {
-        for (var resourceType in resourceList.ResourceType) {
-            for (var resource of resourceList[resourceType]) {
-                // create new instances so the given resourceList can be GC'ed
-                const copy = Resource.fromType(resource.type);
-                this[resourceType].push(copy);
+    /** Resource, ResourceType (string), ResourceType (int), array, ResourceList  */
+    add(item) {
+        if (item instanceof Resource) {
+            this._addSafe(item);
+            return;
+        } else if (Array.isArray(item)) {
+            for (var resource of item) {
+                this._addSafe(resource);
             }
+            return;
+        } else if (item instanceof ResourceList) {
+            for (var resourceType in item._map.keys()) {
+                for (var resource of item._map.get(resourceType)) {
+                    this._addSafe(resource);
+                }
+            }
+            return;
+        } else if (typeof(item) === "string") {
+            const resourceType = proto.ResourceType[item];
+            const resource = Resource.fromType(resourceType);
+            this._addSafe(resource);
+            return;
+        } else if (typeof(item) === "number") {
+            const resource = Resource.fromType(item);
+            this._addSafe(resource);
         }
     }
-    /** assumes this hasAtLeast(resourceList) */
-    remove(resourceList) {
-        if (!this.hasAtLeast(resourceList)) {
-            throw new Error("attempting to remove more resources then available");
-        }
-        for (var resourceType in resourceList.ResourceType) {
-            this[resourceType].splice(0, resourceList[resourceType].length);
+    _removeSafe(resource) {
+        const resourceTypeString = Util.getEnumName(proto.ResourceType, resource.type);
+        this._map.get(resourceTypeString).pop(); // ignore returned instance
+    }
+    /** assumes this hasAtLeast(resourceList) 
+     *  Resource, ResourceType (string), ResourceType (int), array, ResourceList  */
+    remove(item) {
+        if (item instanceof Resource) {
+            this._removeSafe(item);
+            return;
+        } else if (Array.isArray(item)) {
+            for (var resource of item) {
+                this._removeSafe(resource);
+            }
+            return;
+        } else if (item instanceof ResourceList) {
+            for (var resourceType of item._map.keys()) {
+                for (var resource of item._map.get(resourceType)) {
+                    this._removeSafe(resource);
+                }
+            }
+        } else if (typeof(item) === "string") {
+            this._map.get(item).pop(); // ignore returned instance
+        } else if (typeof(item) === "number") {
+            const resourceTypeString = Util.getEnumName(proto.ResourceType, item);
+            this._map.get(resourceTypeString).pop(); // ignore returned instance
         }
     }
     /** true if no resource instances are contained in this list */
     get isEmpty() {
-        for (var resourceType in proto.ResourceType) {
-            if (this[resourceType].length !== 0) {
+        for (var resourceType of this._map.keys()) {
+            if (this._map.get(resourceType).length !== 0) {
                 return false;
             }
         }
         return true;
     }
+    get types() {
+        return Array.from(this._map.keys());
+    }
+    of(resourceType) {
+        if (typeof(resourceType) === "number") {
+            const resourceTypeString = Util.getEnumName(proto.ResourceType, resourceType);
+            return this._map.has(resourceTypeString) ? this._map.get(resourceTypeString) : [];    
+        } else if (typeof(resourceType) === "string") {
+            return this._map.has(resourceType) ? this._map.get(resourceType) : [];
+        }
+        throw new Error(".of in ResourceList expects a ResourceType (String) or ResourceType (int)");
+    }
     /** true if this list has at least all resource instances of given resourceList  */
-    hasAtLeast(minimum) {
-        for (var resourceType in minimum) {
-            if (minimum[resourceType] > this[resourceType]) {
+    hasAtLeast(resourceList) {
+        for (var resourceType of resourceList.types) {
+            if (resourceType.of(resourceType) > this.of(resourceType)) {
                 return false;
             }
         }
     }
     /** true if this list has resources of given resourceType */
     hasOfType(resourceType) {
-        return this[resourceType].length > 0;
+        if (typeof(resourceType) !== "string") {
+            throw new Error(".hasOfType in ResourceList expects a ResourceType (String)");
+        }
+        return this.of(resourceType).length > 0;
     }
     /** returns amount of resourceTypes this list contains */
     get amountTypes() {
         var amount = 0;
-        for (var resourceType in proto.ResourceType) {
-            if (this[resourceType].length > 0) {
+        for (var resourceType of this.types) {
+            if (this.of(resourceType).length > 0) {
                 amount++;
             }
         }
         return amount;
     }
+    get length() {
+        var amount = 0;
+        for (var resourceType of this.types) {
+            amount += this.of(resourceType).length;
+        }
+        return amount;
+    }
+    // get toArray() {
+    //     var result = [];
+    //     for (var resourceType of this.types) {
+    //         result = result.concat(this.of(resourceType));
+    //     }
+    //     return result;
+    // }
     moveFrom(source, toMove) {
-        for (var resourceType in toMove) {
-            for (var resource of toMove[resourceType]) {
-                this[resourceType].push(resource);
-                source[resourceType].remove(resource);
+        for (var resourceType of toMove.types) {
+            for (var resource of toMove.of(resourceType)) {
+                this._addSafe(resource);
+                source.remove(resource);
             }
         }
     }
