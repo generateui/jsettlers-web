@@ -27,6 +27,7 @@ import {Util} from "../util.js";
 import {Road} from "../road.js";
 import {Town} from "../town.js";
 import {City} from "../city.js";
+import {Edge} from "../edge.js";
 
 export class BoardBehavior {
     start(boardRenderer) {} // set the behavior as active behavior on the BoardRenderer

@@ -3,6 +3,7 @@ import {Util} from "./util.js";
 import {Stock} from "./stock.js";
 import {Resource, Timber, Wheat, Ore, Sheep, Brick, Gold, ResourceList} from "./resource.js";
 import {DevelopmentCard, YearOfPlenty, Monopoly, Soldier, VictoryPoint, RoadBuilding} from "./developmentCard.js";
+import {Any4To1Port, Any3To1Port, PortList, Wheat2To1Port, Sheep2To1Port} from "./port.js";
 var proto = require("../data_pb");
 
 export class Player extends Observable {
@@ -23,6 +24,7 @@ export class Player extends Observable {
         this.resources = [{}, {}, {}, {}, {}, {}, {}, {}];
         this.victoryPoints = [{},{},{}];
         this.stock = new Stock();
+        this.ports = new PortList();
         this.towns = new Map(); // <Node, Town>
         this.cities = new Map(); // <Node, City>
         this.roads = new Map(); // <Edge, Road>

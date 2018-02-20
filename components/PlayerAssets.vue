@@ -4,12 +4,13 @@
             v-if="showMonopolyDialog" 
             v-on:close="closeMonopolyDialog">
         </monopoly-dialog>
+        <div v-if="update"></div>
         <year-of-plenty-dialog 
             v-if="showYearOfPlentyDialog" 
             v-on:close="closeYearOfPlentyDialog">
         </year-of-plenty-dialog>
         <div id="resources">
-            <div id="resourceType" v-for="resourceType in player.resources.types" :key="key">
+            <div id="resourceType" v-for="resourceType in player.resources.types" v-if="player.resources.hasOf(resourceType)" :key="key">
                 <img v-for="resource in player.resources.of(resourceType)"  :src="`doc/images/${resource.name}Card.png`" />
             </div>
         </div>
@@ -38,6 +39,9 @@
             },
             host: {
                 type: Object
+            },
+            update: {
+                type: Boolean
             }
         },
         data() {

@@ -9,6 +9,7 @@ import {PlayDevelopmentCard} from "./actions/playDevelopmentCard.js";
 import {Node} from "./node.js";
 import { YearOfPlenty, Soldier, Monopoly, RoadBuilding, VictoryPoint } from "./developmentCard";
 import { ClientRandom } from "./random";
+import { TradeBank } from "./actions/tradeBank";
 
 export class HostAtClient {
     constructor(game) {
@@ -58,6 +59,7 @@ export class HostAtClient {
         if (a.hasBuildTown()) { return BuildTown.fromData(a.getBuildTown()); }
         if (a.hasBuildRoad()) { return BuildRoad.fromData(a.getBuildRoad()); }
         if (a.hasBuildCity()) { return BuildCity.fromData(a.getBuildCity()); }
+        if (a.hasTradeBank()) { return TradeBank.fromData(a.getTradeBank()); }
         if (a.hasBuyDevelopmentCard()) { return BuyDevelopmentCard.fromData(a.getBuyDevelopmentCard()); }
         if (a.hasPlayDevelopmentCard()) { return PlayDevelopmentCard.fromData(a.getPlayDevelopmentCard()); }
         throw new Error("Unsupported action in HostAtClient");

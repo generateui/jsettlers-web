@@ -18,6 +18,10 @@
                 <img src="doc/images/DevelopmentCard48.png" />
                 <span>{{player.developmentCards.length}}</span>
             </div>
+            <div id="ports" class="stock-info">
+                <img src="doc/images/Port48.png" />
+                <span>{{player.ports.items.length}}</span>
+            </div>
             <div id="victoryPoints" class="stock-info">
                 <popper trigger="hover" :options="{placement: 'right'}">
                     <div class="popper vps">
@@ -63,18 +67,19 @@ h3 {
 }
 .stock-info > img {
     /* font-size: 10px; */
-    width: 2em;
-    height: 2em;
+    width: 24px;
+    height: 24px;
 }
 .image {
     height: 32px;
     width: 32px;
 }
 .vp-image {
-    width: 32px;
+    width: 48px;
     height: auto;
     grid-column-start: 1;
     grid-row-start: 1;
+    filter: drop-shadow(0px 0px 12px #FFD700);
 }
 .vp-count {
     background: rgba(255,255,255,0.6);
@@ -83,14 +88,16 @@ h3 {
     font-size: 14px;
     font-weight: 900;
     border-radius: 50%;
-    margin-top: 8px;
-    margin-left: 8px;
+    margin-top: 16px;
+    margin-left: 16px;
     height: 18px;
     width: 18px;
+    z-index: 1000;
 }
 .vps {
     display: inline-flex;
     background-color: black;
+    padding: 1em;
 }
 .vp {
     display: grid;
@@ -136,6 +143,10 @@ h3 {
 #developmentCards {
     grid-column-start: 3;
     grid-row-start: 1;
+}
+#ports {
+    grid-column-start: 3;
+    grid-row-start: 2;
 }
 #resources {
     grid-column-start: 1;

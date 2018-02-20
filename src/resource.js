@@ -72,6 +72,15 @@ export class ResourceList {
         }
         this.add(item);
     }
+    static withAllTypes() {
+        return ResourceList.onlyWithTypes([
+            proto.ResourceType.TIMBER,
+            proto.ResourceType.WHEAT,
+            proto.ResourceType.ORE,
+            proto.ResourceType.SHEEP,
+            proto.ResourceType.BRICK,
+        ]);
+    }
     /** singleton instance for empty resource list */
     static get empty() {
         if (ResourceList._empty === undefined) {
@@ -96,6 +105,17 @@ export class ResourceList {
             this._map.get(resourceTypeString).push(resource);
         }
     }
+    _ensureTypeExists(resourceType) {
+        var resourceTypeString = null;
+        if (typeof(resourceType) === "number") {
+            resourceTypeString = Util.getEnumName(proto.ResourceType, resourceType);
+        } else {
+            resourceTypeString = resourceType;
+        }
+        if (!this._map.has(resourceTypeString)) {
+            this._map.set(resourceTypeString, []);
+        }
+    }
     /** Resource, ResourceType (string), ResourceType (int), array, ResourceList  */
     add(item) {
         if (item instanceof Resource) {
@@ -103,11 +123,12 @@ export class ResourceList {
             return;
         } else if (Array.isArray(item)) {
             for (var resource of item) {
-                this._addSafe(resource);
+                this.add(resource);
             }
             return;
         } else if (item instanceof ResourceList) {
-            for (var resourceType in item._map.keys()) {
+            for (var resourceType of item._map.keys()) {
+                this._ensureTypeExists(resourceType);
                 for (var resource of item._map.get(resourceType)) {
                     this._addSafe(resource);
                 }
@@ -121,6 +142,11 @@ export class ResourceList {
         } else if (typeof(item) === "number") {
             const resource = Resource.fromType(item);
             this._addSafe(resource);
+        }
+    }
+    addAmount(item, amount) {
+        for (var i = 0; i< amount; i++) {
+            this.add(item);
         }
     }
     _removeSafe(resource) {
@@ -181,9 +207,9 @@ export class ResourceList {
         }
     }
     /** true if this list has resources of given resourceType */
-    hasOfType(resourceType) {
+    hasOf(resourceType) {
         if (typeof(resourceType) !== "string") {
-            throw new Error(".hasOfType in ResourceList expects a ResourceType (String)");
+            throw new Error(".hasOf in ResourceList expects a ResourceType (String)");
         }
         return this.of(resourceType).length > 0;
     }

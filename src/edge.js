@@ -13,6 +13,12 @@ export class Edge {
         this._hash = hash;
         Edge._cache.set(hash, this);
     }
+    static fromPartIndex(coord1, partIndex) {
+        let pi = 5 - partIndex; // reverse clock
+        pi = pi === 5 ? 0 : pi + 1;
+        const coord2 = coord1.neighbors[pi];
+        return new Edge(coord1, coord2);
+    }
     get coord1() { return this._coord1; }
     get coord2() { return this._coord2; }
     get node1() {

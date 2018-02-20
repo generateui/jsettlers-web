@@ -1,12 +1,16 @@
 <template>
   <div id="game">
     <div id="left">
+        <trade-bank-dialog 
+            v-if="showTradeBankDialog" 
+            v-bind:game="game" 
+            v-on:trade="tradeBank"></trade-bank-dialog>
         <div id="players">
             <div v-for="player in game.players">
                 <player-info v-bind:player="player"></player-info>
             </div>
         </div>
-        <bank-view id="bank" v-bind:bank="game.bank"></bank-view>
+        <bank-view id="bank" v-bind:bank="game.bank" v-bind:update="update"></bank-view>
 
         <div id="tabs">
             <button class="tab-button" @click="doShowActions()">actions</button>
@@ -14,16 +18,31 @@
             <button class="tab-button" @click="doShowPerformAction()">action</button>
         </div>
         <div id="tab-content">
-            <action-log v-if="showActions" id="action-log" v-bind:actions="game.actions"></action-log>
+            <action-log 
+                v-if="showActions" 
+                id="action-log" 
+                v-bind:actions="game.actions"></action-log>
             <div v-if="showChats" id="chats"></div>
-            <debug-perform-actions v-if="showPerformActions" v-bind:game="game" v-bind:host="host" v-on:behaviorChanged="behaviorChanged"></debug-perform-actions>
+            <debug-perform-actions 
+                v-if="showPerformActions" 
+                v-bind:game="game" 
+                v-bind:host="host" 
+                v-on:behaviorChanged="behaviorChanged"></debug-perform-actions>
         </div>
     </div>
 
     <div id="right">
         <div id="game-board-renderer"></div>
-        <actions v-bind:game="game" v-on:action="action" v-bind:keyListener="keyListener"></actions>
-        <player-assets v-bind:player="game.player" v-on:action="performAction"></player-assets>
+        <actions 
+            v-bind:game="game" 
+            v-on:behaveThenAct="behaveThenAct" 
+            v-on:act="performAction" 
+            v-on:tradebank="openTradeBankDialog"
+            v-bind:keyListener="keyListener"></actions>
+        <player-assets 
+            v-bind:player="game.player" 
+            v-bind:update="update"
+            v-on:action="performAction"></player-assets>
     </div>
 
   </div>
@@ -38,6 +57,7 @@
     import ActionLog from "./ActionLog.vue";
     import DiceView from "./DiceView.vue";
     import DebugPerformActions from "./DebugPerformActions.vue";
+    import TradeBankDialog from "./TradeBankDialog.vue";
 
     import {HostAtClient} from "../src/host.js";
     import {Game, GameSettings} from "../src/game.js";
@@ -67,7 +87,7 @@
     export default {
         name: 'game',
         components: {
-            PlayerInfo, PlayerAssets, Actions, BankView, ActionLog, DiceView, DebugPerformActions
+            PlayerInfo, PlayerAssets, Actions, BankView, ActionLog, DiceView, DebugPerformActions, TradeBankDialog
         },
         props: {
             settings: {
@@ -90,6 +110,8 @@
                 selectedPlayer: null,
                 host: null,
                 keyListener: new KeyListener(),
+                showTradeBankDialog: false,
+                update: false,
             }
         },
         methods: {
@@ -108,8 +130,14 @@
                 this.$data.showChat = false;
                 this.$data.showPerformActions = true;
             },
-            action: function(behavior, createAction) {
-                this.behaveThenAct(behavior, createAction);
+            openTradeBankDialog: function() {
+                this.showTradeBankDialog = true;
+            },
+            tradeBank: function(action) {
+                this.performAction(action);
+                this.showTradeBankDialog = false;
+                this.$forceUpdate();
+                this.update = !this.update;
             },
             behaviorChanged: function(behavior) {
                 boardRenderer.behavior = behavior;
@@ -121,9 +149,8 @@
                     alert(error.message);
                 }
             },
-            act: async function(createAction) {
+            act: async function(action) {
                 try {
-                    const action = createAction(this.$data.player);
                     await this.$data.host.send(action);
                 } catch (error) {
                     alert(error.message);
@@ -174,6 +201,7 @@
             }
             game.player = player;
             this.$data.game = game;
+            window.game = game; // nice for debugging
         },
         mounted: function() {
             var brEl = document.getElementById("game-board-renderer");

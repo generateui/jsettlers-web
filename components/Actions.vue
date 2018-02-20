@@ -1,5 +1,6 @@
 <template>
     <div id="actions">
+        <!-- <trade-bank-dialog v-if="showTradeBankDialog" v-bind:game="game" v-on:trade="tradeBank"></trade-bank-dialog> -->
         <div id="build-town" class="build-button">
             <img id="town-trade1" class="trade" src="doc/images/Trade48.png" />
             <img id="town-trade2" class="trade" src="doc/images/Trade48.png" />
@@ -34,7 +35,7 @@
         <div id="trade-player" class="build-button">
             <img src="doc/images/TradePlayer48.png" />
         </div>
-        <div id="trade-bank" class="build-button">
+        <div id="trade-bank" class="build-button" @click="tradeBank">
             <img src="doc/images/TradeBank48.png" />
         </div>
         <div id="end-turn" class="build-button">
@@ -49,11 +50,12 @@
     import * as gb from "../src/ui/gameBehavior.js";
     import {BuildRoad} from "../src/actions/buildRoad.js";
     import DiceView from "./DiceView.vue";
+    import TradeBankDialog from "./TradeBankDialog.vue";
     import {Dice} from "../src/dice.js";
 
     export default {
         components: {
-            DiceView
+            DiceView, TradeBankDialog
         },
         props: {
             game: {
@@ -66,7 +68,8 @@
         name: 'actions',
         data() {
             return {
-                dice: new Dice()
+                dice: new Dice(),
+                showTradeBankDialog: false,
             }
         },
         methods: {
@@ -74,7 +77,14 @@
                 const player = this.$props.game.player;
                 const behavior = new gb.BuildRoad(player, this.$props.keyListener);
                 const createAction = (player, edge) => BuildRoad.createData(player, edge);
-                this.$emit("action", behavior, createAction);
+                this.$emit("behaveThenAct", behavior, createAction);
+            },
+            openTradeBankDialog: function() {
+                this.$data.showTradeBankDialog = true;
+            },
+            tradeBank: function(tradeBankAction) {
+                this.$emit("tradebank", tradeBankAction);
+                // this.$data.showTradeBankDialog = false;
             }
         }
     }

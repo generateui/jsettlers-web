@@ -8,6 +8,7 @@
             <img src="doc/images/DevelopmentCard.png" />
             <div>{{bank.developmentCards.length}}</div>
         </div>
+        <div v-if="update"></div>
     </div>
 </template>
 
@@ -18,6 +19,9 @@
         props: {
             bank: {
                 type: Object
+            },
+            update: {
+                type: Boolean
             }
         },
         methods: {

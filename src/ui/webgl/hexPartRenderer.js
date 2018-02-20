@@ -14,7 +14,7 @@ export class HexPartRenderer  extends Renderer{
         const partIndexX = cellSize * Math.cos(partIndexAngle);
         const partIndexY = cellSize * Math.sin(partIndexAngle);
 
-        const nextPartIndex = partIndex == 5 ? 0 : partIndex + 1;
+        const nextPartIndex = partIndex == 5 ? 0 : partIndex + 1; //overflow 5 to 0
         const nextPartIndexAngle = (Math.TAU / 6) * nextPartIndex;
         const nextPartIndexX = cellSize * Math.cos(nextPartIndexAngle);
         const nextPartIndexY = cellSize * Math.sin(nextPartIndexAngle);
