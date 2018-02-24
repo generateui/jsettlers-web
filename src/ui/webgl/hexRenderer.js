@@ -94,6 +94,7 @@ export class HexRenderer extends Renderer {
 
 		this.highlight = '0x0084cc';
 		this.texture = new THREE.TextureLoader().load(this._getTexture(hex));
+		this.texture.minFilter = THREE.LinearFilter;
 		this.topMaterial = new THREE.MeshLambertMaterial({ color: 0xdddddd, map: this.texture });
 		// this.topMaterial.emissive = new THREE.Color(this.highlight);
 		this.material = new THREE.MeshLambertMaterial({ color: 0x0 });
@@ -153,6 +154,7 @@ export class HexRenderer extends Renderer {
 		this._hex = hex;
 		const texture = this._getTexture(hex);
 		this.topMaterial.map = new THREE.TextureLoader().load(texture);
+		this.topMaterial.map.minFilter = THREE.LinearFilter;
 		this.topMaterial.needsUpdate = true;
         this.material.color = new THREE.Color(this.hex.color);
         this.material.needsUpdate = true;

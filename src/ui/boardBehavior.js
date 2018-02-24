@@ -27,13 +27,14 @@ import {Util} from "../util.js";
 import {Road} from "../road.js";
 import {Town} from "../town.js";
 import {City} from "../city.js";
+import {Edge} from "../edge.js";
 
 export class BoardBehavior {
     start(boardRenderer) {} // set the behavior as active behavior on the BoardRenderer
     click(boardRenderer, renderer) { }
     enter(boardRenderer, renderer) { }
     leave(boardRenderer, renderer) { }
-    stop(boardRenderer) {} // unset the behavior
+    stop(boardRenderer) {} // unset the behavior & cleanup any resources/handlers
 }
 /** Don't respond to any user input at all */
 export class NoBehavior extends BoardBehavior { }
@@ -301,10 +302,9 @@ export class MoveRobber extends BoardBehavior {
     }
 }
 export class BuildTown extends BoardBehavior {
-    constructor() {
+    constructor(player) {
         super();
-        this.player = new Player({color: 0xff0000});
-        this.player.color = 0xff0000;
+        this.player = player || new Player({color: 0xff0000});
     }
     start(boardRenderer) {
         this.boardRenderer = boardRenderer;
@@ -321,6 +321,7 @@ export class BuildTown extends BoardBehavior {
         boardRenderer.hideAllNodes();
     }
 }
+
 export class BuildCity extends BoardBehavior {
     constructor() {
         super();
@@ -345,9 +346,10 @@ export class BuildCity extends BoardBehavior {
 export class BuildRoad extends BoardBehavior {
     constructor() {
         super();
-        this.emphasizeHoveredObject = new EmphasizeHoveredObject();
+        this.emphasizeHoveredObject = new EmphasizeHoveredObject(r => r instanceof EdgeRenderer);
         this.player = new Player();
         this.player.color = 0xff0000;
+
     }
     _showEdges() {
         var edges = this.boardRenderer.board.getAllEdges();

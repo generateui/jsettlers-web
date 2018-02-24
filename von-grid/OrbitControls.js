@@ -354,7 +354,6 @@ THREE.OrbitControls = function ( object, domElement ) {
 	function onMouseDown( event ) {
 
 		if ( scope.enabled === false ) return;
-		event.preventDefault();
 
 		if ( event.button === scope.mouseButtons.ORBIT ) {
 			if ( scope.noRotate === true ) return;
@@ -390,8 +389,6 @@ THREE.OrbitControls = function ( object, domElement ) {
 	function onMouseMove( event ) {
 
 		if ( scope.enabled === false ) return;
-
-		event.preventDefault();
 
 		var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
 
@@ -460,8 +457,6 @@ THREE.OrbitControls = function ( object, domElement ) {
 	function onMouseWheel( event ) {
 
 		if ( scope.enabled === false || scope.noZoom === true || state !== STATE.NONE ) return;
-
-		event.preventDefault();
 		event.stopPropagation();
 
 		var delta = 0;
@@ -571,8 +566,6 @@ THREE.OrbitControls = function ( object, domElement ) {
 	function touchmove( event ) {
 
 		if ( scope.enabled === false ) return;
-
-		event.preventDefault();
 		event.stopPropagation();
 
 		var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
@@ -656,16 +649,16 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	}
 
-	this.domElement.addEventListener( 'contextmenu', function ( event ) { event.preventDefault(); }, false );
-	this.domElement.addEventListener( 'mousedown', onMouseDown, false );
-	this.domElement.addEventListener( 'mousewheel', onMouseWheel, false );
-	this.domElement.addEventListener( 'DOMMouseScroll', onMouseWheel, false ); // firefox
+	// this.domElement.addEventListener( 'contextmenu', function ( event ) { event.preventDefault(); }, false );
+	this.domElement.addEventListener( 'mousedown', onMouseDown, {capture: false, passive: true} );
+	this.domElement.addEventListener( 'mousewheel', onMouseWheel, {capture: false, passive: true} );
+	this.domElement.addEventListener( 'DOMMouseScroll', onMouseWheel, {capture: false, passive: true} ); // firefox
 
-	this.domElement.addEventListener( 'touchstart', touchstart, false );
-	this.domElement.addEventListener( 'touchend', touchend, false );
-	this.domElement.addEventListener( 'touchmove', touchmove, false );
+	this.domElement.addEventListener( 'touchstart', touchstart, {capture: false, passive: true} );
+	this.domElement.addEventListener( 'touchend', touchend, {capture: false, passive: true} );
+	this.domElement.addEventListener( 'touchmove', touchmove, {capture: false, passive: true} );
 
-	window.addEventListener( 'keydown', onKeyDown, false );
+	window.addEventListener( 'keydown', onKeyDown, {capture: false, passive: true} );
 
 	// force an update at start
 	this.update();

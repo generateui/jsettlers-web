@@ -3,6 +3,7 @@ import {ObservableMap} from "./generic/observableMap.js";
 import {Robber} from "./robber.js";
 import {Coord3D} from "./coord.js";
 import {Bank} from "./bank.js";
+import { ObservableArray } from "./generic/observableArray.js";
 
 export class GameSettings {
     constructor(config) {
@@ -18,9 +19,29 @@ export class Game extends Observable {
 
         this.robber = new Robber(Coord3D.center);
         this.players = [];
-        this.playerOnTurn = null;
+        this.player = null; // the player at the front-end
+        this.playerOnTurn = null; // the player whose turn it is
         this.board = null;
         this.developmentCards = []; // TODO: observable array
         this.bank = new Bank();
+        this.actions = new ObservableArray();
+    }
+    
+    getPlayerById(id) {
+        for (var player of this.players) {
+            if (player.id === id) {
+                return player;
+            }
+        }
+        return null;
+    }
+    getOpponents(player) {
+        const opponents = [];
+        for (var opponent of this.players) {
+            if (opponent.id !== player.id) {
+                opponents.push(opponent);
+            }
+        }
+        return opponents;
     }
 }

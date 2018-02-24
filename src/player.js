@@ -1,7 +1,9 @@
 import {Observable} from "./generic/observable.js";
 import {Util} from "./util.js";
+import {Stock} from "./stock.js";
 import {Resource, Timber, Wheat, Ore, Sheep, Brick, Gold, ResourceList} from "./resource.js";
 import {DevelopmentCard, YearOfPlenty, Monopoly, Soldier, VictoryPoint, RoadBuilding} from "./developmentCard.js";
+import {Any4To1Port, Any3To1Port, PortList, Wheat2To1Port, Sheep2To1Port} from "./port.js";
 var proto = require("../data_pb");
 
 export class Player extends Observable {
@@ -10,26 +12,34 @@ export class Player extends Observable {
 
         config = config || {};
 
+        this.id = config.id;
         this.color = config.color || 0x000000;
         this.user = config.user || new User();
         this.maxHandResources = 7;
         this.developmentCards = [
             new Soldier(), new YearOfPlenty(), new Monopoly(), new VictoryPoint(), new RoadBuilding()
-        ]; // TODO: ObseravbleArray
+        ]; // TODO: ObservableArray
+        this.playedDevelopmentCards = [];
+        this.roadBuildingTokens = 0;
         this.resources = [{}, {}, {}, {}, {}, {}, {}, {}];
         this.victoryPoints = [{},{},{}];
+        this.stock = new Stock();
+        this.ports = new PortList();
         this.towns = new Map(); // <Node, Town>
         this.cities = new Map(); // <Node, City>
         this.roads = new Map(); // <Edge, Road>
         this.victoryPoints = []; // <Edge, Road>
-        // this.resources = [new Timber(),new Timber(),new Timber(),new Timber(),new Timber(),new Wheat(),new Wheat(),new Brick()];
-        this.resources = new ResourceList(); // <ResourceType, Resources[]>
-        this.resources[proto.ResourceType.TIMBER] =  [new Timber(), new Timber(), new Timber()];
-        this.resources[proto.ResourceType.WHEAT] = [new Wheat(), new Wheat()];
-        this.resources[proto.ResourceType.ORE] = [new Ore(), new Ore()];
-        this.resources[proto.ResourceType.SHEEP] = [new Sheep(), new Sheep()];
-        this.resources[proto.ResourceType.BRICK] = [new Brick(), new Brick()];
-        this.resources[proto.ResourceType.GOLD] = [new Gold(), new Gold()];
+        this.producers = new Map(); // <Node, Piece> (Piece = Town | City)
+        this.nodePieces = new Map(); // <Node, Piece> (Piece = Town | City)
+        this.edgePieces = new Map(); // <Edge, Piece> (Piece = Road)
+        this.resources = new ResourceList([
+            new Timber(), new Timber(), new Timber(),
+            new Wheat(), new Wheat(),
+            new Ore(), new Ore(),
+            new Sheep(), new Sheep(),
+            new Brick(), new Brick(),
+            new Gold(), new Gold()
+        ]);
 
         this.makeObservable(["user"]);
     }
@@ -64,7 +74,7 @@ export class Color {
     }
     static get white() {
         if (Color._white === undefined) {
-            Color._white = new Color(0xff0000);
+            Color._white = new Color(0xffffff);
         }
         return Color._white;
     }

@@ -3,8 +3,9 @@ var proto = require("../data_pb");
 import {ObservableMap} from "./generic/observableMap.js"; 
 import {Robber} from "./robber.js";
 import {Chit} from "./chit.js";
-import {Forest, WheatField, River, Sea, Mountain, Pasture, Desert, HexFromBag} from "./hex.js";
 import {Coord3D} from "./coord.js";
+import {Edge} from "./edge.js";
+import {Forest, WheatField, River, Sea, Mountain, Pasture, Desert, HexFromBag} from "./hex.js";
 import {Any3To1Port, Clay2To1Port, Any4To1Port, FromBagPort, Ore2To1Port, Sheep2To1Port, Timber2To1Port, Wheat2To1Port} from "./port.js";
 
 export class BoardDescriptor {
@@ -36,10 +37,17 @@ export class Board {
             chitBag: [],
         };
         this._hexes = new ObservableMap(); // <Coord, Hex>
-        this.robber = new Robber(Coord3D.center);
+        this.robber = new Robber(Coord3D.center); // TODO: move to desert
         this.towns = new ObservableMap(); // <Node, Town>
         this.cities = new ObservableMap(); // <Node, City>
         this.roads = new ObservableMap(); // <Edge, Road>
+        this.nodePieces = new Map(); // <Node, Piece> Piece = Town | City
+        this.edgePieces = new Map(); // <Edge, Piece> Piece = Road | ??
+        this.portsByNode = new Map();
+        this.producersByNode = new Map(); // <Node, Producer>
+
+        const c = Coord3D.center;
+        const n1 = new Edge(c, c.neighbors[0]);
     }
     static create(id) {
         if (Board.factoryCache === undefined) {
@@ -60,8 +68,8 @@ export class Board {
         const items = [];
         for (var item of config) {
             // expand config specification of hexes in hexBag
-             // e.g. [new Forest(), [3, () => new Mountain()]]
-             if (Array.isArray(item)) {
+            // e.g. [new Forest(), [3, () => new Mountain()]]
+            if (Array.isArray(item)) {
                 var array = item;
                 var amount = array[0];
                 var createItemFunction = array[1];
@@ -109,7 +117,7 @@ export class Board {
         const bagPorts = Board._flattenConfig(this._config.portBag);
         const hexesWithPortToReplace = Array.from(this._hexes.values()).filter(h => h.port instanceof FromBagPort);
         var j = 0;
-        while (j < hexesWithPortToReplace.length&& bagPorts.length > 0) {
+        while (j < hexesWithPortToReplace.length && bagPorts.length > 0) {
             const toReplace = hexesWithPortToReplace[j];
             const index = Math.floor(Math.random() * bagPorts.length);
             const pick = bagPorts[index];
@@ -118,6 +126,13 @@ export class Board {
             toReplace.port = pick;
             bagPorts.splice(index, 1);
             j++;
+        }
+        for (var hex of this._hexes.values()) {
+            if (hex.port !== null) {
+                const edge = hex.port.edge;
+                this.portsByNode.set(edge.node1, hex.port);
+                this.portsByNode.set(edge.node2, hex.port);
+            }
         }
     }
     placeHexes() {

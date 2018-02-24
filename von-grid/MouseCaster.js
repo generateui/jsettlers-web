@@ -39,15 +39,14 @@ export class MouseCaster {
 		// behind-the-scenes stuff you shouldn't worry about
 		this._camera = camera;
 		this._raycaster = new THREE.Raycaster();
-		this._preventDefault = false;
 
 		element = element || document;
 
-		element.addEventListener('mousemove', this._onDocumentMouseMove.bind(this), false);
-		element.addEventListener('mousedown', this._onDocumentMouseDown.bind(this), false);
-		element.addEventListener('mouseup', this._onDocumentMouseUp.bind(this), false);
-		element.addEventListener('mousewheel', this._onMouseWheel.bind(this), false);
-		element.addEventListener('DOMMouseScroll', this._onMouseWheel.bind(this), false); // firefox
+		element.addEventListener('mousemove', this._onDocumentMouseMove.bind(this), {capture: false, passive: true});
+		element.addEventListener('mousedown', this._onDocumentMouseDown.bind(this), {capture: false, passive: true});
+		element.addEventListener('mouseup', this._onDocumentMouseUp.bind(this), {capture: false, passive: true});
+		element.addEventListener('mousewheel', this._onMouseWheel.bind(this), {capture: false, passive: true});
+		element.addEventListener('DOMMouseScroll', this._onMouseWheel.bind(this), {capture: false, passive: true}); // firefox
 
 		// statics to describe the events we dispatch
 		MouseCaster.OVER = 'over';
@@ -102,17 +101,8 @@ export class MouseCaster {
 		this.allHits = intersects;
 	}
 
-	preventDefault() {
-		this._preventDefault = true;
-	}
-
 	_onDocumentMouseDown(evt) {
 		evt = evt || window.event;
-		evt.preventDefault();
-		if (this._preventDefault) {
-			this._preventDefault = false;
-			return false;
-		}
 		if (this.pickedObject) {
 			this.selectedObject = this.pickedObject;
 		}
@@ -126,11 +116,6 @@ export class MouseCaster {
 	}
 
 	_onDocumentMouseUp(evt) {
-		evt.preventDefault();
-		if (this._preventDefault) {
-			this._preventDefault = false;
-			return false;
-		}
 		this.shift = evt.shiftKey;
 		this.ctrl = evt.ctrlKey;
 
@@ -144,7 +129,6 @@ export class MouseCaster {
 	}
 
 	_onDocumentMouseMove(event) {
-		event.preventDefault();
 		// this.screenPosition.x = (evt.clientX / window.innerWidth) * 2 - 1;
 		// this.screenPosition.y = -(evt.clientY / window.innerHeight) * 2 + 1;
 		this.screenPosition.x = ( ( event.clientX - this.element.offsetLeft ) / this.element.clientWidth ) * 2 - 1;
@@ -155,7 +139,6 @@ export class MouseCaster {
 		if (!this.active) {
 			return;
 		}
-		evt.preventDefault();
 		evt.stopPropagation();
 
 		var delta = 0;
@@ -172,5 +155,23 @@ export class MouseCaster {
 			this.wheel--;
 		}
 		this.signal.dispatch(MouseCaster.WHEEL, this.wheel);
+	}
+
+	dispose() {
+		this.element.removeEventListener('mousemove', this._onDocumentMouseMove.bind(this), {capture: false, passive: true});
+		this.element.removeEventListener('mousedown', this._onDocumentMouseDown.bind(this), {capture: false, passive: true});
+		this.element.removeEventListener('mouseup', this._onDocumentMouseUp.bind(this), {capture: false, passive: true});
+		this.element.removeEventListener('mousewheel', this._onMouseWheel.bind(this), {capture: false, passive: true});
+		this.element.removeEventListener('DOMMouseScroll', this._onMouseWheel.bind(this), {capture: false, passive: true}); // firefox
+		this.pickedObject = null;
+		this.selectedObject = null;
+		this.allHits = null;
+		this.position = null;
+		this.screenPosition = null;
+		this.group = null;
+		this._camera = null;
+		this._raycaster = null;
+		this.signal.dispose();
+		this.signal = null;
 	}
 }

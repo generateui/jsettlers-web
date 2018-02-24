@@ -3,16 +3,15 @@
         <div id="sidedrawer" class="mui--no-user-select">
             <div id="sidedrawer-brand" class="mui--appbar-line-height">
                     <img id="side-logo" src="https://raw.githubusercontent.com/jdmonin/JSettlers2/master/doc/graf/Logo24.png">
-                <span class="mui--text-title">JSettlers-web</span>
+                <span class="mui--text-title">jsettlers-web</span>
             </div>
             <div class="mui-divider"></div>
             <ul>
                 <li>
-                    <strong>Play</strong>
+                    <h1>Play</h1>
                     <ul>
-                        <li>
-                            <router-link to="/play-test-game">play test game</router-link>
-                        </li>
+                        <li><router-link to="/play-test-game">play test game</router-link></li>
+                        <li><router-link to="/">welcome</router-link></li>
                     </ul>
                 </li>
                 <li>
@@ -26,6 +25,9 @@
                         <li>
                             <router-link to="/tech-demo">Tech demo</router-link>
                         </li>
+                        <li>
+                            <router-link to="/attribution">Attribution</router-link>
+                        </li>                            
                     </ul>
                 </li>
             </ul>

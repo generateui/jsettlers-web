@@ -1,0 +1,120 @@
+<template>
+    <ul id="perform-action">
+        <li>
+            <div>
+                <span>perform action for player: </span>
+                <select v-model="player">
+                    <option v-for="p in game.players" v-bind:value="p" v-bind:key="p.id">{{p.user.name}}</option>
+                </select>
+            </div>
+        </li>
+        <li>
+            <ul>
+                <li>
+                    <img src="doc/images/Town48.png" style="height:24px; width: 24px;">
+                    <button @click="buildTown()">build town</button>
+                </li>
+                <li>
+                    <img src="doc/images/Road48.png" style="height:24px; width: 24px;">
+                    <button @click="buildRoad()">build road</button>
+                </li>
+                <li>
+                    <img src="doc/images/City48.png" style="height:24px; width: 24px;">
+                    <button @click="buildCity()">build city</button>
+                </li>
+                <li>
+                    <img src="doc/images/DevelopmentCard.png" style="height:24px; width: 24px;">
+                    <button @click="buyDevelopmentCard()">buy devcard</button>
+                </li>
+                <li>
+                    <monopoly-dialog v-if="show" v-on:close="closeMonopolyDialog"></monopoly-dialog>
+                    
+                </li>
+            </ul>
+        </li>
+    </ul>
+</template>
+
+<script>
+    import * as bb from "../src/ui/boardBehavior.js";
+    import * as gb from "../src/ui/gameBehavior.js";
+    import {Receiver} from "../src/receiver.js";
+    import {HostAtClient} from "../src/host.js";
+    import {BuildTown} from "../src/actions/buildTown.js";
+    import {BuildRoad} from "../src/actions/buildRoad.js";
+    import {BuildCity} from "../src/actions/buildCity.js";
+    import {BuyDevelopmentCard} from "../src/actions/buyDevelopmentCard.js";
+    import {KeyListener} from "../src/ui/keyListener.js";
+
+    export default {
+        name: 'debug-perform-actions',
+        props: {
+            game: {
+                type: Object
+            },
+            host: {
+                type: Object
+            }
+        },
+        data() {
+            return {
+                receiver: null,
+                player: null,
+                keyListener: new KeyListener(),
+            }
+        },
+        methods: {
+            buildTown: async function() {
+                const behavior = new gb.BuildTown(this.$data.player, this.$data.keyListener);
+                const createActionData = (player, node) => BuildTown.createData(player, node);
+                this.behaveThenAct(behavior, createActionData);
+            },
+            buildRoad: function() {
+                const behavior = new gb.BuildRoad(this.$data.player, this.$data.keyListener);
+                const createAction = (player, edge) => BuildRoad.createData(this.$data.player, edge);
+                this.behaveThenAct(behavior, createAction);
+            },
+            buildCity: function() {
+                const behavior = new gb.BuildCity(this.$data.player, this.$data.keyListener);
+                const createAction = (player, node) => BuildCity.createData(this.$data.player, node);
+                this.behaveThenAct(behavior, createAction);
+            },
+            buyDevelopmentCard: function() {
+                const createAction = (player) => BuyDevelopmentCard.createData(player, null);
+                this.act(createAction);
+            },
+            playDevelopmentCard: function() {
+
+            },
+            act: async function(createAction) {
+                try {
+                    const action = createAction(this.$data.player);
+                    await this.$props.host.send(action);
+                } catch (error) {
+                    alert(error.message);
+                }
+            },
+            behaveThenAct: async function(behavior, createAction) {
+                // Set the board to the new behavior
+                this.$emit('behaviorChanged', behavior);
+                try {
+                    // await the behavior for completion (e.g. a click on the board on some renderer)
+                    const result = await behavior.promise;
+                    // create some data
+                    const action = createAction(this.$data.player, result);
+                    // send the data
+                    await this.$props.host.send(action);
+                } catch (error) {
+                    // add it to game errors?
+                    alert(error.message);
+                } finally {
+                    this.$emit('behaviorChanged', new bb.NoBehavior());
+                }
+            }
+        },
+    }
+</script>
+
+<style scoped>
+
+</style>

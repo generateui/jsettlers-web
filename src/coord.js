@@ -3,10 +3,19 @@ import {Node} from "./node.js";
 import {Edge} from "./edge.js";
 
 // relative location of a hex on a hexagonal grid
-class Coord {
+export class Coord {
     // get neighbors;
     // get nodes();
     // get edges();
+    static fromData(data) {
+        if (data.hasCoord1D()) {
+            // not implemented
+        } else if (data.hasCoord2D()) {
+            // not implemented
+        } else if (data.hasCoord3D()) {
+            return Coord3D.fromData(data.getCoord3D());
+        }
+    }
 }
 
 class Coord1D extends Coord {
@@ -71,11 +80,13 @@ export class Coord3D extends Coord {
         return new Coord3D(data.getX(), data.getY(), data.getZ());
     }
     get data() {
-        let data = new proto.Coord3D();
+        const data = new proto.Coord3D();
         data.setX(this.x);
         data.setY(this.y);
         data.setZ(this.z);
-        return data;
+        const coord = new proto.Coord();
+        coord.setCoord3D(data);
+        return coord;
     }
     /** <Coord3D>[6] */
     get neighbors() {

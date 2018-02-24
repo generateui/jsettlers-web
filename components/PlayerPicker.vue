@@ -14,14 +14,14 @@
 </template>
 
 <script>
-  import {Player, User} from "../src/player.js";
+  import {Player, User, Color} from "../src/player.js";
   const players = [
-      new Player({ color: 0xff0000, user: new User({name: "player1" }) }),
-      new Player({ color: 0x00ff00, user: new User({name: "player2" }) }),
-      new Player({ color: 0x0000ff, user: new User({name: "player3" }) }),
-      new Player({ color: 0xffffff, user: new User({name: "player4" }) }),
-      new Player({ color: 0xffa500, user: new User({name: "player5" }) }),
-      new Player({ color: 0x654321, user: new User({name: "player6" }) }),
+      new Player({ color: Color.red, user: new User({name: "player1" }) }),
+      new Player({ color: Color.green, user: new User({name: "player2" }) }),
+      new Player({ color: Color.blue, user: new User({name: "player3" }) }),
+      new Player({ color: Color.white, user: new User({name: "player4" }) }),
+      new Player({ color: Color.orange, user: new User({name: "player5" }) }),
+      new Player({ color: Color.brown, user: new User({name: "player6" }) }),
   ];
   export default {
     name: 'player-picker',

@@ -24,9 +24,9 @@ export class Scene {
 		this.scene = new THREE.Scene();
 		this.scene.add(new THREE.AmbientLight(0xdddddd));
 
-		var light = new THREE.DirectionalLight(0xffffff)
-		light.position.set(-1, 1, -1).normalize();
-		this.scene.add(light);
+		this.light = new THREE.DirectionalLight(0xffffff)
+		this.light.position.set(-1, 1, -1).normalize();
+		this.scene.add(this.light);
 
 		this.camera = new THREE.PerspectiveCamera(50, this.width / this.height, 1, 5000);
 
@@ -38,14 +38,7 @@ export class Scene {
 
 		this.camera.position.copy({ x:-150, y:150, z:0 });
 
-		window.addEventListener('resize', function onWindowResize() {
-			this.width = element.clientWidth;
-			this.height = element.clientHeight;
-			this.camera.aspect = this.width / this.height;
-
-			this.camera.updateProjectionMatrix();
-			this.renderer.setSize(this.width, this.height);
-		}.bind(this), false);
+		window.addEventListener('resize', this._onWindowResize.bind(this), false);
 
 		element.style.width = this.width + 'px';
 		element.style.height = this.height + 'px';
@@ -61,6 +54,15 @@ export class Scene {
 		this.elapsed = null;
 		
 		this.paused = false;
+		this.disposed = false;
+	}
+	_onWindowResize() {
+		this.width = element.clientWidth;
+		this.height = element.clientHeight;
+		this.camera.aspect = this.width / this.height;
+
+		this.camera.updateProjectionMatrix();
+		this.renderer.setSize(this.width, this.height);
 	}
     
     startAnimating(fps) {
@@ -70,6 +72,9 @@ export class Scene {
     }
 
     animate(newtime) {
+		if (this.disposed) {
+			return;
+		}
         window.requestAnimationFrame(this.animate.bind(this));
         this.now = newtime;
         this.elapsed = this.now - this.then;
@@ -99,5 +104,16 @@ export class Scene {
 
 	focusOn(obj) {
 		this.camera.lookAt(obj.position);
+	}
+	dispose() {
+		this.disposed = true;
+		this.mouse.dispose();
+		this.renderer = null;
+		this.mouse = null;
+		this.light = null;
+		this.scene = null;
+		this.camera = null;
+		window.removeEventListener('resize', this._onWindowResize.bind(this), false);
+		this.element = null;
 	}
 }

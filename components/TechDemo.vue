@@ -124,14 +124,12 @@
             }
         },
         mounted: function() {
-            // // A design representation of a board morphable into a play board
             const boardDesign = new Standard4pDesign();
             boardDesign.generateBoardForPlay();
             var brEl = this.$refs["board-renderer"];
             boardRenderer = new BoardRenderer(brEl, boardDesign, setHex);
         }
     }
-
 </script>
 
 <style scoped>
@@ -146,21 +144,20 @@
     background-color: rgba(33, 150, 243, 0.75);
     grid-row-start: 1;
     grid-column-start: 1;
-    height: 100%;
+    /* height: 100%; */
 }
 #vertical-menu-2 {
     background-color: rgba(33, 150, 243, 0.5);
     grid-row-start: 1;
     grid-column-start: 2;
-    height: 100%;
+    /* height: 100%; */
 }
 #board-renderer {
     background-color: #000;
     grid-row-start: 1;
     grid-column-start: 3;
-    height: 100%;
+    /* height: 100%; */
 }
-
 </style>
 
 <style>
@@ -178,8 +175,6 @@
     vertical-align: middle;
     margin-right: 0.5em;
 }
-
-/* a label right after an input element which is checked */
 .toggle-button li > input[type='radio']:checked+label {
     border: 2px solid black;
     background-color: #C4C4C4;

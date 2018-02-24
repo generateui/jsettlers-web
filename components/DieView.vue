@@ -1,6 +1,6 @@
 <template>
-    <svg width="48px" height="48px" id="dices" viewBox="32 32">
-        <g transform="scale(1.3)" transform-origin="0 0">
+    <svg width="48px" height="48px" id="dices" viewBox="0 0 38 38">
+        <g>
             <rect fill="white" stroke="black" stroke-width="4" x="3" y="3" width="32" height="32" rx="8" ry="8"></rect>
             <circle v-if="showLeftTop()" fill="Black" stroke="black" stroke-width="1" r="2" cx="11" cy="12" ></circle>
             <circle v-if="showLeftCenter()" fill="Black" stroke="black" stroke-width="1" r="2" cx="11" cy="19"></circle>
@@ -55,8 +55,4 @@
 </script>
 
 <style scoped>
-    svg {
-        /* transform-origin: 0 0; */
-        /* transform: scale(1.5); */
-    }
 </style>

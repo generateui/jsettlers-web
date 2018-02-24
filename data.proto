@@ -3,9 +3,10 @@ package carcattonne_data;
 
 message Coord {
 	oneof coord_oneof {
-		Coord1D coord1D = 1;
-		Coord2D coord2D = 2;
-		Coord3D coord3D = 3;
+		// snake_casing used here generates expected "coord1D" instead of "coord1d"
+		Coord1D coord1_d = 1;
+		Coord2D coord2_d = 2;
+		Coord3D coord3_d = 3;
 	}
 }
 	message Coord1D {
@@ -32,9 +33,10 @@ message Edge {
 }
 
 message Hex {
-	HexType Type = 1;
+	HexType type = 1;
 	Coord coord = 2;
 	ChitType chit = 3;
+	// TODO: I saw implementations having multiple ports per hex. Make this repeated?
 	PortType port = 4;
 }
 	enum HexType {
@@ -81,3 +83,86 @@ enum ResourceType {
 	Gold = 5;
 	Unknown = 6; // in opponents' list of resources to reduce spying
 }
+message BuildTown {
+	Node node = 1;
+}
+message BuildRoad {
+	Edge edge = 1;
+}
+message BuildCity {
+	Node node = 1;
+}
+message BuyDevelopmentCard {
+	DevelopmentCard development_card = 1;
+}
+message PlayDevelopmentCard {
+	DevelopmentCard development_card = 1;
+}
+message TradeBank {
+	repeated ResourceType offered_resources = 1;
+	repeated ResourceType requested_resources = 2;
+}
+message RollDice {
+	message Production {
+		int32 player_id = 1;
+		repeated ResourceType produce = 2;
+	}
+	int32 die1 = 1;
+	int32 die2 = 2;
+	repeated Production productions = 3;
+}
+// a client requests to perform a game action
+message GameActionRequest {
+	int32 request_id = 1; // client-generated id to match response with request to update state
+	oneof action {
+		BuildTown build_town = 2;
+		BuildRoad build_road = 3;
+		BuildCity build_city = 4;
+		BuyDevelopmentCard buy_development_card = 5;
+		PlayDevelopmentCard play_development_card = 6;
+		TradeBank trade_bank = 7;
+		RollDice roll_dice = 8;
+	}
+}
+message GameAction {
+	int32 id = 1;
+	int32 game_id = 2;
+	int32 player_id = 3;
+	int32 user_id = 4;
+	int32 turn_id = 5;
+	int32 game_phase_id = 6;
+	int32 turn_phase_id = 7;
+	oneof action {
+		BuildTown build_town = 8;
+		BuildRoad build_road = 9;
+		BuildCity build_city = 10;
+		BuyDevelopmentCard buy_development_card = 11;
+		PlayDevelopmentCard play_development_card = 12;
+		TradeBank trade_bank = 13;
+		RollDice roll_dice = 14;
+	}
+}
+message DevelopmentCard {
+	int32 player_id = 1;
+	int32 turn_bought_index = 2;
+	int32 turn_played_index = 3;
+	oneof development_card {
+		VictoryPoint victory_point = 4;
+		YearOfPlenty year_of_plenty = 5;
+		Soldier soldier = 6;
+		Monopoly monopoly = 7;
+		RoadBuilding road_building = 8;
+	}
+}
+message VictoryPoint { }
+message YearOfPlenty {
+	ResourceType resource_type1 = 1;
+	ResourceType resource_type2 = 2;
+}
+message Soldier {
+	Coord coord = 1;
+}
+message Monopoly {
+	ResourceType resource_type = 1;
+}
+message RoadBuilding { }

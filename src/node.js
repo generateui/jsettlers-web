@@ -1,4 +1,6 @@
+var proto = require("../data_pb");
 import {Edge} from "./edge.js";
+import {Coord} from "./coord.js";
 
 /** Combination of 3 hexagon locations (Coords) */
 export class Node {
@@ -43,11 +45,15 @@ export class Node {
     get data() {
         var data = new proto.Node();
         data.setCoord1(this.coord1.data);
-        data.setCoord2(this.coord1.data);
+        data.setCoord2(this.coord2.data);
+        data.setCoord3(this.coord3.data);
         return data;
     }
     static fromData(data) {
-        return new Node(data.getCoord1(), data.getCoord2());
+        const coord1 = Coord.fromData(data.getCoord1());
+        const coord2 = Coord.fromData(data.getCoord2());
+        const coord3 = Coord.fromData(data.getCoord3());
+        return new Node(coord1, coord2, coord3);
     }
 }
 Node._cache = new Map();
