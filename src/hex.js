@@ -56,6 +56,7 @@ export class WheatField extends Hex {
     get color() { return 0xFFD700; }
     get canHaveChit() { return true; }
     get canHaveRobber() { return true; }
+    get resourceType() { return proto.ResourceType.WHEAT; }
 }
 export class Mountain extends Hex {
     constructor(coord) {
@@ -65,6 +66,7 @@ export class Mountain extends Hex {
     get color() { return 0x8A2BE2; }
     get canHaveChit() { return true; }
     get canHaveRobber() { return true; }
+    get resourceType() { return proto.ResourceType.ORE; }
  }
  export class River extends Hex { 
     constructor(coord) {
@@ -74,6 +76,7 @@ export class Mountain extends Hex {
     get color() { return 0xFF3232; }
     get canHaveChit() { return true; }
     get canHaveRobber() { return true; }
+    get resourceType() { return proto.ResourceType.BRICK; }
 }
 export class Forest extends Hex { 
     constructor(coord) {
@@ -83,6 +86,7 @@ export class Forest extends Hex {
     get color() { return 0x006400; }
     get canHaveChit() { return true; }
     get canHaveRobber() { return true; }
+    get resourceType() { return proto.ResourceType.TIMBER; }
 }
 export class Pasture extends Hex {
     constructor(coord) {
@@ -92,6 +96,7 @@ export class Pasture extends Hex {
     get color() { return 0x00FF00; }
     get canHaveChit() { return true; }
     get canHaveRobber() { return true; }
+    get resourceType() { return proto.ResourceType.SHEEP; }
 }
 export class NoneHex extends Hex {
     constructor(coord) {

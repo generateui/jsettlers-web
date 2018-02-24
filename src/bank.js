@@ -11,6 +11,10 @@ export class Bank {
             proto.ResourceType.BRICK,
         ]);
         this.resources.addAmount(proto.ResourceType.TIMBER, 19);
+        this.resources.addAmount(proto.ResourceType.WHEAT, 19);
+        this.resources.addAmount(proto.ResourceType.ORE, 19);
+        this.resources.addAmount(proto.ResourceType.SHEEP, 19);
+        this.resources.addAmount(proto.ResourceType.BRICK, 19);
         this.developmentCards = [];
     }
 }

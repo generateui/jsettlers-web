@@ -5,6 +5,9 @@ export class City {
         this.victoryPoints = 2;
         this.name = "City";
     }
+    produce(hex) {
+        return [hex.resourceType, hex.resourceType];
+    }
     addToPlayer(player) {
         player.cities.set(this.node, this);
         player.victoryPoints.push(this);
@@ -22,10 +25,12 @@ export class City {
     addToBoard(board) {
         board.cities.set(this.node, this);
         board.nodePieces.set(this.node, this);
+        board.producersByNode.set(this.node, this)
         // remove from pieces list?
     }
     removeFromBoard(board) {
         board.cities.delete(this.node);
         board.nodePieces.delete(this.node);
+        board.producersByNode.delete(this.node, this)
     }
 }

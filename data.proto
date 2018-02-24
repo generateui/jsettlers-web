@@ -102,6 +102,15 @@ message TradeBank {
 	repeated ResourceType offered_resources = 1;
 	repeated ResourceType requested_resources = 2;
 }
+message RollDice {
+	message Production {
+		int32 player_id = 1;
+		repeated ResourceType produce = 2;
+	}
+	int32 die1 = 1;
+	int32 die2 = 2;
+	repeated Production productions = 3;
+}
 // a client requests to perform a game action
 message GameActionRequest {
 	int32 request_id = 1; // client-generated id to match response with request to update state
@@ -112,6 +121,7 @@ message GameActionRequest {
 		BuyDevelopmentCard buy_development_card = 5;
 		PlayDevelopmentCard play_development_card = 6;
 		TradeBank trade_bank = 7;
+		RollDice roll_dice = 8;
 	}
 }
 message GameAction {
@@ -129,6 +139,7 @@ message GameAction {
 		BuyDevelopmentCard buy_development_card = 11;
 		PlayDevelopmentCard play_development_card = 12;
 		TradeBank trade_bank = 13;
+		RollDice roll_dice = 14;
 	}
 }
 message DevelopmentCard {

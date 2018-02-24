@@ -7,7 +7,7 @@
             v-on:trade="tradeBank"></trade-bank-dialog>
         <div id="players">
             <div v-for="player in game.players">
-                <player-info v-bind:player="player"></player-info>
+                <player-info v-bind:player="player" v-bind:ref="'player' + player.id"></player-info>
             </div>
         </div>
         <bank-view id="bank" v-bind:bank="game.bank" v-bind:update="update"></bank-view>
@@ -37,6 +37,7 @@
             v-bind:game="game" 
             v-on:behaveThenAct="behaveThenAct" 
             v-on:act="performAction" 
+            v-on:rolldice="rollDice"
             v-on:tradebank="openTradeBankDialog"
             v-bind:keyListener="keyListener"></actions>
         <player-assets 
@@ -62,11 +63,13 @@
     import {HostAtClient} from "../src/host.js";
     import {Game, GameSettings} from "../src/game.js";
     import {Bank} from "../src/bank.js";
+    import {RollDice} from "../src/actions/rollDice.js";
     import {BoardRenderer} from "../src/ui/webgl/boardRenderer.js";
     import {Player, User} from "../src/player.js";
     import { Standard4pDesign, JustSomeSea, TheGreatForest, BoardDescriptor } from '../src/board.js';
     import {KeyListener} from "../src/ui/keyListener.js";
     import * as bb from "../src/ui/boardBehavior.js";
+    import * as gb from "../src/ui/gameBehavior.js";
 
     var boardRenderer = null;
     var receiver = null;
@@ -132,6 +135,10 @@
             },
             openTradeBankDialog: function() {
                 this.showTradeBankDialog = true;
+            },
+            rollDice: function() {
+                let rollDice = RollDice.createData(this.game.player);
+                this.act(rollDice);
             },
             tradeBank: function(action) {
                 this.performAction(action);
@@ -202,12 +209,29 @@
             game.player = player;
             this.$data.game = game;
             window.game = game; // nice for debugging
+            game.actions.added(async item => {
+                if (item instanceof RollDice) {
+                    if (item.die1 + item.die2 !== 7) {
+                        const diceRoll = item.die1 + item.die2;
+                        const behavior = new gb.ShowProduction(this.keyListener, diceRoll);
+                        boardRenderer.behavior = behavior;
+                        await behavior.promise;
+                        boardRenderer.behavior = new bb.NoBehavior();
+                    }
+                }
+            })
         },
         mounted: function() {
             var brEl = document.getElementById("game-board-renderer");
             const game = this.$data.game;
             boardRenderer = new BoardRenderer(brEl, game.board);
             this.$data.host = new HostAtClient(game);
+
+            game.actions.added(item => {
+                for (var player of game.players) {
+                    this.$refs["player" + player.id][0].showAction(item);
+                }
+            });
         },
         destroyed: function() {
             boardRenderer.dispose();

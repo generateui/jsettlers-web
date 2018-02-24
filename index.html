@@ -77,6 +77,21 @@
                 if (index !== -1) {
                     this.splice(index, 1);
                 }
+            };
+            Array.prototype.mapMany = function(filterFunction) {
+                return Array.prototype.concat(...this.map(filterFunction));
+            };
+            Array.prototype.pushAll = function(array) {
+                for (let item of array) {
+                    this.push(item);
+                }
+            }
+            Set.prototype.difference = function(setB) {
+                var difference = new Set(this);
+                for (var item of setB) {
+                    difference.delete(item);
+                }
+                return difference;
             }
         </script>
         <script type="text/javascript" src="dist/build.js"></script>

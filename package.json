@@ -23,6 +23,7 @@
     "google-protobuf": "^3.4.0",
     "three-js": "^79.0.0",
     "vue": "^2.0.1",
+    "vue-directive-tooltip": "^1.4.2",
     "vue-markdown": "^2.2.4",
     "vue-popperjs": "^1.2.5"
   },

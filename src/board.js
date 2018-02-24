@@ -44,6 +44,7 @@ export class Board {
         this.nodePieces = new Map(); // <Node, Piece> Piece = Town | City
         this.edgePieces = new Map(); // <Edge, Piece> Piece = Road | ??
         this.portsByNode = new Map();
+        this.producersByNode = new Map(); // <Node, Producer>
 
         const c = Coord3D.center;
         const n1 = new Edge(c, c.neighbors[0]);

@@ -1,6 +1,6 @@
 <template>
-    <div id="wrapper">
-        <div id="background-wrapper"  v-bind:style="{ borderColor: player.color.css, backgroundColor: player.color.toCssRgba(0.25) }">
+    <div id="wrapper" >
+        <div id="background-wrapper" v-bind:style="{ borderColor: player.color.css, backgroundColor: player.color.toCssRgba(0.25) }">
             <div id="player-name">{{player.user.name}}</div>
             <div id="towns" class="stock-info">
                 <img src="doc/images/Town48.png" />
@@ -32,7 +32,7 @@
                     </div>
                     <div slot="reference">
                         <img src="doc/images/VictoryPoint48.png" class="image" />
-                        <span>{{player.victoryPoints.length}}</span>
+                        <span>{{player.victoryPoints.length > 0 ? player.victoryPoints.reduce((vp1, vp2) => vp1.victoryPoints + vp2.victoryPoints) : 0 }}</span>
                     </div>
                 </popper>
             </div>
@@ -43,12 +43,33 @@
                 <!-- </div> -->
             </div>
         </div>
+        <div id="popup" class="popper" v-bind:ref="'popup-' + player.id" v-show="actions.length > 0">
+            <div id="actions" v-for="action in actions">
+                <div id="resources" v-if="action.constructor.name === 'RollDice' && action.productionByPlayer.has(player)">
+                    <div id="resourceType" 
+                        v-if="action.productionByPlayer.get(player).hasOf(resourceType)"
+                        v-for="resourceType in action.productionByPlayer.get(player).types">
+                        <img v-for="resource in action.productionByPlayer.get(player).of(resourceType)" :src="`doc/images/${resource.name}Card.png`" />
+                    </div>
+                </div>
+                <div id="resources" v-if="action.constructor.name === 'BuildTown' && action.player === player">
+                    <img src="doc/images/Town48.png" />
+                </div>
+                <div id="resources" v-if="action.constructor.name === 'BuildRoad' && action.player === player">
+                    <img src="doc/images/Road48.png" />
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
     import Popper from 'vue-popperjs';
-    // require('vue-popperjs/dist/css/vue-popper.css');
+    import PopperJs from "../node_modules/popper.js/dist/esm/popper.js";
+    // import timer from "../src/ui/timer.js";
+    import { RollDice } from '../src/actions/rollDice';
+
+    const timer = ms => new Promise(result => setTimeout(result, ms));
     
     export default {
         name: 'player-info',
@@ -57,11 +78,37 @@
             player: {
                 type: Object
             }
+        },
+        data() {
+            return {
+                showResourcesGained: false,
+                showPopup: false,
+                actions: [],
+            }
+        },
+        methods: {
+            showAction: async function(action) {
+                this.actions.push(action);
+                await timer(4000);
+                this.actions.remove(action);
+            },
+        },
+        mounted: function() {
+            var el = this.$el;
+            var popupEl = this.$refs["popup-" + this.player.id]
+            var x = new PopperJs(el, popupEl, { placement: 'right'});
+            x.update();
         }
     }
 </script>
 
 <style scoped>
+#popup {
+    /* float:right; */
+    color: white;
+    background-color: black;
+    display: inline-flex;
+}
 h3 {
     color: white;
 }
@@ -159,8 +206,8 @@ h3 {
     margin-right: 1em;
 }
 #resources img {
-    margin-left: -3em;
-    width: 4em;
+    margin-left: -2em;
+    width: 3em;
     height: 4em;
 }
 #victoryPoints {

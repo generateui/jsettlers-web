@@ -125,7 +125,45 @@ export class BuildCity extends BoardBehavior {
     enter(boardRenderer, renderer) {
         this.emphasizeHoveredObject.enter(boardRenderer, renderer);
     }
-    leave(boardRenderer, renderer) {
+    stop(boardRenderer, renderer) {
         this.emphasizeHoveredObject.leave(boardRenderer, renderer);
+    }
+}
+export class ShowProduction extends BoardBehavior {
+    constructor(keyListener, diceRoll) {
+        super();
+        this.diceRoll = diceRoll;
+
+        this.promise = new Promise((ok, fail) => {
+            this.ok = ok;
+        });
+        this.removeSubscription = keyListener.any(() => {
+            this.ok();
+        });
+    }
+    start(boardRenderer) {
+        this.boardRenderer = boardRenderer;
+        const board = boardRenderer.board;
+        const affectedHexes = Array.from(board.hexes.values())
+            .filter(h => h.chit.number !== null && 
+                h.chit.number === this.diceRoll && 
+                h.coord !== board.robber.coord);
+        boardRenderer.lightenHexes(affectedHexes);
+        const nonAffectedHexes = new Set(board.hexes.values());
+        const robberHex = board.hexes.get(board.robber.coord);
+        for (let affected of affectedHexes) {
+            nonAffectedHexes.delete(affected);
+        }
+        if (robberHex.chit.number === this.diceRoll) {
+            boardRenderer.redifyHexes([robberHex]);
+            nonAffectedHexes.delete(robberHex);
+        }
+        boardRenderer.darkenHexes(nonAffectedHexes);
+    }
+    click(boardRenderer, renderer) {
+        this.ok();
+    }
+    stop(boardRenderer, renderer) {
+        this.boardRenderer.normalizeHexes(this.boardRenderer.board.hexes.values());
     }
 }

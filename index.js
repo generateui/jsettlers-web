@@ -28,12 +28,12 @@ const routes = [
     ]
   },
 ];
-
 const router = new VueRouter({
   routes
 });
 Vue.use(VueMarkdown);
 Vue.use(VueRouter);
+
 new Vue({ // eslint-disable-line no-new
   router,
   render: (h) => h(App)

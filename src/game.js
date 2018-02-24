@@ -3,6 +3,7 @@ import {ObservableMap} from "./generic/observableMap.js";
 import {Robber} from "./robber.js";
 import {Coord3D} from "./coord.js";
 import {Bank} from "./bank.js";
+import { ObservableArray } from "./generic/observableArray.js";
 
 export class GameSettings {
     constructor(config) {
@@ -23,7 +24,7 @@ export class Game extends Observable {
         this.board = null;
         this.developmentCards = []; // TODO: observable array
         this.bank = new Bank();
-        this.actions = [];
+        this.actions = new ObservableArray();
     }
     
     getPlayerById(id) {

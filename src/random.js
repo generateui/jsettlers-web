@@ -5,6 +5,9 @@ export class ClientRandom {
     intFromZero(size) {
         return this._getRandomIntInclusive(0, size - 1);
     }
+    intFromOne(size) {
+        return this._getRandomIntInclusive(1, size);
+    }
     _getRandomIntInclusive(min, max) {
         min = Math.ceil(min);
         max = Math.floor(max);

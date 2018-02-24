@@ -6,6 +6,7 @@ import {BuildRoad} from "./actions/buildRoad.js";
 import {BuildCity} from "./actions/buildCity.js";
 import {BuyDevelopmentCard} from "./actions/buyDevelopmentCard.js";
 import {PlayDevelopmentCard} from "./actions/playDevelopmentCard.js";
+import {RollDice} from "./actions/rollDice.js";
 import {Node} from "./node.js";
 import { YearOfPlenty, Soldier, Monopoly, RoadBuilding, VictoryPoint } from "./developmentCard";
 import { ClientRandom } from "./random";
@@ -26,6 +27,7 @@ export class HostAtClient {
             new VictoryPoint(), new VictoryPoint(), new VictoryPoint(), new VictoryPoint(), new VictoryPoint(),
         ];
     }
+    // TODO: keep separate instance of game to ensure serialization works properly
     send(actionMessage) {
         const binary = actionMessage.serializeBinary();
         // here, we send the message to the server
@@ -47,6 +49,9 @@ export class HostAtClient {
                 // fail(new Error(`random: ${random.toString()}`))
             // } else {
                 GameAction.setReferences(action, this.game);
+                if (action.setReferences !== undefined) {
+                    action.setReferences(this.game);
+                }
                 action.performServer(this);
                 action.perform(this.game);
                 this.game.actions.push(action);
@@ -62,6 +67,7 @@ export class HostAtClient {
         if (a.hasTradeBank()) { return TradeBank.fromData(a.getTradeBank()); }
         if (a.hasBuyDevelopmentCard()) { return BuyDevelopmentCard.fromData(a.getBuyDevelopmentCard()); }
         if (a.hasPlayDevelopmentCard()) { return PlayDevelopmentCard.fromData(a.getPlayDevelopmentCard()); }
+        if (a.hasRollDice()) { return RollDice.fromData(a.getRollDice()); }
         throw new Error("Unsupported action in HostAtClient");
     }
 }

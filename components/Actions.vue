@@ -41,7 +41,7 @@
         <div id="end-turn" class="build-button">
             <img src="doc/images/EndTurn48.png" />
         </div>
-        <dice-view id="dice-view" class="build-button" v-bind:dice="dice"></dice-view>
+        <dice-view id="dice-view" class="build-button" v-on:rolldice="rollDice" v-bind:dice="dice"></dice-view>
 
     </div>
 </template>
@@ -85,6 +85,9 @@
             tradeBank: function(tradeBankAction) {
                 this.$emit("tradebank", tradeBankAction);
                 // this.$data.showTradeBankDialog = false;
+            },
+            rollDice: function() {
+                this.$emit("rolldice");
             }
         }
     }

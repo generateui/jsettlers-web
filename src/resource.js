@@ -201,17 +201,22 @@ export class ResourceList {
     /** true if this list has at least all resource instances of given resourceList  */
     hasAtLeast(resourceList) {
         for (var resourceType of resourceList.types) {
-            if (resourceType.of(resourceType) > this.of(resourceType)) {
+            if (resourceList.of(resourceType) > this.of(resourceType)) {
                 return false;
             }
         }
+        return true;
     }
     /** true if this list has resources of given resourceType */
     hasOf(resourceType) {
-        if (typeof(resourceType) !== "string") {
-            throw new Error(".hasOf in ResourceList expects a ResourceType (String)");
+        var resourceTypeString = resourceType;
+        if (typeof(resourceType) === "number") {
+            resourceTypeString = Util.getEnumName(proto.ResourceType, resourceType);
         }
-        return this.of(resourceType).length > 0;
+        if (typeof(resourceType) !== "string" && typeof(resourceType) !== "number") {
+            throw new Error(".hasOf in ResourceList expects a ResourceType (String) or (Number)");
+        }
+        return this.of(resourceTypeString).length > 0;
     }
     /** returns amount of resourceTypes this list contains */
     get amountTypes() {
