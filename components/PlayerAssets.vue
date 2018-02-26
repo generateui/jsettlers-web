@@ -10,8 +10,16 @@
             v-on:close="closeYearOfPlentyDialog">
         </year-of-plenty-dialog>
         <div id="resources">
-            <div id="resourceType" v-for="resourceType in player.resources.types" v-if="player.resources.hasOf(resourceType)" :key="key">
-                <img v-for="resource in player.resources.of(resourceType)"  :src="`doc/images/${resource.name}Card.png`" />
+            <div 
+                id="resourceType" 
+                v-if="player.resources.hasOf(resourceType)"
+                v-for="resourceType in player.resources.types"
+                :key="resourceType">
+                <img 
+                    v-for="resource in player.resources.of(resourceType)"  
+                    :src="`doc/images/${resource.name}Card.png`"
+                    :key="resource.id"
+                    v-bind:class="{ selected: selectedResources.includes(resource)}" />
             </div>
         </div>
         <div id="developmentCards">
@@ -27,12 +35,13 @@
 <script>
     import MonopolyDialog from './MonopolyDialog.vue';
     import YearOfPlentyDialog from './YearOfPlentyDialog.vue';
+
     import { Monopoly } from '../src/developmentCard.js';
-    import {PlayDevelopmentCard} from "../src/actions/playDevelopmentCard.js";
+    import { PlayDevelopmentCard } from "../src/actions/playDevelopmentCard.js";
 
     export default {
         name: 'player-assets',
-        components: {MonopolyDialog, YearOfPlentyDialog},
+        components: {MonopolyDialog, YearOfPlentyDialog },
         props: {
             player: {
                 type: Object
@@ -42,6 +51,9 @@
             },
             update: {
                 type: Boolean
+            },
+            game: {
+                type: Object
             }
         },
         data() {
@@ -49,9 +61,13 @@
                 showMonopolyDialog: false,
                 showYearOfPlentyDialog: false,
                 developmentCard: null,
+                selectedResources: [],
             }
         },
         methods: {
+            action(action) {
+                this.$emit('action', action);
+            },
             playDevelopmentCard(developmentCard) {
                 this.$data.developmentCard = developmentCard;
                 // instanceof don't work here
@@ -95,7 +111,7 @@
                 yop.player = player;
                 const playYop = PlayDevelopmentCard.createData(player, yop);
                 this.$emit('action', playYop)
-            }
+            },
         }
     }
 </script>
@@ -114,6 +130,12 @@
     margin-left: -96px;
     height: 101px;
     width: 63px;
+}
+#resourceType img:hover {
+    transform: translate(0, -0.5em);
+}
+.selected, .selected:hover {
+    transform: translate(0, -2em) !important;
 }
 #developmentCards {
     /* margin-left: 37px; */

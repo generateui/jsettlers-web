@@ -36,11 +36,12 @@
         <actions 
             v-bind:game="game" 
             v-on:behaveThenAct="behaveThenAct" 
-            v-on:act="performAction" 
+            v-on:action="performAction"
             v-on:rolldice="rollDice"
             v-on:tradebank="openTradeBankDialog"
             v-bind:keyListener="keyListener"></actions>
         <player-assets 
+            v-bind:game="game" 
             v-bind:player="game.player" 
             v-bind:update="update"
             v-on:action="performAction"></player-assets>
@@ -72,7 +73,6 @@
     import * as gb from "../src/ui/gameBehavior.js";
 
     var boardRenderer = null;
-    var receiver = null;
     var host = null;
 
     const boards = [
@@ -152,6 +152,7 @@
             performAction: async function(action) {
                 try {
                     await this.$data.host.send(action);
+                    this.update = !this.update;
                 } catch (error) {
                     alert(error.message);
                 }

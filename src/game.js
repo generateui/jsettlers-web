@@ -44,4 +44,8 @@ export class Game extends Observable {
         }
         return opponents;
     }
+    getActionById(id) {
+        // if this gets slow, move to Map()
+        return this.actions.array.find(a => a.id === id);
+    }
 }

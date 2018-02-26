@@ -111,6 +111,33 @@ message RollDice {
 	int32 die2 = 2;
 	repeated Production productions = 3;
 }
+message OfferTrade {
+	repeated ResourceType offered = 1;
+	repeated ResourceType wanted = 2;
+}
+message RejectOffer {
+	enum Reason {
+		NOT_GIVEN = 0; // opponent just rejects
+		DONT_HAVE = 1; // opponent does not have wanted resources
+		NO_RESOURCES = 2; // opponent does not have any resources
+		WANT_MORE = 3; // opponent wants more resources
+		TIME_OUT = 4; // maximum time has passed for opponent to respond, so it is auto-rejected
+	}
+	int32 trade_offer_id = 1;
+	Reason reason = 2;
+}
+message CounterOffer {
+	int32 trade_offer_id = 1;
+	repeated ResourceType offered = 2;
+	repeated ResourceType wanted = 3;
+}
+message AcceptOffer {
+	int32 trade_offer_id = 1;
+}
+message TradePlayer {
+	int32 trade_offer_id = 1;
+	int32 trade_response_id = 2;
+}
 // a client requests to perform a game action
 message GameActionRequest {
 	int32 request_id = 1; // client-generated id to match response with request to update state
@@ -122,6 +149,11 @@ message GameActionRequest {
 		PlayDevelopmentCard play_development_card = 6;
 		TradeBank trade_bank = 7;
 		RollDice roll_dice = 8;
+		OfferTrade offer_trade = 9;
+		RejectOffer reject_offer = 10;
+		CounterOffer counter_offer = 11;
+		AcceptOffer accept_offer = 12;
+		TradePlayer trade_player = 13;
 	}
 }
 message GameAction {
@@ -140,6 +172,11 @@ message GameAction {
 		PlayDevelopmentCard play_development_card = 12;
 		TradeBank trade_bank = 13;
 		RollDice roll_dice = 14;
+		OfferTrade offer_trade = 15;
+		RejectOffer reject_offer = 16;
+		CounterOffer counter_offer = 17;
+		AcceptOffer accept_offer = 18;
+		TradePlayer trade_player = 19;
 	}
 }
 message DevelopmentCard {

@@ -22,9 +22,9 @@ export class Player extends Observable {
         this.playedDevelopmentCards = [];
         this.roadBuildingTokens = 0;
         this.resources = [{}, {}, {}, {}, {}, {}, {}, {}];
-        this.victoryPoints = [{},{},{}];
+        this.victoryPoints = [];
         this.stock = new Stock();
-        this.ports = new PortList();
+        this.ports = new PortList([new Any4To1Port()]);
         this.towns = new Map(); // <Node, Town>
         this.cities = new Map(); // <Node, City>
         this.roads = new Map(); // <Edge, Road>
@@ -33,12 +33,11 @@ export class Player extends Observable {
         this.nodePieces = new Map(); // <Node, Piece> (Piece = Town | City)
         this.edgePieces = new Map(); // <Edge, Piece> (Piece = Road)
         this.resources = new ResourceList([
-            new Timber(), new Timber(), new Timber(),
-            new Wheat(), new Wheat(),
+            new Timber(), new Timber(), new Timber(), new Timber(),
+            new Wheat(),
             new Ore(), new Ore(),
-            new Sheep(), new Sheep(),
+            new Sheep(),
             new Brick(), new Brick(),
-            new Gold(), new Gold()
         ]);
 
         this.makeObservable(["user"]);

@@ -86,6 +86,17 @@
                     this.push(item);
                 }
             }
+            Array.prototype.clear = function(array) {
+                this.splice(0, this.length);
+            }
+            Array.prototype.removeIf = function(conditionFunction) {
+                var i = this.length;
+                while (i--) {
+                    if (conditionFunction(this[i], i)) {
+                        this.splice(i, 1);
+                    }
+                }
+            };
             Set.prototype.difference = function(setB) {
                 var difference = new Set(this);
                 for (var item of setB) {

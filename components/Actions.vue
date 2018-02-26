@@ -33,7 +33,7 @@
             <img src="doc/images/PlayDevelopmentCard48.png" />
         </div> -->
         <div id="trade-player" class="build-button">
-            <img src="doc/images/TradePlayer48.png" />
+            <img src="doc/images/TradePlayer48.png" @click="openTradePlayerDialog" />
         </div>
         <div id="trade-bank" class="build-button" @click="tradeBank">
             <img src="doc/images/TradeBank48.png" />
@@ -42,7 +42,11 @@
             <img src="doc/images/EndTurn48.png" />
         </div>
         <dice-view id="dice-view" class="build-button" v-on:rolldice="rollDice" v-bind:dice="dice"></dice-view>
-
+        <trade-player-dialog 
+            v-if="showTradePlayerDialog" 
+            v-on:action="action"
+            v-bind:game="game">
+        </trade-player-dialog>
     </div>
 </template>
 
@@ -51,11 +55,12 @@
     import {BuildRoad} from "../src/actions/buildRoad.js";
     import DiceView from "./DiceView.vue";
     import TradeBankDialog from "./TradeBankDialog.vue";
+    import TradePlayerDialog from './TradePlayerDialog.vue';
     import {Dice} from "../src/dice.js";
 
     export default {
         components: {
-            DiceView, TradeBankDialog
+            DiceView, TradeBankDialog, TradePlayerDialog
         },
         props: {
             game: {
@@ -70,9 +75,13 @@
             return {
                 dice: new Dice(),
                 showTradeBankDialog: false,
+                showTradePlayerDialog: false,
             }
         },
         methods: {
+            action: function(action) {
+                this.$emit("action", action);
+            },
             buildRoad: function() {
                 const player = this.$props.game.player;
                 const behavior = new gb.BuildRoad(player, this.$props.keyListener);
@@ -88,6 +97,9 @@
             },
             rollDice: function() {
                 this.$emit("rolldice");
+            },
+            openTradePlayerDialog: function() {
+                this.showTradePlayerDialog = !this.showTradePlayerDialog;
             }
         }
     }
@@ -97,7 +109,7 @@
 #actions {
     display: grid;
     height: 64px;
-    grid-template-columns: repeat(8, 48px) auto;
+    grid-template-columns: 110px repeat(8, 48px) auto;
     grid-template-rows: repeat(9, 64px);
     grid-column-gap: 1em;
 }
@@ -113,7 +125,7 @@
     height: 24px;
 }
 #build-city {
-    grid-column-start: 1;
+    grid-column-start: 4;
     grid-row-start: 1;
     display: grid;
     grid-template-columns: 24px 24px;
@@ -211,7 +223,7 @@
         grid-row-start: 1;
     }
 #buy-development-card {
-    grid-column-start: 4;
+    grid-column-start: 5;
     grid-row-start: 1;
     display: grid;
     grid-template-columns: 24px 24px;
@@ -254,7 +266,7 @@
     grid-row-start: 1;
 }
 #dice-view {
-    grid-column-start: 9;
+    grid-column-start: 1;
     grid-row-start: 1;
 }
 </style>

@@ -20,6 +20,8 @@
   },
   "homepage": "https://github.com/geluso/carcattonne#readme",
   "dependencies": {
+    "circular-json": "^0.5.1",
+    "circular-json-es6": "^2.0.2",
     "google-protobuf": "^3.4.0",
     "three-js": "^79.0.0",
     "vue": "^2.0.1",

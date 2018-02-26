@@ -184,7 +184,6 @@
   height: 100%;
   background-color: rgba(0, 0, 0, .5);
   display: table;
-  /* transition: opacity .2s ease; */
 }
 #get-wrapper {
     text-align: center;
@@ -210,14 +209,11 @@
     grid-row-start: 3;
     grid-column-start: 1;
     grid-column-end: 1;
-    
 }
 #trade-button-wrapper {
     grid-row-start: 2;
     grid-row-end: 5;
-    grid-column-start: 2;
-    /* margin-top: 4em; */
-
+    grid-column-start: 3;
     display: flex;
     align-items: center;
     justify-content: center;

@@ -52,7 +52,7 @@
                         <img v-for="resource in action.productionByPlayer.get(player).of(resourceType)" :src="`doc/images/${resource.name}Card.png`" />
                     </div>
                 </div>
-                <div id="resources" v-if="action.constructor.name === 'BuildTown' && action.player === player">
+                <div id="resources" v-if="action instanceof BuildTown && action.player === player">
                     <img src="doc/images/Town48.png" />
                 </div>
                 <div id="resources" v-if="action.constructor.name === 'BuildRoad' && action.player === player">

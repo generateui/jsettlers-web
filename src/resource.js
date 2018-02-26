@@ -1,7 +1,10 @@
-var proto = require("../data_pb");
+var proto = require("../data_pb.js");
 import {Util} from "./util.js";
 
 export class Resource {
+    constructor() {
+        this.id = Resource.nextId();
+    }
     static fromType(resourceType) {
         switch (resourceType) {
             case proto.ResourceType.TIMBER: return new Timber();
@@ -12,6 +15,13 @@ export class Resource {
             case proto.ResourceType.GOLD: return new Gold();
         }
         throw new Error(`Unsupported resource type [${resourceType}]`);
+    }
+    static nextId() {
+        if (Resource.currentId === undefined) {
+            Resource.currentId = 0;
+        }
+        Resource.currentId++;
+        return Resource.currentId;
     }
 }
 export class Timber extends Resource {
@@ -235,13 +245,13 @@ export class ResourceList {
         }
         return amount;
     }
-    // get toArray() {
-    //     var result = [];
-    //     for (var resourceType of this.types) {
-    //         result = result.concat(this.of(resourceType));
-    //     }
-    //     return result;
-    // }
+    toArray() {
+        var result = [];
+        for (var resourceType of this.types) {
+            result = result.concat(this.of(resourceType));
+        }
+        return result;
+    }
     moveFrom(source, toMove) {
         for (var resourceType of toMove.types) {
             for (var resource of toMove.of(resourceType)) {

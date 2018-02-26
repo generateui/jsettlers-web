@@ -3,6 +3,9 @@ export class ObservableArray {
         this._array = [];
         this._addListeners = [];
     }
+    get array() {
+        return this._array;
+    }
     added(addHandler) {
         this._addListeners.push(addHandler);
         const that = this;

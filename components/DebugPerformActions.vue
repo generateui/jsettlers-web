@@ -27,8 +27,11 @@
                     <button @click="buyDevelopmentCard()">buy devcard</button>
                 </li>
                 <li>
+                    <input type="checkbox" id="check-auto-respond" v-bind:checked="autoRespond">
+                    <label for="check-auto-respond">respond to trade offers randomly</label>
+                </li>
+                <li>
                     <monopoly-dialog v-if="show" v-on:close="closeMonopolyDialog"></monopoly-dialog>
-                    
                 </li>
             </ul>
         </li>
@@ -38,13 +41,19 @@
 <script>
     import * as bb from "../src/ui/boardBehavior.js";
     import * as gb from "../src/ui/gameBehavior.js";
-    import {Receiver} from "../src/receiver.js";
     import {HostAtClient} from "../src/host.js";
     import {BuildTown} from "../src/actions/buildTown.js";
     import {BuildRoad} from "../src/actions/buildRoad.js";
     import {BuildCity} from "../src/actions/buildCity.js";
     import {BuyDevelopmentCard} from "../src/actions/buyDevelopmentCard.js";
     import {KeyListener} from "../src/ui/keyListener.js";
+    import {ClientRandom} from "../src/random";
+    import { RejectOffer } from '../src/actions/rejectOffer';
+    import { CounterOffer } from '../src/actions/counterOffer';
+    import { AcceptOffer } from '../src/actions/acceptOffer';
+    import { OfferTrade } from '../src/actions/offerTrade';
+
+    const random = new ClientRandom();
 
     export default {
         name: 'debug-perform-actions',
@@ -58,9 +67,9 @@
         },
         data() {
             return {
-                receiver: null,
                 player: null,
                 keyListener: new KeyListener(),
+                autoRespond: true,
             }
         },
         methods: {
@@ -110,8 +119,44 @@
                 } finally {
                     this.$emit('behaviorChanged', new bb.NoBehavior());
                 }
-            }
+            },
         },
+        mounted: function() {
+            this.game.actions.added((action) => {
+                if (!this.autoRespond) {
+                    return;
+                }
+                if (action instanceof OfferTrade) {
+                    const offerTrade = action;
+                    const opponents = this.game.getOpponents(offerTrade.player);
+                    const responses = [];
+                    for (var opponent of opponents) {
+                        const i = random.intFromOne(3);
+                        if (i === 1) {
+                            const reason = random.intFromZero(4);
+                            this.act(() => RejectOffer.createData(opponent, offerTrade, reason));
+                        } else if (i === 2) {
+                            this.act(() => AcceptOffer.createData(opponent, offerTrade));
+                        } else if (i === 3) {
+                            const offerAmount = random.intFromOne(3);
+                            const wantAmount = random.intFromOne(3);
+                            const offered = [];
+                            const wanted = [];
+                            const resources = opponent.resources.toArray();
+                            for (var x = 0; x < offerAmount; x++) {
+                                const randomIndex = random.intFromZero(resources.length - 1);
+                                offered.push(resources[randomIndex].type);
+                            }
+                            for (var x = 0; x < wantAmount; x++) {
+                                const randomIndex = random.intFromZero(resources.length - 1);
+                                wanted.push(resources[randomIndex].type);
+                            }
+                            this.act(() => CounterOffer.createData(opponent, offerTrade, offered, wanted));
+                        }
+                    }
+                }
+            });
+        }
     }
 </script>
 
