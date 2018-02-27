@@ -27,6 +27,7 @@
                 v-if="showPerformActions" 
                 v-bind:game="game" 
                 v-bind:host="host" 
+                v-bind:keyListener="keyListener"
                 v-on:behaviorChanged="behaviorChanged"></debug-perform-actions>
         </div>
     </div>
@@ -220,7 +221,15 @@
                         boardRenderer.behavior = new bb.NoBehavior();
                     }
                 }
-            })
+            });
+            game.longestRoad.edgesChanged((oldEdges, newEdges) => {
+                if (newEdges === null) {
+                    return;
+                }
+                if (oldEdges === null || oldEdges.length !== newEdges.length) {
+                    boardRenderer.animateLongestRoad(game.longestRoad.edges);
+                }
+            });
         },
         mounted: function() {
             var brEl = document.getElementById("game-board-renderer");

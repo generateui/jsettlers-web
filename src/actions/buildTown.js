@@ -16,6 +16,15 @@ export class BuildTown extends GameAction {
         }
         town.addToPlayer(this.player);
         town.addToBoard(game.board);
+        const edges = town.node.edges;
+        const edgePieces = game.board.edgePieces;
+        const opponentHasSidePieceAtNode = 
+            (edgePieces.has(edges[0]) && edgePieces.get(edges[0]).player !== this.player) ||
+            (edgePieces.has(edges[1]) && edgePieces.get(edges[1]).player !== this.player) ||
+            (edgePieces.has(edges[2]) && edgePieces.get(edges[2]).player !== this.player);
+        if (opponentHasSidePieceAtNode) {
+            game.calculateLongestRoad();
+        }
     }
     static fromData(data) {
         const node = Node.fromData(data.getNode());

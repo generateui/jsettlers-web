@@ -171,6 +171,20 @@ export class BoardRenderer {
         }
     }
 
+    async animateLongestRoad(edges) {
+        const timer = ms => new Promise(result => setTimeout(result, ms));
+        const scale = 1.5;
+        for (let edge of edges) {
+            const roadRenderer = this.roadRenderers.get(edge);
+            roadRenderer.mesh.scale.set(scale, scale, scale);
+        }
+        await timer(2000);
+        for (let edge of edges) {
+            const roadRenderer = this.roadRenderers.get(edge);
+            roadRenderer.mesh.scale.set(1,1,1);
+        }
+    }
+
     addMesh(mesh) {
         this.scene.scene.add(mesh);
     }

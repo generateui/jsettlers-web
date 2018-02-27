@@ -104,6 +104,13 @@
                 }
                 return difference;
             }
+            Set.prototype.union = function(setB) {
+                var union = new Set(this);
+                for (var item of setB) {
+                    union.add(item);
+                }
+                return union;
+            }
         </script>
         <script type="text/javascript" src="dist/build.js"></script>
 

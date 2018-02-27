@@ -189,7 +189,7 @@
                     action.player === that.game.player &&
                     that.tradeOffer !== null &&
                     action.tradeOfferId === that.tradeOffer.id) {
-                    // successfull trade, so kill the current offer
+                    // successfull trade: kill the current offer, clear the UI and reset players' resources
                     that.tradeOffer = null;
                     that.offeredResources.clear();
                     that.wantedResourceTypes.clear();

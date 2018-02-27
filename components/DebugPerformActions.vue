@@ -63,29 +63,31 @@
             },
             host: {
                 type: Object
+            },
+            keyListener: {
+                type: Object
             }
         },
         data() {
             return {
                 player: null,
-                keyListener: new KeyListener(),
                 autoRespond: true,
             }
         },
         methods: {
             buildTown: async function() {
-                const behavior = new gb.BuildTown(this.$data.player, this.$data.keyListener);
-                const createActionData = (player, node) => BuildTown.createData(player, node);
+                const behavior = new gb.BuildTown(this.player, this.keyListener);
+                const createActionData = (player, node) => BuildTown.createData(this.player, node);
                 this.behaveThenAct(behavior, createActionData);
             },
             buildRoad: function() {
-                const behavior = new gb.BuildRoad(this.$data.player, this.$data.keyListener);
-                const createAction = (player, edge) => BuildRoad.createData(this.$data.player, edge);
+                const behavior = new gb.BuildRoad(this.player, this.keyListener);
+                const createAction = (player, edge) => BuildRoad.createData(this.player, edge);
                 this.behaveThenAct(behavior, createAction);
             },
             buildCity: function() {
-                const behavior = new gb.BuildCity(this.$data.player, this.$data.keyListener);
-                const createAction = (player, node) => BuildCity.createData(this.$data.player, node);
+                const behavior = new gb.BuildCity(this.player, this.keyListener);
+                const createAction = (player, node) => BuildCity.createData(this.player, node);
                 this.behaveThenAct(behavior, createAction);
             },
             buyDevelopmentCard: function() {
@@ -122,6 +124,10 @@
             },
         },
         mounted: function() {
+            const that = this;
+            this.keyListener.specific("r", () => {
+                that.buildRoad();
+            });
             this.game.actions.added((action) => {
                 if (!this.autoRespond) {
                     return;

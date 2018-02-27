@@ -12,7 +12,7 @@ export class RoadRenderer extends Renderer {
         var lines = new THREE.LineSegments(this.geometry, new THREE.LineBasicMaterial({ color: 0x000000 }));
         this.material = new THREE.MeshBasicMaterial( {color: road.player.color.integer} );
         var box = new THREE.Mesh(boxGeometry, this.material);
-        box.add(lines);
+        box.add(lines); 
         var radians = ((road.edge.rotation || 60)* Math.PI) / 180;
         box.rotateY(radians);
         var position = boardRenderer.edgeToPixel(road.edge);

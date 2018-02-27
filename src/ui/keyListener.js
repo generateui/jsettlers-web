@@ -4,7 +4,7 @@ export class KeyListener {
         this.anyKeyListeners = [];
         document.addEventListener('keydown', (event) => {
             for (var [keyCode, listeners] of this.listenersByKey) {
-                if (keyCode === event.keyCode) {
+                if (keyCode === event.keyCode || keyCode === event.key) {
                     for (var listener of listeners) {
                         listener();
                     }
@@ -14,6 +14,17 @@ export class KeyListener {
                 listener();
             }
         });
+    }
+    specific(key, handler) {
+        if (!this.listenersByKey.has(key)) {
+            this.listenersByKey.set(key, []);
+        }
+        this.listenersByKey.get(key).push(handler);
+        return () => {
+            const listeners = this.listenersByKey.get(key);
+            const index = listeners.indexOf(handler);
+            listeners.splice(index, 1);
+        }
     }
     escape(handler) {
         const ESCAPE = 27;
