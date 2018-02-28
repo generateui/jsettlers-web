@@ -1,10 +1,17 @@
 import { Observable } from "./generic/observable";
 
 class Route {
+    //         edge1
+    //        /  
+    //    ―― ●  🡐node
+    //     🡑  \
+    //   edge  edge2
+    // The edge is the reference edge. From there we try to look ahead
+    // to edge1 and edge2. 
     constructor(config) {
         this.edge = config.edge; // starting edge of this route
         this.node = config.node; // combined with edge makes this the *direction*
-        this.edge1 = config.edge1; // can be null
+        this.edge1 = config.edge1; // edge when a connection available, otherwise null
         this.edge2 = config.edge2; // can be null too
         this.route1 = null; // child Route 1
         this.route2 = null; // child Route 2
@@ -40,19 +47,22 @@ export class LongestRoad extends Observable {
     constructor() {
         super();
 
-        this.victoryPoints = 2;
         this.player = null;
         this.edges = null; // []
+        
         this.name = "LongestRoad";
+        this.victoryPoints = 2;
 
         this.makeObservable(["player", "edges"]);
     }
     /** Brute-force algorithm to determine the longest road per player 
      *  1. Per player: 
      *  2. Per edge of that player, create two routes starting from either 
-     *     node. This yields $edgeCount * 2 Routes.
+     *     node. This yields ($edgeCount * 2) amount of Routes.
      *  3. Per route, recursively find the longest path
      *  4. If a path is longer then the previous, set that as the winner
+     *
+     *  Returns a Map<Player, Edge[]> containing the longest route per player.
      */
     calculate(game) {
         const longestRouteByPlayer = new Map(); // <Player, Edge[]>
@@ -68,12 +78,24 @@ export class LongestRoad extends Observable {
             //     edge2  |   edge4
             //           edge 
             for (let edge of edgePieces.keys()) {
+                //         edge1
+                //        /  
+                //    ―― ●  🡐node1
+                //     🡑  \
+                //   edge  edge2
+                //     
                 const node1 = edge.node1;
                 const index1 = node1.edges.indexOf(edge);
                 // we want to get a reference to the second and third edge of the node here
                 const edge1 = index1 === 0 ? node1.edges[1] : node1.edges[0];
-                const edge2 = index1 === 0 ? node1.edges[2] : index1 == 1 ? node1.edges[2] : node1.edges[1];
+                const edge2 = index1 === 0 ? node1.edges[2] : index1 === 1 ? node1.edges[2] : node1.edges[1];
                 const pieceAtNode1 = game.board.nodePieces.has(node1);
+
+                //   ✔️         ❌         ✔️                                 🔴: opponent town/city
+                //        /           /          /          / 🡐 edge: ️️️✔️      ️️✔️: connects
+                //    ―― ⌂       ―― 🔴      ――          ――                     ❌: does not connect
+                //        \           \          \          ⋱ 🡐 no edge: ❌    ⌂ : player town/city
+                //                                                              ⋱ : player has no road on edge
                 const isOpponentAtNode1 = pieceAtNode1 && game.board.nodePieces.get(node1).player !== player;
                 const connects1 = !pieceAtNode1 || !isOpponentAtNode1;
                 const connectingEdge1 = connects1 && edgePieces.has(edge1) ? edge1 : null;
@@ -81,11 +103,15 @@ export class LongestRoad extends Observable {
                 const route1 = new Route({
                     edge: edge,
                     node: node1,
+                    // it's possible both edges here are null. This will terminate the 
+                    // recursive search immediately. 
                     edge1: connectingEdge1,
                     edge2: connectingEdge2,
                 });
                 routes1.set(edge, route1);
 
+                // I had this duplicated code refactored into a function, but it mainly complicated 
+                // matters. So I rolled that back.
                 const node2 = edge.node2;
                 const node2Edges = node2.edges;
                 const index2 = node2Edges.indexOf(edge);
@@ -106,25 +132,26 @@ export class LongestRoad extends Observable {
             }
             // set the references of routenodes now we have all of them
             const allRoutes = [...Array.from(routes1.values()), ...Array.from(routes2.values())];
-            for (let rn of allRoutes) {
-                if (rn.edge1 !== null) {
-                    const rn1 = routes1.get(rn.edge1);
-                    if (rn1.node !== rn.node) {
-                        rn.route1 = rn1;
+            for (let route of allRoutes) {
+                // below code could be done simpler with a single map
+                if (route.edge1 !== null) {
+                    const rn1 = routes1.get(route.edge1);
+                    if (rn1.node !== route.node) {
+                        route.route1 = rn1;
                     }
-                    const rn2 = routes2.get(rn.edge1);
-                    if (rn2.node !== rn.node) {
-                        rn.route2 = rn2;
+                    const rn2 = routes2.get(route.edge1);
+                    if (rn2.node !== route.node) {
+                        route.route2 = rn2;
                     }
                 }
-                if (rn.edge2 !== null) {
-                    const rn1 = routes1.get(rn.edge2);
-                    if (rn1.node !== rn.node) {
-                        rn.route1 = rn1;
+                if (route.edge2 !== null) {
+                    const rn1 = routes1.get(route.edge2);
+                    if (rn1.node !== route.node) {
+                        route.route1 = rn1;
                     }
-                    const rn2 = routes2.get(rn.edge2);
-                    if (rn2.node !== rn.node) {
-                        rn.route2 = rn2;
+                    const rn2 = routes2.get(route.edge2);
+                    if (rn2.node !== route.node) {
+                        route.route2 = rn2;
                     }
                 }
             }

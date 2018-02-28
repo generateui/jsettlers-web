@@ -52,6 +52,8 @@ export class Game extends Observable {
     }
     calculateLongestRoad() {
         let routeByPlayer = this.longestRoad.calculate(this); // returns <Player, Edges[]>
+
+        // determine all the current winners
         let winningPlayers = new Set();
         let length = 5;
         const isTaken = this.longestRoad.player !== null;
@@ -66,6 +68,7 @@ export class Game extends Observable {
                 winningPlayers.add(player);
             }
         }
+        // from the current winners, determine the actual winner
         let winningPlayer = null;
         if (winningPlayers.size === 1) {
             winningPlayer = winningPlayers.values().next().value;
@@ -74,8 +77,12 @@ export class Game extends Observable {
             const currentWinner = this.longestRoad.player;
             const stillWins = currentWinner !== null && winningPlayers.has(currentWinner);
             if (stillWins) {
+                // other players must have *more* roads to beat the current winner,
+                // which is not the case here. So have the current winner keep LR.
                 winningPlayer = this.longestRoad.player;
             } else if (winningPlayers.has(this.playerOnTurn)) {
+                // The first player on turn can claim LR. If this happens to be the 
+                // player currently on turn, award him LR.
                 winningPlayer = this.playerOnTurn;
             } else {
                 // this happens when:
@@ -84,6 +91,7 @@ export class Game extends Observable {
                 // The player who's turn it is first wins it, as he is able to claim LR first.
                 const index = this.players.indexOf(this.playerOnTurn);
                 const playerCount = this.players.length;
+                // This loops over the players in order of turns
                 for (let i = 0; i < playerCount; i++) {
                     let j = index + i;
                     j = j >= playerCount ? j - playerCount : j;
@@ -105,7 +113,7 @@ export class Game extends Observable {
             winningPlayer === this.longestRoad.player &&
             winningEdges.length !== this.longestRoad.edges.length;
 
-        // a player had it, lost it, and no new winner is present
+        // a player had it and no new winner is present: he lost it
         const lost = winningPlayers.size === 0 && this.longestRoad.player !== null;
 
         // a player took it from another or claimed it first time
