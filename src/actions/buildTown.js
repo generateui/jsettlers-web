@@ -25,6 +25,7 @@ export class BuildTown extends GameAction {
         if (opponentHasSidePieceAtNode) {
             game.calculateLongestRoad();
         }
+        game.phase.buildTown(game, this);
     }
     static fromData(data) {
         const node = Node.fromData(data.getNode());

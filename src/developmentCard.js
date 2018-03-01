@@ -101,6 +101,7 @@ export class Soldier extends DevelopmentCard {
     }
     play(game, player) {
         // TODO: enqueue actions?
+        player.soldiers.push(this);
     }
     get name() { return "Soldier"; }
 }

@@ -96,6 +96,7 @@ JSON.parse = function (data, reviver) {
   }
 }
 
+require("./src/generic/shims");
 require("./src/generic/math.js");
 
 require("./von-grid/OrbitControls.js");

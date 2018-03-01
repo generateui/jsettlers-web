@@ -59,6 +59,9 @@ export class HostAtClient {
                 }
                 action.performServer(this);
                 action.perform(this.game);
+                if (game.queue.matches(action)) {
+                    game.queue.dequeue(action);
+                }
                 this.game.actions.push(action);
                 ok();
             // }

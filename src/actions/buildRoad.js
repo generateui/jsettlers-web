@@ -18,6 +18,7 @@ export class BuildRoad extends GameAction {
         road.addToPlayer(this.player);
         road.addToBoard(game.board);
         game.calculateLongestRoad();
+        game.phase.buildRoad(game, this);
     }
     static fromData(data) {
         const edge = Edge.fromData(data.getEdge())

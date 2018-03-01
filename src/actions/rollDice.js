@@ -49,6 +49,7 @@ export class RollDice extends GameAction {
         for (var [player, production] of this.productions.entries()) {
             player.resources.moveFrom(game.bank.resources, production);
         }
+        game.phase.rollDice(game, this);
     }
     performServer(host) {
         const game = host.game;
