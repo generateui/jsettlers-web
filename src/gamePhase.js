@@ -1,5 +1,9 @@
 import { BuildTown } from "./actions/buildTown";
 import { BuildRoad } from "./actions/buildRoad";
+import { RollDice } from "./actions/rollDice";
+import { PlayDevelopmentCard } from "./actions/playDevelopmentCard";
+import { Town } from "./town";
+import { PlaySoldierOrRollDice, PlayTurnActions, BuildTownThenBuildRoad } from "./expectation";
 
 /** State of the game where certain actions are expected and performed
  * 
@@ -23,7 +27,7 @@ export class GamePhase {
     buildTown(game, buildTown) {}
     // perform gamephase-specific logic for the RollDice action
     rollDice(game, rollDice) {}
-    endTurn(game, endTurn)
+    endTurn(game, endTurn) {}
 }
 export class InitialPlacement extends GamePhase {
     constructor() {
@@ -31,28 +35,14 @@ export class InitialPlacement extends GamePhase {
 
         this.name = "InitialPlacement";
         this.queue = [];
+        this.expectation = null;
     }
     start(game) {
-        const playerAmount = game.players.length;
-        for (let i = 0; i < playerAmount; i++) {
-            const player = game.players[i];
-            const buildTown = new BuildTown();
-            buildTown.player = player;
-            const buildRoad = new BuildRoad();
-            buildRoad.player = player;
-            game.queue.consecutive([buildTown, buildRoad]);
-        }
-        for (let i = playerAmount; i > -1; i--) {
-            const player = game.players[i];
-            const buildTown = new BuildTown();
-            buildTown.player = player;
-            const buildRoad = new BuildRoad();
-            buildRoad.player = player;
-            game.queue.consecutive([buildTown, buildRoad]);
-        }
+        this.expectation = new BuildTownThenBuildRoad(game);
+        game.expectation = this.expectation;
     }
     buildTown(game, buildTown) {
-        if (game.queue.totalActions >= game.players.length) {
+        if (this.expectation.giveResources) {
             const town = buildTown.player.nodePieces.get(buildTown.coord);
             const coords = town.node.coords;
             const hexes = coords.map(coord => game.board.hexes.get(coord));
@@ -64,8 +54,7 @@ export class InitialPlacement extends GamePhase {
         }
     }
     buildRoad(game, buildRoad) {
-        // this action is not yet dequeued, so compare to 1
-        if (game.queue.totalActions === 1) {
+        if (this.expectation.met) {
             game.goToNextPhase();
         }
     }
@@ -86,8 +75,9 @@ export class PlayTurns extends GamePhase {
         this.turns = []; // all played turns
         this.turn = null; // current turn
 
-        this.beforeRollDicePhase = new BeforeDiceRollPhase();
-        this.rollDicePhase = new DiceRollPhase();
+        this.playTurnActions = null;
+        this.beforeRollDicePhase = new BeforeRollDicePhase();
+        this.rollDicePhase = new RollDicePhase();
         this.tradeAndBuildPhase = new TradeAndBuildPhase();
         this.turnPhase = null;
         this.turnPhases = [
@@ -103,16 +93,51 @@ export class PlayTurns extends GamePhase {
         this.turns.push(turn);
         game.playerOnTurn = player;
         this.turnPhase = this.beforeRollDicePhase;
+        game.expectation = new PlaySoldierOrRollDice(game);
+    }
+    buildTown(game, buildTown) {
+        game.bank.resources.moveFrom(buildTown.player.resources, Town.cost);
+    }
+    buildRoad(game, buildTown) {
+        if (this.player.roadBuildingTokens > 0) {
+            this.player.roadBuildingTokens -= 1;
+            if (game.expectation.met) {
+                game.expectation = this.playTurnActions;
+            }
+        } else {
+            game.bank.resources.moveFrom(buildTown.player.resources, Road.cost);
+        }
     }
     playSoldier(game, soldier) {
-        this.turnPhase = this.rollDicePhase;
+        if (this.turnPhase === this.beforeRollDicePhase) {
+            this.turnPhase = this.rollDicePhase;
+        }
     }
     rollDice(game, rollDice) {
+        if (rollDice.die1 + rollDice.die2 !== 7) {
+            this._moveToPlayTurnsPhase(game);
+        }
+    }
+    moveRobber(game, moveRobber) {
+
+    }
+    robPlayer(game, robPlayer) {
+        if (this.turnPhase === this.rollDicePhase) {
+            this._moveToPlayTurnsPhase(game);
+            return;
+        }
+        // soldier played
+        if (game.expectation.met) {
+            game.expectation = this.playTurnActions;
+        }
+    }
+    _moveToPlayTurnsPhase(game) {
         this.turnPhase = this.tradeAndBuildPhase;
+        this.playTurnActions = new PlayTurnActions(game.playerOnTurn, game.player);
+        game.expectation = this.playTurnActions;
     }
     endTurn(game, endTurn) {
-        const player = endTurn.player;
-        const index = game.players.indexOf(game.playerOnTurn);
+        let index = game.players.indexOf(game.playerOnTurn);
         index +=1;
         if (index === game.players.length) {
             index = 0;
@@ -123,10 +148,28 @@ export class PlayTurns extends GamePhase {
         game.playerOnTurn = player;
         this.turns.push(turn);
         this.turnPhase = this.beforeRollDicePhase;
+        game.expectation = new PlaySoldierOrRollDice(game);
+    }
+    offerTrade(game, offerTrade) {
+        game.expectation = new ExpectTradeResponses(game);
+    }
+    acceptOffer(game, acceptOffer) {
+        this._tradeResponse(game, acceptOffer);
+    }
+    rejectOffer(game, rejectOffer) {
+        this._tradeResponse(game, rejectOffer);
+    }
+    counterOffer(game, counterOffer) {
+        this._tradeResponse(game, counterOffer);
+    }
+    _tradeResponse(game, tradeResponse) { // <AcceptOffer | RejectOffer | CounterOffer>
+        if (game.expectation.met) {
+            game.expectation = this.playTurnActions;
+        }
     }
     end(game) {
-        this.turn = null;
-        this.turnPhase = null;
+        // this.turn = null;
+        // this.turnPhase = null;
     }
 }
 export class Ended extends GamePhase {

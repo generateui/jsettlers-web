@@ -1,6 +1,10 @@
 var proto = require("../../data_pb");
 import {GameAction} from "./gameAction.js";
 import {ResourceList, Resource} from "../resource.js";
+import { MoveRobber } from "./moveRobber";
+import { RobPlayer } from "./robPlayer";
+import { LooseResources } from "./looseResources";
+import { LooseResourcesMoveRobberRobPlayer } from "../expectation";
 
 export class Production {
     constructor(playerId, resources) {
@@ -16,7 +20,6 @@ export class RollDice extends GameAction {
         this.productions = productions;
         this.productionByPlayer = new Map(); // <Player, ResourceList>
     }
-
     static createData(player) {
         const action = new proto.GameAction();
         action.setPlayerId(player.id);
@@ -24,7 +27,24 @@ export class RollDice extends GameAction {
         action.setRollDice(rollDice);
         return action;
     }
-
+    static createDataDebug(player, number) {
+        const action = new proto.GameAction();
+        action.setPlayerId(player.id);
+        const rollDice = new proto.RollDice();
+        let die1 = null;
+        let die2 = null;
+        if (number < 8) {
+            die1 = 1;
+            die2 = number - 1;
+        } else {
+            die1 = 6;
+            die2 = number - 6;
+        }
+        rollDice.setDie1(die1);
+        rollDice.setDie2(die2);
+        action.setRollDice(rollDice);
+        return action;
+    }
     static fromData(data) {
         const rollDice = new RollDice();
         rollDice.die1 = data.getDie1();
@@ -46,19 +66,9 @@ export class RollDice extends GameAction {
         }
     }
     perform(game) {
-        for (var [player, production] of this.productions.entries()) {
-            player.resources.moveFrom(game.bank.resources, production);
-        }
-        game.phase.rollDice(game, this);
-    }
-    performServer(host) {
-        const game = host.game;
-        const board = game.board;
-        this.die1 = host.random.intFromOne(6);
-        this.die2 = host.random.intFromOne(6);
         const total = this.die1 + this.die2;
         if (total === 7) {
-            // TODO: enqueue loosecards & moverobber & robplayer
+            game.expectation = new LooseResourcesMoveRobberRobPlayer(game);
         } else {
             // distribute resources. Fair distribution is complicated, as shortages
             // of bank resources should be divided evenly.
@@ -80,11 +90,11 @@ export class RollDice extends GameAction {
             // loop ends, no more resources. Result: B -> 2x timber, A: 1x timber
 
             // create a copy, so when we subtract we dont immediately do it from bank
-            const bankResources = new ResourceList(host.game.bank.resources);
+            const bankResources = new ResourceList(game.bank.resources);
             const affectedHexes = Array.from(game.board.hexes.values())
                 .filter(h => h.chit.number !== null && 
                     h.chit.number === total && 
-                    h.coord !== host.game.board.robber.coord);
+                    h.coord !== game.board.robber.coord);
 
             // first, get total theoretical production and get total theoretical production by player
             const resourceCountByResourceType = new Map(); // <ResourceType, []>
@@ -122,7 +132,6 @@ export class RollDice extends GameAction {
                 this.productionByPlayer.set(player, new ResourceList());
             }
 
-            resources:
             for (var resourceType of resourceTypes) {
                 const resources = new ResourceList(resourceCountByResourceType.get(resourceType));
                 if (game.bank.resources.hasAtLeast(resources)) {
@@ -171,6 +180,18 @@ export class RollDice extends GameAction {
                 }
             }
         }
-
+        for (var [player, production] of this.productions.entries()) {
+            player.resources.moveFrom(game.bank.resources, production);
+        }
+        game.phase.rollDice(game, this);
+    }
+    performServer(host) {
+        const game = host.game;
+        const board = game.board;
+        // this if is here to support debugging. but this should be removed somehow.
+        if (this.die1 === null || this.die1 === undefined) {
+            this.die1 = host.random.intFromOne(6);
+            this.die2 = host.random.intFromOne(6);
+        }
     }
 }

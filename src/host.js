@@ -1,13 +1,12 @@
 var proto = require("../data_pb");
-// var pbjs = require("protobufjs");
-import {GameAction} from "./actions/gameAction.js";
-import {BuildTown} from "./actions/buildTown.js";
-import {BuildRoad} from "./actions/buildRoad.js";
-import {BuildCity} from "./actions/buildCity.js";
-import {BuyDevelopmentCard} from "./actions/buyDevelopmentCard.js";
-import {PlayDevelopmentCard} from "./actions/playDevelopmentCard.js";
-import {RollDice} from "./actions/rollDice.js";
-import {Node} from "./node.js";
+import { GameAction } from "./actions/gameAction.js";
+import { BuildTown } from "./actions/buildTown.js";
+import { BuildRoad } from "./actions/buildRoad.js";
+import { BuildCity } from "./actions/buildCity.js";
+import { BuyDevelopmentCard } from "./actions/buyDevelopmentCard.js";
+import { PlayDevelopmentCard } from "./actions/playDevelopmentCard.js";
+import { RollDice } from "./actions/rollDice.js";
+import { Node } from "./node.js";
 import { YearOfPlenty, Soldier, Monopoly, RoadBuilding, VictoryPoint } from "./developmentCard";
 import { ClientRandom } from "./random";
 import { TradeBank } from "./actions/tradeBank";
@@ -16,6 +15,9 @@ import { RejectOffer } from "./actions/rejectOffer";
 import { CounterOffer } from "./actions/counterOffer";
 import { TradePlayer } from "./actions/tradePlayer";
 import { AcceptOffer } from "./actions/acceptOffer";
+import { MoveRobber } from "./actions/moveRobber";
+import { RobPlayer } from "./actions/robPlayer";
+import { LooseResources } from "./actions/looseResources";
 
 export class HostAtClient {
     constructor(game) {
@@ -58,10 +60,11 @@ export class HostAtClient {
                     action.setReferences(this.game);
                 }
                 action.performServer(this);
-                action.perform(this.game);
-                if (game.queue.matches(action)) {
-                    game.queue.dequeue(action);
+                if (!game.expectation.matches(action)) {
+                    // what to do here?
                 }
+                game.expectation.meet(action);
+                action.perform(this.game);
                 this.game.actions.push(action);
                 ok();
             // }
@@ -85,6 +88,9 @@ export class HostAtClient {
         if (a.hasRejectOffer()) { return RejectOffer.fromData(a.getRejectOffer()); }
         if (a.hasCounterOffer()) { return CounterOffer.fromData(a.getCounterOffer()); }
         if (a.hasTradePlayer()) { return TradePlayer.fromData(a.getTradePlayer()); }
+        if (a.hasMoveRobber()) { return MoveRobber.fromData(a.getMoveRobber()); }
+        if (a.hasRobPlayer()) { return RobPlayer.fromData(a.getRobPlayer()); }
+        if (a.hasLooseResources()) { return LooseResources.fromData(a.getLooseResources()); }
         throw new Error("Unsupported action in HostAtClient");
     }
 }

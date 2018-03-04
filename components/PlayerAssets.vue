@@ -9,6 +9,12 @@
             v-if="showYearOfPlentyDialog" 
             v-on:close="closeYearOfPlentyDialog">
         </year-of-plenty-dialog>
+        <loose-resources-dialog
+            v-if="showLooseResourcesDialog"
+            v-bind:game="game"
+            v-on:looseResources="looseResources"
+            v-bind:selectedResources="selectedResources">
+        </loose-resources-dialog>
         <div id="resources">
             <div 
                 id="resourceType" 
@@ -19,6 +25,7 @@
                     v-for="resource in player.resources.of(resourceType)"  
                     :src="`doc/images/${resource.name}Card.png`"
                     :key="resource.id"
+                    @click="toggleResource(resource)"
                     v-bind:class="{ selected: selectedResources.includes(resource)}" />
             </div>
         </div>
@@ -35,13 +42,16 @@
 <script>
     import MonopolyDialog from './MonopolyDialog.vue';
     import YearOfPlentyDialog from './YearOfPlentyDialog.vue';
+    import LooseResourcesDialog from "./LooseResourcesDialog.vue";
 
     import { Monopoly } from '../src/developmentCard.js';
     import { PlayDevelopmentCard } from "../src/actions/playDevelopmentCard.js";
+    import { LooseResources } from "../src/actions/looseResources";
+    import { ResourceList } from '../src/resource';
 
     export default {
         name: 'player-assets',
-        components: {MonopolyDialog, YearOfPlentyDialog },
+        components: {MonopolyDialog, YearOfPlentyDialog, LooseResourcesDialog },
         props: {
             player: {
                 type: Object
@@ -54,7 +64,10 @@
             },
             game: {
                 type: Object
-            }
+            },
+            showLooseResourcesDialog: {
+                type: Boolean
+            },
         },
         data() {
             return {
@@ -62,6 +75,7 @@
                 showYearOfPlentyDialog: false,
                 developmentCard: null,
                 selectedResources: [],
+                selectResources: false,
             }
         },
         methods: {
@@ -88,6 +102,12 @@
                     vp.player = player;
                     const playVp = PlayDevelopmentCard.createData(player, vp);
                     this.$emit('action', playVp)
+                } else if (typeName === "Soldier") {
+                    const soldier = this.developmentCard;
+                    soldier.player = this.player;
+                    const playSoldier = PlayDevelopmentCard.createData(this.player, soldier);
+                    playSoldier.player = this.player;
+                    this.$emit('action', playSoldier);
                 }
             },
             closeMonopolyDialog(resourceType) {
@@ -112,6 +132,18 @@
                 const playYop = PlayDevelopmentCard.createData(player, yop);
                 this.$emit('action', playYop)
             },
+            toggleResource(resource) {
+                if (this.selectedResources.includes(resource)) {
+                    this.selectedResources.remove(resource);
+                } else {
+                    this.selectedResources.push(resource);
+                }
+            },
+            looseResources() {
+                const resourceList = new ResourceList(this.selectedResources);
+                const looseResources = LooseResources.createData(this.player, resourceList);
+                this.$emit('looseResources', looseResources)
+            }
         }
     }
 </script>

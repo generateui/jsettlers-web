@@ -37,6 +37,7 @@ export class BoardRenderer {
         this.townRenderers = new Map(); // <Node, TownRenderer>
         this.cityRenderers = new Map(); // <Node, CityRenderer>
         this.roadRenderers = new Map(); // <Edge, RoadRenderer>
+        this.renderersForPlayer = new Map(); // <Player, Renderer[]>
         this.robberRenderer = new RobberRenderer(this, this.board.robber);
         this.portPickerRenderer = new PortPickerRenderer(this);
         this.group.add(this.portPickerRenderer.group);
@@ -82,6 +83,7 @@ export class BoardRenderer {
         this.removeTownDeletedSubscription = this.board.towns.deleted(key => {
             const townRenderer = this.townRenderers.get(key);
             this.townRenderers.delete(key);
+            this.renderersForPlayer.get(townRenderer.town.player).remove(townRenderer);
             townRenderer.dispose();
         });
 
@@ -102,20 +104,29 @@ export class BoardRenderer {
             this.edgesGroup.add(edgeRenderer.mesh);
             this.edgeRenderers.set(edge, edgeRenderer);
         }
-        this.removeTownAddedSubscription = this.board.towns.added((key, value) => {
-            var townRenderer = new TownRenderer(this, value);
-            this.townRenderers.set(key, townRenderer);
+        this.removeTownAddedSubscription = this.board.towns.added((node, town) => {
+            var townRenderer = new TownRenderer(this, town);
+            this._addPlayerRenderer(town.player, townRenderer);
+            this.townRenderers.set(node, townRenderer);
         });
-        this.removeCityAddedSubscription = this.board.cities.added((key, value) => {
-            var cityRenderer = new CityRenderer(this, value);
-            this.cityRenderers.set(key, cityRenderer);
+        this.removeCityAddedSubscription = this.board.cities.added((node, city) => {
+            var cityRenderer = new CityRenderer(this, city);
+            this._addPlayerRenderer(city.player, cityRenderer);
+            this.cityRenderers.set(node, cityRenderer);
         });
-        this.removeRoadAddedSubscription = this.board.roads.added((key, value) => {
-            var roadRenderer = new RoadRenderer(this, value);
-            this.roadRenderers.set(key, roadRenderer);
+        this.removeRoadAddedSubscription = this.board.roads.added((edge, road) => {
+            var roadRenderer = new RoadRenderer(this, road);
+            this._addPlayerRenderer(road.player, roadRenderer);
+            this.roadRenderers.set(edge, roadRenderer);
         });
 
         this.scene.paused = false;
+    }
+    _addPlayerRenderer(player, renderer) {
+        if (!this.renderersForPlayer.has(player)) {
+            this.renderersForPlayer.set(player, []);
+        }
+        this.renderersForPlayer.get(player).push(renderer);
     }
     setBoard(board) {
         this.reset();
@@ -168,6 +179,21 @@ export class BoardRenderer {
         for (var hex of hexes) {
             const renderer = this.hexRenderers.get(hex.coord);
             renderer.redify();
+        }
+    }
+    darkenPieces(renderers) {
+        for (let renderer of renderers) {
+            renderer.darken();
+        }
+    }
+    lightenPieces(renderers) {
+        for (let renderer of renderers) {
+            renderer.lighten();
+        }
+    }
+    normalizePieces(renderers) {
+        for (let renderer of renderers) {
+            renderer.normalize();
         }
     }
 
@@ -299,6 +325,7 @@ export class BoardRenderer {
         this.townRenderers = null; // <Node, Town>
         this.cityRenderers = null; // <Node, City>
         this.roadRenderers = null; // <Edge, Road>
+        this.renderersForPlayer = null;
 
         this.nodesGroup = null;
         this.edgesGroup = null;

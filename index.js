@@ -115,11 +115,16 @@ import GameSettings from './components/GameSettings.vue';
 import Attribution from './components/doc/Attribution.vue';
 import VueMarkdown from 'vue-markdown';
 import {BuildTown} from "./src/actions/buildTown.js";
+import {BuildRoad} from "./src/actions/buildRoad.js";
+import {BuildCity} from "./src/actions/buildCity.js";
 import {RejectOffer} from "./src/actions/rejectOffer.js";
 import {AcceptOffer} from "./src/actions/acceptOffer.js";
 import {CounterOffer} from "./src/actions/counterOffer.js";
 import {OfferTrade} from "./src/actions/offerTrade";
 import {TradePlayer} from "./src/actions/tradePlayer";
+import {LooseResources} from "./src/actions/looseResources";
+import {RobPlayer} from "./src/actions/robPlayer";
+import {MoveRobber} from "./src/actions/moveRobber";
 
 const routes = [
   { path: "/", component: Welcome },
@@ -144,6 +149,10 @@ Vue.prototype.AcceptOffer = AcceptOffer;
 Vue.prototype.CounterOffer = CounterOffer;
 Vue.prototype.OfferTrade = OfferTrade;
 Vue.prototype.TradePlayer = TradePlayer;
+Vue.prototype.LooseResources = LooseResources;
+Vue.prototype.RobPlayer = RobPlayer;
+Vue.prototype.MoveRobber = MoveRobber;
+
 
 new Vue({ // eslint-disable-line no-new
   router,

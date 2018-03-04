@@ -27,6 +27,32 @@
                     <button @click="buyDevelopmentCard()">buy devcard</button>
                 </li>
                 <li>
+                    <img src="doc/images/Robber.png" style="height:24px; width: 24px;">
+                    <button @click="moveRobber()">move robber</button>
+                </li>
+                <li>
+                    <img src="doc/images/RobPlayer.png" style="height:24px; width: 24px;">
+                    <select multiple v-model="opponents">
+                        <option v-for="p in game.players" v-bind:value="p" v-bind:key="p.id">{{p.user.name}}</option>
+                    </select>
+                    <button @click="robPlayer()">rob player</button>
+                </li>
+                <li>
+                    <img src="doc/images/RollDice.png" style="height:24px; width: 24px;">
+                    <span>roll dice</span>
+                    <span class="dice-number" @click="rollDice(2)">2</span>
+                    <span class="dice-number" @click="rollDice(3)">3</span>
+                    <span class="dice-number" @click="rollDice(4)">4</span>
+                    <span class="dice-number" @click="rollDice(5)">5</span>
+                    <span class="dice-number" @click="rollDice(6)">6</span>
+                    <span class="dice-number" @click="rollDice(7)">7</span>
+                    <span class="dice-number" @click="rollDice(8)">8</span>
+                    <span class="dice-number" @click="rollDice(9)">9</span>
+                    <span class="dice-number" @click="rollDice(10)">10</span>
+                    <span class="dice-number" @click="rollDice(11)">11</span>
+                    <span class="dice-number" @click="rollDice(12)">12</span>
+                </li>
+                <li>
                     <input type="checkbox" id="check-auto-respond" v-bind:checked="autoRespond">
                     <label for="check-auto-respond">respond to trade offers randomly</label>
                 </li>
@@ -52,6 +78,9 @@
     import { CounterOffer } from '../src/actions/counterOffer';
     import { AcceptOffer } from '../src/actions/acceptOffer';
     import { OfferTrade } from '../src/actions/offerTrade';
+    import { MoveRobber } from '../src/actions/moveRobber';
+    import { RobPlayer } from '../src/actions/robPlayer';
+    import { RollDice } from '../src/actions/rollDice';
 
     const random = new ClientRandom();
 
@@ -72,21 +101,22 @@
             return {
                 player: null,
                 autoRespond: true,
+                opponents: [],
             }
         },
         methods: {
             buildTown: async function() {
-                const behavior = new gb.BuildTown(this.player, this.keyListener);
+                const behavior = new gb.BuildTown(this.player, this.keyListener, true);
                 const createActionData = (player, node) => BuildTown.createData(this.player, node);
                 this.behaveThenAct(behavior, createActionData);
             },
             buildRoad: function() {
-                const behavior = new gb.BuildRoad(this.player, this.keyListener);
+                const behavior = new gb.BuildRoad(this.player, this.keyListener, true);
                 const createAction = (player, edge) => BuildRoad.createData(this.player, edge);
                 this.behaveThenAct(behavior, createAction);
             },
             buildCity: function() {
-                const behavior = new gb.BuildCity(this.player, this.keyListener);
+                const behavior = new gb.BuildCity(this.player, this.keyListener, true);
                 const createAction = (player, node) => BuildCity.createData(this.player, node);
                 this.behaveThenAct(behavior, createAction);
             },
@@ -96,6 +126,20 @@
             },
             playDevelopmentCard: function() {
 
+            },
+            moveRobber: function() {
+                const behavior = new gb.MoveRobber();
+                const createAction = (player, coord) => MoveRobber.createData(player, coord);
+                this.behaveThenAct(behavior, createAction);
+            },
+            robPlayer: function() {
+                const behavior = new gb.PickPlayer(this.opponents);
+                const createAction = (player, opponent) => RobPlayer.createData(player, opponent);
+                this.behaveThenAct(behavior, createAction);
+            },
+            rollDice(number) {
+                const createAction = (player) => RollDice.createDataDebug(player, number);
+                this.act(createAction);
             },
             act: async function(createAction) {
                 try {
@@ -167,5 +211,9 @@
 </script>
 
 <style scoped>
-
+.dice-number {
+    font-weight: bolder;
+    cursor: pointer;
+    margin: 0.2em 0.2em 0.2em 0.2em;
+}
 </style>

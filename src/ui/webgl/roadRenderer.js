@@ -3,6 +3,8 @@ import {Renderer} from "./renderer.js";
 export class RoadRenderer extends Renderer {
     constructor(boardRenderer, road) {
         super();
+
+        this.road = road;
         
         this.boardRenderer = boardRenderer;
 
@@ -21,6 +23,10 @@ export class RoadRenderer extends Renderer {
         this.mesh.userData.structure = this;
         this.boardRenderer.addMesh(box);
     }
+    get player() {
+        return this.road.player;
+    }
+
     dispose() {
         this.mesh.userData.structure = null;
         this.mesh = null;

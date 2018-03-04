@@ -5,8 +5,8 @@ import {Coord3D} from "./coord.js";
 import {Bank} from "./bank.js";
 import { ObservableArray } from "./generic/observableArray.js";
 import { LongestRoad } from "./longestRoad.js";
-import { Queue } from "./queue.js";
-import { InitialPlacement, PlayTurns } from "./gamePhase.js";
+import { InitialPlacement, PlayTurns, Ended } from "./gamePhase.js";
+import { ExpectAnything } from "./expectation";
 
 export class GameSettings {
     constructor(config) {
@@ -29,7 +29,7 @@ export class Game extends Observable {
         this.bank = new Bank();
         this.actions = new ObservableArray();
         this.longestRoad = new LongestRoad();
-        this.queue = new Queue();
+        this.expectation = new ExpectAnything();
 
         this.initialPlacement = new InitialPlacement();
         this.playTurns = new PlayTurns();
@@ -40,6 +40,8 @@ export class Game extends Observable {
             this.ended,
         ];
         this.phase = this.initialPlacement;
+
+        this.makeObservable(["expectation"]);
     }
 
     start() {
@@ -47,7 +49,7 @@ export class Game extends Observable {
     }
 
     goToNextPhase() {
-        const index = this.phases.indexOf(this.phase);
+        let index = this.phases.indexOf(this.phase);
         const newIndex = index += 1;
         const newPhase = this.phases[newIndex];
         this.phase.end(this);

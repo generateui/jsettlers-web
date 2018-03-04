@@ -40,6 +40,11 @@ export class Observable {
             listener(oldValue, newValue);
         }
     }
+    _fireIfChanged(propertyName, oldValue, newValue) {
+        if (oldValue !== newValue) {
+            this._fireChanged(propertyName, oldValue, newValue);
+        }
+    }
     /** Rewrites properties of given names to fire changed events when property is set.
      *  this implementation currently loses any custom getters/setters on an object,
      * so only "this.propertyName = null" declarations work. */

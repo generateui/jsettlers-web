@@ -16,13 +16,30 @@
             <button class="tab-button" @click="doShowActions()">actions</button>
             <button class="tab-button" @click="doShowChat()">chat</button>
             <button class="tab-button" @click="doShowPerformAction()">action</button>
+            <button class="tab-button" @click="doShowQueue()">queue</button>
         </div>
         <div id="tab-content">
             <action-log 
                 v-if="showActions" 
                 id="action-log" 
-                v-bind:actions="game.actions"></action-log>
+                v-bind:actions="game.actions.array"></action-log>
             <div v-if="showChats" id="chats"></div>
+            <div v-if="showQueue" id="queue">
+                <!-- <ul>
+                    <li v-for="item in game.queue.queuedActions">
+                        <div v-if="item instanceof QueuedAction">
+                            {{item.action.constructor.name}} - {{item.action.player.user.name}}
+                            <span v-if="item.optional"> (optional)</span>
+                        </div>
+                        <ul v-if="item instanceof Unordered">
+                            <li v-for="nested in item.queuedActions">
+                                {{nested.action.constructor.name}} - {{nested.action.player.user.name}}
+                                <span v-if="nested.optional"> (optional)</span>
+                            </li>
+                        </ul>
+                    </li>
+                </ul> -->
+            </div>
             <debug-perform-actions 
                 v-if="showPerformActions" 
                 v-bind:game="game" 
@@ -42,10 +59,15 @@
             v-on:tradebank="openTradeBankDialog"
             v-bind:keyListener="keyListener"></actions>
         <player-assets 
-            v-bind:game="game" 
-            v-bind:player="game.player" 
+            v-bind:game="game"
+            v-bind:player="game.player"
             v-bind:update="update"
-            v-on:action="performAction"></player-assets>
+            v-bind:showLooseResourcesDialog="showLooseResourcesDialog"
+            v-on:looseResources="looseResources"
+            v-on:action="performAction">
+        </player-assets>
+        <actions-message
+            v-bind:game="game"></actions-message>
     </div>
 
   </div>
@@ -61,6 +83,7 @@
     import DiceView from "./DiceView.vue";
     import DebugPerformActions from "./DebugPerformActions.vue";
     import TradeBankDialog from "./TradeBankDialog.vue";
+    import ActionsMessage from "./ActionsMessage.vue";
 
     import {HostAtClient} from "../src/host.js";
     import {Game, GameSettings} from "../src/game.js";
@@ -72,6 +95,11 @@
     import {KeyListener} from "../src/ui/keyListener.js";
     import * as bb from "../src/ui/boardBehavior.js";
     import * as gb from "../src/ui/gameBehavior.js";
+    import { LooseResources } from '../src/actions/looseResources';
+    import { RobPlayer } from '../src/actions/robPlayer';
+    import { MoveRobber } from '../src/actions/moveRobber';
+    import { BuildTown } from '../src/actions/buildTown';
+    import { BuildRoad } from '../src/actions/buildRoad';
 
     var boardRenderer = null;
     var host = null;
@@ -91,7 +119,8 @@
     export default {
         name: 'game',
         components: {
-            PlayerInfo, PlayerAssets, Actions, BankView, ActionLog, DiceView, DebugPerformActions, TradeBankDialog
+            PlayerInfo, PlayerAssets, Actions, BankView, ActionLog, DiceView, 
+            DebugPerformActions, TradeBankDialog, ActionsMessage
         },
         props: {
             settings: {
@@ -110,29 +139,40 @@
                 showActions: false,
                 showChat: false,
                 showPerformActions: true,
+                showQueue: false,
                 game: null,
                 selectedPlayer: null,
                 host: null,
                 keyListener: new KeyListener(),
                 showTradeBankDialog: false,
                 update: false,
+                showLooseResourcesDialog: true,
             }
         },
         methods: {
             doShowActions: function() {
-                this.$data.showActions = true;
-                this.$data.showChat = false;
-                this.$data.showPerformActions = false;
+                this.showActions = true;
+                this.showChat = false;
+                this.showPerformActions = false;
+                this.showQueue = false;
             },
             doShowChat: function() {
-                this.$data.showActions = false;
-                this.$data.showChat = true;
-                this.$data.showPerformActions = false;
+                this.showActions = false;
+                this.showChat = true;
+                this.showPerformActions = false;
+                this.showQueue = false;
             },
             doShowPerformAction: function() {
-                this.$data.showActions = false;
-                this.$data.showChat = false;
-                this.$data.showPerformActions = true;
+                this.showActions = false;
+                this.showChat = false;
+                this.showPerformActions = true;
+                this.showQueue = false;
+            },
+            doShowQueue() {
+                this.showActions = false;
+                this.showChat = false;
+                this.showPerformActions = false;
+                this.showQueue = true;
             },
             openTradeBankDialog: function() {
                 this.showTradeBankDialog = true;
@@ -145,6 +185,11 @@
                 this.performAction(action);
                 this.showTradeBankDialog = false;
                 this.$forceUpdate();
+                this.update = !this.update;
+            },
+            looseResources: function(action) {
+                this.showLooseResourcesDialog = false;
+                this.performAction(action);
                 this.update = !this.update;
             },
             behaviorChanged: function(behavior) {
@@ -181,6 +226,37 @@
                 } finally {
                     boardRenderer.behavior = new bb.NoBehavior();
                 }
+            },
+            forceYouActionIfNeeded(action) {
+                if (action === null) {
+                    return;
+                }
+                if (action.isTradeResponse) {
+                    // popup traderesponse dialog
+                }
+                if (action instanceof BuildTown) {
+                    const behavior = new gb.BuildTown(this.player, this.keyListener);
+                    const createActionData = (player, node) => BuildTown.createData(this.player, node);
+                    this.behaveThenAct(behavior, createActionData);
+                }
+                if (action instanceof BuildRoad) {
+                    const behavior = new gb.BuildRoad(this.player, this.keyListener);
+                    const createAction = (player, edge) => BuildRoad.createData(this.player, edge);
+                    this.behaveThenAct(behavior, createAction);
+                }
+                if (action instanceof MoveRobber) {
+                    const behavior = new gb.MoveRobber();
+                    const createAction = (player, coord) => MoveRobber.createData(player, coord);
+                    this.behaveThenAct(behavior, createAction);
+                }
+                if (action instanceof RobPlayer) {
+                    const behavior = new gb.PickPlayer(this.opponents);
+                    const createAction = (player, opponent) => RobPlayer.createData(player, opponent);
+                    this.behaveThenAct(behavior, createAction);
+                }
+                if (action instanceof LooseResources) {
+                    this.showLooseResourcesDialog = true;
+                }
             }
         },
         created: function() {
@@ -209,7 +285,8 @@
                 playerId++;
             }
             game.player = player;
-            this.$data.game = game;
+            game.playerOnTurn = player;
+            this.game = game;
             window.game = game; // nice for debugging
             game.actions.added(async item => {
                 if (item instanceof RollDice) {
@@ -233,18 +310,33 @@
         },
         mounted: function() {
             var brEl = document.getElementById("game-board-renderer");
-            const game = this.$data.game;
+            const game = this.game;
             boardRenderer = new BoardRenderer(brEl, game.board);
-            this.$data.host = new HostAtClient(game);
+            this.host = new HostAtClient(game);
 
-            game.actions.added(item => {
+            this.removeActionAddedHandler = game.actions.added(item => {
                 for (var player of game.players) {
                     this.$refs["player" + player.id][0].showAction(item);
                 }
             });
+            const that = this;
+            this.removeExpectationChangedHandler = game.expectationChanged((oldExpectation, newExpectation) => {
+                if (that.removeYouActionChangedHandler !== undefined){
+                    that.removeYouActionChangedHandler();
+                }
+                that.removeYouActionChangedHandler = game.expectation.youActionChanged((oldYouAction, newYouAction) => {
+                    that.forceYouActionIfNeeded(newYouAction);
+                });
+                that.forceYouActionIfNeeded(newExpectation.youAction);
+            });
         },
         destroyed: function() {
             boardRenderer.dispose();
+            this.removeExpectationChangedHandler();
+            this.removeActionAddedHandler();
+            if (this.removeYouActionChangedHandler !== undefined){
+                this.removeYouActionChangedHandler();
+            }
         }
     }
 </script>
@@ -303,5 +395,10 @@
     height: 100%;
     width: 100%;
 }
-
+#queue > ul, queue > li {
+    padding-left: 1em;
+}
+#queue {
+    padding-left: 1em;
+}
 </style>

@@ -8,6 +8,7 @@ export class OfferTrade extends GameAction {
         this.responses = new Map(); // <Player, TradeResponse (RejectOffer|AcceptOffer|CounterOffer)>
     }
     perform(game) {
+        game.phase.offerTrade(game, this);
     }
     static createData(player, offered, wanted) {
         const offerTrade = new proto.OfferTrade();

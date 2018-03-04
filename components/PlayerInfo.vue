@@ -66,7 +66,6 @@
 <script>
     import Popper from 'vue-popperjs';
     import PopperJs from "../node_modules/popper.js/dist/esm/popper.js";
-    // import timer from "../src/ui/timer.js";
     import { RollDice } from '../src/actions/rollDice';
 
     const timer = ms => new Promise(result => setTimeout(result, ms));

@@ -245,10 +245,22 @@ export class ResourceList {
         }
         return amount;
     }
+    get halfCount() {
+        return Math.floor(this.length / 2);
+    }
     toArray() {
         var result = [];
         for (var resourceType of this.types) {
             result = result.concat(this.of(resourceType));
+        }
+        return result;
+    }
+    toResourceTypeArray() {
+        var result = [];
+        for (var resourceType of this.types) {
+            for(var resource of this.of(resourceType)) {
+                result.push(resource.type);
+            }
         }
         return result;
     }

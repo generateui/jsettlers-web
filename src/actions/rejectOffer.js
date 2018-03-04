@@ -5,6 +5,9 @@ export class RejectOffer extends GameAction {
     constructor() {
         super();
     }
+    get isTradeResponse() {
+        return true;
+    }
     perform(game) {
         const tradeOffer = game.getActionById(this.tradeOfferId);
         tradeOffer.responses.set(this.player, this);

@@ -23,7 +23,7 @@ export class Player extends Observable {
         this.roadBuildingTokens = 0;
         this.resources = [{}, {}, {}, {}, {}, {}, {}, {}];
         this.victoryPoints = [];
-        this.solders = [];
+        this.soldiers = [];
         this.stock = new Stock();
         this.ports = new PortList([new Any4To1Port()]);
         this.towns = new Map(); // <Node, Town>

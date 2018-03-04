@@ -1,3 +1,6 @@
+// Object.prototype.equalsType = function(other) {
+    // return this.constructor.name === other.constructor.name;
+// };
 String.prototype.hashCode = function() {
     var hash = 0, i, charCode;
     if (this.length === 0) {
@@ -44,8 +47,8 @@ Array.prototype.removeIf = function(conditionFunction) {
 };
 
 Set.prototype.difference = function(setB) {
-    var difference = new Set(this);
-    for (var item of setB) {
+    let difference = new Set(this);
+    for (let item of setB) {
         difference.delete(item);
     }
     return difference;

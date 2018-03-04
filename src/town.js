@@ -1,3 +1,6 @@
+var proto = require("../data_pb.js");
+import { ResourceList } from "./resource";
+
 export class Town {
     constructor(player, node) {
         this.node = node;
@@ -7,6 +10,14 @@ export class Town {
     }
     produce(hex) {
         return [hex.resourceType];
+    }
+    static cost() {
+        return new ResourceList([
+            proto.ResourceType.TIMBER,
+            proto.ResourceType.WHEAT,
+            proto.ResourceType.SHEEP,
+            proto.ResourceType.BRICK,
+        ]);
     }
     addToPlayer(player) {
         player.towns.set(this.node, this);
