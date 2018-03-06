@@ -125,6 +125,7 @@ import {TradePlayer} from "./src/actions/tradePlayer";
 import {LooseResources} from "./src/actions/looseResources";
 import {RobPlayer} from "./src/actions/robPlayer";
 import {MoveRobber} from "./src/actions/moveRobber";
+import {InitialPlacement, Finished, PlayTurns} from "./src/gamePhase";
 
 const routes = [
   { path: "/", component: Welcome },
@@ -152,6 +153,9 @@ Vue.prototype.TradePlayer = TradePlayer;
 Vue.prototype.LooseResources = LooseResources;
 Vue.prototype.RobPlayer = RobPlayer;
 Vue.prototype.MoveRobber = MoveRobber;
+Vue.prototype.InitialPlacement = InitialPlacement;
+Vue.prototype.Finished = Finished;
+Vue.prototype.PlayTurns = PlayTurns;
 
 
 new Vue({ // eslint-disable-line no-new

@@ -169,7 +169,7 @@ export class PlayTurns extends GamePhase {
         }
     }
 }
-export class Ended extends GamePhase {
+export class Finished extends GamePhase {
     constructor() {
         super();
     }

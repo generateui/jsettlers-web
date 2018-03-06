@@ -42,6 +42,9 @@
             <img src="doc/images/EndTurn48.png" />
         </div>
         <dice-view id="dice-view" class="build-button" v-on:rolldice="rollDice" v-bind:dice="dice"></dice-view>
+        <game-phases-view id="game-phases-view"
+            v-bind:game="game">
+        </game-phases-view>
         <trade-player-dialog 
             v-if="showTradePlayerDialog" 
             v-on:action="action"
@@ -56,11 +59,12 @@
     import DiceView from "./DiceView.vue";
     import TradeBankDialog from "./TradeBankDialog.vue";
     import TradePlayerDialog from './TradePlayerDialog.vue';
+    import GamePhasesView from './GamePhasesView.vue';
     import {Dice} from "../src/dice.js";
 
     export default {
         components: {
-            DiceView, TradeBankDialog, TradePlayerDialog
+            DiceView, TradeBankDialog, TradePlayerDialog, GamePhasesView
         },
         props: {
             game: {
@@ -109,7 +113,7 @@
 #actions {
     display: grid;
     height: 64px;
-    grid-template-columns: 110px repeat(8, 48px) auto;
+    grid-template-columns: 110px repeat(8, 48px) 10em;
     grid-template-rows: repeat(9, 64px);
     grid-column-gap: 1em;
 }
@@ -268,5 +272,8 @@
 #dice-view {
     grid-column-start: 1;
     grid-row-start: 1;
+}
+#game-phases-view {
+    grid-column-start: 10;
 }
 </style>
