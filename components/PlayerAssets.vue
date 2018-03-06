@@ -15,27 +15,25 @@
             v-on:looseResources="looseResources"
             v-bind:selectedResources="selectedResources">
         </loose-resources-dialog>
-        <div id="resources">
-            <div 
-                id="resourceType" 
+        <div id="all">
+            <template 
+                class="resource-type" 
                 v-if="player.resources.hasOf(resourceType)"
-                v-for="resourceType in player.resources.types"
-                :key="resourceType">
-                <img 
-                    v-for="resource in player.resources.of(resourceType)"  
-                    :src="`doc/images/${resource.name}Card.png`"
-                    :key="resource.id"
-                    @click="toggleResource(resource)"
-                    v-bind:class="{ selected: selectedResources.includes(resource)}" />
+                v-for="resourceType in player.resources.types">
+                <div class="wrapper" v-for="resource in player.resources.of(resourceType)">
+                    <img class="resource"
+                        :src="`doc/images/${resource.name}Card.png`"
+                        :key="resource.id"
+                        @click="toggleResource(resource)"
+                        v-bind:class="{ selected: selectedResources.includes(resource)}" />
+                </div>
+            </template>
+            <div class="wrapper" v-for="developmentCard in player.developmentCards">
+                <img class="development-card"  
+                    :src="`doc/images/${developmentCard.name}.png`"
+                    @dblclick="playDevelopmentCard(developmentCard)" />
             </div>
         </div>
-        <div id="developmentCards">
-            <img v-for="developmentCard in player.developmentCards" 
-                :src="`doc/images/${developmentCard.name}.png`"
-                @dblclick="playDevelopmentCard(developmentCard)" />
-        </div>
-        <div id="victoryPoints"></div>
-        <div id="ports"></div>
     </div>
 </template>
 
@@ -151,39 +149,41 @@
 
 <style scoped>
 #player-assets {
-    display: inline-flex;
     background-color: black;
-    padding-left: 67px;
+    padding-right: 0.5em;
+    padding-left: 0.5em;
+    padding-top: 0.5em;
 }
-#resourceType {
-    padding-left: 100px;
-    display: inline-flex;
+#all {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
 }
-#resourceType img {
-    margin-left: -96px;
+.wrapper:last-child {
+    flex: 0 0 auto;
+}
+.wrapper {
+    flex: 1 1 0;
+    min-width: 0;
+}
+.resource {
     height: 101px;
     width: 63px;
 }
-#resourceType img:hover {
+img {
+    min-width: 0;
+    height: 101px;
+    width: 63px;
+}
+.resource:hover {
     transform: translate(0, -0.5em);
+}
+.development-card:hover {
+    transform: translate(0, -1em);
 }
 .selected, .selected:hover {
     transform: translate(0, -2em) !important;
 }
-#developmentCards {
-    /* margin-left: 37px; */
-    right: 0;
-    margin: 0;
-    padding: 0;
-    height: 101px;
-    position: absolute;
-}
-    #developmentCards img {
-        /* margin-left: -90px; */
-        height: 101px;
-        width: 63px;
-    }
-    #developmentCards img:hover {
-        transform: translate(0, -1em);
-    }
 </style>

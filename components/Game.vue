@@ -361,7 +361,7 @@
   display: flex;
   flex: auto auto auto auto;
   flex-direction: column;
-  background-color: black;;
+  background-color: black;
 }
 #players {
     flex: 0 0 auto;
@@ -391,6 +391,7 @@
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
+  min-width: 0; /* nested flexboxes need this */
 }
 #game-board-renderer {
     top: 0;

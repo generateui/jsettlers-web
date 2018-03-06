@@ -17,10 +17,11 @@
 </script>
 
 <style scoped>
-#message{
+#message {
     color: white;
     font-size: 16px;
     margin: 0.25em;
+    padding-left: 0.5em;
 }
 #you-message {
     font-weight: bold;
@@ -28,5 +29,8 @@
 }
 #opponents-message {
     color: #aaaaaa;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 </style>
