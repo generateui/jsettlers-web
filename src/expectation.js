@@ -44,6 +44,23 @@ export class Expectation extends Observable {
         let namesArray = Array.from(names);
         return namesArray.join(", ");
     }
+    _fireIfChanged(propertyName, oldValue, newValue) {
+        const bothNull = oldValue === null && newValue === null;
+        if (bothNull) {
+            return;
+        }
+        const eitherNull = oldValue !== null && newValue === null ||
+            oldValue === null && newValue !== null;
+        if (eitherNull) {
+            this._fireChanged(propertyName, oldValue, newValue);
+            return;
+        }
+        const typeChanged = oldValue.constructor.name !== newValue.constructor.name;
+        if (!typeChanged) {
+            this._fireChanged(propertyName, oldValue, newValue);
+        }
+    }
+
 }
 /** for debugging purposes */
 export class ExpectAnything extends Expectation {
@@ -305,11 +322,14 @@ export class LooseResourcesMoveRobberRobPlayer extends Expectation {
         if (!this._allPlayersLostResources) {
             const isUnlucky = this.unlucky.has(this.player);
             const notLostCards = !this.lostResources.has(this.player);
-            return new LooseResources();
+            if (isUnlucky && notLostCards) {
+                return new LooseResources();
+            }
+            return null;
         }
         return this.moveRobberThenRobPlayer.youAction;
     }
-    matches(game, action) {
+    matches(action) {
         if (this._allPlayersLostResources) {
             return this.moveRobberThenRobPlayer.matches(action);
         }

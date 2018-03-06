@@ -21,13 +21,19 @@ export class GamePhase {
     start(game) {}
     // cleanup any state and resources of this game phase
     end(game) {}
-    // perform gamephase-specific logic for the BuildRoad action
+    /** Below methods should be implemented when GamePhase-specific logic must be
+     * performed for the action */
     buildRoad(game, buildRoad) {}
-    // perform gamephase-specific logic for the BuildTown action
     buildTown(game, buildTown) {}
-    // perform gamephase-specific logic for the RollDice action
     rollDice(game, rollDice) {}
     endTurn(game, endTurn) {}
+    playSoldier(game, soldier) {} 
+    robPlayer(game, robPlayer) {}
+
+    offerTrade(game, offerTrade) {}
+    acceptOffer(game, acceptOffer) {}
+    rejectOffer(game, rejectOffer) {}
+    counterOffer(game, counterOffer) {}
 }
 export class InitialPlacement extends GamePhase {
     constructor() {
@@ -57,8 +63,6 @@ export class InitialPlacement extends GamePhase {
         if (this.expectation.met) {
             game.goToNextPhase();
         }
-    }
-    end(game) {
     }
 }
 /** Phase in the game where players play turns.
@@ -118,15 +122,12 @@ export class PlayTurns extends GamePhase {
             this._moveToPlayTurnsPhase(game);
         }
     }
-    moveRobber(game, moveRobber) {
-
-    }
     robPlayer(game, robPlayer) {
         if (this.turnPhase === this.rollDicePhase) {
             this._moveToPlayTurnsPhase(game);
             return;
         }
-        // soldier played
+        // soldier played in playturns phase, so only move back
         if (game.expectation.met) {
             game.expectation = this.playTurnActions;
         }
@@ -167,10 +168,6 @@ export class PlayTurns extends GamePhase {
             game.expectation = this.playTurnActions;
         }
     }
-    end(game) {
-        // this.turn = null;
-        // this.turnPhase = null;
-    }
 }
 export class Ended extends GamePhase {
     constructor() {
@@ -204,13 +201,4 @@ export class Turn {
         this.player = player;
         this.nunmber = number; // 1-based index
     }
-}
-
-/**
- * Playing
- * Waiting for player to connect
- * 
- */
-class GameState {
-
 }

@@ -11,6 +11,7 @@ export class RejectOffer extends GameAction {
     perform(game) {
         const tradeOffer = game.getActionById(this.tradeOfferId);
         tradeOffer.responses.set(this.player, this);
+        game.phase.rejectOffer(game, this);
     }
     static createData(player, tradeOffer, reason) {
         const rejectOffer = new proto.RejectOffer();

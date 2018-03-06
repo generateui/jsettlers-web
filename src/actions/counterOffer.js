@@ -11,6 +11,7 @@ export class CounterOffer extends GameAction {
     perform(game) {
         const tradeOffer = game.getActionById(this.tradeOfferId);
         tradeOffer.responses.set(this.player, this);
+        game.phase.counterOffer(game, this);
     }
     static createData(player, tradeOffer, offered, wanted) {
         const counterOffer = new proto.CounterOffer();

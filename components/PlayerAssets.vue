@@ -142,6 +142,7 @@
             looseResources() {
                 const resourceList = new ResourceList(this.selectedResources);
                 const looseResources = LooseResources.createData(this.player, resourceList);
+                this.selectedResources.length = 0;
                 this.$emit('looseResources', looseResources)
             }
         }

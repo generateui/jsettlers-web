@@ -6,7 +6,7 @@ import { ResourceList } from "../resource.js";
 
 /** Trade with a player
  *  1. Player on turn offers a trade (TradeOffer)
- *  2. Opponents respond: Accept, Reject, Counter
+ *  2. Opponents respond: Accept | Reject | Counter
  *  3. Player chooses an Accept or Counter
  *  4. TradePlayer is send with TradeOffer and Response (Accept|Counter) */
 export class TradePlayer extends GameAction {

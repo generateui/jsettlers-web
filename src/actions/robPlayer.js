@@ -14,6 +14,7 @@ export class RobPlayer extends GameAction {
         const stolen = new ResourceList();
         stolen.add(this.resourceType);
         this.player.resources.moveFrom(this.opponent.resources, stolen);
+        game.phase.robPlayer(game, this);
     }
     performServer(host) {
         const index = host.random.intFromZero(this.opponent.resources.length - 1);

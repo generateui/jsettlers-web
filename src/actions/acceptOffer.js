@@ -11,6 +11,7 @@ export class AcceptOffer extends GameAction {
     perform(game) {
         const tradeOffer = game.getActionById(this.tradeOfferId);
         tradeOffer.responses.set(this.player, this);
+        game.phase.acceptOffer(game, this);
     }
     static createData(player, tradeOffer) {
         const acceptOffer = new proto.AcceptOffer();

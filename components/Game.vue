@@ -146,7 +146,7 @@
                 keyListener: new KeyListener(),
                 showTradeBankDialog: false,
                 update: false,
-                showLooseResourcesDialog: true,
+                showLooseResourcesDialog: false,
             }
         },
         methods: {
@@ -188,7 +188,7 @@
                 this.update = !this.update;
             },
             looseResources: function(action) {
-                this.showLooseResourcesDialog = false;
+                this.$data.showLooseResourcesDialog = false;
                 this.performAction(action);
                 this.update = !this.update;
             },
