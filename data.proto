@@ -107,8 +107,11 @@ message RollDice {
 		int32 player_id = 1;
 		repeated ResourceType produce = 2;
 	}
-	int32 die1 = 1;
-	int32 die2 = 2;
+	message Dice {
+		int32 die1 = 1;
+		int32 die2 = 2;
+	}
+	Dice dice = 2;
 	repeated Production productions = 3;
 }
 message OfferTrade {
@@ -148,6 +151,7 @@ message RobPlayer {
 message MoveRobber {
 	Coord coord = 1;
 }
+message EndTurn { }
 // a client requests to perform a game action
 message GameActionRequest {
 	int32 request_id = 1; // client-generated id to match response with request to update state
@@ -167,6 +171,7 @@ message GameActionRequest {
 		LooseResources loose_resources = 14;
 		RobPlayer rob_player = 15;
 		MoveRobber move_robber = 16;
+		EndTurn end_turn = 17;
 	}
 }
 message GameAction {
@@ -193,6 +198,7 @@ message GameAction {
 		LooseResources loose_resources = 20;
 		RobPlayer rob_player = 21;
 		MoveRobber move_robber = 22;
+		EndTurn end_turn = 23;
 	}
 }
 message DevelopmentCard {

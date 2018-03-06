@@ -91,6 +91,7 @@ export class HostAtClient {
         if (a.hasMoveRobber()) { return MoveRobber.fromData(a.getMoveRobber()); }
         if (a.hasRobPlayer()) { return RobPlayer.fromData(a.getRobPlayer()); }
         if (a.hasLooseResources()) { return LooseResources.fromData(a.getLooseResources()); }
+        if (a.hasEndTurn()) { return EndTurn.fromData(a.getEndTurn()); }
         throw new Error("Unsupported action in HostAtClient");
     }
 }

@@ -13,10 +13,35 @@ export class Production {
         this.player = null;
     }
 }
+export class Dice {
+    constructor(die1, die2) {
+        this.die1 = die1;
+        this.die2 = die2;
+    }
+    get total() {
+        return this.die1 + this.die2;
+    }
+    static fromData(data) {
+        return new Dice(data.getDie1(), data.getDie2());
+    }
+    static createData(die1, die2) {
+        const dice = new proto.RollDice.Dice();
+        dice.setDie1(die1);
+        dice.setDie2(die2);
+        return dice;
+    }
+    get data() {
+        const dice = new proto.RollDice.Dice();
+        dice.setDie1(this.die1);
+        dice.setDie2(this.die2);
+        return dice;
+    }
+}
 export class RollDice extends GameAction {
     constructor(productions) {
         super();
 
+        this.dice = null;
         this.productions = productions;
         this.productionByPlayer = new Map(); // <Player, ResourceList>
     }
@@ -40,15 +65,13 @@ export class RollDice extends GameAction {
             die1 = 6;
             die2 = number - 6;
         }
-        rollDice.setDie1(die1);
-        rollDice.setDie2(die2);
+        rollDice.setDice(Dice.createData(die1, die2));
         action.setRollDice(rollDice);
         return action;
     }
     static fromData(data) {
         const rollDice = new RollDice();
-        rollDice.die1 = data.getDie1();
-        rollDice.die2 = data.getDie2();
+        rollDice.dice = Dice.fromData(data.getDice());
         const productions = [];
         for (var production of data.getProductionsList()) {
             const playerId = production.getPlayerId();
@@ -66,8 +89,7 @@ export class RollDice extends GameAction {
         }
     }
     perform(game) {
-        const total = this.die1 + this.die2;
-        if (total === 7) {
+        if (this.dice.total === 7) {
             game.expectation = new LooseResourcesMoveRobberRobPlayer(game);
         } else {
             // distribute resources. Fair distribution is complicated, as shortages
@@ -103,8 +125,8 @@ export class RollDice extends GameAction {
             const players = new Set();
             for (let hex of affectedHexes) {
                 for (let node of hex.coord.nodes) {
-                    if (board.producersByNode.has(node)) {
-                        const producer = board.producersByNode.get(node);
+                    if (game.board.producersByNode.has(node)) {
+                        const producer = game.board.producersByNode.get(node);
                         const resourceType = hex.resourceType;
                         resourceTypes.add(resourceType);
                         const player = producer.player;
@@ -183,15 +205,15 @@ export class RollDice extends GameAction {
                 player.resources.moveFrom(game.bank.resources, production);
             }
         }
+        game.dice = this.dice;
         game.phase.rollDice(game, this);
     }
     performServer(host) {
-        const game = host.game;
-        const board = game.board;
         // this if is here to support debugging. but this should be removed somehow.
-        if (this.die1 === null || this.die1 === undefined) {
-            this.die1 = host.random.intFromOne(6);
-            this.die2 = host.random.intFromOne(6);
+        if (this.dice === null) {
+            const die1 = host.random.intFromOne(6);
+            const die2 = host.random.intFromOne(6);
+            this.dice = new Dice(die1, die2);
         }
     }
 }

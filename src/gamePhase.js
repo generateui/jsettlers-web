@@ -118,7 +118,7 @@ export class PlayTurns extends GamePhase {
         }
     }
     rollDice(game, rollDice) {
-        if (rollDice.die1 + rollDice.die2 !== 7) {
+        if (rollDice.dice.total !== 7) {
             this._moveToPlayTurnsPhase(game);
         }
     }

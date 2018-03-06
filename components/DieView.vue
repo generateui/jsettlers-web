@@ -18,36 +18,36 @@
         name: 'die-view',
         props: {
             die: {
-                type: Object
+                type: Number
             }
         },
         methods: {
             showLeftTop: function() {
-                const n = this.$props.die.number;
+                const n = this.die;
                 return n === 2 || n === 3 || n === 4 || n === 5 || n === 6;
             },
             showLeftCenter: function() {
-                const n = this.$props.die.number;
+                const n = this.die;
                 return n === 6;
             },
             showLeftBottom: function() {
-                const n = this.$props.die.number;
+                const n = this.die;
                 return n === 4 || n === 5 || n === 6;
             },
             showCenter: function() {
-                const n = this.$props.die.number;
+                const n = this.die;
                 return n === 1 || n === 3 || n === 5;
             },
             showRightTop: function() {
-                const n = this.$props.die.number;
+                const n = this.die;
                 return n === 4 || n === 5 || n === 6;
             },
             showRightCenter: function() {
-                const n = this.$props.die.number;
+                const n = this.die;
                 return n === 6;
             },
             showRightBottom: function() {
-                const n = this.$props.die.number;
+                const n = this.die;
                 return n === 2 || n === 3 || n === 4 || n === 5 || n === 6;
             },
         }

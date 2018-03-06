@@ -38,7 +38,7 @@
         <div id="trade-bank" class="build-button" @click="tradeBank">
             <img src="doc/images/TradeBank48.png" />
         </div>
-        <div id="end-turn" class="build-button">
+        <div id="end-turn" class="build-button" @click="endTurn">
             <img src="doc/images/EndTurn48.png" />
         </div>
         <dice-view id="dice-view" class="build-button" v-on:rolldice="rollDice" v-bind:dice="dice"></dice-view>
@@ -60,7 +60,6 @@
     import TradeBankDialog from "./TradeBankDialog.vue";
     import TradePlayerDialog from './TradePlayerDialog.vue';
     import GamePhasesView from './GamePhasesView.vue';
-    import {Dice} from "../src/dice.js";
 
     export default {
         components: {
@@ -77,7 +76,7 @@
         name: 'actions',
         data() {
             return {
-                dice: new Dice(),
+                dice: game.dice,
                 showTradeBankDialog: false,
                 showTradePlayerDialog: false,
             }
@@ -101,6 +100,9 @@
             },
             rollDice: function() {
                 this.$emit("rolldice");
+            },
+            endTurn: function() {
+                this.$emit("endTurn");
             },
             openTradePlayerDialog: function() {
                 this.showTradePlayerDialog = !this.showTradePlayerDialog;

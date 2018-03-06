@@ -8,6 +8,7 @@ import { LongestRoad } from "./longestRoad.js";
 import { InitialPlacement, PlayTurns, Finished } from "./gamePhase.js";
 import { ExpectAnything } from "./expectation";
 import { LargestArmy } from "./actions/largestArmy.js";
+import { Dice } from "./actions/rollDice.js";
 
 export class GameSettings {
     constructor(config) {
@@ -21,9 +22,8 @@ export class Game extends Observable {
     constructor() {
         super();
 
-        this.robber = new Robber(Coord3D.center);
         this.players = [];
-        this.player = null; // the player at the front-end
+        this.player = null; // the player at the front-end/client
         this.playerOnTurn = null; // the player whose turn it is
         this.board = null;
         this.developmentCards = []; // TODO: observable array
@@ -32,6 +32,7 @@ export class Game extends Observable {
         this.longestRoad = new LongestRoad();
         this.largestArmy = new LargestArmy();
         this.expectation = new ExpectAnything();
+        this.dice = new Dice(6, 6); // keep las tolled dice for convenience
 
         this.initialPlacement = new InitialPlacement();
         this.playTurns = new PlayTurns();

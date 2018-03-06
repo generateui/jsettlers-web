@@ -56,6 +56,7 @@
             v-on:behaveThenAct="behaveThenAct" 
             v-on:action="performAction"
             v-on:rolldice="rollDice"
+            v-on:endTurn="endTurn"
             v-on:tradebank="openTradeBankDialog"
             v-bind:keyListener="keyListener"></actions>
         <player-assets 
@@ -100,6 +101,7 @@
     import { MoveRobber } from '../src/actions/moveRobber';
     import { BuildTown } from '../src/actions/buildTown';
     import { BuildRoad } from '../src/actions/buildRoad';
+    import { EndTurn } from '../src/actions/endTurn';
 
     var boardRenderer = null;
     var host = null;
@@ -191,6 +193,10 @@
                 this.$data.showLooseResourcesDialog = false;
                 this.performAction(action);
                 this.update = !this.update;
+            },
+            endTurn: function() {
+                let endTurn = EndTurn.createData(this.game.player);
+                this.act(endTurn);
             },
             behaviorChanged: function(behavior) {
                 boardRenderer.behavior = behavior;
@@ -290,9 +296,9 @@
             window.game = game; // nice for debugging
             game.actions.added(async item => {
                 if (item instanceof RollDice) {
-                    if (item.die1 + item.die2 !== 7) {
-                        const diceRoll = item.die1 + item.die2;
-                        const behavior = new gb.ShowProduction(this.keyListener, diceRoll);
+                    const rollDice = item;
+                    if (rollDice.dice.total !== 7) {
+                        const behavior = new gb.ShowProduction(this.keyListener, rollDice.dice.total);
                         boardRenderer.behavior = behavior;
                         await behavior.promise;
                         boardRenderer.behavior = new bb.NoBehavior();
