@@ -86,6 +86,7 @@ export class Game extends Observable {
         let length = 5;
         const isTaken = this.longestRoad.player !== null;
         for (let [player, edges] of routeByPlayer.entries()) {
+            player.routeLength = edges.length;
             if (edges.length > length) {
                 winningPlayers = new Set();
                 winningPlayers.add(player);

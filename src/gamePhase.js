@@ -60,7 +60,7 @@ export class InitialPlacement extends GamePhase {
         }
     }
     buildRoad(game, buildRoad) {
-        if (this.expectation.met) {
+        if (this.expectation !== null && this.expectation.met) {
             game.goToNextPhase();
         }
     }

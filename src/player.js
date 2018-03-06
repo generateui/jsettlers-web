@@ -24,6 +24,7 @@ export class Player extends Observable {
         this.resources = [{}, {}, {}, {}, {}, {}, {}, {}];
         this.victoryPoints = [];
         this.soldiers = [];
+        this.routeLength = 0;
         this.stock = new Stock();
         this.ports = new PortList([new Any4To1Port()]);
         this.towns = new Map(); // <Node, Town>

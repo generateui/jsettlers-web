@@ -7,7 +7,7 @@
             v-on:trade="tradeBank"></trade-bank-dialog>
         <div id="players">
             <div v-for="player in game.players">
-                <player-info v-bind:player="player" v-bind:ref="'player' + player.id"></player-info>
+                <player-info v-bind:player="player" v-bind:game="game" v-bind:ref="'player' + player.id"></player-info>
             </div>
         </div>
         <bank-view id="bank" v-bind:bank="game.bank" v-bind:update="update"></bank-view>

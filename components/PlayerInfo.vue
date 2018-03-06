@@ -14,6 +14,14 @@
                 <img src="doc/images/Road48.png" />
                 <span>{{player.stock.roads}}</span>
             </div>
+            <div id="soldiers" class="stock-info">
+                <img src="doc/images/LargestArmy48.png" />
+                <span>{{player.soldiers.length}}</span>
+            </div>
+            <div id="route-length" class="stock-info">
+                <img src="doc/images/LongestRoad48.png" />
+                <span v-bind:class="{ 'is-winner': game.longestRoad.player === player}">{{player.routeLength}}</span>
+            </div>
             <div id="developmentCards" class="stock-info">
                 <img src="doc/images/DevelopmentCard48.png" />
                 <span>{{player.developmentCards.length}}</span>
@@ -75,6 +83,9 @@
         components: {Popper},
         props: {
             player: {
+                type: Object
+            },
+            game: {
                 type: Object
             }
         },
@@ -166,7 +177,7 @@ h3 {
     padding: 4px;
     /* padding: 0.25em; */
     display: grid;
-    grid-template-columns: auto 4em 4em;
+    grid-template-columns: auto 4em 4em 4em;
     grid-template-rows: 33% 33% 33%;
     box-sizing: border-box;
 }
@@ -212,5 +223,18 @@ h3 {
 #victoryPoints {
     grid-column-start: 3;
     grid-row-start: 3;
+}
+#soldiers {
+    grid-column-start: 4;
+    grid-row-start: 1;
+}
+#route-length {
+    grid-column-start: 4;
+    grid-row-start: 2;
+}
+.is-winner {
+    font-weight: bold;
+    font-size: 125%;
+    color: darkred;
 }
 </style>
