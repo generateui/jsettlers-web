@@ -16,7 +16,7 @@
             </div>
             <div id="soldiers" class="stock-info">
                 <img src="doc/images/LargestArmy48.png" />
-                <span>{{player.soldiers.length}}</span>
+                <span v-bind:class="{ 'is-winner': game.largestArmy.player === player}">{{player.soldiers.length}}</span>
             </div>
             <div id="route-length" class="stock-info">
                 <img src="doc/images/LongestRoad48.png" />
@@ -24,7 +24,7 @@
             </div>
             <div id="developmentCards" class="stock-info">
                 <img src="doc/images/DevelopmentCard48.png" />
-                <span>{{player.developmentCards.length}}</span>
+                <span >{{player.developmentCards.length}}</span>
             </div>
             <div id="ports" class="stock-info">
                 <img src="doc/images/Port48.png" />

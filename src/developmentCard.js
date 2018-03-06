@@ -102,6 +102,16 @@ export class Soldier extends DevelopmentCard {
     play(game, player) {
         game.expectation = new MoveRobberThenRobPlayer(game);
         player.soldiers.push(this);
+        if (game.largestArmy.player === null && player.soldiers.length === 3) {
+            game.largestArmy.player = player;
+            return;
+        }
+        if (game.largestArmy.player !== null) {
+            if (player.soldiers.length > game.largestArmy.player.soldiers.length) {
+                game.largestArmy.player = player;
+                return;
+            }
+        }
     }
     get name() { return "Soldier"; }
 }

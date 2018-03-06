@@ -7,6 +7,7 @@ import { ObservableArray } from "./generic/observableArray.js";
 import { LongestRoad } from "./longestRoad.js";
 import { InitialPlacement, PlayTurns, Finished } from "./gamePhase.js";
 import { ExpectAnything } from "./expectation";
+import { LargestArmy } from "./actions/largestArmy.js";
 
 export class GameSettings {
     constructor(config) {
@@ -29,6 +30,7 @@ export class Game extends Observable {
         this.bank = new Bank();
         this.actions = new ObservableArray();
         this.longestRoad = new LongestRoad();
+        this.largestArmy = new LargestArmy();
         this.expectation = new ExpectAnything();
 
         this.initialPlacement = new InitialPlacement();

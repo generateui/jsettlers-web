@@ -17,7 +17,7 @@ export class Player extends Observable {
         this.user = config.user || new User();
         this.maxHandResources = 7;
         this.developmentCards = [
-            new Soldier(), new YearOfPlenty(), new Monopoly(), new VictoryPoint(), new RoadBuilding()
+            new Soldier(), new Soldier(),new Soldier(), new YearOfPlenty(), new Monopoly(), new VictoryPoint(), new RoadBuilding()
         ]; // TODO: ObservableArray
         this.playedDevelopmentCards = [];
         this.roadBuildingTokens = 0;
