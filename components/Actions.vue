@@ -96,7 +96,6 @@
             },
             tradeBank: function(tradeBankAction) {
                 this.$emit("tradebank", tradeBankAction);
-                // this.$data.showTradeBankDialog = false;
             },
             rollDice: function() {
                 this.$emit("rolldice");

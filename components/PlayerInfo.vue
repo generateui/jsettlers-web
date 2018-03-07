@@ -124,12 +124,12 @@ h3 {
 }
 .stock-info > img {
     /* font-size: 10px; */
-    width: 24px;
+    /* width: 24px; */
     height: 24px;
 }
 .image {
-    height: 32px;
-    width: 32px;
+    height: 24px;
+    /* width: 24px; */
 }
 .vp-image {
     width: 48px;

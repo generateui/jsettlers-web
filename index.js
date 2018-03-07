@@ -145,6 +145,8 @@ const router = new VueRouter({
 Vue.use(VueMarkdown);
 Vue.use(VueRouter);
 Vue.prototype.BuildTown = BuildTown;
+Vue.prototype.BuildRoad = BuildRoad;
+Vue.prototype.BuildCity = BuildCity;
 Vue.prototype.RejectOffer = RejectOffer;
 Vue.prototype.AcceptOffer = AcceptOffer;
 Vue.prototype.CounterOffer = CounterOffer;

@@ -36,9 +36,11 @@ export class Player extends Observable {
         this.edgePieces = new Map(); // <Edge, Piece> (Piece = Road)
         this.resources = new ResourceList([
             new Timber(), new Timber(), new Timber(), new Timber(),
+            new Timber(), new Timber(), new Timber(), new Timber(),
+            new Timber(), 
             new Wheat(),
-            new Ore(), new Ore(),
-            new Sheep(),
+            new Ore(), new Ore(), new Ore(),
+            new Sheep(), 
             new Brick(), new Brick(),
         ]);
 

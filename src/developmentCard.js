@@ -104,11 +104,14 @@ export class Soldier extends DevelopmentCard {
         player.soldiers.push(this);
         if (game.largestArmy.player === null && player.soldiers.length === 3) {
             game.largestArmy.player = player;
+            player.victoryPoints.push(game.largestArmy);
             return;
         }
         if (game.largestArmy.player !== null) {
             if (player.soldiers.length > game.largestArmy.player.soldiers.length) {
+                game.largestArmy.player.victoryPoints.remove(game.largestArmy);
                 game.largestArmy.player = player;
+                player.victoryPoints.push(game.largestArmy);
                 return;
             }
         }

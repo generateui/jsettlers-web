@@ -23,22 +23,22 @@
                     <button @click="buildCity()">build city</button>
                 </li>
                 <li>
-                    <img src="doc/images/DevelopmentCard.png" style="height:24px; width: 24px;">
+                    <img src="doc/images/DevelopmentCard48.png" style="height:24px; width: 24px;">
                     <button @click="buyDevelopmentCard()">buy devcard</button>
                 </li>
                 <li>
-                    <img src="doc/images/Robber.png" style="height:24px; width: 24px;">
+                    <img src="doc/images/Robber48.png" style="height:24px; width: 24px;">
                     <button @click="moveRobber()">move robber</button>
                 </li>
                 <li>
-                    <img src="doc/images/RobPlayer.png" style="height:24px; width: 24px;">
+                    <img src="doc/images/RobPlayer48.png" style="height:24px; width: 24px;">
                     <select multiple v-model="opponents">
                         <option v-for="p in game.players" v-bind:value="p" v-bind:key="p.id">{{p.user.name}}</option>
                     </select>
                     <button @click="robPlayer()">rob player</button>
                 </li>
                 <li>
-                    <img src="doc/images/RollDice.png" style="height:24px; width: 24px;">
+                    <img src="doc/images/RollDice48.png" style="height:24px; width: 24px;">
                     <span>roll dice</span>
                     <span class="dice-number" @click="rollDice(2)">2</span>
                     <span class="dice-number" @click="rollDice(3)">3</span>
