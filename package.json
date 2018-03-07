@@ -4,7 +4,7 @@
   "description": "a hexagonal game to build settlements, cities & roads",
   "main": "index.js",
   "scripts": {
-    "watchify": "watchify -vd -p browserify-hmr -e index.js -o dist/build.js",
+    "watchify": "watchify -vd -p browserify-hmr -t [ browserify-css index.css ] -e index.js -o dist/build.js",
     "serve": "http-server -o -c 1 -a localhost",
     "test": "mocha --require babel-polyfill --require babel-register ./test/*Test.js",
     "dev": "npm-run-all --parallel watchify serve"
@@ -41,6 +41,7 @@
     "babel-runtime": "^6.0.0",
     "babelify": "^7.2.0",
     "browserify": "^13.1.0",
+    "browserify-css": "^0.14.0",
     "browserify-hmr": "^0.3.1",
     "cross-env": "^2.0.0",
     "envify": "^3.4.1",
@@ -65,7 +66,14 @@
           ]
         }
       ],
-      "vueify"
+      "vueify",
+      "browserify-css"
     ]
+  },
+  "browserify-css": {
+    "autoInject": false,
+    "minify": false,
+    "rootDir": ".",
+    "output": "dist/build.css"
   }
 }

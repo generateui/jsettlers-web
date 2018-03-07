@@ -96,6 +96,8 @@ JSON.parse = function (data, reviver) {
   }
 }
 
+var css = require('./index.css');
+
 require("./src/generic/shims");
 require("./src/generic/math.js");
 

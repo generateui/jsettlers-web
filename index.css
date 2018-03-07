@@ -1,0 +1,26 @@
+@import "node_modules/vue-popperjs/dist/css/vue-popper.css";
+@import "mui/mui.css";
+
+html,
+body {
+    height: 100%;
+    background-color: #eee;
+}
+html,
+body,
+input,
+textarea,
+buttons {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.004);
+}
+ol, 
+ul {
+    padding: 0.5em;
+}
+:root {
+    --main-background-color-dark: rgba(33, 150, 243, 0.75);
+    /* --main-background-color-light: rgba(33, 150, 243, 0.5); */
+    --main-background-color-light: rgb(17,75,122);
+}
