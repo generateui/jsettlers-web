@@ -22,15 +22,19 @@ import {City} from "../city.js";
 import {KeyListener} from "./keyListener.js";
 
 export class BuildRoad extends BoardBehavior {
-    constructor(player, keyListener) {
+    constructor(player, keyListener, canCancel) {
         super();
+
         this.player = player;
+        canCancel = canCancel || false;
         this.emphasizeHoveredObject = new EmphasizeHoveredObject(r => r instanceof EdgeRenderer);
         this.promise = new Promise((ok, fail) => {
             this.ok = ok;
             this.fail = fail;
         });
-        this.removeSubscription = keyListener.escape(() => this.fail(new Error("Cancelled building a new town")));
+        if (canCancel) {
+            this.removeSubscription = keyListener.escape(() => this.fail(new Error("Cancelled building a new town")));
+        }
     }
     start(boardRenderer) {
         this.boardRenderer = boardRenderer;
@@ -46,7 +50,9 @@ export class BuildRoad extends BoardBehavior {
     }
     stop(boardRenderer) {
         boardRenderer.hideAllEdges();
-        this.removeSubscription();
+        if (this.removeSubscription !== undefined) {
+            this.removeSubscription();
+        }
         this.player = null;
         this.boardRenderer = null;
         this.emphasizeHoveredObject = null;
@@ -59,8 +65,10 @@ export class BuildRoad extends BoardBehavior {
     }
 }
 export class BuildTown extends BoardBehavior {
-    constructor(player, keyListener) {
+    constructor(player, keyListener, canCancel) {
         super();
+
+        canCancel = canCancel || false;
         this.player = player;
         this.emphasizeHoveredObject = new EmphasizeHoveredObject(r => r instanceof NodeRenderer);
         
@@ -68,7 +76,9 @@ export class BuildTown extends BoardBehavior {
             this.ok = ok;
             this.fail = fail;
         });
-        this.removeSubscription = keyListener.escape(() => this.fail(new Error("Cancelled building a new town")));
+        if (canCancel) {
+            this.removeSubscription = keyListener.escape(() => this.fail(new Error("Cancelled building a new town")));
+        }
     }
     start(boardRenderer) {
         this.boardRenderer = boardRenderer;
@@ -95,16 +105,20 @@ export class BuildTown extends BoardBehavior {
     }
 }
 export class BuildCity extends BoardBehavior {
-    constructor(player, keyListener) {
+    constructor(player, keyListener, canCancel) {
         super();
-        this.player = new Player();
+
+        canCancel = canCancel || false;
+        this.player = player;
         this.emphasizeHoveredObject = new EmphasizeHoveredObject(r => r instanceof TownRenderer);
         
         this.promise = new Promise((ok, fail) => {
             this.ok = ok;
             this.fail = fail;
         });
-        this.removeSubscription = keyListener.escape(() => this.fail(new Error("Cancelled building a new town")));
+        if (this.canCancel) {
+            this.removeSubscription = keyListener.escape(() => this.fail(new Error("Cancelled building a new town")));
+        }
     }
     start(boardRenderer) {
         this.boardRenderer = boardRenderer;
@@ -117,7 +131,9 @@ export class BuildCity extends BoardBehavior {
     }
     stop(boardRenderer) {
         boardRenderer.hideAllNodes();
-        this.removeSubscription();
+        if (this.removeSubscription !== undefined) {
+            this.removeSubscription();
+        }
         this.promise = null;
         this.player = null;
         this.boardRenderer = null;
@@ -165,5 +181,103 @@ export class ShowProduction extends BoardBehavior {
     }
     stop(boardRenderer, renderer) {
         this.boardRenderer.normalizeHexes(this.boardRenderer.board.hexes.values());
+    }
+}
+export class MoveRobber extends BoardBehavior {
+    constructor() {
+        super();
+
+        this.emphasizeHoveredHex = new EmphasizeHoveredObject(r => r instanceof HexRenderer);
+        this.promise = new Promise((ok, fail) => {
+            this.ok = ok;
+            this.fail = fail;
+        });
+    }
+    click(boardRenderer, renderer) {
+        if (renderer instanceof HexRenderer) {
+            const hex = renderer.hex;
+            const coord = renderer.hex.coord;
+            if (boardRenderer.board.robber.coord === coord) {
+                return;
+            }
+            if (!hex.canHaveRobber) {
+                return;
+            }
+            this.ok(coord);
+        }
+    }
+    start(boardRenderer, renderer) {
+        this.emphasizeHoveredHex.enter(boardRenderer, renderer);
+        var all = Array.from(boardRenderer.board.hexes.values());
+        const robberHex = boardRenderer.board.hexes.get(boardRenderer.board.robber.coord);
+        var possible = all.filter(h => h.canHaveRobber && h.coord !== robberHex.coord);
+        boardRenderer.redifyHexes([robberHex]);
+        const notPossible = Util.except(all, possible);
+        notPossible.remove(robberHex);
+        boardRenderer.lightenHexes(possible);
+        boardRenderer.darkenHexes(notPossible);
+    }
+    enter(boardRenderer, renderer) {
+        this.emphasizeHoveredHex.enter(boardRenderer, renderer);
+    }
+    leave(boardRenderer, renderer) {
+        this.emphasizeHoveredHex.leave(boardRenderer, renderer);
+    }
+    stop(boardRenderer) {
+        boardRenderer.normalizeHexes(boardRenderer.board.hexes.values());
+        this.ok = null;
+        this.fail = null;
+    }
+}
+export class PickPlayer extends BoardBehavior {
+    constructor(opponents) {
+        super();
+
+        this.opponents = opponents;
+        this.emphasizeHoveredHex = new EmphasizeHoveredObject((r => this.lightened.has(r)).bind(this));
+        this.promise = new Promise((ok, fail) => {
+            this.ok = ok;
+            this.fail = fail;
+        });
+    }
+    start(boardRenderer) {
+        this.boardRenderer = boardRenderer;
+        const board = boardRenderer.board;
+        const opponentsSet = new Set(this.opponents);
+        boardRenderer.darkenHexes(board.hexes.values());
+        const toLighten = [];
+        const toDarken = [];
+        for (let [player, renderers] of boardRenderer.renderersForPlayer.entries()) {
+            if (opponentsSet.has(player)) {
+                toLighten.pushAll(renderers);
+            } else {
+                toDarken.pushAll(renderers);
+            }
+        }
+        boardRenderer.darkenPieces(toDarken);
+        boardRenderer.lightenPieces(toLighten);
+        this.lightened = new Set(toLighten);
+        this.darkened = new Set(toDarken);
+    }
+    click(boardRenderer, renderer) {
+        if (this.lightened.has(renderer)) {
+            this.ok(renderer.player);
+        }
+    }
+    enter(boardRenderer, renderer) {
+        this.emphasizeHoveredHex.enter(boardRenderer, renderer);
+    }
+    leave(boardRenderer, renderer) {
+        this.emphasizeHoveredHex.leave(boardRenderer, renderer);
+    }
+    stop(boardRenderer) {
+        boardRenderer.normalizePieces(this.lightened);
+        boardRenderer.normalizePieces(this.darkened);
+        boardRenderer.normalizeHexes(boardRenderer.board.hexes.values());
+        this.ok = null;
+        this.fail = null;
+        this.emphasizeHoveredHex = null;
+        this.lightened = null;
+        this.darkened = null;
     }
 }

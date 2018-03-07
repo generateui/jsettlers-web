@@ -4,6 +4,7 @@ import {Stock} from "./stock.js";
 import {Resource, Timber, Wheat, Ore, Sheep, Brick, Gold, ResourceList} from "./resource.js";
 import {DevelopmentCard, YearOfPlenty, Monopoly, Soldier, VictoryPoint, RoadBuilding} from "./developmentCard.js";
 import {Any4To1Port, Any3To1Port, PortList, Wheat2To1Port, Sheep2To1Port} from "./port.js";
+import { ObservableMap } from "./generic/observableMap.js";
 var proto = require("../data_pb");
 
 export class Player extends Observable {
@@ -17,31 +18,46 @@ export class Player extends Observable {
         this.user = config.user || new User();
         this.maxHandResources = 7;
         this.developmentCards = [
-            new Soldier(), new YearOfPlenty(), new Monopoly(), new VictoryPoint(), new RoadBuilding()
+            new Soldier(), new Soldier(),new Soldier(), new YearOfPlenty(), new Monopoly(), new VictoryPoint(), new RoadBuilding()
         ]; // TODO: ObservableArray
         this.playedDevelopmentCards = [];
         this.roadBuildingTokens = 0;
         this.resources = [{}, {}, {}, {}, {}, {}, {}, {}];
-        this.victoryPoints = [{},{},{}];
+        this.victoryPoints = [];
+        this.soldiers = [];
+        this.routeLength = 0;
         this.stock = new Stock();
-        this.ports = new PortList();
+        this.ports = new PortList([new Any4To1Port()]);
         this.towns = new Map(); // <Node, Town>
         this.cities = new Map(); // <Node, City>
         this.roads = new Map(); // <Edge, Road>
         this.victoryPoints = []; // <Edge, Road>
         this.producers = new Map(); // <Node, Piece> (Piece = Town | City)
         this.nodePieces = new Map(); // <Node, Piece> (Piece = Town | City)
-        this.edgePieces = new Map(); // <Edge, Piece> (Piece = Road)
+        this.edgePieces = new ObservableMap(); // <Edge, Piece> (Piece = Road)
         this.resources = new ResourceList([
-            new Timber(), new Timber(), new Timber(),
-            new Wheat(), new Wheat(),
-            new Ore(), new Ore(),
-            new Sheep(), new Sheep(),
+            new Timber(), new Timber(), new Timber(), new Timber(),
+            new Timber(), new Timber(), new Timber(), new Timber(),
+            new Timber(), 
+            // new Wheat(),
+            new Ore(), new Ore(), new Ore(),
+            // new Sheep(), 
             new Brick(), new Brick(),
-            new Gold(), new Gold()
         ]);
 
         this.makeObservable(["user"]);
+    }
+    /** true if player can pay for given resources taking trades into account */
+    canPayWith(resourceList) {
+        const cost = resourceList;
+        if (this.resources.hasAtLeast(cost)) {
+            return true;
+        }
+        const amountGoldNeeded = resources.amountGoldNeeded(cost);
+        const resourcesWithoutCost = new ResourceList(cost);
+        resourcesWithoutCost.remove(cost);
+        const amountGold = this.ports.amountGold(resourcesWithoutCost);
+        return amountGold >= amountGoldNeeded;
     }
     static get colors() {
         if (Player._colors === undefined) {

@@ -1,7 +1,16 @@
+var proto = require("../data_pb.js");
+import { ResourceList } from "./resource";
+
 export class Road {
     constructor(player, edge) {
         this.player = player;
         this.edge = edge;
+    }
+    static get cost() {
+        return new ResourceList([
+            proto.ResourceType.TIMBER,
+            proto.ResourceType.BRICK
+        ]);
     }
     addToPlayer(player) {
         player.roads.set(this.edge, this);

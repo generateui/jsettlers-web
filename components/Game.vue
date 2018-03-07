@@ -7,7 +7,7 @@
             v-on:trade="tradeBank"></trade-bank-dialog>
         <div id="players">
             <div v-for="player in game.players">
-                <player-info v-bind:player="player" v-bind:ref="'player' + player.id"></player-info>
+                <player-info v-bind:player="player" v-bind:game="game" v-bind:ref="'player' + player.id"></player-info>
             </div>
         </div>
         <bank-view id="bank" v-bind:bank="game.bank" v-bind:update="update"></bank-view>
@@ -16,17 +16,35 @@
             <button class="tab-button" @click="doShowActions()">actions</button>
             <button class="tab-button" @click="doShowChat()">chat</button>
             <button class="tab-button" @click="doShowPerformAction()">action</button>
+            <button class="tab-button" @click="doShowQueue()">queue</button>
         </div>
         <div id="tab-content">
             <action-log 
                 v-if="showActions" 
                 id="action-log" 
-                v-bind:actions="game.actions"></action-log>
+                v-bind:actions="game.actions.array"></action-log>
             <div v-if="showChats" id="chats"></div>
+            <div v-if="showQueue" id="queue">
+                <!-- <ul>
+                    <li v-for="item in game.queue.queuedActions">
+                        <div v-if="item instanceof QueuedAction">
+                            {{item.action.constructor.name}} - {{item.action.player.user.name}}
+                            <span v-if="item.optional"> (optional)</span>
+                        </div>
+                        <ul v-if="item instanceof Unordered">
+                            <li v-for="nested in item.queuedActions">
+                                {{nested.action.constructor.name}} - {{nested.action.player.user.name}}
+                                <span v-if="nested.optional"> (optional)</span>
+                            </li>
+                        </ul>
+                    </li>
+                </ul> -->
+            </div>
             <debug-perform-actions 
                 v-if="showPerformActions" 
                 v-bind:game="game" 
                 v-bind:host="host" 
+                v-bind:keyListener="keyListener"
                 v-on:behaviorChanged="behaviorChanged"></debug-perform-actions>
         </div>
     </div>
@@ -36,14 +54,21 @@
         <actions 
             v-bind:game="game" 
             v-on:behaveThenAct="behaveThenAct" 
-            v-on:act="performAction" 
+            v-on:action="performAction"
             v-on:rolldice="rollDice"
+            v-on:endTurn="endTurn"
             v-on:tradebank="openTradeBankDialog"
             v-bind:keyListener="keyListener"></actions>
         <player-assets 
-            v-bind:player="game.player" 
+            v-bind:game="game"
+            v-bind:player="game.player"
             v-bind:update="update"
-            v-on:action="performAction"></player-assets>
+            v-bind:showLooseResourcesDialog="showLooseResourcesDialog"
+            v-on:looseResources="looseResources"
+            v-on:action="performAction">
+        </player-assets>
+        <actions-message
+            v-bind:game="game"></actions-message>
     </div>
 
   </div>
@@ -59,6 +84,7 @@
     import DiceView from "./DiceView.vue";
     import DebugPerformActions from "./DebugPerformActions.vue";
     import TradeBankDialog from "./TradeBankDialog.vue";
+    import ActionsMessage from "./ActionsMessage.vue";
 
     import {HostAtClient} from "../src/host.js";
     import {Game, GameSettings} from "../src/game.js";
@@ -70,9 +96,14 @@
     import {KeyListener} from "../src/ui/keyListener.js";
     import * as bb from "../src/ui/boardBehavior.js";
     import * as gb from "../src/ui/gameBehavior.js";
+    import { LooseResources } from '../src/actions/looseResources';
+    import { RobPlayer } from '../src/actions/robPlayer';
+    import { MoveRobber } from '../src/actions/moveRobber';
+    import { BuildTown } from '../src/actions/buildTown';
+    import { BuildRoad } from '../src/actions/buildRoad';
+    import { EndTurn } from '../src/actions/endTurn';
 
     var boardRenderer = null;
-    var receiver = null;
     var host = null;
 
     const boards = [
@@ -90,7 +121,8 @@
     export default {
         name: 'game',
         components: {
-            PlayerInfo, PlayerAssets, Actions, BankView, ActionLog, DiceView, DebugPerformActions, TradeBankDialog
+            PlayerInfo, PlayerAssets, Actions, BankView, ActionLog, DiceView, 
+            DebugPerformActions, TradeBankDialog, ActionsMessage
         },
         props: {
             settings: {
@@ -109,29 +141,40 @@
                 showActions: false,
                 showChat: false,
                 showPerformActions: true,
+                showQueue: false,
                 game: null,
                 selectedPlayer: null,
                 host: null,
                 keyListener: new KeyListener(),
                 showTradeBankDialog: false,
                 update: false,
+                showLooseResourcesDialog: false,
             }
         },
         methods: {
             doShowActions: function() {
-                this.$data.showActions = true;
-                this.$data.showChat = false;
-                this.$data.showPerformActions = false;
+                this.showActions = true;
+                this.showChat = false;
+                this.showPerformActions = false;
+                this.showQueue = false;
             },
             doShowChat: function() {
-                this.$data.showActions = false;
-                this.$data.showChat = true;
-                this.$data.showPerformActions = false;
+                this.showActions = false;
+                this.showChat = true;
+                this.showPerformActions = false;
+                this.showQueue = false;
             },
             doShowPerformAction: function() {
-                this.$data.showActions = false;
-                this.$data.showChat = false;
-                this.$data.showPerformActions = true;
+                this.showActions = false;
+                this.showChat = false;
+                this.showPerformActions = true;
+                this.showQueue = false;
+            },
+            doShowQueue() {
+                this.showActions = false;
+                this.showChat = false;
+                this.showPerformActions = false;
+                this.showQueue = true;
             },
             openTradeBankDialog: function() {
                 this.showTradeBankDialog = true;
@@ -146,12 +189,22 @@
                 this.$forceUpdate();
                 this.update = !this.update;
             },
+            looseResources: function(action) {
+                this.$data.showLooseResourcesDialog = false;
+                this.performAction(action);
+                this.update = !this.update;
+            },
+            endTurn: function() {
+                let endTurn = EndTurn.createData(this.game.player);
+                this.act(endTurn);
+            },
             behaviorChanged: function(behavior) {
                 boardRenderer.behavior = behavior;
             },
             performAction: async function(action) {
                 try {
                     await this.$data.host.send(action);
+                    this.update = !this.update;
                 } catch (error) {
                     alert(error.message);
                 }
@@ -178,6 +231,37 @@
                     alert(error.message);
                 } finally {
                     boardRenderer.behavior = new bb.NoBehavior();
+                }
+            },
+            forceYouActionIfNeeded(action) {
+                if (action === null) {
+                    return;
+                }
+                if (action.isTradeResponse) {
+                    // popup traderesponse dialog
+                }
+                if (action instanceof BuildTown) {
+                    const behavior = new gb.BuildTown(this.player, this.keyListener);
+                    const createActionData = (player, node) => BuildTown.createData(this.player, node);
+                    this.behaveThenAct(behavior, createActionData);
+                }
+                if (action instanceof BuildRoad) {
+                    const behavior = new gb.BuildRoad(this.player, this.keyListener);
+                    const createAction = (player, edge) => BuildRoad.createData(this.player, edge);
+                    this.behaveThenAct(behavior, createAction);
+                }
+                if (action instanceof MoveRobber) {
+                    const behavior = new gb.MoveRobber();
+                    const createAction = (player, coord) => MoveRobber.createData(player, coord);
+                    this.behaveThenAct(behavior, createAction);
+                }
+                if (action instanceof RobPlayer) {
+                    const behavior = new gb.PickPlayer(this.opponents);
+                    const createAction = (player, opponent) => RobPlayer.createData(player, opponent);
+                    this.behaveThenAct(behavior, createAction);
+                }
+                if (action instanceof LooseResources) {
+                    this.showLooseResourcesDialog = true;
                 }
             }
         },
@@ -207,34 +291,58 @@
                 playerId++;
             }
             game.player = player;
-            this.$data.game = game;
+            game.playerOnTurn = player;
+            this.game = game;
             window.game = game; // nice for debugging
             game.actions.added(async item => {
                 if (item instanceof RollDice) {
-                    if (item.die1 + item.die2 !== 7) {
-                        const diceRoll = item.die1 + item.die2;
-                        const behavior = new gb.ShowProduction(this.keyListener, diceRoll);
+                    const rollDice = item;
+                    if (rollDice.dice.total !== 7) {
+                        const behavior = new gb.ShowProduction(this.keyListener, rollDice.dice.total);
                         boardRenderer.behavior = behavior;
                         await behavior.promise;
                         boardRenderer.behavior = new bb.NoBehavior();
                     }
                 }
-            })
+            });
+            game.longestRoad.edgesChanged((oldEdges, newEdges) => {
+                if (newEdges === null) {
+                    return;
+                }
+                if (oldEdges === null || oldEdges.length !== newEdges.length) {
+                    boardRenderer.animateLongestRoad(game.longestRoad.edges);
+                }
+            });
         },
         mounted: function() {
             var brEl = document.getElementById("game-board-renderer");
-            const game = this.$data.game;
+            const game = this.game;
             boardRenderer = new BoardRenderer(brEl, game.board);
-            this.$data.host = new HostAtClient(game);
+            this.host = new HostAtClient(game);
 
-            game.actions.added(item => {
+            this.removeActionAddedHandler = game.actions.added(item => {
                 for (var player of game.players) {
                     this.$refs["player" + player.id][0].showAction(item);
                 }
             });
+            const that = this;
+            this.removeExpectationChangedHandler = game.expectationChanged((oldExpectation, newExpectation) => {
+                if (that.removeYouActionChangedHandler !== undefined){
+                    that.removeYouActionChangedHandler();
+                }
+                that.removeYouActionChangedHandler = game.expectation.youActionChanged((oldYouAction, newYouAction) => {
+                    that.forceYouActionIfNeeded(newYouAction);
+                });
+                that.forceYouActionIfNeeded(newExpectation.youAction);
+            });
         },
         destroyed: function() {
             boardRenderer.dispose();
+            this.removeExpectationChangedHandler();
+            this.removeActionAddedHandler();
+            if (this.removeYouActionChangedHandler !== undefined){
+                this.removeYouActionChangedHandler();
+            }
         }
     }
 </script>
@@ -253,7 +361,7 @@
   display: flex;
   flex: auto auto auto auto;
   flex-direction: column;
-  background-color: black;;
+  background-color: black;
 }
 #players {
     flex: 0 0 auto;
@@ -283,6 +391,7 @@
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
+  min-width: 0; /* nested flexboxes need this */
 }
 #game-board-renderer {
     top: 0;
@@ -293,5 +402,10 @@
     height: 100%;
     width: 100%;
 }
-
+#queue > ul, queue > li {
+    padding-left: 1em;
+}
+#queue {
+    padding-left: 1em;
+}
 </style>

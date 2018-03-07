@@ -3,6 +3,8 @@ import {Renderer} from "./renderer.js";
 export class RoadRenderer extends Renderer {
     constructor(boardRenderer, road) {
         super();
+
+        this.road = road;
         
         this.boardRenderer = boardRenderer;
 
@@ -12,7 +14,7 @@ export class RoadRenderer extends Renderer {
         var lines = new THREE.LineSegments(this.geometry, new THREE.LineBasicMaterial({ color: 0x000000 }));
         this.material = new THREE.MeshBasicMaterial( {color: road.player.color.integer} );
         var box = new THREE.Mesh(boxGeometry, this.material);
-        box.add(lines);
+        box.add(lines); 
         var radians = ((road.edge.rotation || 60)* Math.PI) / 180;
         box.rotateY(radians);
         var position = boardRenderer.edgeToPixel(road.edge);
@@ -21,6 +23,10 @@ export class RoadRenderer extends Renderer {
         this.mesh.userData.structure = this;
         this.boardRenderer.addMesh(box);
     }
+    get player() {
+        return this.road.player;
+    }
+
     dispose() {
         this.mesh.userData.structure = null;
         this.mesh = null;

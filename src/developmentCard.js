@@ -1,6 +1,9 @@
 var proto = require("../data_pb");
 import {Coord} from "./coord.js";
 import { ResourceList, Resource } from "./resource";
+import { MoveRobber } from "./actions/moveRobber";
+import { RobPlayer } from "./actions/robPlayer";
+import { MoveRobberThenRobPlayer, BuildTwoRoads } from "./expectation";
 
 export class DevelopmentCard {
     static fromData(data) {
@@ -88,19 +91,30 @@ export class Soldier extends DevelopmentCard {
         this.coord = null;
     }
     static fromData(data) {
-        const soldier = new Soldier();
-        soldier.coord = Coord.fromData(data.getCoord());
-        return soldier;
+        return new Soldier();
     }
     get data() {
         const soldier = new proto.Soldier();
-        soldier.setCoord(this.coord.data);
         const data = super._getData();
         data.setSoldier(soldier);
         return data;
     }
     play(game, player) {
-        // TODO: enqueue actions?
+        game.expectation = new MoveRobberThenRobPlayer(game);
+        player.soldiers.push(this);
+        if (game.largestArmy.player === null && player.soldiers.length === 3) {
+            game.largestArmy.player = player;
+            player.victoryPoints.push(game.largestArmy);
+            return;
+        }
+        if (game.largestArmy.player !== null) {
+            if (player.soldiers.length > game.largestArmy.player.soldiers.length) {
+                game.largestArmy.player.victoryPoints.remove(game.largestArmy);
+                game.largestArmy.player = player;
+                player.victoryPoints.push(game.largestArmy);
+                return;
+            }
+        }
     }
     get name() { return "Soldier"; }
 }
@@ -126,7 +140,7 @@ export class RoadBuilding extends DevelopmentCard {
     }
     play(game, player) {
         player.roadBuildingTokens += 2;
-        // TODO: enqueue actions?
+        game.expectation = new BuildTwoRoads(game);
     }
     get data() { 
         const roadBuilding = new proto.RoadBuilding();

@@ -9,30 +9,47 @@
             v-if="showYearOfPlentyDialog" 
             v-on:close="closeYearOfPlentyDialog">
         </year-of-plenty-dialog>
-        <div id="resources">
-            <div id="resourceType" v-for="resourceType in player.resources.types" v-if="player.resources.hasOf(resourceType)" :key="key">
-                <img v-for="resource in player.resources.of(resourceType)"  :src="`doc/images/${resource.name}Card.png`" />
+        <loose-resources-dialog
+            v-if="showLooseResourcesDialog"
+            v-bind:game="game"
+            v-on:looseResources="looseResources"
+            v-bind:selectedResources="selectedResources">
+        </loose-resources-dialog>
+        <div id="all">
+            <template 
+                class="resource-type" 
+                v-if="player.resources.hasOf(resourceType)"
+                v-for="resourceType in player.resources.types">
+                <div class="wrapper" v-for="resource in player.resources.of(resourceType)">
+                    <img class="resource"
+                        :src="`doc/images/${resource.name}Card.png`"
+                        :key="resource.id"
+                        @click="toggleResource(resource)"
+                        v-bind:class="{ selected: selectedResources.includes(resource)}" />
+                </div>
+            </template>
+            <div class="wrapper" v-for="developmentCard in player.developmentCards">
+                <img class="development-card"  
+                    :src="`doc/images/${developmentCard.name}.png`"
+                    @dblclick="playDevelopmentCard(developmentCard)" />
             </div>
         </div>
-        <div id="developmentCards">
-            <img v-for="developmentCard in player.developmentCards" 
-                :src="`doc/images/${developmentCard.name}.png`"
-                @dblclick="playDevelopmentCard(developmentCard)" />
-        </div>
-        <div id="victoryPoints"></div>
-        <div id="ports"></div>
     </div>
 </template>
 
 <script>
     import MonopolyDialog from './MonopolyDialog.vue';
     import YearOfPlentyDialog from './YearOfPlentyDialog.vue';
+    import LooseResourcesDialog from "./LooseResourcesDialog.vue";
+
     import { Monopoly } from '../src/developmentCard.js';
-    import {PlayDevelopmentCard} from "../src/actions/playDevelopmentCard.js";
+    import { PlayDevelopmentCard } from "../src/actions/playDevelopmentCard.js";
+    import { LooseResources } from "../src/actions/looseResources";
+    import { ResourceList } from '../src/resource';
 
     export default {
         name: 'player-assets',
-        components: {MonopolyDialog, YearOfPlentyDialog},
+        components: {MonopolyDialog, YearOfPlentyDialog, LooseResourcesDialog },
         props: {
             player: {
                 type: Object
@@ -42,16 +59,27 @@
             },
             update: {
                 type: Boolean
-            }
+            },
+            game: {
+                type: Object
+            },
+            showLooseResourcesDialog: {
+                type: Boolean
+            },
         },
         data() {
             return {
                 showMonopolyDialog: false,
                 showYearOfPlentyDialog: false,
                 developmentCard: null,
+                selectedResources: [],
+                selectResources: false,
             }
         },
         methods: {
+            action(action) {
+                this.$emit('action', action);
+            },
             playDevelopmentCard(developmentCard) {
                 this.$data.developmentCard = developmentCard;
                 // instanceof don't work here
@@ -72,6 +100,12 @@
                     vp.player = player;
                     const playVp = PlayDevelopmentCard.createData(player, vp);
                     this.$emit('action', playVp)
+                } else if (typeName === "Soldier") {
+                    const soldier = this.developmentCard;
+                    soldier.player = this.player;
+                    const playSoldier = PlayDevelopmentCard.createData(this.player, soldier);
+                    playSoldier.player = this.player;
+                    this.$emit('action', playSoldier);
                 }
             },
             closeMonopolyDialog(resourceType) {
@@ -95,6 +129,19 @@
                 yop.player = player;
                 const playYop = PlayDevelopmentCard.createData(player, yop);
                 this.$emit('action', playYop)
+            },
+            toggleResource(resource) {
+                if (this.selectedResources.includes(resource)) {
+                    this.selectedResources.remove(resource);
+                } else {
+                    this.selectedResources.push(resource);
+                }
+            },
+            looseResources() {
+                const resourceList = new ResourceList(this.selectedResources);
+                const looseResources = LooseResources.createData(this.player, resourceList);
+                this.selectedResources.length = 0;
+                this.$emit('looseResources', looseResources)
             }
         }
     }
@@ -102,33 +149,41 @@
 
 <style scoped>
 #player-assets {
-    display: inline-flex;
     background-color: black;
-    padding-left: 67px;
+    padding-right: 0.5em;
+    padding-left: 0.5em;
+    padding-top: 0.5em;
 }
-#resourceType {
-    padding-left: 100px;
-    display: inline-flex;
+#all {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
 }
-#resourceType img {
-    margin-left: -96px;
+.wrapper:last-child {
+    flex: 0 0 auto;
+}
+.wrapper {
+    flex: 1 1 0;
+    min-width: 0;
+}
+.resource {
     height: 101px;
     width: 63px;
 }
-#developmentCards {
-    /* margin-left: 37px; */
-    right: 0;
-    margin: 0;
-    padding: 0;
+img {
+    min-width: 0;
     height: 101px;
-    position: absolute;
+    width: 63px;
 }
-    #developmentCards img {
-        /* margin-left: -90px; */
-        height: 101px;
-        width: 63px;
-    }
-    #developmentCards img:hover {
-        transform: translate(0, -1em);
-    }
+.resource:hover {
+    transform: translate(0, -0.5em);
+}
+.development-card:hover {
+    transform: translate(0, -1em);
+}
+.selected, .selected:hover {
+    transform: translate(0, -2em) !important;
+}
 </style>

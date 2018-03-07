@@ -10,13 +10,10 @@ export class BuildRoad extends GameAction {
     }
     perform(game) {
         const road = new Road(this.player, this.edge);
-        if (this.player.roadBuildingTokens > 0) {
-            this.player.roadBuildingTokens -= 1;
-        } else {
-            // TODO: pay for with resources
-        }
         road.addToPlayer(this.player);
         road.addToBoard(game.board);
+        game.calculateLongestRoad();
+        game.phase.buildRoad(game, this);
     }
     static fromData(data) {
         const edge = Edge.fromData(data.getEdge())

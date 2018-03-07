@@ -56,7 +56,6 @@ export class ObservableMap {
     }
     changed(changeHandler) {
         this._changeListeners.push(changeHandler);
-        const that = this;
         return () => {
             var index = this._changeListeners.indexOf(changeHandler);
             this._changeListeners.splice(index, 1);
@@ -64,7 +63,6 @@ export class ObservableMap {
     }
     added(addHandler) {
         this._addListeners.push(addHandler);
-        const that = this;
         return () => {
             var index = this._addListeners.indexOf(addHandler);
             this._addListeners.splice(index, 1);
@@ -72,7 +70,6 @@ export class ObservableMap {
     }
     cleared(clearHandler) {
         this._clearListeners.push(clearHandler);
-        const that = this;
         return () => {
             var index = this._clearListeners.indexOf(clearHandler);
             this._clearListeners.splice(index, 1);
@@ -80,7 +77,6 @@ export class ObservableMap {
     }
     deleted(deleteHandler) {
         this._deleteListeners.push(deleteHandler);
-        const that = this;
         return () => {
             var index = this._deleteListeners.indexOf(deleteHandler);
             this._deleteListeners.splice(index, 1);

@@ -16,6 +16,9 @@ export class Port {
     }
     get color() { return 0x0; }
     get canPlaceOnBoard() { return true; }
+    divide(resources, resourceType) {
+        return Math.floor(resources.of(resourceType).length / this.inAmount);
+    }
     static fromType(portType, partIndex, seaCoord, landCoord) {
         switch (portType) {
             case proto.PortType.CLAY2TO1: return new Clay2To1Port(partIndex, seaCoord);
@@ -132,5 +135,16 @@ export class PortList {
             }
         }
         return result;
+    }
+    amountGold(resources) {
+        let total = 0;
+        for (let resourceType of resources.types) {
+            if (resources.of(resourceType).length === 0) {
+                break;
+            }
+            const port = this.bestPortForResourceType(resourceType);
+            total += port.divide(resources, resourceType);
+        }
+        return total;
     }
 }

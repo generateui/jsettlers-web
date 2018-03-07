@@ -4,9 +4,10 @@ import {GameAction} from "./gameAction.js";
 import {Node} from "../node.js";
 
 export class BuildTown extends GameAction {
-    constructor(node) {
+    constructor(config) {
         super();
-        this.node = node;
+        this.node = config.node;
+        this.player = config.player;
     }
     perform(game) {
         const town = new Town(this.player, this.node);
@@ -16,10 +17,20 @@ export class BuildTown extends GameAction {
         }
         town.addToPlayer(this.player);
         town.addToBoard(game.board);
+        const edges = town.node.edges;
+        const edgePieces = game.board.edgePieces;
+        const opponentHasSidePieceAtNode = 
+            (edgePieces.has(edges[0]) && edgePieces.get(edges[0]).player !== this.player) ||
+            (edgePieces.has(edges[1]) && edgePieces.get(edges[1]).player !== this.player) ||
+            (edgePieces.has(edges[2]) && edgePieces.get(edges[2]).player !== this.player);
+        if (opponentHasSidePieceAtNode) {
+            game.calculateLongestRoad();
+        }
+        game.phase.buildTown(game, this);
     }
     static fromData(data) {
         const node = Node.fromData(data.getNode());
-        return new BuildTown(node);
+        return new BuildTown({node: node});
     }
     static createData(player, node) {
         const action = new proto.GameAction();

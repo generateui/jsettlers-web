@@ -3,6 +3,7 @@ import {Renderer} from "./renderer.js";
 export class CityRenderer extends Renderer {
     constructor(boardRenderer, city) {
         super();
+        this.city = city;
         this.boardRenderer = boardRenderer;
         var loader = new THREE.STLLoader();
         loader.load('models3D/city.stl', (geometry) => {
@@ -20,6 +21,10 @@ export class CityRenderer extends Renderer {
             this.mesh.userData.structure = this;
         });
     }
+    get player() {
+        return this.city.player;
+    }
+
     dispose() {
         this.geometry.dispose();
         this.material.dispose();

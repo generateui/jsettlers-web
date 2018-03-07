@@ -23,6 +23,9 @@ export class TownRenderer extends Renderer {
             this.mesh.userData.structure = this;
         });
     }
+    get player() {
+        return this.town.player;
+    }
     dispose() {
         this.material.dispose();
         this.boardRenderer.removeMesh(this.mesh);

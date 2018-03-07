@@ -1,13 +1,6 @@
 <template>
     <div id="actions">
-        <!-- <trade-bank-dialog v-if="showTradeBankDialog" v-bind:game="game" v-on:trade="tradeBank"></trade-bank-dialog> -->
-        <div id="build-town" class="build-button">
-            <img id="town-trade1" class="trade" src="doc/images/Trade48.png" />
-            <img id="town-trade2" class="trade" src="doc/images/Trade48.png" />
-            <img id="town-trade3" class="trade" src="doc/images/Trade48.png" />
-            <img id="town-trade4" class="trade" src="doc/images/Trade48.png" />
-            <img id="build-town-button" src="doc/images/Town48.png" />
-        </div>
+        <build-town-button id="build-town-button" v-bind:game="game"></build-town-button>
         <div id="build-city" class="build-button">
             <img id="city-trade1" class="trade" src="doc/images/Trade48.png" />
             <img id="city-trade2" class="trade" src="doc/images/Trade48.png" />
@@ -33,29 +26,39 @@
             <img src="doc/images/PlayDevelopmentCard48.png" />
         </div> -->
         <div id="trade-player" class="build-button">
-            <img src="doc/images/TradePlayer48.png" />
+            <img src="doc/images/TradePlayer48.png" @click="openTradePlayerDialog" />
         </div>
         <div id="trade-bank" class="build-button" @click="tradeBank">
             <img src="doc/images/TradeBank48.png" />
         </div>
-        <div id="end-turn" class="build-button">
+        <div id="end-turn" class="build-button" @click="endTurn">
             <img src="doc/images/EndTurn48.png" />
         </div>
         <dice-view id="dice-view" class="build-button" v-on:rolldice="rollDice" v-bind:dice="dice"></dice-view>
-
+        <game-phases-view id="game-phases-view"
+            v-bind:game="game">
+        </game-phases-view>
+        <trade-player-dialog 
+            v-if="showTradePlayerDialog" 
+            v-on:action="action"
+            v-bind:game="game">
+        </trade-player-dialog>
     </div>
 </template>
 
 <script>
-    import * as gb from "../src/ui/gameBehavior.js";
-    import {BuildRoad} from "../src/actions/buildRoad.js";
     import DiceView from "./DiceView.vue";
     import TradeBankDialog from "./TradeBankDialog.vue";
-    import {Dice} from "../src/dice.js";
+    import TradePlayerDialog from './TradePlayerDialog.vue';
+    import BuildTownButton from './BuildTownButton.vue';
+    import GamePhasesView from './GamePhasesView.vue';
+
+    import * as gb from "../src/ui/gameBehavior.js";
+    import {BuildRoad} from "../src/actions/buildRoad.js";
 
     export default {
         components: {
-            DiceView, TradeBankDialog
+            DiceView, TradeBankDialog, TradePlayerDialog, GamePhasesView, BuildTownButton
         },
         props: {
             game: {
@@ -68,11 +71,15 @@
         name: 'actions',
         data() {
             return {
-                dice: new Dice(),
+                dice: game.dice,
                 showTradeBankDialog: false,
+                showTradePlayerDialog: false,
             }
         },
         methods: {
+            action: function(action) {
+                this.$emit("action", action);
+            },
             buildRoad: function() {
                 const player = this.$props.game.player;
                 const behavior = new gb.BuildRoad(player, this.$props.keyListener);
@@ -84,36 +91,49 @@
             },
             tradeBank: function(tradeBankAction) {
                 this.$emit("tradebank", tradeBankAction);
-                // this.$data.showTradeBankDialog = false;
             },
             rollDice: function() {
                 this.$emit("rolldice");
+            },
+            endTurn: function() {
+                this.$emit("endTurn");
+            },
+            openTradePlayerDialog: function() {
+                this.showTradePlayerDialog = !this.showTradePlayerDialog;
             }
         }
     }
 </script>
 
-<style scoped>
-#actions {
-    display: grid;
-    height: 64px;
-    grid-template-columns: repeat(8, 48px) auto;
-    grid-template-rows: repeat(9, 64px);
-    grid-column-gap: 1em;
-}
+<style>
 .build-button { 
     margin: 0.25em;
     align-self: end;
 }
-.build-button:hover {
+.build-button:hover:not(.disabled) {
     filter: drop-shadow(0px 0px 12px #fff);
 }
 .trade {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
+    align-self: center;
 }
+.disabled {
+    filter: blur(2px) grayscale(100%);
+}
+</style>
+
+<style scoped>
+#actions {
+    display: grid;
+    height: 64px;
+    grid-template-columns: 110px repeat(8, 48px) 10em;
+    grid-template-rows: repeat(9, 64px);
+    grid-column-gap: 1em;
+}
+
 #build-city {
-    grid-column-start: 1;
+    grid-column-start: 4;
     grid-row-start: 1;
     display: grid;
     grid-template-columns: 24px 24px;
@@ -148,37 +168,11 @@
         grid-row-start: 1;
     }
 
-#build-town {
+#build-town-button {
     grid-column-start: 2;
     grid-row-start: 1;
-    display: grid;
-    grid-template-columns: 24px 24px;
-    grid-template-rows: 24px 24px 48px;
 }
-    #build-town-button {
-        grid-column-start: 1;
-        grid-column-end: 2;
-        grid-row-start: 3;
-        grid-row-end: 3;
-        width: 48px;
-        height: 48px;
-    }
-    #town-trade1 {
-        grid-column-start: 1;
-        grid-row-start: 2;
-    }
-    #town-trade2 {
-        grid-column-start: 2;
-        grid-row-start: 2;
-    }
-    #town-trade3 {
-        grid-column-start: 1;
-        grid-row-start: 1;
-    }
-    #town-trade4 {
-        grid-column-start: 2;
-        grid-row-start: 1;
-    }
+
 #build-road {
     grid-column-start: 3;
     grid-row-start: 1;
@@ -211,7 +205,7 @@
         grid-row-start: 1;
     }
 #buy-development-card {
-    grid-column-start: 4;
+    grid-column-start: 5;
     grid-row-start: 1;
     display: grid;
     grid-template-columns: 24px 24px;
@@ -254,7 +248,10 @@
     grid-row-start: 1;
 }
 #dice-view {
-    grid-column-start: 9;
+    grid-column-start: 1;
     grid-row-start: 1;
+}
+#game-phases-view {
+    grid-column-start: 10;
 }
 </style>

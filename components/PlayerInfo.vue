@@ -14,9 +14,17 @@
                 <img src="doc/images/Road48.png" />
                 <span>{{player.stock.roads}}</span>
             </div>
+            <div id="soldiers" class="stock-info">
+                <img src="doc/images/LargestArmy48.png" />
+                <span v-bind:class="{ 'is-winner': game.largestArmy.player === player}">{{player.soldiers.length}}</span>
+            </div>
+            <div id="route-length" class="stock-info">
+                <img src="doc/images/LongestRoad48.png" />
+                <span v-bind:class="{ 'is-winner': game.longestRoad.player === player}">{{player.routeLength}}</span>
+            </div>
             <div id="developmentCards" class="stock-info">
                 <img src="doc/images/DevelopmentCard48.png" />
-                <span>{{player.developmentCards.length}}</span>
+                <span >{{player.developmentCards.length}}</span>
             </div>
             <div id="ports" class="stock-info">
                 <img src="doc/images/Port48.png" />
@@ -52,7 +60,7 @@
                         <img v-for="resource in action.productionByPlayer.get(player).of(resourceType)" :src="`doc/images/${resource.name}Card.png`" />
                     </div>
                 </div>
-                <div id="resources" v-if="action.constructor.name === 'BuildTown' && action.player === player">
+                <div id="resources" v-if="action instanceof BuildTown && action.player === player">
                     <img src="doc/images/Town48.png" />
                 </div>
                 <div id="resources" v-if="action.constructor.name === 'BuildRoad' && action.player === player">
@@ -66,7 +74,6 @@
 <script>
     import Popper from 'vue-popperjs';
     import PopperJs from "../node_modules/popper.js/dist/esm/popper.js";
-    // import timer from "../src/ui/timer.js";
     import { RollDice } from '../src/actions/rollDice';
 
     const timer = ms => new Promise(result => setTimeout(result, ms));
@@ -76,6 +83,9 @@
         components: {Popper},
         props: {
             player: {
+                type: Object
+            },
+            game: {
                 type: Object
             }
         },
@@ -114,12 +124,12 @@ h3 {
 }
 .stock-info > img {
     /* font-size: 10px; */
-    width: 24px;
+    /* width: 24px; */
     height: 24px;
 }
 .image {
-    height: 32px;
-    width: 32px;
+    height: 24px;
+    /* width: 24px; */
 }
 .vp-image {
     width: 48px;
@@ -167,7 +177,7 @@ h3 {
     padding: 4px;
     /* padding: 0.25em; */
     display: grid;
-    grid-template-columns: auto 4em 4em;
+    grid-template-columns: auto 4em 4em 4em;
     grid-template-rows: 33% 33% 33%;
     box-sizing: border-box;
 }
@@ -213,5 +223,18 @@ h3 {
 #victoryPoints {
     grid-column-start: 3;
     grid-row-start: 3;
+}
+#soldiers {
+    grid-column-start: 4;
+    grid-row-start: 1;
+}
+#route-length {
+    grid-column-start: 4;
+    grid-row-start: 2;
+}
+.is-winner {
+    font-weight: bold;
+    font-size: 125%;
+    color: darkred;
 }
 </style>

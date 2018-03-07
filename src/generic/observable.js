@@ -32,7 +32,7 @@ export class Observable {
             listeners.splice(index, 1);
         }
     }
-    _fireChanged(propertyName, oldValue, newValue) {
+    _firePropertyChanged(propertyName, oldValue, newValue) {
         if (this.listenersByProperty[propertyName] === undefined) {
             return;
         }
@@ -57,7 +57,7 @@ export class Observable {
                     set(value) {
                         const oldValue = that[fieldName];
                         that[fieldName] = value;
-                        that._fireChanged(pn, oldValue, value);
+                        that._firePropertyChanged(pn, oldValue, value);
                     }
                 });
                 const subscribeFunctionName = pn + "Changed";
