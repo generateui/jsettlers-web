@@ -161,7 +161,9 @@ export class ResourceList {
     }
     _removeSafe(resource) {
         const resourceTypeString = Util.getEnumName(proto.ResourceType, resource.type);
-        this._map.get(resourceTypeString).pop(); // ignore returned instance
+        if (this._map.has(resourceTypeString)) {
+            this._map.get(resourceTypeString).pop(); // ignore returned instance
+        } 
     }
     /** assumes this hasAtLeast(resourceList) 
      *  Resource, ResourceType (string), ResourceType (int), array, ResourceList  */
@@ -271,5 +273,14 @@ export class ResourceList {
                 source.remove(resource);
             }
         }
+    }
+    amountGoldNeeded(resourceList) {
+        let amountGold = 0;
+        for (var resourceType of resourceList.types) {
+            let difference = resourceList.of(resourceType).length - this.of(resourceType).length;
+            difference = difference < 0 ? 0 : difference;
+            amountGold += difference;
+        }
+        return amountGold;
     }
 }

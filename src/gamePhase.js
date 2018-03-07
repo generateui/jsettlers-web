@@ -34,6 +34,7 @@ export class GamePhase {
     acceptOffer(game, acceptOffer) {}
     rejectOffer(game, rejectOffer) {}
     counterOffer(game, counterOffer) {}
+    canPlaceTownOnBoard(game, player) {}
 }
 export class InitialPlacement extends GamePhase {
     constructor() {
@@ -63,6 +64,9 @@ export class InitialPlacement extends GamePhase {
         if (this.expectation !== null && this.expectation.met) {
             game.goToNextPhase();
         }
+    }
+    canPlaceTownOnBoard(game, player) {
+        return true;
     }
 }
 /** Phase in the game where players play turns.
@@ -167,6 +171,9 @@ export class PlayTurns extends GamePhase {
         if (game.expectation.met) {
             game.expectation = this.playTurnActions;
         }
+    }
+    canPlaceTownOnBoard(game, player) {
+        
     }
 }
 export class Finished extends GamePhase {

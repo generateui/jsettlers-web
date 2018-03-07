@@ -11,7 +11,7 @@ export class Town {
     produce(hex) {
         return [hex.resourceType];
     }
-    static cost() {
+    static get cost() {
         return new ResourceList([
             proto.ResourceType.TIMBER,
             proto.ResourceType.WHEAT,

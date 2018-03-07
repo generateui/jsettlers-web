@@ -4,9 +4,10 @@ import {GameAction} from "./gameAction.js";
 import {Node} from "../node.js";
 
 export class BuildTown extends GameAction {
-    constructor(node) {
+    constructor(config) {
         super();
-        this.node = node;
+        this.node = config.node;
+        this.player = config.player;
     }
     perform(game) {
         const town = new Town(this.player, this.node);
@@ -29,7 +30,7 @@ export class BuildTown extends GameAction {
     }
     static fromData(data) {
         const node = Node.fromData(data.getNode());
-        return new BuildTown(node);
+        return new BuildTown({node: node});
     }
     static createData(player, node) {
         const action = new proto.GameAction();

@@ -1,13 +1,6 @@
 <template>
     <div id="actions">
-        <!-- <trade-bank-dialog v-if="showTradeBankDialog" v-bind:game="game" v-on:trade="tradeBank"></trade-bank-dialog> -->
-        <div id="build-town" class="build-button">
-            <img id="town-trade1" class="trade" src="doc/images/Trade48.png" />
-            <img id="town-trade2" class="trade" src="doc/images/Trade48.png" />
-            <img id="town-trade3" class="trade" src="doc/images/Trade48.png" />
-            <img id="town-trade4" class="trade" src="doc/images/Trade48.png" />
-            <img id="build-town-button" src="doc/images/Town48.png" />
-        </div>
+        <build-town-button id="build-town-button" v-bind:game="game"></build-town-button>
         <div id="build-city" class="build-button">
             <img id="city-trade1" class="trade" src="doc/images/Trade48.png" />
             <img id="city-trade2" class="trade" src="doc/images/Trade48.png" />
@@ -54,16 +47,18 @@
 </template>
 
 <script>
-    import * as gb from "../src/ui/gameBehavior.js";
-    import {BuildRoad} from "../src/actions/buildRoad.js";
     import DiceView from "./DiceView.vue";
     import TradeBankDialog from "./TradeBankDialog.vue";
     import TradePlayerDialog from './TradePlayerDialog.vue';
+    import BuildTownButton from './BuildTownButton.vue';
     import GamePhasesView from './GamePhasesView.vue';
+
+    import * as gb from "../src/ui/gameBehavior.js";
+    import {BuildRoad} from "../src/actions/buildRoad.js";
 
     export default {
         components: {
-            DiceView, TradeBankDialog, TradePlayerDialog, GamePhasesView
+            DiceView, TradeBankDialog, TradePlayerDialog, GamePhasesView, BuildTownButton
         },
         props: {
             game: {
@@ -110,6 +105,24 @@
     }
 </script>
 
+<style>
+.build-button { 
+    margin: 0.25em;
+    align-self: end;
+}
+.build-button:hover:not(.disabled) {
+    filter: drop-shadow(0px 0px 12px #fff);
+}
+.trade {
+    width: 20px;
+    height: 20px;
+    align-self: center;
+}
+.disabled {
+    filter: blur(2px) grayscale(100%);
+}
+</style>
+
 <style scoped>
 #actions {
     display: grid;
@@ -118,17 +131,7 @@
     grid-template-rows: repeat(9, 64px);
     grid-column-gap: 1em;
 }
-.build-button { 
-    margin: 0.25em;
-    align-self: end;
-}
-.build-button:hover {
-    filter: drop-shadow(0px 0px 12px #fff);
-}
-.trade {
-    width: 24px;
-    height: 24px;
-}
+
 #build-city {
     grid-column-start: 4;
     grid-row-start: 1;
@@ -165,37 +168,11 @@
         grid-row-start: 1;
     }
 
-#build-town {
+#build-town-button {
     grid-column-start: 2;
     grid-row-start: 1;
-    display: grid;
-    grid-template-columns: 24px 24px;
-    grid-template-rows: 24px 24px 48px;
 }
-    #build-town-button {
-        grid-column-start: 1;
-        grid-column-end: 2;
-        grid-row-start: 3;
-        grid-row-end: 3;
-        width: 48px;
-        height: 48px;
-    }
-    #town-trade1 {
-        grid-column-start: 1;
-        grid-row-start: 2;
-    }
-    #town-trade2 {
-        grid-column-start: 2;
-        grid-row-start: 2;
-    }
-    #town-trade3 {
-        grid-column-start: 1;
-        grid-row-start: 1;
-    }
-    #town-trade4 {
-        grid-column-start: 2;
-        grid-row-start: 1;
-    }
+
 #build-road {
     grid-column-start: 3;
     grid-row-start: 1;

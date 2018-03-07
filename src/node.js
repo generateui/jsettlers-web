@@ -32,6 +32,16 @@ export class Node {
         }
         return this._edges;
     }
+    get nodes() {
+        if (this._nodes === undefined) {
+            this._nodes = [
+                this.edges[0].node1 !== this ? this.edges[0].node1 : this.edges[0].node2,
+                this.edges[1].node1 !== this ? this.edges[1].node1 : this.edges[1].node2,
+                this.edges[2].node1 !== this ? this.edges[2].node1 : this.edges[2].node2,
+            ];
+        }
+        return this._nodes;
+    }
     // By adding the hashcode numbers the order of coord1, 
     // coord2 and coord3 is not important
     // We divide by 3 to prevent overflow

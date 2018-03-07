@@ -41,7 +41,7 @@ export class Board {
         this.towns = new ObservableMap(); // <Node, Town>
         this.cities = new ObservableMap(); // <Node, City>
         this.roads = new ObservableMap(); // <Edge, Road>
-        this.nodePieces = new Map(); // <Node, Piece> Piece = Town | City
+        this.nodePieces = new ObservableMap(); // <Node, Piece> Piece = Town | City
         this.edgePieces = new Map(); // <Edge, Piece> Piece = Road | ??
         this.portsByNode = new Map();
         this.producersByNode = new Map(); // <Node, Producer>
@@ -176,6 +176,22 @@ export class Board {
                 this.addNeighborsRecursively(coords, neighbor, shouldAdd);
             }
         }
+    }
+    townPossibilities(player) {
+        const possibilities = [];
+        const edgePieces = Array.from(player.edgePieces);
+        const nodes = new Set(edgePieces.mapMany(ep => ep.nodes));
+        for (let node of nodes) {
+            const isNodeUsed = this.nodePieces.has(node);
+            const anyNeighborUsed = 
+                this.nodePieces.has(node.nodes[0]) ||
+                this.nodePieces.has(node.nodes[1]) ||
+                this.nodePieces.has(node.nodes[2]);
+            if (!isNodeUsed && !anyNeighborUsed) {
+                possibilities.push(node);
+            }
+        }
+        return possibilities;
     }
     get hexes() { return this._hexes; }
     setHex(coord, hex) {

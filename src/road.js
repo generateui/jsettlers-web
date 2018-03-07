@@ -6,7 +6,7 @@ export class Road {
         this.player = player;
         this.edge = edge;
     }
-    static cost() {
+    static get cost() {
         return new ResourceList([
             proto.ResourceType.TIMBER,
             proto.ResourceType.BRICK

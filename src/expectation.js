@@ -13,6 +13,8 @@ import { Observable } from "./generic/observable";
 export class Expectation extends Observable {
     constructor() {
         super();
+
+        this._listeners = [];
     }
     /** returns true when the state of the expectation is complete */
     get met() {
@@ -52,12 +54,23 @@ export class Expectation extends Observable {
         const eitherNull = oldValue !== null && newValue === null ||
             oldValue === null && newValue !== null;
         if (eitherNull) {
-            this._fireChanged(propertyName, oldValue, newValue);
+            this._firePropertyChanged(propertyName, oldValue, newValue);
             return;
         }
         const typeChanged = oldValue.constructor.name !== newValue.constructor.name;
         if (!typeChanged) {
-            this._fireChanged(propertyName, oldValue, newValue);
+            this._firePropertyChanged(propertyName, oldValue, newValue);
+        }
+    }
+    changed(handlerFunction) {
+        this.listeners.push(handlerFunction);
+        return () => {
+            this._listeners.remove(handlerFunction);
+        }
+    }
+    _fireChanged() {
+        for (let listener of this._listeners) {
+            listener();
         }
     }
 
@@ -112,6 +125,7 @@ export class ExpectTradeResponses extends Expectation {
     }
     meet(action) {
         this.responded.add(action.player);
+        this._fireChanged();
     }
     get youMessage() {
         // if the client player is the offerin the trade no response is expected
@@ -212,11 +226,13 @@ export class MoveRobberThenRobPlayer extends Expectation {
         const oldYouAction = this.youAction;
         if (action instanceof RobPlayer) {
             this.hasRobbedPlayer = true;
-            this._fireChanged("youAction", oldYouAction, this.youAction);
+            this._firePropertyChanged("youAction", oldYouAction, this.youAction);
+            this._fireChanged();
         }
         if (action instanceof MoveRobber) {
             this.hasMovedRobber = true;
-            this._fireChanged("youAction", oldYouAction, this.youAction);
+            this._firePropertyChanged("youAction", oldYouAction, this.youAction);
+            this._fireChanged();
         }
     }
     get youMessage() {
@@ -279,6 +295,7 @@ export class PlaySoldierOrRollDice extends Expectation {
         } else {
             this.playedSoldier = true;
         }
+        this._fireChanged();
     }
     get youMessage() {
         if (this.player !== this.playerOnTurn) {
@@ -301,7 +318,6 @@ export class PlaySoldierOrRollDice extends Expectation {
         return `waiting for ${opponent} to roll the dice`;
     }
 }
-// TODO: split into 2 classes?
 export class LooseResourcesMoveRobberRobPlayer extends Expectation {
     constructor(game) {
         super();
@@ -351,6 +367,7 @@ export class LooseResourcesMoveRobberRobPlayer extends Expectation {
         }
         this.lostResources.add(action.player);
         this._fireIfChanged("youAction", oldYouAction, this.youAction);
+        this._fireChanged();
     }
     get youMessage() {
         if (!this._allPlayersLostResources) {
@@ -427,6 +444,7 @@ export class BuildTownThenBuildRoad extends Expectation {
         this.index += 1;
         this.action = this.actions[this.index];
         this._fireIfChanged("youAction", oldYouAction, this.youAction);
+        this._fireChanged();
     }
     get youMessage() {
         if (this.action.player !== this.player) {
@@ -472,6 +490,7 @@ export class BuildTwoRoads extends Expectation {
             const oldYouAction = this.youAction;
             this.roadsBuild += 1;
             this._fireIfChanged("youAction", oldYouAction, this.youAction);
+            this._fireChanged();
         }
     }
     get youMessage() {
