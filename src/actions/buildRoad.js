@@ -4,9 +4,10 @@ import {Edge} from "../edge.js";
 import {Road} from "../road.js";
 
 export class BuildRoad extends GameAction {
-    constructor(edge) {
+    constructor(config) {
         super();
-        this.edge = edge;
+        this.edge = config.edge;
+        this.player = config.player;
     }
     perform(game) {
         const road = new Road(this.player, this.edge);

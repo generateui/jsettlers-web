@@ -42,6 +42,14 @@ export class Node {
         }
         return this._nodes;
     }
+    /** given an edge of this node, return the other edges */
+    otherEdges(edge) {
+        // TODO: throw if edge is not in edges?
+        const index = this.edges.indexOf(edge);
+        const edge1 = index === 0 ? this.edges[1] : this.edges[0];
+        const edge2 = index === 0 ? this.edges[2] : index === 1 ? this.edges[2] : this.edges[1];
+        return [index1, index2];
+    }
     // By adding the hashcode numbers the order of coord1, 
     // coord2 and coord3 is not important
     // We divide by 3 to prevent overflow

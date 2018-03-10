@@ -179,7 +179,7 @@ export class Board {
     }
     townPossibilities(player) {
         const possibilities = [];
-        const edgePieces = Array.from(player.edgePieces);
+        const edgePieces = Array.from(player.edgePieces.map.keys());
         const nodes = new Set(edgePieces.mapMany(ep => ep.nodes));
         for (let node of nodes) {
             const isNodeUsed = this.nodePieces.has(node);
@@ -189,6 +189,33 @@ export class Board {
                 this.nodePieces.has(node.nodes[2]);
             if (!isNodeUsed && !anyNeighborUsed) {
                 possibilities.push(node);
+            }
+        }
+        return possibilities;
+    }
+    roadPossibilities(player) {
+        const possibilities = [];
+        if (player.nodePieces.length === 0) {
+            return possibilities;
+        }
+        for (let edge of player.edgePieces.map.keys()) {
+            const node1IsUsed = this.nodePieces.has(edge.node1);
+            const opponentUsesNode1 = node1IsUsed && this.nodePieces.get(edge.node1).player !== player;
+            const otherEdges1 = node.otherEdges(edge);
+            if (!opponentUsesNode1 && !this.edgePieces.has(otherEdges1[0])) {
+                possibilities.push(otherEdges1[0]);
+            }
+            if (!opponentUsesNode1 && !this.edgePieces.has(otherEdges1[1])) {
+                possibilities.push(otherEdges1[1]);
+            }
+            const node2IsUsed = this.nodePieces.has(edge.node2);
+            const opponentUsesNode2 = node2IsUsed && this.nodePieces.get(edge.node2).player !== player;
+            const otherEdges2 = node.otherEdges(edge);
+            if (!opponentUsesNode2 && !this.edgePieces.has(otherEdges2[0])) {
+                possibilities.push(otherEdges2[0]);
+            }
+            if (!opponentUsesNode2 && !this.edgePieces.has(otherEdges2[1])) {
+                possibilities.push(otherEdges2[1]);
             }
         }
         return possibilities;

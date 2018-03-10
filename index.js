@@ -128,6 +128,7 @@ import {LooseResources} from "./src/actions/looseResources";
 import {RobPlayer} from "./src/actions/robPlayer";
 import {MoveRobber} from "./src/actions/moveRobber";
 import {InitialPlacement, Finished, PlayTurns} from "./src/gamePhase";
+import {Soldier, VictoryPoint, RoadBuilding, YearOfPlenty, Monopoly} from "./src/developmentCard";
 
 const routes = [
   { path: "/", component: Welcome },
@@ -160,6 +161,11 @@ Vue.prototype.MoveRobber = MoveRobber;
 Vue.prototype.InitialPlacement = InitialPlacement;
 Vue.prototype.Finished = Finished;
 Vue.prototype.PlayTurns = PlayTurns;
+Vue.prototype.Soldier = Soldier;
+Vue.prototype.VictoryPoint = VictoryPoint;
+Vue.prototype.RoadBuilding = RoadBuilding;
+Vue.prototype.YearOfPlenty = YearOfPlenty;
+Vue.prototype.Monopoly = Monopoly;
 
 
 new Vue({ // eslint-disable-line no-new

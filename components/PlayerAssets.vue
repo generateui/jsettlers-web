@@ -28,11 +28,92 @@
                         v-bind:class="{ selected: selectedResources.includes(resource)}" />
                 </div>
             </template>
-            <div class="wrapper" v-for="developmentCard in player.developmentCards">
-                <img class="development-card"  
-                    :src="`doc/images/${developmentCard.name}.png`"
-                    @dblclick="playDevelopmentCard(developmentCard)" />
-            </div>
+
+            <popper v-for="dc in player.developmentCards" class="root"
+                trigger="hover" 
+                :options="{placement: 'top'}">
+                <ul class="popper popup">
+                    <div v-if="dc instanceof Soldier">
+                        <div class="popup-hero">
+                            <img class="popup-logo" src="doc/images/Soldier.png" />
+                            <span class="popup-title">soldier</span>
+                            <p class="popup-description">
+                                Move the robber. Then, you may steal a resource from any of the players having a town or city on the hex of the new robber position.
+                            </p>
+                        </div>
+                        <ul>
+                            <li v-for="message in soldierMessages" :key="message">{{message}}</li>
+                        </ul>
+                    </div>
+
+                    <div v-if="dc instanceof RoadBuilding">
+                        <div class="popup-hero">
+                            <img class="popup-logo" src="doc/images/RoadBuilding.png" />
+                            <span class="popup-title">road building</span>
+                            <p class="popup-description">
+                                Build two roads for free
+                            </p>
+                        </div>
+                        <ul>
+                            <li v-for="message in otherMessages" :key="message">{{message}}</li>
+                        </ul>
+                    </div>
+
+                    <div v-if="dc instanceof VictoryPoint">
+                        <div class="popup-hero">
+                            <img class="popup-logo" src="doc/images/VictoryPoint.png" />
+                            <span class="popup-title">victory point</span>
+                            <p class="popup-description">
+                                Gain 1 victory point
+                            </p>
+                        </div>
+                        <ul>
+                            <li v-for="message in victoryPointMessages" :key="message">{{message}}</li>
+                        </ul>
+                    </div>
+                    <div v-if="dc instanceof YearOfPlenty">
+                        <div class="popup-hero">
+                            <img class="popup-logo" src="doc/images/YearOfPlenty.png" />
+                            <span class="popup-title">year of plenty</span>
+                            <p class="popup-description">
+                                Choose two resources for free
+                            </p>
+                        </div>
+                        <ul>
+                            <li v-for="message in otherMessages" :key="message">{{message}}</li>
+                        </ul>
+                    </div>
+                    <div v-if="dc instanceof Monopoly">
+                        <div class="popup-hero">
+                            <img class="popup-logo" src="doc/images/Monopoly.png" />
+                            <span class="popup-title">monopoly</span>
+                            <p class="popup-description">
+                                Pick a resource type. Opponents with resources of that type must give you all their resources of that type.
+                            </p>
+                        </div>
+                        <ul>
+                            <li v-for="message in otherMessages" :key="message">{{message}}</li>
+                        </ul>
+                    </div>
+                </ul>
+                <div slot="reference">
+                    <img 
+                        class="development-card" 
+                        v-if="dc instanceof RoadBuilding || dc instanceof YearOfPlenty || dc instanceof Monopoly"
+                        v-bind:class=" { disabled: !canPlayOther }"
+                        :src="`doc/images/${dc.name}.png`"/>
+                    <img 
+                        class="development-card" 
+                        v-if="dc instanceof VictoryPoint"
+                        v-bind:class=" { disabled: !canPlayVp }"
+                        :src="`doc/images/${dc.name}.png`"/>
+                    <img 
+                        class="development-card" 
+                        v-if="dc instanceof Soldier"
+                        v-bind:class=" { disabled: !canPlaySoldier }"
+                        :src="`doc/images/${dc.name}.png`"/>
+                </div>
+            </popper>
         </div>
     </div>
 </template>
@@ -41,15 +122,17 @@
     import MonopolyDialog from './MonopolyDialog.vue';
     import YearOfPlentyDialog from './YearOfPlentyDialog.vue';
     import LooseResourcesDialog from "./LooseResourcesDialog.vue";
+    import Popper from 'vue-popperjs';
 
-    import { Monopoly } from '../src/developmentCard.js';
+    import * as m from "../src/matcher";
+    import { Monopoly, Soldier } from '../src/developmentCard.js';
     import { PlayDevelopmentCard } from "../src/actions/playDevelopmentCard.js";
     import { LooseResources } from "../src/actions/looseResources";
     import { ResourceList } from '../src/resource';
 
     export default {
         name: 'player-assets',
-        components: {MonopolyDialog, YearOfPlentyDialog, LooseResourcesDialog },
+        components: {MonopolyDialog, YearOfPlentyDialog, LooseResourcesDialog, Popper },
         props: {
             player: {
                 type: Object
@@ -69,11 +152,17 @@
         },
         data() {
             return {
+                victoryPointMessages: [],
+                soldierMessages: [],
+                otherMessages: [],
                 showMonopolyDialog: false,
                 showYearOfPlentyDialog: false,
                 developmentCard: null,
                 selectedResources: [],
                 selectResources: false,
+                canPlayVp: false,
+                canPlaySoldier: false,
+                canPlayOther: false,
             }
         },
         methods: {
@@ -142,12 +231,58 @@
                 const looseResources = LooseResources.createData(this.player, resourceList);
                 this.selectedResources.length = 0;
                 this.$emit('looseResources', looseResources)
+            },
+            updateCanPlayVp() {
+                const game = this.game;
+                const player = this.game.player;
+                this.victoryPointMessages = m.match([
+                    m.isOnTurn(game, player),
+                    m.isExpected(game, new PlayDevelopmentCard({player: player})),
+                ]);
+                this.canPlayVp = this.victoryPointMessages.length === 0;
+            },
+            updateCanPlaySoldier() {
+                const game = this.game;
+                const player = this.game.player;
+                this.soldierMessages = m.match([
+                    m.isOnTurn(game, player),
+                    m.isExpected(game, new PlayDevelopmentCard({player: player, developmentCard: new Soldier()})),
+                ]);
+                this.canPlaySoldier = this.soldierMessages.length === 0;
+            },
+            updateCanPlayNonVp() {
+                const game = this.game;
+                const player = this.game.player;
+                this.otherMessages = m.match([
+                    m.notYetPlayedDevelopmentCard(game),
+                    m.isOnTurn(game, player),
+                    m.isExpected(game, new PlayDevelopmentCard({player: player})),
+                ]);
+                this.canPlayOther = this.otherMessages.length === 0;
             }
+        },
+        mounted() {
+            this.updateCanPlayVp();
+            this.updateCanPlaySoldier();
+            this.updateCanPlayNonVp();
+            this.removeActionAddedHandler = this.game.actions.added((action) => {
+                this.updateCanPlayVp();
+                this.updateCanPlaySoldier();
+                this.updateCanPlayNonVp();
+            });
+        },
+        unmount() {
+            this.removeActionAddedHandler();
         }
+
     }
 </script>
 
 <style scoped>
+.root {
+    width: 50px;
+    height: 100px;
+}
 #player-assets {
     background-color: black;
     padding-right: 0.5em;
@@ -168,14 +303,10 @@
     flex: 1 1 0;
     min-width: 0;
 }
-.resource {
+.resource, .development-card {
     height: 101px;
     width: 63px;
-}
-img {
     min-width: 0;
-    height: 101px;
-    width: 63px;
 }
 .resource:hover {
     transform: translate(0, -0.5em);

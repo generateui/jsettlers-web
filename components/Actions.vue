@@ -1,30 +1,9 @@
 <template>
     <div id="actions">
         <build-town-button id="build-town-button" v-bind:game="game"></build-town-button>
-        <div id="build-city" class="build-button">
-            <img id="city-trade1" class="trade" src="doc/images/Trade48.png" />
-            <img id="city-trade2" class="trade" src="doc/images/Trade48.png" />
-            <img id="city-trade3" class="trade" src="doc/images/Trade48.png" />
-            <img id="city-trade4" class="trade" src="doc/images/Trade48.png" />
-            <img id="city-trade5" class="trade" src="doc/images/Trade48.png" />
-            <img id="build-city-button" src="doc/images/City48.png" />
-        </div>
-        <div id="build-road" class="build-button">
-            <!-- <img id="road-trade1" class="trade" src="doc/images/Trade48.png" /> -->
-            <!-- <img id="road-trade2" class="trade" src="doc/images/Trade48.png" /> -->
-            <img id="road-token1" v-if="game.player.roadBuildingTokens > 0" class="trade" src="doc/images/RoadBuildingToken.png" />
-            <img id="road-token2" v-if="game.player.roadBuildingTokens > 1" class="trade" src="doc/images/RoadBuildingToken.png" />
-            <img id="build-road-button" src="doc/images/Road48.png" @click="buildRoad" />
-        </div>
-        <div id="buy-development-card" class="build-button">
-            <img id="buy-development-card-trade1" class="trade trade1" src="doc/images/Trade48.png" />
-            <img id="buy-development-card-trade2" class="trade trade2" src="doc/images/Trade48.png" />
-            <img id="buy-development-card-trade3" class="trade trade3" src="doc/images/Trade48.png" />
-            <img id="buy-development-card-button" src="doc/images/BuyDevelopmentCard48.png" />
-        </div>
-        <!-- <div id="play-developmentCard" class="build-button">
-            <img src="doc/images/PlayDevelopmentCard48.png" />
-        </div> -->
+        <build-city-button id="build-city-button" v-bind:game="game"></build-city-button>
+        <build-road-button id="build-road-button" v-bind:game="game"></build-road-button>
+        <buy-development-card-button id="buy-development-card-button" v-bind:game="game"></buy-development-card-button>
         <div id="trade-player" class="build-button">
             <img src="doc/images/TradePlayer48.png" @click="openTradePlayerDialog" />
         </div>
@@ -51,6 +30,9 @@
     import TradeBankDialog from "./TradeBankDialog.vue";
     import TradePlayerDialog from './TradePlayerDialog.vue';
     import BuildTownButton from './BuildTownButton.vue';
+    import BuildCityButton from './BuildCityButton.vue';
+    import BuildRoadButton from './BuildRoadButton.vue';
+    import BuyDevelopmentCardButton from './BuyDevelopmentCardButton.vue';
     import GamePhasesView from './GamePhasesView.vue';
 
     import * as gb from "../src/ui/gameBehavior.js";
@@ -58,7 +40,8 @@
 
     export default {
         components: {
-            DiceView, TradeBankDialog, TradePlayerDialog, GamePhasesView, BuildTownButton
+            DiceView, TradeBankDialog, TradePlayerDialog, GamePhasesView, BuildTownButton, 
+            BuildRoadButton, BuildCityButton, BuyDevelopmentCardButton
         },
         props: {
             game: {
@@ -121,6 +104,59 @@
 .disabled {
     filter: blur(2px) grayscale(100%);
 }
+.popup {
+    max-width: 200px;
+}
+.popup-resource {
+    width: 24px;
+    /* height: 32px; */
+    margin: 2px;
+}
+.popup p {
+    text-align: left;
+    margin: 0.5em;
+    grid-column-start: 1;
+    grid-column-end: 3;
+    grid-row-start: 2;
+}
+.popup-hero {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto;
+    justify-content: center;
+}
+.popup-logo {
+    grid-column-start: 1;
+    grid-row-start: 1;
+    /* height: 24px; */
+    width: 24px;
+    margin-right: 6px;
+    margin-left: 4px;
+    margin-top: 4px;
+}
+.popup-cost {
+    grid-column-start: 1;
+    grid-column-end: 3;
+    grid-row-start: 2;
+    display: inline-flex;
+    margin: 0.5em;
+}
+.popup-title {
+    grid-column-start: 2;
+    grid-row-start: 1;
+    align-self: center;
+    font-weight: bold;
+    font-family: "Nanum Pen Script";
+    font-size: 24px;
+}
+.popup li {
+    text-align: left;
+    list-style: none;
+}
+.popup li:before {
+    content: '❌';
+    margin-right: 4px;
+}
 </style>
 
 <style scoped>
@@ -132,105 +168,23 @@
     grid-column-gap: 1em;
 }
 
-#build-city {
+#build-city-button {
     grid-column-start: 4;
     grid-row-start: 1;
-    display: grid;
-    grid-template-columns: 24px 24px;
-    grid-template-rows: 24px 24px 24px 48px;
 }
-    #build-city-button {
-        grid-column-start: 1;
-        grid-column-end: 2;
-        grid-row-start: 4;
-        grid-row-end: 4;
-        width: 48px;
-        height: 48px;
-    }
-    #city-trade1 {
-        grid-column-start: 1;
-        grid-row-start: 3;
-    }
-    #city-trade2 {
-        grid-column-start: 2;
-        grid-row-start: 3;
-    }
-    #city-trade3 {
-        grid-column-start: 1;
-        grid-row-start: 2;
-    }
-    #city-trade4 {
-        grid-column-start: 2;
-        grid-row-start: 2;
-    }
-    #city-trade5 {
-        grid-column-start: 1;
-        grid-row-start: 1;
-    }
-
 #build-town-button {
     grid-column-start: 2;
     grid-row-start: 1;
 }
-
-#build-road {
+#build-road-button {
     grid-column-start: 3;
-    grid-row-start: 1;
-    display: grid;
-    grid-template-columns: 24px 24px;
-    grid-template-rows: 24px 48px;
+    grid-row-start: 2;
 }
-    #build-road-button {
-        grid-column-start: 1;
-        grid-column-end: 2;
-        grid-row-start: 2;
-        grid-row-end: 2;
-        width: 48px;
-        height: 48px;
-    }
-    #road-trade1 {
-        grid-column-start: 1;
-        grid-row-start: 1;
-    }
-    #road-trade2 {
-        grid-column-start: 2;
-        grid-row-start: 1;
-    }
-    #road-token1 {
-        grid-column-start: 1;
-        grid-row-start: 1;
-    }
-    #road-token2 {
-        grid-column-start: 2;
-        grid-row-start: 1;
-    }
-#buy-development-card {
+#buy-development-card-button {
     grid-column-start: 5;
     grid-row-start: 1;
-    display: grid;
-    grid-template-columns: 24px 24px;
-    grid-template-rows: 24px 24px 48px;
 }
-    #buy-development-card-button {
-        grid-column-start: 1;
-        grid-column-end: 2;
-        grid-row-start: 3;
-        grid-row-end: 3;
-        width: 48px;
-        height: 48px;
-    }
-    #buy-development-card-trade1 {
-        grid-column-start: 1;
-        grid-row-start: 2;
-    }
-    #buy-development-card-trade2 {
-        grid-column-start: 2;
-        grid-row-start: 2;
-    }
-    #buy-development-card-trade3 {
-        grid-column-start: 1;
-        grid-row-start: 1;
-    }
+
 #play-developmentCard {
     grid-column-start: 5;
     grid-row-start: 1;

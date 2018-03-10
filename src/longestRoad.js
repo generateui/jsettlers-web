@@ -86,9 +86,9 @@ export class LongestRoad extends Observable {
                 //     
                 const node1 = edge.node1;
                 const index1 = node1.edges.indexOf(edge);
-                // we want to get a reference to the second and third edge of the node here
-                const edge1 = index1 === 0 ? node1.edges[1] : node1.edges[0];
-                const edge2 = index1 === 0 ? node1.edges[2] : index1 === 1 ? node1.edges[2] : node1.edges[1];
+                const otherEdges1 = node1.otherEdges(edge);
+                const edge1 = otherEdges1[0];
+                const edge2 = otherEdges1[1];
                 const pieceAtNode1 = game.board.nodePieces.has(node1);
 
                 //   ✔️         ❌         ✔️                                 🔴: opponent town/city
@@ -114,9 +114,9 @@ export class LongestRoad extends Observable {
                 // matters. So I rolled that back.
                 const node2 = edge.node2;
                 const node2Edges = node2.edges;
-                const index2 = node2Edges.indexOf(edge);
-                const edge3 = index2 === 0 ? node2Edges[1] : node2Edges[0];
-                const edge4 = index2 === 0 ? node2Edges[2] : index2 == 1 ? node2Edges[2] : node2Edges[1];
+                const otherEdges2 = node2.otherEdges(edge);
+                const edge3 = otherEdges2[0];
+                const edge4 = otherEdges2[1];
                 const pieceAtNode2 = game.board.nodePieces.has(edge.node2);
                 const opponentAtNode2 = pieceAtNode2 && game.board.nodePieces.get(edge.node2).player !== player;
                 const connects2 = !pieceAtNode2 || !opponentAtNode2;

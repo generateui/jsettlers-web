@@ -32,6 +32,16 @@ export class DevelopmentCard {
         data.setTurnPlayedIndex(this.turnPlayedIndex);
         return data;
     }
+    static get cost() {
+        return new ResourceList([
+            proto.ResourceType.WHEAT,
+            proto.ResourceType.ORE,
+            proto.ResourceType.SHEEP,
+        ]);
+    }
+    get maxOnePerTurn() {
+        return true;
+    }
 }
 export class YearOfPlenty extends DevelopmentCard {
     constructor() {
@@ -133,6 +143,7 @@ export class VictoryPoint extends DevelopmentCard {
         return data;
     }
     get name() { return "VictoryPoint"; }
+    get maxOnePerTurn() { return false; }
 }
 export class RoadBuilding extends DevelopmentCard {
     constructor() {

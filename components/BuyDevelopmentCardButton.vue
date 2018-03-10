@@ -2,8 +2,8 @@
     <popper trigger="hover" :options="{placement: 'top'}" class="root">
         <ul class="popper popup">
             <div class="popup-hero">
-                <img class="popup-logo" src="doc/images/Town48.png" />
-                <span class="popup-title">Build a town</span>
+                <img class="popup-logo" src="doc/images/DevelopmentCard48.png" />
+                <span class="popup-title">Buy a development card</span>
                 <div class="popup-cost">
                     <div v-for="resourceType in cost.types" :key="resourceType">
                         <img class="popup-resource" v-for="resource in cost.of(resourceType)" :key="resource.id"
@@ -16,16 +16,14 @@
             </ul>
         </ul>
 
-        <div id="build-town" class="build-button" slot="reference" v-bind:class="{ disabled: !canBuildTown }">
-            <img id="button" src="doc/images/Town48.png" />
+        <div id="buy-development-card" class="build-button" slot="reference" v-bind:class="{ disabled: !canBuyDevelopmentCard }">
+            <img id="button" src="doc/images/DevelopmentCard48.png" />
             <img id="trade1" class="trade" src="doc/images/Trade48.png"
-                v-if="!canPayTownDirectly && amountGoldNeeded >= 1 && amountGold >= 1" />
+                v-if="!canPayDevelopmentCardDirectly && amountGoldNeeded >= 1 && amountGold >= 1" />
             <img id="trade2" class="trade" src="doc/images/Trade48.png" 
-                v-if="!canPayTownDirectly && amountGoldNeeded >= 2 && amountGold >= 2" />
+                v-if="!canPayDevelopmentCardDirectly && amountGoldNeeded >= 2 && amountGold >= 2" />
             <img id="trade3" class="trade" src="doc/images/Trade48.png" 
-                v-if="!canPayTownDirectly && amountGoldNeeded >= 3 && amountGold >= 3" />
-            <img id="trade4" class="trade" src="doc/images/Trade48.png" 
-                v-if="!canPayTownDirectly && amountGoldNeeded >= 4 && amountGold >= 4" />
+                v-if="!canPayDevelopmentCardDirectly && amountGoldNeeded >= 3 && amountGold >= 3" />
         </div>
     </popper>
 </template>
@@ -33,12 +31,12 @@
 <script>
 import * as m from "../src/matcher";
 import Popper from 'vue-popperjs';
-import { BuildTown } from '../src/actions/buildTown';
-import { Town } from '../src/town';
+import { BuyDevelopmentCard } from '../src/actions/buyDevelopmentCard';
+import { DevelopmentCard } from '../src/developmentCard';
 import { ResourceList } from '../src/resource';
 
 export default {
-    name: 'build-town-button',
+    name: 'build-development-card-button',
     components: { Popper },
     props: {
         game: {
@@ -48,42 +46,38 @@ export default {
     data() {
         return {
             messages: [],
-            canBuildTown: false,
-            canPayTownDirectly: false,
+            canBuyDevelopmentCard: false,
+            canPayDevelopmentCardDirectly: false,
             amountGoldNeeded: 0,
             amountGold: 0,
-            edgePieces: game.player.edgePieces,
-            stockTowns: game.player.stock.towns,
-            cost: Town.cost,
+            cost: DevelopmentCard.cost,
         }
     },
     methods: {
         updateGold() {
             const resources = this.game.player.resources;
-            this.canPayTownDirectly = resources.hasAtLeast(Town.cost);
-            this.amountGoldNeeded = resources.amountGoldNeeded(Town.cost);
+            this.canPayDevelopmentCardDirectly = resources.hasAtLeast(DevelopmentCard.cost);
+            this.amountGoldNeeded = resources.amountGoldNeeded(DevelopmentCard.cost);
             const resourcesWithoutCost = new ResourceList(resources);
-            resourcesWithoutCost.remove(Town.cost);
+            resourcesWithoutCost.remove(DevelopmentCard.cost);
             this.amountGold = this.game.player.ports.amountGold(resourcesWithoutCost);
         },
-        updateCanBuildTown() {
+        updateCanBuildDevelopmentCard() {
             const game = this.game;
             const player = this.game.player;
             this.messages = m.match([
-                m.hasTownInStock(player.stock),
                 m.isOnTurn(game, player),
-                m.isExpected(game, new BuildTown({player: player})),
-                m.canPlaceTownOnBoard(game, player),
+                m.isExpected(game, new BuyDevelopmentCard({player: player})),
             ]);
-            this.canBuildTown = this.messages.length === 0;
+            this.canBuyDevelopmentCard = this.messages.length === 0;
         }
     },
     mounted() {
-        this.updateCanBuildTown();
+        this.updateCanBuildDevelopmentCard();
         this.updateGold();
         this.removeActionAddedHandler = this.game.actions.added((action) => {
             this.updateGold();
-            this.updateCanBuildTown();
+            this.updateCanBuildDevelopmentCard();
         })
     },
     unmount() {
@@ -94,15 +88,11 @@ export default {
 </script>
 
 <style scoped>
-li {
-    text-align: left;
-    list-style: none;
-}
 .root {
     height: 108px; /* todo: fix. 72 + half */
     align-self: end;
 }
-#build-town {
+#buy-development-card {
     display: grid;
     grid-template-columns: 24px 24px;
     grid-template-rows: 24px 24px 24px;
@@ -125,10 +115,6 @@ li {
 }
 #trade3 {
     grid-column-start: 1;
-    grid-row-start: 1;
-}
-#trade4 {
-    grid-column-start: 2;
     grid-row-start: 1;
 }
 </style>

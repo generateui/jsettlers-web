@@ -27,6 +27,7 @@ export class GamePhase {
     buildTown(game, buildTown) {}
     rollDice(game, rollDice) {}
     endTurn(game, endTurn) {}
+    playDevelopmentCard(game, playDevelopmentCard) {}
     playSoldier(game, soldier) {} 
     robPlayer(game, robPlayer) {}
 
@@ -81,7 +82,7 @@ export class PlayTurns extends GamePhase {
         super();
 
         this.turns = []; // all played turns
-        this.turn = null; // current turn
+        this.turn = new Turn(); // current turn
 
         this.playTurnActions = null;
         this.beforeRollDicePhase = new BeforeRollDicePhase();
@@ -114,6 +115,11 @@ export class PlayTurns extends GamePhase {
             }
         } else {
             game.bank.resources.moveFrom(buildTown.player.resources, Road.cost);
+        }
+    }
+    playDevelopmentCard(game, playDevelopmentCard) {
+        if (developmentCard.maxOnePerTurn) {
+            this.turn.hasDevelopmentCardPlayed = true;
         }
     }
     playSoldier(game, soldier) {
@@ -207,5 +213,6 @@ export class Turn {
     constructor(player, number) {
         this.player = player;
         this.nunmber = number; // 1-based index
+        this.hasDevelopmentCardPlayed = false;
     }
 }
