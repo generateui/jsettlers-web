@@ -144,19 +144,17 @@
     background-color: rgba(33, 150, 243, 0.75);
     grid-row-start: 1;
     grid-column-start: 1;
-    /* height: 100%; */
+    padding-left: 1em;
 }
 #vertical-menu-2 {
     background-color: rgba(33, 150, 243, 0.5);
     grid-row-start: 1;
     grid-column-start: 2;
-    /* height: 100%; */
 }
 #board-renderer {
     background-color: #000;
     grid-row-start: 1;
     grid-column-start: 3;
-    /* height: 100%; */
 }
 </style>
 

@@ -1,6 +1,10 @@
 @import "node_modules/vue-popperjs/dist/css/vue-popper.css";
 @import "mui/mui.css";
 
+* {
+    font-family: "Roboto";
+}
+
 html,
 body {
     height: 100%;
