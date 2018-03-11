@@ -14,7 +14,7 @@
 </template>
 
 <script>
-  import {Player, User, Color} from "../src/player.js";
+  import {Player, User, Color} from "../../src/player.js";
   const players = [
       new Player({ color: Color.red, user: new User({name: "player1" }) }),
       new Player({ color: Color.green, user: new User({name: "player2" }) }),

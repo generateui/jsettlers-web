@@ -23,13 +23,13 @@
 
 <script>
     import Welcome from './components/Welcome.vue';
-    import TechDemo from './components/TechDemo.vue';
+    import TechDemo from './components/techdemo/TechDemo.vue';
     import VueRouter from 'vue-router';
 
     export default {
         name: 'app',
         components: {
-            Hello, TechDemo
+            TechDemo
         }
     }
 </script>

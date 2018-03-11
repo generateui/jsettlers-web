@@ -110,7 +110,7 @@ import Vue from 'vue';
 import App from './App.vue';
 import VueRouter from 'vue-router';
 import PlayTestGame from './components/PlayTestGame.vue';
-import TechDemo from './components/TechDemo.vue';
+import TechDemo from './components/techdemo/TechDemo.vue';
 import Welcome from './components/Welcome.vue';
 import Game from './components/Game.vue';
 import GameSettings from './components/GameSettings.vue';

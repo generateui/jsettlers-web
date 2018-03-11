@@ -13,35 +13,20 @@
         <bank-view id="bank" v-bind:bank="game.bank" v-bind:update="update"></bank-view>
 
         <div id="tabs">
-            <button class="tab-button" @click="doShowActions()">actions</button>
-            <button class="tab-button" @click="doShowChat()">chat</button>
-            <button class="tab-button" @click="doShowPerformAction()">action</button>
-            <button class="tab-button" @click="doShowQueue()">queue</button>
+            <button class="tab-button" @click="tabMode = TABMODE.actions">actions</button>
+            <button class="tab-button" @click="tabMode = TABMODE.chat">chat</button>
+            <button class="tab-button" @click="tabMode = TABMODE.debug">debug</button>
+            <button class="tab-button" @click="tabMode = TABMODE.expectation">expectation</button>
         </div>
         <div id="tab-content">
             <action-log 
-                v-show="showActions" 
+                v-show="tabMode === TABMODE.actions" 
                 id="action-log" 
                 v-bind:actions="game.actions.array"></action-log>
-            <div v-show="showChats" id="chats"></div>
-            <div v-show="showQueue" id="queue">
-                <!-- <ul>
-                    <li v-for="item in game.queue.queuedActions">
-                        <div v-if="item instanceof QueuedAction">
-                            {{item.action.constructor.name}} - {{item.action.player.user.name}}
-                            <span v-if="item.optional"> (optional)</span>
-                        </div>
-                        <ul v-if="item instanceof Unordered">
-                            <li v-for="nested in item.queuedActions">
-                                {{nested.action.constructor.name}} - {{nested.action.player.user.name}}
-                                <span v-if="nested.optional"> (optional)</span>
-                            </li>
-                        </ul>
-                    </li>
-                </ul> -->
-            </div>
+            <div v-show="tabMode === TABMODE.chat" id="chats"></div>
+            <div v-show="tabMode === TABMODE.expectation" id="queue"></div>
             <debug-perform-actions 
-                v-show="showPerformActions" 
+                v-show="tabMode === TABMODE.debug" 
                 v-bind:game="game" 
                 v-bind:host="host" 
                 v-bind:keyListener="keyListener"
@@ -76,13 +61,14 @@
 </template>
 
 <script>
+    import Vue from 'vue';
     import PlayerInfo from "./PlayerInfo.vue";
     import PlayerAssets from "./PlayerAssets.vue";
     import Actions from "./Actions.vue";
     import BankView from "./BankView.vue";
     import ActionLog from "./ActionLog.vue";
     import DiceView from "./DiceView.vue";
-    import DebugPerformActions from "./DebugPerformActions.vue";
+    import DebugPerformActions from "./debug/DebugPerformActions.vue";
     import TradeBankDialog from "./TradeBankDialog.vue";
     import ActionsMessage from "./ActionsMessage.vue";
 
@@ -105,6 +91,13 @@
 
     var boardRenderer = null;
     var host = null;
+    const TABMODE = {
+        actions: 0,
+        chat: 1,
+        debug: 2,
+        expectation: 3
+    };
+    Vue.prototype.TABMODE = TABMODE;
 
     const boards = [
         Standard4pDesign.descriptor,
@@ -138,10 +131,7 @@
         },
         data() {
             return {
-                showActions: false,
-                showChat: false,
-                showPerformActions: true,
-                showQueue: false,
+                tabMode: TABMODE.debug,
                 game: null,
                 selectedPlayer: null,
                 host: null,
