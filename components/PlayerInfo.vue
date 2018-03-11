@@ -92,7 +92,7 @@
                     <div class="development-card-view"  v-if="action.developmentCard instanceof YearOfPlenty">
                         <img class="development-card-logo" src="doc/images/YearOfPlentyLogo48.png" />
                         <resource-list-view
-                            :resources="createResourceList([action.developmentCard.resourceType1, action.developmentCard.resourceType2])"
+                            :resources="action.developmentCard.resources"
                             :size="48">
                         </resource-list-view>
                     </div>
@@ -139,15 +139,9 @@
                 <div class="trade-bank-view" v-if="action instanceof TradeBank">
                     <img src="doc/images/TradeBank48.png" />
                     <span>got</span>
-                    <resource-list-view
-                        :resources="action.wanted"
-                        :size="48">
-                    </resource-list-view>
+                    <resource-list-view :resources="action.wanted" :size="48"></resource-list-view>
                     <span>for</span>
-                    <resource-list-view
-                        :resources="action.offered"
-                        :size="48">
-                    </resource-list-view>
+                    <resource-list-view :resources="action.offered" :size="48"></resource-list-view>
                 </div>
 
                 <div class="trade-player-view" v-if="action instanceof TradePlayer">
@@ -215,13 +209,12 @@
             }
         },
         methods: {
-            createResourceList(resourceTypes) {
-                return new ResourceList(resourceTypes);
-            },
             showAction: async function(action) {
-                // filter interesting actions only for this player
+                // show resources gained for all player who gain
                 const isRollDiceWithResources = action instanceof RollDice && action.productionByPlayer.has(this.player);
+                // show tradeplayer for both players
                 const isTradePlayer = action instanceof TradePlayer && action.opponent === this.player;
+                // show all actions of this player
                 const isMine = action.player === this.player;
                 if (isRollDiceWithResources || isTradePlayer || isMine) {
                     this.actions.push(action);
