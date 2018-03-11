@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/geluso/carcattonne.git"
+    "url": "git+https://github.com/generateui/jsettlers-web.git"
   },
   "author": "",
   "license": "AGPL-3.0",
   "bugs": {
-    "url": "https://github.com/geluso/carcattonne/issues"
+    "url": "https://github.com/generateui/jsettlers-web/issues"
   },
-  "homepage": "https://github.com/geluso/carcattonne#readme",
+  "homepage": "https://github.com/generateui/jsettlers-web",
   "dependencies": {
     "circular-json": "^0.5.1",
     "circular-json-es6": "^2.0.2",

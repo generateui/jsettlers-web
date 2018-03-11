@@ -20,11 +20,11 @@
         </div>
         <div id="tab-content">
             <action-log 
-                v-if="showActions" 
+                v-show="showActions" 
                 id="action-log" 
                 v-bind:actions="game.actions.array"></action-log>
-            <div v-if="showChats" id="chats"></div>
-            <div v-if="showQueue" id="queue">
+            <div v-show="showChats" id="chats"></div>
+            <div v-show="showQueue" id="queue">
                 <!-- <ul>
                     <li v-for="item in game.queue.queuedActions">
                         <div v-if="item instanceof QueuedAction">
@@ -41,7 +41,7 @@
                 </ul> -->
             </div>
             <debug-perform-actions 
-                v-if="showPerformActions" 
+                v-show="showPerformActions" 
                 v-bind:game="game" 
                 v-bind:host="host" 
                 v-bind:keyListener="keyListener"
@@ -242,12 +242,12 @@
                 }
                 if (action instanceof BuildTown) {
                     const behavior = new gb.BuildTown(this.player, this.keyListener);
-                    const createActionData = (player, node) => BuildTown.createData(this.player, node);
+                    const createActionData = (player, node) => BuildTown.createData(player, node);
                     this.behaveThenAct(behavior, createActionData);
                 }
                 if (action instanceof BuildRoad) {
                     const behavior = new gb.BuildRoad(this.player, this.keyListener);
-                    const createAction = (player, edge) => BuildRoad.createData(this.player, edge);
+                    const createAction = (player, edge) => BuildRoad.createData(player, edge);
                     this.behaveThenAct(behavior, createAction);
                 }
                 if (action instanceof MoveRobber) {

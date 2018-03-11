@@ -129,7 +129,7 @@
     grid-column-start: 1;
     grid-row-start: 1;
     /* height: 24px; */
-    width: 24px;
+    width: 48px;
     margin-right: 6px;
     margin-left: 4px;
     margin-top: 4px;
@@ -147,7 +147,7 @@
     align-self: center;
     font-weight: bold;
     font-family: "Nanum Pen Script";
-    font-size: 24px;
+    font-size: 20px;
 }
 .popup li {
     text-align: left;

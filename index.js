@@ -116,6 +116,8 @@ import Game from './components/Game.vue';
 import GameSettings from './components/GameSettings.vue';
 import Attribution from './components/doc/Attribution.vue';
 import VueMarkdown from 'vue-markdown';
+import {TradeBank} from "./src/actions/tradeBank.js";
+import {RollDice} from "./src/actions/rollDice.js";
 import {BuildTown} from "./src/actions/buildTown.js";
 import {BuildRoad} from "./src/actions/buildRoad.js";
 import {BuildCity} from "./src/actions/buildCity.js";
@@ -127,6 +129,8 @@ import {TradePlayer} from "./src/actions/tradePlayer";
 import {LooseResources} from "./src/actions/looseResources";
 import {RobPlayer} from "./src/actions/robPlayer";
 import {MoveRobber} from "./src/actions/moveRobber";
+import {BuyDevelopmentCard} from "./src/actions/buyDevelopmentCard";
+import {PlayDevelopmentCard} from "./src/actions/playDevelopmentCard";
 import {InitialPlacement, Finished, PlayTurns} from "./src/gamePhase";
 import {Soldier, VictoryPoint, RoadBuilding, YearOfPlenty, Monopoly} from "./src/developmentCard";
 
@@ -166,6 +170,10 @@ Vue.prototype.VictoryPoint = VictoryPoint;
 Vue.prototype.RoadBuilding = RoadBuilding;
 Vue.prototype.YearOfPlenty = YearOfPlenty;
 Vue.prototype.Monopoly = Monopoly;
+Vue.prototype.PlayDevelopmentCard = PlayDevelopmentCard;
+Vue.prototype.BuyDevelopmentCard = BuyDevelopmentCard;
+Vue.prototype.RollDice = RollDice;
+Vue.prototype.TradeBank = TradeBank;
 
 
 new Vue({ // eslint-disable-line no-new

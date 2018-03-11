@@ -106,18 +106,18 @@
         },
         methods: {
             buildTown: async function() {
-                const behavior = new gb.BuildTown(this.player, this.keyListener, true);
-                const createActionData = (player, node) => BuildTown.createData(this.player, node);
+                const behavior = new gb.BuildTown(this.game.player, this.keyListener, true);
+                const createActionData = (player, node) => BuildTown.createData(player, node);
                 this.behaveThenAct(behavior, createActionData);
             },
             buildRoad: function() {
-                const behavior = new gb.BuildRoad(this.player, this.keyListener, true);
-                const createAction = (player, edge) => BuildRoad.createData(this.player, edge);
+                const behavior = new gb.BuildRoad(this.game.player, this.keyListener, true);
+                const createAction = (player, edge) => BuildRoad.createData(player, edge);
                 this.behaveThenAct(behavior, createAction);
             },
             buildCity: function() {
-                const behavior = new gb.BuildCity(this.player, this.keyListener, true);
-                const createAction = (player, node) => BuildCity.createData(this.player, node);
+                const behavior = new gb.BuildCity(this.game.player, this.keyListener, true);
+                const createAction = (player, node) => BuildCity.createData(player, node);
                 this.behaveThenAct(behavior, createAction);
             },
             buyDevelopmentCard: function() {
@@ -156,7 +156,7 @@
                     // await the behavior for completion (e.g. a click on the board on some renderer)
                     const result = await behavior.promise;
                     // create some data
-                    const action = createAction(this.$data.player, result);
+                    const action = createAction(this.player, result);
                     // send the data
                     await this.$props.host.send(action);
                 } catch (error) {
@@ -171,6 +171,9 @@
             const that = this;
             this.keyListener.specific("r", () => {
                 that.buildRoad();
+            });
+            this.keyListener.specific("t", () => {
+                that.buildTown();
             });
             this.game.actions.added((action) => {
                 if (!this.autoRespond) {

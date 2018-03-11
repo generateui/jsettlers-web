@@ -6,6 +6,7 @@ import {Road} from "../road.js";
 export class BuildRoad extends GameAction {
     constructor(config) {
         super();
+        config = config || {};
         this.edge = config.edge;
         this.player = config.player;
     }
@@ -18,7 +19,7 @@ export class BuildRoad extends GameAction {
     }
     static fromData(data) {
         const edge = Edge.fromData(data.getEdge())
-        return new BuildRoad(edge);
+        return new BuildRoad({edge: edge});
     }
     static createData(player, edge) {
         const action = new proto.GameAction();

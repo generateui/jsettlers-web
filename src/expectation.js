@@ -361,7 +361,7 @@ export class LooseResourcesMoveRobberRobPlayer extends Expectation {
     meet(action) {
         const oldYouAction = this.youAction;
         if (action instanceof RobPlayer || action instanceof MoveRobber) {
-            this.moveRobberThenRobPlayer(action);
+            this.moveRobberThenRobPlayer.meet(action);
             this._fireIfChanged("youAction", oldYouAction, this.youAction);
             return;
         }

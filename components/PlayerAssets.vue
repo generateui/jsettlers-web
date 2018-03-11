@@ -35,7 +35,7 @@
                 <ul class="popper popup">
                     <div v-if="dc instanceof Soldier">
                         <div class="popup-hero">
-                            <img class="popup-logo" src="doc/images/Soldier.png" />
+                            <img class="popup-logo" src="doc/images/SoldierLogo48.png" />
                             <span class="popup-title">soldier</span>
                             <p class="popup-description">
                                 Move the robber. Then, you may steal a resource from any of the players having a town or city on the hex of the new robber position.
@@ -48,7 +48,7 @@
 
                     <div v-if="dc instanceof RoadBuilding">
                         <div class="popup-hero">
-                            <img class="popup-logo" src="doc/images/RoadBuilding.png" />
+                            <img class="popup-logo" src="doc/images/RoadBuildingLogo48.png" />
                             <span class="popup-title">road building</span>
                             <p class="popup-description">
                                 Build two roads for free
@@ -61,7 +61,7 @@
 
                     <div v-if="dc instanceof VictoryPoint">
                         <div class="popup-hero">
-                            <img class="popup-logo" src="doc/images/VictoryPoint.png" />
+                            <img class="popup-logo" src="doc/images/VictoryPointLogo48.png" />
                             <span class="popup-title">victory point</span>
                             <p class="popup-description">
                                 Gain 1 victory point
@@ -73,7 +73,7 @@
                     </div>
                     <div v-if="dc instanceof YearOfPlenty">
                         <div class="popup-hero">
-                            <img class="popup-logo" src="doc/images/YearOfPlenty.png" />
+                            <img class="popup-logo" src="doc/images/YearOfPlentyLogo48.png" />
                             <span class="popup-title">year of plenty</span>
                             <p class="popup-description">
                                 Choose two resources for free
@@ -85,7 +85,7 @@
                     </div>
                     <div v-if="dc instanceof Monopoly">
                         <div class="popup-hero">
-                            <img class="popup-logo" src="doc/images/Monopoly.png" />
+                            <img class="popup-logo" src="doc/images/MonopolyLogo48.png" />
                             <span class="popup-title">monopoly</span>
                             <p class="popup-description">
                                 Pick a resource type. Opponents with resources of that type must give you all their resources of that type.
@@ -101,16 +101,19 @@
                         class="development-card" 
                         v-if="dc instanceof RoadBuilding || dc instanceof YearOfPlenty || dc instanceof Monopoly"
                         v-bind:class=" { disabled: !canPlayOther }"
+                        @dblclick="playDevelopmentCard(dc)"
                         :src="`doc/images/${dc.name}.png`"/>
                     <img 
                         class="development-card" 
                         v-if="dc instanceof VictoryPoint"
                         v-bind:class=" { disabled: !canPlayVp }"
+                        @dblclick="playDevelopmentCard(dc)"
                         :src="`doc/images/${dc.name}.png`"/>
                     <img 
                         class="development-card" 
                         v-if="dc instanceof Soldier"
                         v-bind:class=" { disabled: !canPlaySoldier }"
+                        @dblclick="playDevelopmentCard(dc)"
                         :src="`doc/images/${dc.name}.png`"/>
                 </div>
             </popper>
@@ -170,24 +173,22 @@
                 this.$emit('action', action);
             },
             playDevelopmentCard(developmentCard) {
-                this.$data.developmentCard = developmentCard;
+                this.developmentCard = developmentCard;
                 // instanceof don't work here
                 const typeName = developmentCard.constructor.name;
                 if (typeName === "Monopoly") {
-                    this.$data.showMonopolyDialog = true;
+                    this.showMonopolyDialog = true;
                 } else if (typeName === "YearOfPlenty") {
-                    this.$data.showYearOfPlentyDialog = true;
+                    this.showYearOfPlentyDialog = true;
                 } else if (typeName === "RoadBuilding") {
-                    const rb = this.$data.developmentCard;
-                    const player = this.$props.player;
-                    rb.player = player;
-                    const playRoadBuilding = PlayDevelopmentCard.createData(player, rb);
+                    const rb = this.developmentCard;
+                    rb.player = this.player;
+                    const playRoadBuilding = PlayDevelopmentCard.createData(this.player, rb);
                     this.$emit('action', playRoadBuilding)
                 } else if (typeName === "VictoryPoint") {
-                    const vp = this.$data.developmentCard;
-                    const player = this.$props.player;
-                    vp.player = player;
-                    const playVp = PlayDevelopmentCard.createData(player, vp);
+                    const vp = this.developmentCard;
+                    vp.player = this.player;
+                    const playVp = PlayDevelopmentCard.createData(this.player, vp);
                     this.$emit('action', playVp)
                 } else if (typeName === "Soldier") {
                     const soldier = this.developmentCard;
@@ -198,23 +199,23 @@
                 }
             },
             closeMonopolyDialog(resourceType) {
-                this.$data.showMonopolyDialog = false;
+                this.showMonopolyDialog = false;
                 if (resourceType === null) {
                     return;
                 }
-                const player = this.$props.player;
-                const monopoly = this.$data.developmentCard;
+                const player = this.player;
+                const monopoly = this.developmentCard;
                 monopoly.resourceType = resourceType;
                 monopoly.player = player;
                 const playMonopoly = PlayDevelopmentCard.createData(player, monopoly);
                 this.$emit('action', playMonopoly)
             },
             closeYearOfPlentyDialog(resourceTypes) {
-                this.$data.showYearOfPlentyDialog = false;
-                const yop = this.$data.developmentCard;
+                this.showYearOfPlentyDialog = false;
+                const yop = this.developmentCard;
                 yop.resourceType1 = resourceTypes[0];
                 yop.resourceType2 = resourceTypes[1];
-                const player = this.$props.player;
+                const player = this.player;
                 yop.player = player;
                 const playYop = PlayDevelopmentCard.createData(player, yop);
                 this.$emit('action', playYop)

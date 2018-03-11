@@ -115,7 +115,7 @@ export class RollDice extends GameAction {
             const bankResources = new ResourceList(game.bank.resources);
             const affectedHexes = Array.from(game.board.hexes.values())
                 .filter(h => h.chit.number !== null && 
-                    h.chit.number === total && 
+                    h.chit.number === this.dice.total && 
                     h.coord !== game.board.robber.coord);
 
             // first, get total theoretical production and get total theoretical production by player

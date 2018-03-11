@@ -44,28 +44,142 @@
                     </div>
                 </popper>
             </div>
-            <div id="resources">
+            <div class="hand-cards">
                 <!-- TODO: diff opponent & playing player -->
                 <!-- <div > -->
-                    <img v-for="n in player.resources.length" src="doc/images/BlankResourceCard48.png" />
+                    <span class="hand-cards-amount">{{player.resources.length}}</span>
+                    <div class="hand-card-wrapper" v-for="n in player.resources.length">
+                        <img src="doc/images/BlankResourceCard48.png" />
+                    </div>
                 <!-- </div> -->
             </div>
         </div>
         <div id="popup" class="popper" v-bind:ref="'popup-' + player.id" v-show="actions.length > 0">
-            <div id="actions" v-for="action in actions">
-                <div id="resources" v-if="action.constructor.name === 'RollDice' && action.productionByPlayer.has(player)">
-                    <div id="resourceType" 
-                        v-if="action.productionByPlayer.get(player).hasOf(resourceType)"
-                        v-for="resourceType in action.productionByPlayer.get(player).types">
-                        <img v-for="resource in action.productionByPlayer.get(player).of(resourceType)" :src="`doc/images/${resource.name}Card.png`" />
+            <div id="actions" v-for="action in actions" :key="action.id">
+                <div class="roll-dice-production" v-if="action instanceof RollDice">
+                    <div id="roll-dice-view" v-if="action.player === player">
+                        <!-- TODO: show actual dice numbers -->
+                        <img src="doc/images/RollDice48.png" />
                     </div>
+                    <resource-list-view 
+                        v-if="action.productionByPlayer.has(player)"
+                        :resources="action.productionByPlayer.get(player)"
+                        :size="48">
+                    </resource-list-view>
                 </div>
-                <div id="resources" v-if="action instanceof BuildTown && action.player === player">
+
+                <div id="build-town-view" v-if="action instanceof BuildTown">
                     <img src="doc/images/Town48.png" />
                 </div>
-                <div id="resources" v-if="action.constructor.name === 'BuildRoad' && action.player === player">
+
+                <div id="build-road-view" v-if="action instanceof BuildRoad">
                     <img src="doc/images/Road48.png" />
                 </div>
+
+                <div id="build-city-view" v-if="action instanceof BuildCity">
+                    <img src="doc/images/City48.png" />
+                </div>
+
+                <div id="buy-development-card-view-view" v-if="action instanceof BuyDevelopmentCard">
+                    <img src="doc/images/BuyDevelopmentCard48.png" />
+                </div>
+
+                <div class="play-development-card-view" v-if="action instanceof PlayDevelopmentCard">
+                    <img src="doc/images/PlayDevelopmentCard48.png" />
+                    <div class="development-card-view" v-if="action.developmentCard instanceof Soldier">
+                        <img class="development-card-logo" src="doc/images/SoldierLogo48.png" />
+                    </div>
+                    <div class="development-card-view"  v-if="action.developmentCard instanceof YearOfPlenty">
+                        <img class="development-card-logo" src="doc/images/YearOfPlentyLogo48.png" />
+                        <resource-list-view
+                            :resources="createResourceList([action.developmentCard.resourceType1, action.developmentCard.resourceType2])"
+                            :size="48">
+                        </resource-list-view>
+                    </div>
+                    <div class="development-card-view" 
+                        v-if="action.developmentCard instanceof Monopoly">
+                        <img class="development-card-logo" src="doc/images/MonopolyLogo48.png" />
+                        <resource-list-view
+                            :resources="action.developmentCard.stolen"
+                            :size="48">
+                        </resource-list-view>
+                    </div>
+                    <div class="development-card-view"  v-if="action.developmentCard instanceof RoadBuilding">
+                        <img class="development-card-logo" src="doc/images/RoadBuildingLogo48.png" />
+                    </div>
+                    <div class="development-card-view"  v-if="action.developmentCard instanceof VictoryPoint">
+                        <img class="development-card-logo" src="doc/images/VictoryPointLogo48.png" />
+                    </div>
+                </div>
+
+                <div id="move-robber-view" v-if="action instanceof MoveRobber">
+                    <img src="doc/images/MoveRobber48.png" />
+                </div>
+
+                <div id="rob-player-view" v-if="action instanceof RobPlayer">
+                    <img src="doc/images/RobPlayer48.png" />
+                </div>
+
+                <div id="rob-player-view" v-if="action instanceof OfferTrade">
+                    <img src="doc/images/OfferTrade48.png" />
+                </div>
+
+                <div id="rob-player-view" v-if="action instanceof AcceptOffer">
+                    <img src="doc/images/AcceptOffer48.png" />
+                </div>
+
+                <div id="rob-player-view" v-if="action instanceof RejectOffer">
+                    <img src="doc/images/RejectOffer48.png" />
+                </div>
+
+                <div id="rob-player-view" v-if="action instanceof CounterOffer">
+                    <img src="doc/images/CounterOffer48.png" />
+                </div>
+
+                <div class="trade-bank-view" v-if="action instanceof TradeBank">
+                    <img src="doc/images/TradeBank48.png" />
+                    <span>got</span>
+                    <resource-list-view
+                        :resources="action.wanted"
+                        :size="48">
+                    </resource-list-view>
+                    <span>for</span>
+                    <resource-list-view
+                        :resources="action.offered"
+                        :size="48">
+                    </resource-list-view>
+                </div>
+
+                <div class="trade-player-view" v-if="action instanceof TradePlayer">
+                    <img src="doc/images/TradePlayer48.png" />
+                    <span>got</span>
+                    <resource-list-view v-if="action.player === player"
+                        :resources="action.wanted"
+                        :size="48">
+                    </resource-list-view>
+                    <resource-list-view v-if="action.player !== player"
+                        :resources="action.offered"
+                        :size="48">
+                    </resource-list-view>
+                    <span>for</span>
+                    <resource-list-view  v-if="action.player === player"
+                        :resources="action.offered"
+                        :size="48">
+                    </resource-list-view>
+                    <resource-list-view  v-if="action.player !== player"
+                        :resources="action.wanted"
+                        :size="48">
+                    </resource-list-view>
+                </div>
+
+                <div class="loose-resources-view" v-if="action instanceof LooseResources">
+                    <img src="doc/images/LooseResources48.png" />
+                    <resource-list-view 
+                        :resources="action.resources"
+                        :size="48">
+                    </resource-list-view>
+                </div>
+                
             </div>
         </div>
     </div>
@@ -73,14 +187,18 @@
 
 <script>
     import Popper from 'vue-popperjs';
+    import ResourceListView from './ResourceListView.vue';
     import PopperJs from "../node_modules/popper.js/dist/esm/popper.js";
+
     import { RollDice } from '../src/actions/rollDice';
+    import { TradePlayer } from '../src/actions/tradePlayer';
+    import { ResourceList } from '../src/resource';
 
     const timer = ms => new Promise(result => setTimeout(result, ms));
     
     export default {
         name: 'player-info',
-        components: {Popper},
+        components: {Popper, ResourceListView},
         props: {
             player: {
                 type: Object
@@ -97,10 +215,19 @@
             }
         },
         methods: {
+            createResourceList(resourceTypes) {
+                return new ResourceList(resourceTypes);
+            },
             showAction: async function(action) {
-                this.actions.push(action);
-                await timer(4000);
-                this.actions.remove(action);
+                // filter interesting actions only for this player
+                const isRollDiceWithResources = action instanceof RollDice && action.productionByPlayer.has(this.player);
+                const isTradePlayer = action instanceof TradePlayer && action.opponent === this.player;
+                const isMine = action.player === this.player;
+                if (isRollDiceWithResources || isTradePlayer || isMine) {
+                    this.actions.push(action);
+                    await timer(4000);
+                    this.actions.remove(action);
+                }
             },
         },
         mounted: function() {
@@ -114,7 +241,6 @@
 
 <style scoped>
 #popup {
-    /* float:right; */
     color: white;
     background-color: black;
     display: inline-flex;
@@ -122,14 +248,22 @@
 h3 {
     color: white;
 }
+.roll-dice-production, 
+.loose-resources-view, 
+.trade-player-view,
+.play-development-card-view,
+.trade-bank-view,
+.development-card-view {
+    display: inline-flex;
+}
+.development-card-logo {
+    filter: drop-shadow(0px 0px 2px #fff);
+}
 .stock-info > img {
-    /* font-size: 10px; */
-    /* width: 24px; */
     height: 24px;
 }
 .image {
     height: 24px;
-    /* width: 24px; */
 }
 .vp-image {
     width: 48px;
@@ -177,7 +311,7 @@ h3 {
     padding: 4px;
     /* padding: 0.25em; */
     display: grid;
-    grid-template-columns: auto 4em 4em 4em;
+    grid-template-columns: 14em 4em 4em 4em;
     grid-template-rows: 33% 33% 33%;
     box-sizing: border-box;
 }
@@ -205,20 +339,22 @@ h3 {
     grid-column-start: 3;
     grid-row-start: 2;
 }
-#resources {
+.hand-cards {
     grid-column-start: 1;
     grid-row-start: 2;
-    grid-row-end: 3;
-    display: inline-flex;
-    padding-left: 3em;
+    grid-row-end: 4;
+    display: flex;
+    margin-right: 3.5em;
+    align-items: center;
 }
-#resources :nth-child(4n)  {
-    margin-right: 1em;
+.hand-card-wrapper {
+    flex: 1 1 0;
+    min-width: 0;
 }
-#resources img {
-    margin-left: -2em;
-    width: 3em;
-    height: 4em;
+.hand-cards-amount {
+    font-weight: bolder;
+    font-size: 150%;
+    justify-self: 
 }
 #victoryPoints {
     grid-column-start: 3;

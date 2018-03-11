@@ -14,24 +14,30 @@ export class TradePlayer extends GameAction {
         super();
         this.tradeOfferId = null;
         this.tradeResponseId = null;
+
+        this.tradeOffer = null; // OfferTrade
+        this.tradeResponse = null; // <AcceptOffer | CounterOffer>
+        this.opponent = null; // Player
+        this.offered = null; // ResourceList
+        this.wanted = null; // ResourceList
     }
     perform(game) {
-        const tradeOffer = game.getActionById(this.tradeOfferId);
-        const tradeResponse = game.getActionById(this.tradeResponseId);
-        let offered = null;
-        let wanted = null;
-        const opponent = tradeResponse.player;
+        this.opponent.resources.moveFrom(this.player.resources, this.offered);
+        this.player.resources.moveFrom(this.opponent.resources, this.wanted);
+    }
+    setReferences(game) {
+        this.tradeOffer = game.getActionById(this.tradeOfferId);
+        this.tradeResponse = game.getActionById(this.tradeResponseId);
+        this.opponent = this.tradeResponse.player;
 
-        if (tradeResponse instanceof AcceptOffer) {
-            offered = new ResourceList(tradeOffer.offered);
-            wanted = new ResourceList(tradeOffer.wanted);
-        } else if (tradeResponse instanceof CounterOffer) {
+        if (this.tradeResponse instanceof AcceptOffer) {
+            this.offered = new ResourceList(this.tradeOffer.offered);
+            this.wanted = new ResourceList(this.tradeOffer.wanted);
+        } else if (this.tradeResponse instanceof CounterOffer) {
             // CounterOffer is from the perspective of the opponent, so swap
-            offered = new ResourceList(tradeResponse.wanted);
-            wanted = new ResourceList(tradeResponse.offered);
+            this.offered = new ResourceList(this.tradeResponse.wanted);
+            this.wanted = new ResourceList(this.tradeResponse.offered);
         }
-        opponent.resources.moveFrom(this.player.resources, offered);
-        this.player.resources.moveFrom(opponent.resources, wanted);
     }
     static createData(player, tradeOffer, tradeResponse) {
         const tradePlayer = new proto.TradePlayer();

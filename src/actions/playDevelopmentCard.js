@@ -9,10 +9,13 @@ export class PlayDevelopmentCard extends GameAction {
         this.developmentCard = config.developmentCard;
     }
     static fromData(data) {
-        const playDevelopmentCard = new PlayDevelopmentCard();
         const developmentCard = DevelopmentCard.fromData(data.getDevelopmentCard());
-        playDevelopmentCard.developmentCard = developmentCard;
-        return playDevelopmentCard;
+        return new PlayDevelopmentCard({developmentCard: developmentCard});
+    }
+    setReferences(game) {
+        if (this.developmentCard.setReferences !== undefined) {
+            this.developmentCard.setReferences(game);
+        }
     }
     perform(game) {
         this.developmentCard.play(game, this.player);

@@ -48,12 +48,16 @@ export class YearOfPlenty extends DevelopmentCard {
         super();
         this.resourceType1 = null;
         this.resourceType2 = null;
+        this.resources = null;
     }
     static fromData(data) {
         const yop = new YearOfPlenty();
         yop.resourceType1 = data.getResourceType1();
         yop.resourceType2 = data.getResourceType2();
         return yop;
+    }
+    setReferences(game) {
+        this.resources = new ResourceList([this.resourceType1, this.resourceType2]);
     }
     get data() {
         const data = super._getData();
@@ -73,6 +77,7 @@ export class Monopoly extends DevelopmentCard {
     constructor() {
         super();
         this.resourceType = null;
+        this.stolen = null;
     }
     static fromData(data) {
         const monopoly = new Monopoly();
@@ -87,11 +92,14 @@ export class Monopoly extends DevelopmentCard {
         return data;
     }
     play(game, player) {
+        const stolen = new ResourceList();
         for (var opponent of game.getOpponents(player)) {
             const resourcesOfType = opponent.resources.of(this.resourceType);
             const toMove = new ResourceList(resourcesOfType);
             player.resources.moveFrom(opponent.resources, toMove);
+            stolen.add(toMove);
         }
+        this.stolen = stolen;
     }
     get name() { return "Monopoly"; }
 }
