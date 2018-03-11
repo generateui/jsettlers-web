@@ -23,7 +23,6 @@
 
 <script>
     import Welcome from './components/Welcome.vue';
-    import Hello from './components/Hello.vue';
     import TechDemo from './components/TechDemo.vue';
     import VueRouter from 'vue-router';
 

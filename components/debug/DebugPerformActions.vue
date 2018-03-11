@@ -65,22 +65,22 @@
 </template>
 
 <script>
-    import * as bb from "../src/ui/boardBehavior.js";
-    import * as gb from "../src/ui/gameBehavior.js";
-    import {HostAtClient} from "../src/host.js";
-    import {BuildTown} from "../src/actions/buildTown.js";
-    import {BuildRoad} from "../src/actions/buildRoad.js";
-    import {BuildCity} from "../src/actions/buildCity.js";
-    import {BuyDevelopmentCard} from "../src/actions/buyDevelopmentCard.js";
-    import {KeyListener} from "../src/ui/keyListener.js";
-    import {ClientRandom} from "../src/random";
-    import { RejectOffer } from '../src/actions/rejectOffer';
-    import { CounterOffer } from '../src/actions/counterOffer';
-    import { AcceptOffer } from '../src/actions/acceptOffer';
-    import { OfferTrade } from '../src/actions/offerTrade';
-    import { MoveRobber } from '../src/actions/moveRobber';
-    import { RobPlayer } from '../src/actions/robPlayer';
-    import { RollDice } from '../src/actions/rollDice';
+    import * as bb from "../../src/ui/boardBehavior.js";
+    import * as gb from "../../src/ui/gameBehavior.js";
+    import {HostAtClient} from "../../src/host.js";
+    import {BuildTown} from "../../src/actions/buildTown.js";
+    import {BuildRoad} from "../../src/actions/buildRoad.js";
+    import {BuildCity} from "../../src/actions/buildCity.js";
+    import {BuyDevelopmentCard} from "../../src/actions/buyDevelopmentCard.js";
+    import {KeyListener} from "../../src/ui/keyListener.js";
+    import {ClientRandom} from "../../src/random";
+    import { RejectOffer } from '../../src/actions/rejectOffer';
+    import { CounterOffer } from '../../src/actions/counterOffer';
+    import { AcceptOffer } from '../../src/actions/acceptOffer';
+    import { OfferTrade } from '../../src/actions/offerTrade';
+    import { MoveRobber } from '../../src/actions/moveRobber';
+    import { RobPlayer } from '../../src/actions/robPlayer';
+    import { RollDice } from '../../src/actions/rollDice';
 
     const random = new ClientRandom();
 
