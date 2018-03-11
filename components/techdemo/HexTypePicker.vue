@@ -13,7 +13,7 @@
 </template>
 
 <script>
-var proto = require("../data_pb");
+var proto = require("../../data_pb");
 
 export default {
   name: 'hex-type-picker',

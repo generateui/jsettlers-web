@@ -43,15 +43,15 @@
 </template>
 
 <script>
-    var proto = require("../data_pb");
+    var proto = require("../../data_pb");
     import ChitTypePicker from './ChitTypePicker.vue'
     import HexTypePicker from './HexTypePicker.vue'
     import PlayerPicker from './PlayerPicker.vue'
     import PortTypePicker from './PortTypePicker.vue'
-    import * as bb from "../src/ui/boardBehavior.js";
-    import {Standard4pDesign} from "../src/board.js";
-    import {BoardRenderer} from "../src/ui/webgl/boardRenderer.js";
-    import {Game} from "../src/game.js";
+    import * as bb from "../../src/ui/boardBehavior.js";
+    import {Standard4pDesign} from "../../src/board.js";
+    import {BoardRenderer} from "../../src/ui/webgl/boardRenderer.js";
+    import {Game} from "../../src/game.js";
 
     const setHex = new bb.SetHex();
     const setChit = new bb.SetChit();
