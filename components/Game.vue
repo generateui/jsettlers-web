@@ -4,7 +4,9 @@
         <trade-bank-dialog 
             v-if="showTradeBankDialog" 
             v-bind:game="game" 
-            v-on:trade="tradeBank"></trade-bank-dialog>
+            v-on:trade="tradeBank"
+            v-on:close="closeTradeBankDialog"
+            v-bind:keyListener="keyListener"></trade-bank-dialog>
         <div id="players">
             <div v-for="player in game.players">
                 <player-info v-bind:player="player" v-bind:game="game" v-bind:ref="'player' + player.id"></player-info>
@@ -144,6 +146,9 @@
         methods: {
             openTradeBankDialog: function() {
                 this.showTradeBankDialog = true;
+            },
+            closeTradeBankDialog() {
+                this.showTradeBankDialog = false;
             },
             rollDice: function() {
                 let rollDice = RollDice.createData(this.game.player);
