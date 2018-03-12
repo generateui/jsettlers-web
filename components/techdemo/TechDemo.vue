@@ -128,6 +128,9 @@
             boardDesign.generateBoardForPlay();
             var brEl = this.$refs["board-renderer"];
             boardRenderer = new BoardRenderer(brEl, boardDesign, setHex);
+        },
+        destroyed() {
+            boardRenderer.dispose();
         }
     }
 </script>

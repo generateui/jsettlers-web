@@ -51,8 +51,8 @@ export class ObservableMap {
             listener();
         }
     }
-    get values() {
-        return this.map.values.bind(this.map);
+    values() {
+        return this.map.values();
     }
     changed(changeHandler) {
         this._changeListeners.push(changeHandler);

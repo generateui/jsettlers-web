@@ -214,6 +214,12 @@
 </script>
 
 <style scoped>
+ul {
+    list-style: none;
+}
+li {
+    margin-bottom: 0.5em;
+}
 .dice-number {
     font-weight: bolder;
     cursor: pointer;

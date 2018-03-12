@@ -16,7 +16,7 @@
             <button class="tab-button" @click="tabMode = TABMODE.actions">actions</button>
             <button class="tab-button" @click="tabMode = TABMODE.chat">chat</button>
             <button class="tab-button" @click="tabMode = TABMODE.debug">debug</button>
-            <button class="tab-button" @click="tabMode = TABMODE.expectation">expectation</button>
+            <button class="tab-button" @click="tabMode = TABMODE.expectation">expect</button>
         </div>
         <div id="tab-content">
             <action-log 
@@ -142,30 +142,6 @@
             }
         },
         methods: {
-            doShowActions: function() {
-                this.showActions = true;
-                this.showChat = false;
-                this.showPerformActions = false;
-                this.showQueue = false;
-            },
-            doShowChat: function() {
-                this.showActions = false;
-                this.showChat = true;
-                this.showPerformActions = false;
-                this.showQueue = false;
-            },
-            doShowPerformAction: function() {
-                this.showActions = false;
-                this.showChat = false;
-                this.showPerformActions = true;
-                this.showQueue = false;
-            },
-            doShowQueue() {
-                this.showActions = false;
-                this.showChat = false;
-                this.showPerformActions = false;
-                this.showQueue = true;
-            },
             openTradeBankDialog: function() {
                 this.showTradeBankDialog = true;
             },

@@ -28,6 +28,7 @@ import {Road} from "../road.js";
 import {Town} from "../town.js";
 import {City} from "../city.js";
 import {Edge} from "../edge.js";
+import { EMPHASIS } from "./webgl/renderer";
 
 export class BoardBehavior {
     start(boardRenderer) {} // set the behavior as active behavior on the BoardRenderer
@@ -163,23 +164,34 @@ export class ShowEdgesOfClickedNode extends BoardBehavior {
         this.composite.stop(boardRenderer);
     }
 }
-/** Changes color of hovered object */
+/** Changes emphasis of hovered object */
 export class EmphasizeHoveredObject extends BoardBehavior {
     constructor(rendererFilter) { // a function: bool filter(renderer);
         super();
         this._rendererFilter = rendererFilter || function(r) { return true; };
+        this.lastEmphasis = null;
+        this.lastRenderer = null;
     }
     enter(boardRenderer, renderer) {
         if (!this._rendererFilter(renderer)) {
             return;
         }
-        renderer.darken();
+        this.lastEmphasis = renderer.emphasis;
+        this.lastRenderer = renderer;
+        renderer.emphasis = EMPHASIS.dark;
     }
     leave(boardRenderer, renderer) {
         if (!this._rendererFilter(renderer)) {
             return;
         }
-        renderer.normalize();
+        if (this.lastRenderer !== null) {
+            this.lastRenderer.emphasis = this.lastEmphasis;
+        }
+    }
+    stop(boardRenderer) {
+        if (this.lastRenderer !== null) {
+            this.lastRenderer.emphasis = this.lastEmphasis;
+        }
     }
 }
 /** Dispatches behavior onto given behaviors */
@@ -279,26 +291,33 @@ export class MoveRobber extends BoardBehavior {
     }
     click(boardRenderer, renderer) {
         if (renderer instanceof HexRenderer) {
+            const robberHex = boardRenderer.board.hexes.get(boardRenderer.board.robber.coord);
+            boardRenderer.setHexesEmphasis(EMPHASIS.normal, [robberHex]);
             const coord = renderer.hex.coord;
             boardRenderer.board.robber.coord = coord;
+            
+            this.emphasizeHoveredHex.lastEmphasis = EMPHASIS.red;
         }
     }
     enter(boardRenderer, renderer) {
         this.emphasizeHoveredHex.enter(boardRenderer, renderer);
+    }
+    start(boardRenderer) {
         var all = Array.from(boardRenderer.board.hexes.values());
-        var possible = all.filter(h => h.canHaveRobber);
         const robberHex = boardRenderer.board.hexes.get(boardRenderer.board.robber.coord);
-        // possible = Util.except(possible, [robberHex]);
-        boardRenderer.redifyHexes([robberHex]);
+        var possible = all.filter(h => h.canHaveRobber && h.coord !== robberHex.coord);
         const notPossible = Util.except(all, possible);
-        boardRenderer.lightenHexes(possible);
-        boardRenderer.darkenHexes(notPossible);
+        notPossible.remove(robberHex);
+
+        boardRenderer.setHexesEmphasis(EMPHASIS.red, [robberHex]);
+        boardRenderer.setHexesEmphasis(EMPHASIS.light, possible);
+        boardRenderer.setHexesEmphasis(EMPHASIS.dark, notPossible);
     }
     leave(boardRenderer, renderer) {
         this.emphasizeHoveredHex.leave(boardRenderer, renderer);
     }
     stop(boardRenderer) {
-        boardRenderer.normalizeHexes(boardRenderer.board.hexes.values());
+        boardRenderer.setHexesEmphasis(EMPHASIS.normal, boardRenderer.board.hexes.values());
     }
 }
 export class BuildTown extends BoardBehavior {

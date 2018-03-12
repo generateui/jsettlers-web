@@ -20,6 +20,7 @@ import {Road} from "../road.js";
 import {Town} from "../town.js";
 import {City} from "../city.js";
 import {KeyListener} from "./keyListener.js";
+import { EMPHASIS } from "./webgl/renderer";
 
 export class BuildRoad extends BoardBehavior {
     constructor(player, keyListener, canCancel) {
@@ -164,23 +165,23 @@ export class ShowProduction extends BoardBehavior {
             .filter(h => h.chit.number !== null && 
                 h.chit.number === this.diceRoll && 
                 h.coord !== board.robber.coord);
-        boardRenderer.lightenHexes(affectedHexes);
+        boardRenderer.setHexesEmphasis(EMPHASIS.light, affectedHexes);
         const nonAffectedHexes = new Set(board.hexes.values());
         const robberHex = board.hexes.get(board.robber.coord);
         for (let affected of affectedHexes) {
             nonAffectedHexes.delete(affected);
         }
         if (robberHex.chit.number === this.diceRoll) {
-            boardRenderer.redifyHexes([robberHex]);
+            boardRenderer.setHexesEmphasis(EMPHASIS.red, [robberHex]);
             nonAffectedHexes.delete(robberHex);
         }
-        boardRenderer.darkenHexes(nonAffectedHexes);
+        boardRenderer.setHexesEmphasis(EMPHASIS.dark, nonAffectedHexes);
     }
     click(boardRenderer, renderer) {
         this.ok();
     }
     stop(boardRenderer, renderer) {
-        this.boardRenderer.normalizeHexes(this.boardRenderer.board.hexes.values());
+        this.boardRenderer.setHexesEmphasis(EMPHASIS.normal, this.boardRenderer.board.hexes.values());
     }
 }
 export class MoveRobber extends BoardBehavior {
@@ -211,11 +212,11 @@ export class MoveRobber extends BoardBehavior {
         var all = Array.from(boardRenderer.board.hexes.values());
         const robberHex = boardRenderer.board.hexes.get(boardRenderer.board.robber.coord);
         var possible = all.filter(h => h.canHaveRobber && h.coord !== robberHex.coord);
-        boardRenderer.redifyHexes([robberHex]);
+        boardRenderer.setHexesEmphasis(EMPHASIS.red, [robberHex]);
         const notPossible = Util.except(all, possible);
         notPossible.remove(robberHex);
-        boardRenderer.lightenHexes(possible);
-        boardRenderer.darkenHexes(notPossible);
+        boardRenderer.setHexesEmphasis(EMPHASIS.light, possible);
+        boardRenderer.setHexesEmphasis(EMPHASIS.dark, notPossible);
     }
     enter(boardRenderer, renderer) {
         this.emphasizeHoveredHex.enter(boardRenderer, renderer);
@@ -224,7 +225,7 @@ export class MoveRobber extends BoardBehavior {
         this.emphasizeHoveredHex.leave(boardRenderer, renderer);
     }
     stop(boardRenderer) {
-        boardRenderer.normalizeHexes(boardRenderer.board.hexes.values());
+        boardRenderer.setHexesEmphasis(EMPHASIS.normal, boardRenderer.board.hexes.values());
         this.ok = null;
         this.fail = null;
     }
@@ -244,7 +245,7 @@ export class PickPlayer extends BoardBehavior {
         this.boardRenderer = boardRenderer;
         const board = boardRenderer.board;
         const opponentsSet = new Set(this.opponents);
-        boardRenderer.darkenHexes(board.hexes.values());
+        boardRenderer.setHexesEmphasis(EMPHASIS.dark, board.hexes.values());
         const toLighten = [];
         const toDarken = [];
         for (let [player, renderers] of boardRenderer.renderersForPlayer.entries()) {
@@ -254,8 +255,8 @@ export class PickPlayer extends BoardBehavior {
                 toDarken.pushAll(renderers);
             }
         }
-        boardRenderer.darkenPieces(toDarken);
-        boardRenderer.lightenPieces(toLighten);
+        boardRenderer.setPiecesEmphasis(EMPHASIS.dark, toDarken);
+        boardRenderer.setPiecesEmphasis(EMPHASIS.light, toLighten);
         this.lightened = new Set(toLighten);
         this.darkened = new Set(toDarken);
     }
@@ -271,9 +272,9 @@ export class PickPlayer extends BoardBehavior {
         this.emphasizeHoveredHex.leave(boardRenderer, renderer);
     }
     stop(boardRenderer) {
-        boardRenderer.normalizePieces(this.lightened);
-        boardRenderer.normalizePieces(this.darkened);
-        boardRenderer.normalizeHexes(boardRenderer.board.hexes.values());
+        boardRenderer.setPiecesEmphasis(EMPHASIS.normal, this.lightened);
+        boardRenderer.setPiecesEmphasis(EMPHASIS.normal, this.darkened);
+        boardRenderer.setHexesEmphasis(EMPHASIS.normal, boardRenderer.board.hexes.values());
         this.ok = null;
         this.fail = null;
         this.emphasizeHoveredHex = null;

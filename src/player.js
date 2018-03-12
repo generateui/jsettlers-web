@@ -90,7 +90,7 @@ export class Color {
     }
     static get white() {
         if (Color._white === undefined) {
-            Color._white = new Color(0xffffff);
+            Color._white = new Color(0xbbbbbb);
         }
         return Color._white;
     }
