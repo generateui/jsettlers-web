@@ -134,16 +134,19 @@
               this.$emit("trade", tradeBank);
           }
         },
-        mounted() {
-            this.keyListener.escape(() => {
-                this.$emit("close");
-            });
-        },
         computed: {
             cannotTrade: function() {
               return this.bankPickedResources.length !== this.goldAmount || this.goldAmount === 0;
             }
-        }
+        },
+        mounted() {
+            this.removeEscapeHandler = this.keyListener.escape(() => {
+                this.$emit("close");
+            });
+        },
+        destroyed() {
+            this.removeEscapeHandler();
+        },
     }
 </script>
 

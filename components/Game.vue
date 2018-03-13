@@ -3,10 +3,10 @@
     <div id="left">
         <trade-bank-dialog 
             v-if="showTradeBankDialog" 
-            v-bind:game="game" 
-            v-on:trade="tradeBank"
-            v-on:close="closeTradeBankDialog"
-            v-bind:keyListener="keyListener"></trade-bank-dialog>
+            :game="game" 
+            @toggleTradeBankDialog="toggleTradeBankDialog"
+            @close="closeTradeBankDialog"
+            :keyListener="keyListener"></trade-bank-dialog>
         <div id="players">
             <div v-for="player in game.players">
                 <player-info v-bind:player="player" v-bind:game="game" v-bind:ref="'player' + player.id"></player-info>
@@ -24,38 +24,37 @@
             <action-log 
                 v-show="tabMode === TABMODE.actions" 
                 id="action-log" 
-                v-bind:actions="game.actions.array"></action-log>
+                :actions="game.actions.array"></action-log>
             <div v-show="tabMode === TABMODE.chat" id="chats"></div>
             <div v-show="tabMode === TABMODE.expectation" id="queue"></div>
             <debug-perform-actions 
                 v-show="tabMode === TABMODE.debug" 
-                v-bind:game="game" 
-                v-bind:host="host" 
-                v-bind:keyListener="keyListener"
-                v-on:behaviorChanged="behaviorChanged"></debug-perform-actions>
+                :game="game" 
+                :host="host" 
+                :keyListener="keyListener"
+                @behaviorChanged="behaviorChanged"></debug-perform-actions>
         </div>
     </div>
 
     <div id="right">
         <div id="game-board-renderer"></div>
         <actions 
-            v-bind:game="game" 
-            v-on:behaveThenAct="behaveThenAct" 
-            v-on:action="performAction"
-            v-on:rolldice="rollDice"
-            v-on:endTurn="endTurn"
-            v-on:tradebank="openTradeBankDialog"
-            v-bind:keyListener="keyListener"></actions>
+            :game="game" 
+            @behaveThenAct="behaveThenAct" 
+            @action="performAction"
+            @rolldice="rollDice"
+            @endTurn="endTurn"
+            @toggleTradeBankDialog="toggleTradeBankDialog"
+            :keyListener="keyListener"></actions>
         <player-assets 
-            v-bind:game="game"
-            v-bind:player="game.player"
-            v-bind:update="update"
-            v-bind:showLooseResourcesDialog="showLooseResourcesDialog"
-            v-on:looseResources="looseResources"
-            v-on:action="performAction">
+            :game="game"
+            :player="game.player"
+            :update="update"
+            :showLooseResourcesDialog="showLooseResourcesDialog"
+            @looseResources="looseResources"
+            @action="performAction">
         </player-assets>
-        <actions-message
-            v-bind:game="game"></actions-message>
+        <actions-message :game="game"></actions-message>
     </div>
 
   </div>
@@ -144,32 +143,32 @@
             }
         },
         methods: {
-            openTradeBankDialog: function() {
-                this.showTradeBankDialog = true;
+            toggleTradeBankDialog() {
+                this.showTradeBankDialog = !this.showTradeBankDialog;
             },
             closeTradeBankDialog() {
                 this.showTradeBankDialog = false;
             },
-            rollDice: function() {
+            rollDice() {
                 let rollDice = RollDice.createData(this.game.player);
                 this.act(rollDice);
             },
-            tradeBank: function(action) {
+            tradeBank(action) {
                 this.performAction(action);
                 this.showTradeBankDialog = false;
                 this.$forceUpdate();
                 this.update = !this.update;
             },
-            looseResources: function(action) {
+            looseResources(action) {
                 this.$data.showLooseResourcesDialog = false;
                 this.performAction(action);
                 this.update = !this.update;
             },
-            endTurn: function() {
+            endTurn() {
                 let endTurn = EndTurn.createData(this.game.player);
                 this.act(endTurn);
             },
-            behaviorChanged: function(behavior) {
+            behaviorChanged(behavior) {
                 boardRenderer.behavior = behavior;
             },
             performAction: async function(action) {
@@ -236,7 +235,7 @@
                 }
             }
         },
-        created: function() {
+        created() {
             const settings = this.$props.settings;
             const board = settings.boardDescriptor.createBoard();
             board.generateBoardForPlay();
@@ -285,7 +284,7 @@
                 }
             });
         },
-        mounted: function() {
+        mounted() {
             var brEl = document.getElementById("game-board-renderer");
             const game = this.game;
             boardRenderer = new BoardRenderer(brEl, game.board);
@@ -307,7 +306,7 @@
                 that.forceYouActionIfNeeded(newExpectation.youAction);
             });
         },
-        destroyed: function() {
+        destroyed() {
             boardRenderer.dispose();
             this.removeExpectationChangedHandler();
             this.removeActionAddedHandler();

@@ -5,9 +5,9 @@
         <build-road-button id="build-road-button" v-bind:game="game"></build-road-button>
         <buy-development-card-button id="buy-development-card-button" v-bind:game="game"></buy-development-card-button>
         <div id="trade-player" class="build-button">
-            <img src="doc/images/TradePlayer48.png" @click="openTradePlayerDialog" />
+            <img src="doc/images/TradePlayer48.png" @click="toggleTradePlayerDialog" />
         </div>
-        <div id="trade-bank" class="build-button" @click="tradeBank">
+        <div id="trade-bank" class="build-button" @click="toggleTradeBankDialog">
             <img src="doc/images/TradeBank48.png" />
         </div>
         <div id="end-turn" class="build-button" @click="endTurn">
@@ -19,8 +19,10 @@
         </game-phases-view>
         <trade-player-dialog 
             v-if="showTradePlayerDialog" 
-            v-on:action="action"
-            v-bind:game="game">
+            @action="action"
+            @close="closeTradePlayerDialog"
+            :keyListener="keyListener"
+            :game="game">
         </trade-player-dialog>
     </div>
 </template>
@@ -60,29 +62,29 @@
             }
         },
         methods: {
-            action: function(action) {
+            action(action) {
                 this.$emit("action", action);
             },
-            buildRoad: function() {
+            buildRoad() {
                 const player = this.$props.game.player;
                 const behavior = new gb.BuildRoad(player, this.$props.keyListener);
                 const createAction = (player, edge) => BuildRoad.createData(player, edge);
                 this.$emit("behaveThenAct", behavior, createAction);
             },
-            openTradeBankDialog: function() {
-                this.$data.showTradeBankDialog = true;
+            toggleTradeBankDialog() {
+                this.$emit("toggleTradeBankDialog");
             },
-            tradeBank: function(tradeBankAction) {
-                this.$emit("tradebank", tradeBankAction);
-            },
-            rollDice: function() {
+            rollDice() {
                 this.$emit("rolldice");
             },
-            endTurn: function() {
+            endTurn() {
                 this.$emit("endTurn");
             },
-            openTradePlayerDialog: function() {
+            toggleTradePlayerDialog() {
                 this.showTradePlayerDialog = !this.showTradePlayerDialog;
+            },
+            closeTradePlayerDialog() {
+                this.showTradePlayerDialog = false;
             }
         }
     }

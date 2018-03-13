@@ -184,7 +184,7 @@
                     const opponents = this.game.getOpponents(offerTrade.player);
                     const responses = [];
                     for (var opponent of opponents) {
-                        const i = random.intFromOne(3);
+                        const i = random.intFromOne(2);
                         if (i === 1) {
                             const reason = random.intFromZero(4);
                             this.act(() => RejectOffer.createData(opponent, offerTrade, reason));

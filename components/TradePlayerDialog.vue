@@ -8,36 +8,16 @@
                     :key="opponent.id">
                     <div v-bind:style="{ backgroundColor: opponent.color.css}" class="player-color"></div>
                     <span class="opponent-name">{{opponent.user.name}}</span>
-                    <div class="response"
+                    <div v-if="tradeOffer !== null && tradeOffer.responses.has(opponent) && tradeOffer.responses.get(opponent) instanceof AcceptOffer"
+                        class="accept-button" 
+                        @click="acceptOffer(tradeOffer.responses.get(opponent))">
+                        <img class="accept-icon" src="doc/images/AcceptOffer48.png" />
+                        <span class="accept-text">Trade!</span>
+                    </div>
+                    <div class="reject"
                         v-if="tradeOffer !== null && tradeOffer.responses.has(opponent) && tradeOffer.responses.get(opponent) instanceof RejectOffer">
-                        <button class="response-button" disabled>
-                            <span>Nope...</span>
-                            <img class="response-image" src="doc/images/RejectOffer48.png" />
-                        </button>
-                    </div>
-                    <div class="response"
-                        v-if="tradeOffer !== null && tradeOffer.responses.has(opponent) && tradeOffer.responses.get(opponent) instanceof AcceptOffer">
-                        <button class="response-button" @click="acceptOffer(tradeOffer.responses.get(opponent))">
-                            <span>Trade!</span>
-                            <img class="response-image" src="doc/images/AcceptOffer48.png" />
-                        </button>
-                    </div>
-                    <div class="response"
-                        v-if="tradeOffer !== null && tradeOffer.responses.has(opponent) && tradeOffer.responses.get(opponent) instanceof CounterOffer">
-                        <div class="counter-resources offered">
-                            <img
-                                v-for="resourceType in tradeOffer.responses.get(opponent).offered" :key="resourceType" 
-                                :src="`doc/images/${getName(resourceType).toPascalCase()}Card.png`" />
-                        </div>
-                        <div class="counter-resources wanted">
-                            <img 
-                                v-for="resourceType in tradeOffer.responses.get(opponent).wanted" :key="resourceType"
-                                :src="`doc/images/${getName(resourceType).toPascalCase()}Card.png`" />
-                        </div>
-                        <button class="response-button" @click="counterOffer(tradeOffer.responses.get(opponent))">
-                            <span>Trade!</span>
-                            <img class="response-image" src="doc/images/CounterOffer48.png" />
-                        </button>
+                        <img class="reject-icon" src="doc/images/RejectOffer48.png" />
+                        <span class="reject-text">Rejected</span>
                     </div>
                 </div>
             </div>
@@ -64,14 +44,15 @@
                     @click="unpickOfferedResource(resource)" />
             </div>
             <div id="offered-resource-picker">
-                <div v-for="rt in playerResources.types" :key="rt">
-                    <img v-for="resource in playerResources.of(rt)"
-                        class="resource"
-                        :key="resource.id"
-                        :src="`doc/images/${resource.name}Card.png`"
-                        v-bind:class="{ cannotTrade: isOffered(rt)}"
-                        @click="pickOfferedResource(resource)" />
-                </div>
+                <template v-for="rt in playerResources.types">
+                    <div class="resource-wrapper" v-for="resource in playerResources.of(rt)" :key="resource.id">
+                        <img 
+                            class="resource"
+                            :src="`doc/images/${resource.name}Card.png`"
+                            v-bind:class="{ cannotTrade: isOffered(rt)}"
+                            @click="pickOfferedResource(resource)" />
+                    </div>
+                </template>
             </div>
             <div id="get-wrapper">
                 <div id="get" class="get-give">GET</div>
@@ -104,6 +85,9 @@
         name: 'trade-player-dialog',
         props: {
             game: {
+                type: Object
+            },
+            keyListener: {
                 type: Object
             }
         },
@@ -196,95 +180,19 @@
                     that.playerResources = new ResourceList(that.game.player.resources);
                 }
             });
+            this.removeEscapeHandler = this.keyListener.escape(() => {
+                this.$emit("close");
+            });
+
         },
         unmounted: function() {
             this.removeActionAddedSubscription();
+            this.removeEscapeHandler();
         }
     }
 </script>
 
 <style scoped>
-.counter-resources img {
-    height: 4em;
-    margin-left: -1em;
-}
-.offered {
-    margin-left: 2em;
-}
-.wanted {
-    margin-left: 2em;
-}
-.counter-resources {
-    display: inline-flex;
-}
-.player-color {
-    height: 100%;
-    width: 1em;
-    grid-row-start: 1;
-    grid-row-end: 3;
-    grid-column-start: 1;
-}
-#players {
-    display: flex;
-    flex-direction: column;
-    grid-row-start: 1;
-    grid-row-end: 6;
-    grid-column-start: 1;
-    padding-right: 1em;
-}
-.player {
-    height: 100px;
-    display: grid;
-    grid-template-rows: 2em 5em;
-    grid-template-columns: 1em auto;
-}
-.response {
-    grid-row-start: 2;
-    grid-column-start: 2;
-}
-.response-button {
-    grid-row-start: 2;
-    grid-column-start: 3;
-    height:4em;
-    width:10em;
-    float: right;
-    display: flex;
-    align-items: flex-end;
-    margin-right: 1em;
-}
-.response-button:disabled {
-    filter: blur(1px); 
-    opacity: 0.7;
-}
-.response-button span {
-    margin: 1em;
-    font-weight: bold;
-}
-.opponent-name {
-    grid-row-start: 1;
-    grid-column-start: 2;
-    margin-left: 1em;
-    margin-top: 0.25em;
-    font-weight: bold;
-}
-.cannotTrade {
-    pointer-events: none;
-    filter: blur(2px);
-    opacity: 0.5;
-}
-.resource  {
-    height: 101px;
-    width: 63px;
-    border: 0.5em solid white;
-    border-radius: 16px;
-}
-.resource:hover {
-    cursor: pointer;
-    border: 0.5em solid lightblue;
-}
-.selected, .selected:hover {
-    border: 0.5em solid black;
-}
 .modal-mask {
     position: fixed;
     z-index: 9998;
@@ -297,17 +205,109 @@
     align-items: center;
     justify-content: center;
 }
-
 .modal-body {
     pointer-events: all;
-    width: 1000px;
-    padding: 20px 30px;
+    width: 56em;
+    padding: 1em;
     background-color: #fff;
     border-radius: 1em;
     box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
     display: grid;
-    grid-template-columns: 400px auto 8em;
-    grid-template-rows: 120px 120px 10px 120px 120px;
+    grid-template-columns: 20em 20em 4em 1fr;
+    grid-template-rows: 6em 0.5em 6em;
+    grid-column-gap: 0.5em;
+}
+.offered {
+    margin-left: 2em;
+}
+.wanted {
+    margin-left: 2em;
+}
+#players {
+    display: flex;
+    flex-direction: column;
+    grid-row-start: 1;
+    grid-row-end: 6;
+    grid-column-start: 1;
+}
+.player {
+    height: 3em;
+    display: grid;
+    grid-template-columns: 1em 1fr 8em;
+    padding: 2px;
+}
+.player-color {
+    height: 100%;
+    width: 1em;
+    grid-column-start: 1;
+}
+.opponent-name {
+    grid-column-start: 2;
+    align-self: center;
+    margin-left: .5em;
+    font-weight: bold;
+}
+.accept-button {
+    grid-column-start: 3;
+    display: grid;
+    align-items: center;
+    justify-content: flex-start;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: 3em;
+    height: 100%;
+    box-sizing: border-box;
+    cursor: pointer;
+    background-color: darkgrey;
+    border-radius: 8px;
+}
+.accept-button:hover {
+    background-color: grey;
+}
+    .accept-icon {
+        grid-column-start: 1;
+        height: 32px;
+        padding-left: 0.5em;
+        padding-right: 0.5em;
+    }
+    .accept-text {
+        grid-column-start: 2;
+        font-weight: bold;
+    }
+.reject {
+    grid-column-start: 3;
+    display: grid;
+    align-items: center;
+    justify-content: flex-start;
+    grid-template-columns: auto 1fr;
+    grid-template-rows: 3em;
+    height: 100%;
+}
+    .reject-icon {
+        grid-column-start: 1;
+        height: 32px;
+        padding-left: 0.5em;
+        padding-right: 0.5em;
+    }
+    .reject-text {
+        grid-column-start: 2;
+    }
+
+.cannotTrade {
+    pointer-events: none;
+    filter: blur(2px);
+    opacity: 0.5;
+}
+.resource  {
+    height: 50px;
+    border: 0.25em solid white;
+    border-radius: 0.25em;
+}
+.resource:hover {
+    cursor: pointer;
+    border: 0.25em solid lightblue;
+}
+.selected, .selected:hover {
+    border: 0.25em solid black;
 }
 
 #get-wrapper {
@@ -315,17 +315,18 @@
     grid-row-start: 1;
     grid-row-end: 2;
     grid-column-start: 3;
-    transform: translateX(10%) translateY(60%) rotate(-90deg);
+    transform: translateX(20%) translateY(10%) rotate(-90deg);
+    z-index:0;
 }
 .get-give {
-    font-size: 72px;
+    font-size: 3em;
     font-weight: 900;
     color: #c0c0c0;
 }
 
 #spacer {
     background-color: #c0c0c0;
-    grid-row-start: 3;
+    grid-row-start: 2;
     grid-column-start: 2;
     grid-column-end: 4;
 }
@@ -334,7 +335,9 @@
     grid-row-start: 4;
     grid-row-end: 5;
     grid-column-start: 3;
-    transform: translateY(100%) translateX(10%) rotate(-90deg);
+    transform: translateY(-100%) translateX(-35%) rotate(-90deg);
+    z-index:0;
+    height: 1.5em;
 }
 
 #wanted-resource-picker {
@@ -342,37 +345,45 @@
     grid-column-start: 2;
 }
 #wanted-picked-resources {
-    grid-row-start: 2;
-    grid-column-start: 2;
+    grid-row-start: 1;
+    grid-column-start: 4;
+    z-index:1;
 }
 #offered-picked-resources {
-    grid-row-start: 4;
-    grid-column-start: 2;
+    grid-row-start: 3;
+    grid-column-start: 4;
     display: inline-flex;
+    margin-top: 2em;
+    z-index:1;
 }
 #offered-resource-picker {
-    grid-row-start: 5;
+    grid-row-start: 3;
     grid-column-start: 2;
-    display: inline-flex;
-    padding-left: 4em;
+    display: flex;
+    min-width: 0;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-right: 1.5em;
+    margin-top: 2em;
 }
-#offered-resource-picker img, #offered-resource-picker div {
-    margin-left: -2em;
+.resource-wrapper {
+    min-width: 0.25em;
+    flex: 1 1 0;
 }
 #button-wrapper {
     width: 100%;
     height: 100%;
-    grid-row-start: 2;
-    grid-row-end: 5;
-    grid-column-start: 3;
+    grid-row-start: 1;
+    grid-row-end: 4;
+    grid-column-start: 4;
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: 0;
 }
 #button {
+    height: 3em;
     width: 100%;
-    height: 4em;
-    border-radius: 0.5em;
 }
 </style>
