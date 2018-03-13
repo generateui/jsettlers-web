@@ -2,17 +2,17 @@
     <ol id="action-log">
         <li v-for="action in actions" :key="action.id">
             <div id="build-city-view" class="item-wrapper" v-if="action instanceof BuildCity">
-                <img src="doc/images/City48.png">
+                <img :src="`doc/images/City${action.player.color.name}48.png`">
                 <span>{{action.player.user.name}} built a city at {{action.node.toString()}}</span>
             </div>
 
             <div id="build-road-view" class="item-wrapper" v-if="action instanceof BuildRoad">
-                <img src="doc/images/Road48.png">
+                <img :src="`doc/images/Road${action.player.color.name}48.png`">
                 <span>{{action.player.user.name}} built a road at {{action.edge.toString()}}</span>
             </div>
             
             <div id="build-town-view" class="item-wrapper" v-if="action instanceof BuildTown">
-                <img src="doc/images/Town48.png">
+                <img :src="`doc/images/Town${action.player.color.name}48.png`">
                 <span>{{action.player.user.name}} built a town at {{action.node.toString()}}</span>
             </div>
             

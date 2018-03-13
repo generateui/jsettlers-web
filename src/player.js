@@ -67,42 +67,43 @@ export class Player extends Observable {
     }
 }
 export class Color {
-    constructor(integer) {
+    constructor(integer, name) {
         this.integer = integer;
+        this.name = name;
     }
     static get red() {
         if (Color._red === undefined) {
-            Color._red = new Color(0xff0000);
+            Color._red = new Color(0xff0000, "Red");
         }
         return Color._red;
     }
     static get green() {
         if (Color._green === undefined) {
-            Color._green = new Color(0x00ff00);
+            Color._green = new Color(0x00ff00, "Green");
         }
         return Color._green;
     }
     static get blue() {
         if (Color._blue === undefined) {
-            Color._blue = new Color(0x0000ff);
+            Color._blue = new Color(0x0000ff, "Blue");
         }
         return Color._blue;
     }
     static get white() {
         if (Color._white === undefined) {
-            Color._white = new Color(0xbbbbbb);
+            Color._white = new Color(0xbbbbbb, "White");
         }
         return Color._white;
     }
     static get brown() {
         if (Color._brown === undefined) {
-            Color._brown = new Color(0xff0000);
+            Color._brown = new Color(0xff0000, "Brown");
         }
         return Color._brown;
     }
     static get orange() {
         if (Color._orange === undefined) {
-            Color._orange = new Color(0xff0000);
+            Color._orange = new Color(0xff0000, "Orange");
         }
         return Color._orange;
     }
