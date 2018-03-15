@@ -16,7 +16,7 @@
             </ul>
         </ul>
 
-        <div id="build-city" class="build-button" slot="reference" v-bind:class="{ disabled: !canBuildCity }">
+        <div id="build-city" class="build-button" slot="reference" :class="{ disabled: !canBuildCity }">
             <img id="button" src="doc/images/City48.png" />
             <img id="trade1" class="trade" src="doc/images/Trade48.png"
                 v-if="!canPayCityDirectly && amountGoldNeeded >= 1 && amountGold >= 1" />

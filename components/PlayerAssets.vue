@@ -2,18 +2,18 @@
     <div id="player-assets">
         <monopoly-dialog 
             v-if="showMonopolyDialog" 
-            v-on:close="closeMonopolyDialog">
+            @close="closeMonopolyDialog">
         </monopoly-dialog>
         <div v-if="update"></div>
         <year-of-plenty-dialog 
             v-if="showYearOfPlentyDialog" 
-            v-on:close="closeYearOfPlentyDialog">
+            @close="closeYearOfPlentyDialog">
         </year-of-plenty-dialog>
         <loose-resources-dialog
             v-if="showLooseResourcesDialog"
-            v-bind:game="game"
-            v-on:looseResources="looseResources"
-            v-bind:selectedResources="selectedResources">
+            :game="game"
+            @looseResources="looseResources"
+            :selectedResources="selectedResources">
         </loose-resources-dialog>
         <div id="all">
             <template 
@@ -122,161 +122,160 @@
 </template>
 
 <script>
-    import MonopolyDialog from './MonopolyDialog.vue';
-    import YearOfPlentyDialog from './YearOfPlentyDialog.vue';
-    import LooseResourcesDialog from "./LooseResourcesDialog.vue";
-    import Popper from 'vue-popperjs';
+import MonopolyDialog from './MonopolyDialog.vue';
+import YearOfPlentyDialog from './YearOfPlentyDialog.vue';
+import LooseResourcesDialog from "./LooseResourcesDialog.vue";
+import Popper from 'vue-popperjs';
 
-    import * as m from "../src/matcher";
-    import { Monopoly, Soldier } from '../src/developmentCard.js';
-    import { PlayDevelopmentCard } from "../src/actions/playDevelopmentCard.js";
-    import { LooseResources } from "../src/actions/looseResources";
-    import { ResourceList } from '../src/resource';
+import * as m from "../src/matcher";
+import { Monopoly, Soldier } from '../src/developmentCard.js';
+import { PlayDevelopmentCard } from "../src/actions/playDevelopmentCard.js";
+import { LooseResources } from "../src/actions/looseResources";
+import { ResourceList } from '../src/resource';
 
-    export default {
-        name: 'player-assets',
-        components: {MonopolyDialog, YearOfPlentyDialog, LooseResourcesDialog, Popper },
-        props: {
-            player: {
-                type: Object
-            },
-            host: {
-                type: Object
-            },
-            update: {
-                type: Boolean
-            },
-            game: {
-                type: Object
-            },
-            showLooseResourcesDialog: {
-                type: Boolean
-            },
+export default {
+    name: 'player-assets',
+    components: {MonopolyDialog, YearOfPlentyDialog, LooseResourcesDialog, Popper },
+    props: {
+        player: {
+            type: Object
         },
-        data() {
-            return {
-                victoryPointMessages: [],
-                soldierMessages: [],
-                otherMessages: [],
-                showMonopolyDialog: false,
-                showYearOfPlentyDialog: false,
-                developmentCard: null,
-                selectedResources: [],
-                selectResources: false,
-                canPlayVp: false,
-                canPlaySoldier: false,
-                canPlayOther: false,
+        host: {
+            type: Object
+        },
+        update: {
+            type: Boolean
+        },
+        game: {
+            type: Object
+        },
+        showLooseResourcesDialog: {
+            type: Boolean
+        },
+    },
+    data() {
+        return {
+            victoryPointMessages: [],
+            soldierMessages: [],
+            otherMessages: [],
+            showMonopolyDialog: false,
+            showYearOfPlentyDialog: false,
+            developmentCard: null,
+            selectedResources: [],
+            selectResources: false,
+            canPlayVp: false,
+            canPlaySoldier: false,
+            canPlayOther: false,
+        }
+    },
+    methods: {
+        action(action) {
+            this.$emit('action', action);
+        },
+        playDevelopmentCard(developmentCard) {
+            this.developmentCard = developmentCard;
+            // instanceof don't work here
+            const typeName = developmentCard.constructor.name;
+            if (typeName === "Monopoly") {
+                this.showMonopolyDialog = true;
+            } else if (typeName === "YearOfPlenty") {
+                this.showYearOfPlentyDialog = true;
+            } else if (typeName === "RoadBuilding") {
+                const rb = this.developmentCard;
+                rb.player = this.player;
+                const playRoadBuilding = PlayDevelopmentCard.createData(this.player, rb);
+                this.$emit('action', playRoadBuilding)
+            } else if (typeName === "VictoryPoint") {
+                const vp = this.developmentCard;
+                vp.player = this.player;
+                const playVp = PlayDevelopmentCard.createData(this.player, vp);
+                this.$emit('action', playVp)
+            } else if (typeName === "Soldier") {
+                const soldier = this.developmentCard;
+                soldier.player = this.player;
+                const playSoldier = PlayDevelopmentCard.createData(this.player, soldier);
+                playSoldier.player = this.player;
+                this.$emit('action', playSoldier);
             }
         },
-        methods: {
-            action(action) {
-                this.$emit('action', action);
-            },
-            playDevelopmentCard(developmentCard) {
-                this.developmentCard = developmentCard;
-                // instanceof don't work here
-                const typeName = developmentCard.constructor.name;
-                if (typeName === "Monopoly") {
-                    this.showMonopolyDialog = true;
-                } else if (typeName === "YearOfPlenty") {
-                    this.showYearOfPlentyDialog = true;
-                } else if (typeName === "RoadBuilding") {
-                    const rb = this.developmentCard;
-                    rb.player = this.player;
-                    const playRoadBuilding = PlayDevelopmentCard.createData(this.player, rb);
-                    this.$emit('action', playRoadBuilding)
-                } else if (typeName === "VictoryPoint") {
-                    const vp = this.developmentCard;
-                    vp.player = this.player;
-                    const playVp = PlayDevelopmentCard.createData(this.player, vp);
-                    this.$emit('action', playVp)
-                } else if (typeName === "Soldier") {
-                    const soldier = this.developmentCard;
-                    soldier.player = this.player;
-                    const playSoldier = PlayDevelopmentCard.createData(this.player, soldier);
-                    playSoldier.player = this.player;
-                    this.$emit('action', playSoldier);
-                }
-            },
-            closeMonopolyDialog(resourceType) {
-                this.showMonopolyDialog = false;
-                if (resourceType === null) {
-                    return;
-                }
-                const player = this.player;
-                const monopoly = this.developmentCard;
-                monopoly.resourceType = resourceType;
-                monopoly.player = player;
-                const playMonopoly = PlayDevelopmentCard.createData(player, monopoly);
-                this.$emit('action', playMonopoly)
-            },
-            closeYearOfPlentyDialog(resourceTypes) {
-                this.showYearOfPlentyDialog = false;
-                const yop = this.developmentCard;
-                yop.resourceType1 = resourceTypes[0];
-                yop.resourceType2 = resourceTypes[1];
-                const player = this.player;
-                yop.player = player;
-                const playYop = PlayDevelopmentCard.createData(player, yop);
-                this.$emit('action', playYop)
-            },
-            toggleResource(resource) {
-                if (this.selectedResources.includes(resource)) {
-                    this.selectedResources.remove(resource);
-                } else {
-                    this.selectedResources.push(resource);
-                }
-            },
-            looseResources() {
-                const resourceList = new ResourceList(this.selectedResources);
-                const looseResources = LooseResources.createData(this.player, resourceList);
-                this.selectedResources.length = 0;
-                this.$emit('looseResources', looseResources)
-            },
-            updateCanPlayVp() {
-                const game = this.game;
-                const player = this.game.player;
-                this.victoryPointMessages = m.match([
-                    m.isOnTurn(game, player),
-                    m.isExpected(game, new PlayDevelopmentCard({player: player})),
-                ]);
-                this.canPlayVp = this.victoryPointMessages.length === 0;
-            },
-            updateCanPlaySoldier() {
-                const game = this.game;
-                const player = this.game.player;
-                this.soldierMessages = m.match([
-                    m.isOnTurn(game, player),
-                    m.isExpected(game, new PlayDevelopmentCard({player: player, developmentCard: new Soldier()})),
-                ]);
-                this.canPlaySoldier = this.soldierMessages.length === 0;
-            },
-            updateCanPlayNonVp() {
-                const game = this.game;
-                const player = this.game.player;
-                this.otherMessages = m.match([
-                    m.notYetPlayedDevelopmentCard(game),
-                    m.isOnTurn(game, player),
-                    m.isExpected(game, new PlayDevelopmentCard({player: player})),
-                ]);
-                this.canPlayOther = this.otherMessages.length === 0;
+        closeMonopolyDialog(resourceType) {
+            this.showMonopolyDialog = false;
+            if (resourceType === null) {
+                return;
+            }
+            const player = this.player;
+            const monopoly = this.developmentCard;
+            monopoly.resourceType = resourceType;
+            monopoly.player = player;
+            const playMonopoly = PlayDevelopmentCard.createData(player, monopoly);
+            this.$emit('action', playMonopoly)
+        },
+        closeYearOfPlentyDialog(resourceTypes) {
+            this.showYearOfPlentyDialog = false;
+            const yop = this.developmentCard;
+            yop.resourceType1 = resourceTypes[0];
+            yop.resourceType2 = resourceTypes[1];
+            const player = this.player;
+            yop.player = player;
+            const playYop = PlayDevelopmentCard.createData(player, yop);
+            this.$emit('action', playYop)
+        },
+        toggleResource(resource) {
+            if (this.selectedResources.includes(resource)) {
+                this.selectedResources.remove(resource);
+            } else {
+                this.selectedResources.push(resource);
             }
         },
-        mounted() {
+        looseResources() {
+            const resourceList = new ResourceList(this.selectedResources);
+            const looseResources = LooseResources.createData(this.player, resourceList);
+            this.selectedResources.length = 0;
+            this.$emit('looseResources', looseResources)
+        },
+        updateCanPlayVp() {
+            const game = this.game;
+            const player = this.game.player;
+            this.victoryPointMessages = m.match([
+                m.isOnTurn(game, player),
+                m.isExpected(game, new PlayDevelopmentCard({player: player})),
+            ]);
+            this.canPlayVp = this.victoryPointMessages.length === 0;
+        },
+        updateCanPlaySoldier() {
+            const game = this.game;
+            const player = this.game.player;
+            this.soldierMessages = m.match([
+                m.isOnTurn(game, player),
+                m.isExpected(game, new PlayDevelopmentCard({player: player, developmentCard: new Soldier()})),
+            ]);
+            this.canPlaySoldier = this.soldierMessages.length === 0;
+        },
+        updateCanPlayNonVp() {
+            const game = this.game;
+            const player = this.game.player;
+            this.otherMessages = m.match([
+                m.notYetPlayedDevelopmentCard(game),
+                m.isOnTurn(game, player),
+                m.isExpected(game, new PlayDevelopmentCard({player: player})),
+            ]);
+            this.canPlayOther = this.otherMessages.length === 0;
+        }
+    },
+    mounted() {
+        this.updateCanPlayVp();
+        this.updateCanPlaySoldier();
+        this.updateCanPlayNonVp();
+        this.removeActionAddedHandler = this.game.actions.added((action) => {
             this.updateCanPlayVp();
             this.updateCanPlaySoldier();
             this.updateCanPlayNonVp();
-            this.removeActionAddedHandler = this.game.actions.added((action) => {
-                this.updateCanPlayVp();
-                this.updateCanPlaySoldier();
-                this.updateCanPlayNonVp();
-            });
-        },
-        unmount() {
-            this.removeActionAddedHandler();
-        }
-
+        });
+    },
+    unmount() {
+        this.removeActionAddedHandler();
     }
+}
 </script>
 
 <style scoped>

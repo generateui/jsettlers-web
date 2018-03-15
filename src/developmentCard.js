@@ -48,7 +48,7 @@ export class YearOfPlenty extends DevelopmentCard {
         super();
         this.resourceType1 = null;
         this.resourceType2 = null;
-        this.resources = null;
+        this.resourceList = null;
     }
     static fromData(data) {
         const yop = new YearOfPlenty();
@@ -57,7 +57,7 @@ export class YearOfPlenty extends DevelopmentCard {
         return yop;
     }
     setReferences(game) {
-        this.resources = new ResourceList([this.resourceType1, this.resourceType2]);
+        this.resourceList = new ResourceList([this.resourceType1, this.resourceType2]);
     }
     get data() {
         const data = super._getData();

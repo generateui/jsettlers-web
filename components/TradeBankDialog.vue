@@ -124,10 +124,10 @@
               const port = p.ports.bestPortForResourceType(resourceType);
               return this.playerResources.of(resourceType).length < port.inAmount;
           },
-          bankHasNoResource: function(resourceType) {
+          bankHasNoResource(resourceType) {
               return !this.game.bank.resources.hasOf(resourceType);
           },
-          trade: function() {
+          trade() {
               const bankPicks = this.bankPickedResources.map(rt => proto.ResourceType[rt]);
               const playerPicks = this.playerPickedResources.map(rt => proto.ResourceType[rt]);
               const tradeBank = TradeBank.createData(this.game.player, playerPicks, bankPicks);
@@ -135,7 +135,7 @@
           }
         },
         computed: {
-            cannotTrade: function() {
+            cannotTrade() {
               return this.bankPickedResources.length !== this.goldAmount || this.goldAmount === 0;
             }
         },

@@ -4,18 +4,19 @@ import {GameAction} from "./gameAction.js";
 export class AcceptOffer extends GameAction {
     constructor() {
         super();
+        this.offerTradeId = null;
     }
     get isTradeResponse() {
         return true;
     }
     perform(game) {
-        const tradeOffer = game.getActionById(this.tradeOfferId);
-        tradeOffer.responses.set(this.player, this);
+        const offerTrade = game.getActionById(this.offerTradeId);
+        offerTrade.responses.set(this.player, this);
         game.phase.acceptOffer(game, this);
     }
-    static createData(player, tradeOffer) {
+    static createData(player, offerTrade) {
         const acceptOffer = new proto.AcceptOffer();
-        acceptOffer.setTradeOfferId(tradeOffer.id);
+        acceptOffer.setTradeOfferId(offerTrade.id);
         const action = new proto.GameAction();
         action.setPlayerId(player.id);
         action.setAcceptOffer(acceptOffer);
@@ -23,7 +24,7 @@ export class AcceptOffer extends GameAction {
     }
     static fromData(data) {
         const acceptOffer = new AcceptOffer();
-        acceptOffer.tradeOfferId = data.getTradeOfferId();
+        acceptOffer.offerTradeId = data.getTradeOfferId();
         return acceptOffer;
     }
 }

@@ -22,8 +22,38 @@
             </div>
             
             <div id="play-development-card-view" class="item-wrapper" v-if="action instanceof PlayDevelopmentCard">
+                <div class="development-card" v-if="action.developmentCard instanceof YearOfPlenty">
                 <img src="doc/images/PlayDevelopmentCard48.png">
-                <span>{{action.player.user.name}} played a {{action.developmentCard.name}}</span>
+                <span>{{action.player.user.name}} played a </span>
+                    <img src="doc/images/YearOfPlentyLogo48.png">
+                    <span>{{action.developmentCard.name}} and got</span>
+                    <resource-list-view :size="24" :resources="action.developmentCard.resourceList"></resource-list-view>
+                </div>
+                <div class="development-card" v-if="action.developmentCard instanceof Soldier">
+                <img src="doc/images/PlayDevelopmentCard48.png">
+                <span>{{action.player.user.name}} played a </span>
+                    <img src="doc/images/SoldierLogo48.png">
+                    <span>{{action.developmentCard.name}}</span>
+                </div>
+                <div class="development-card" v-if="action.developmentCard instanceof Monopoly">
+                <img src="doc/images/PlayDevelopmentCard48.png">
+                <span>{{action.player.user.name}} played a </span>
+                    <img src="doc/images/MonopolyLogo48.png">
+                    <span>{{action.developmentCard.name}} and got</span>
+                    <resource-list-view :size="24" :resources="action.developmentCard.stolen"></resource-list-view>
+                </div>
+                <div class="development-card" v-if="action.developmentCard instanceof VictoryPoint">
+                <img src="doc/images/PlayDevelopmentCard48.png">
+                <span>{{action.player.user.name}} played a </span>
+                    <img src="doc/images/YearOfPlentyLogo48.png">
+                    <span>{{action.developmentCard.name}} and gained one victory point</span>
+                </div>
+                <div class="development-card" v-if="action.developmentCard instanceof RoadBuilding">
+                <img src="doc/images/PlayDevelopmentCard48.png">
+                <span>{{action.player.user.name}} played a </span>
+                    <img src="doc/images/YearOfPlentyLogo48.png">
+                    <span>{{action.developmentCard.name}} and got two free roads</span>
+                </div>
             </div>
 
             <div id="roll-dice-view" class="item-wrapper" v-if="action instanceof RollDice">
@@ -48,12 +78,19 @@
             
             <div id="trade-player-view" class="item-wrapper" v-if="action instanceof TradePlayer">
                 <img src="doc/images/TradePlayer48.png">
-                <span>{{action.player.user.name}} trades $offered for $wanted</span>
+                <span>{{action.player.user.name}} trades </span>
+                <resource-list-view :size="24" :resources="action.offered"></resource-list-view>
+                <span>for</span>
+                <resource-list-view :size="24" :resources="action.wanted"></resource-list-view>
+                <span>with {{action.opponent.user.name}}</span>
             </div>
             
             <div id="trade-player-view" class="item-wrapper" v-if="action instanceof CounterOffer">
                 <img src="doc/images/CounterOffer48.png">
-                <span>{{action.player.user.name}} counter-offers $offered for $wanted</span>
+                <span>{{action.player.user.name}} counter-offers </span>
+                <resource-list-view :size="24" :resources="action.offeredResourceList"></resource-list-view>
+                <span>for</span>
+                <resource-list-view :size="24" :resources="action.wantedResourceList"></resource-list-view>
             </div>
             
             <div id="trade-player-view" class="item-wrapper" v-if="action instanceof AcceptOffer">
@@ -68,12 +105,18 @@
             
             <div id="trade-player-view" class="item-wrapper" v-if="action instanceof OfferTrade">
                 <img src="doc/images/OfferTrade48.png">
-                <span>{{action.player.user.name}} offered $offered for $wanted</span>
+                <span>{{action.player.user.name}} offered</span>
+                <resource-list-view :size="24" :resources="action.offeredResourceList"></resource-list-view>
+                <span>for</span>
+                <resource-list-view :size="24" :resources="action.wantedResourceList"></resource-list-view>
             </div>
             
             <div id="trade-bank-view" class="item-wrapper" v-if="action instanceof TradeBank">
                 <img src="doc/images/TradeBank48.png">
-                <span>{{action.player.user.name}} banked $offered for $wanted</span>
+                <span>{{action.player.user.name}} banked </span>
+                <resource-list-view :size="24" :resources="action.offered"></resource-list-view>
+                <span>for</span>
+                <resource-list-view :size="24" :resources="action.wanted"></resource-list-view>
             </div>
             
         </li>
@@ -81,14 +124,17 @@
 </template>
 
 <script>
-    export default {
-        name: 'action-log',
-        props: {
-            actions: {
-                type: Array
-            }
-        },
-    }
+import ResourceListView from "./ResourceListView.vue";
+
+export default {
+    name: 'action-log',
+    components: { ResourceListView },
+    props: {
+        actions: {
+            type: Array
+        }
+    },
+}
 </script>
 
 <style scoped>
@@ -105,6 +151,15 @@ li {
     display: table-cell;
     vertical-align: middle;
     padding-left: 0.25em;
+}
+.development-card {
+    display: flex;
+    align-items: center;
+}
+.development-card img {
+    filter: invert(100%);
+    margin-left: 0.25em;
+    margin-right: 0.25em;
 }
 img {
     height: 24px;

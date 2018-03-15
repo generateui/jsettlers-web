@@ -1,9 +1,9 @@
 <template>
     <div id="actions">
-        <build-town-button id="build-town-button" v-bind:game="game"></build-town-button>
-        <build-city-button id="build-city-button" v-bind:game="game"></build-city-button>
-        <build-road-button id="build-road-button" v-bind:game="game"></build-road-button>
-        <buy-development-card-button id="buy-development-card-button" v-bind:game="game"></buy-development-card-button>
+        <build-town-button id="build-town-button" :game="game"></build-town-button>
+        <build-city-button id="build-city-button" :game="game"></build-city-button>
+        <build-road-button id="build-road-button" :game="game"></build-road-button>
+        <buy-development-card-button id="buy-development-card-button" :game="game"></buy-development-card-button>
         <div id="trade-player" class="build-button">
             <img src="doc/images/TradePlayer48.png" @click="toggleTradePlayerDialog" />
         </div>
@@ -13,15 +13,15 @@
         <div id="end-turn" class="build-button" @click="endTurn">
             <img src="doc/images/EndTurn48.png" />
         </div>
-        <dice-view id="dice-view" class="build-button" v-on:rolldice="rollDice" v-bind:dice="dice"></dice-view>
+        <dice-view id="dice-view" class="build-button" v-on:rolldice="rollDice" :dice="dice"></dice-view>
         <game-phases-view id="game-phases-view"
-            v-bind:game="game">
+            :game="game">
         </game-phases-view>
         <trade-player-dialog 
-            v-if="showTradePlayerDialog" 
             @action="action"
             @close="closeTradePlayerDialog"
             :keyListener="keyListener"
+            :show="showTradePlayerDialog"
             :game="game">
         </trade-player-dialog>
     </div>

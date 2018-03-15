@@ -5,14 +5,18 @@
             v-if="showTradeBankDialog" 
             :game="game" 
             @toggleTradeBankDialog="toggleTradeBankDialog"
+            @trade="tradePlayer"
             @close="closeTradeBankDialog"
             :keyListener="keyListener"></trade-bank-dialog>
         <div id="players">
-            <div v-for="player in game.players">
-                <player-info v-bind:player="player" v-bind:game="game" v-bind:ref="'player' + player.id"></player-info>
+            <div v-for="player in game.players" :key="player.id">
+                <player-info 
+                    :player="player" 
+                    :game="game" 
+                    :ref="'player' + player.id"></player-info>
             </div>
         </div>
-        <bank-view id="bank" v-bind:bank="game.bank" v-bind:update="update"></bank-view>
+        <bank-view id="bank" :bank="game.bank" :update="update"></bank-view>
 
         <div id="tabs">
             <button class="tab-button" @click="tabMode = TABMODE.actions">actions</button>
@@ -158,6 +162,11 @@
                 this.showTradeBankDialog = false;
                 this.$forceUpdate();
                 this.update = !this.update;
+            },
+            tradePlayer(action) {
+                this.performAction(action);
+                this.update = !this.update;
+                this.closeTradeBankDialog();
             },
             looseResources(action) {
                 this.$data.showLooseResourcesDialog = false;
