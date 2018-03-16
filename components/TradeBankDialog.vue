@@ -5,10 +5,14 @@
             <div id="bank-pick-resources">
                 <div v-for="rt1 in bankResources.types" :key="rt1">
                     <img class="resource-image" 
-                         v-bind:class="{ 'cannot-trade': bankHasNoResource(rt1)}"
-                        :src="`doc/images/${rt1.toPascalCase()}Card.png`" 
+                        :class="{ 'cannot-trade': bankHasNoResource(rt1)}"
+                        :src="`doc/images/${rt1}Card.png`" 
                         @click="pickBankResource(rt1)" />
-                    <div class="bank-resource-count">{{bankResources.of(rt1).length}}</div>
+                    <div 
+                        class="bank-resource-count" 
+                        :data-tooltip="`the bank has ${bankResources.of(rt1).length} ${rt1.toPascalCase()} in stock`">
+                        {{bankResources.of(rt1).length}}
+                    </div>
                 </div>
             </div>
             <div id="bank-picked-resources">
@@ -19,12 +23,12 @@
                         :src="`doc/images/${resourceType.toPascalCase()}Card.png`" 
                         @click="unpickBankResource(resourceType)" />
             </div>
-            <div id="get-wrapper">
+            <div id="get-wrapper" data-tooltip="on this top side, select resources you want">
                 <div id="get" class="get-give">GET</div>
             </div>
             <div id="spacer"></div>
             <div id="trade-button-wrapper">
-                <button id="trade-button" @click="trade" :disabled="cannotTrade">
+                <button id="trade-button" @click="trade" :disabled="cannotTrade" data-tooltip="to bank, balance the top and bottom resources and hit this button">
                     🡹 Trade! 🡻
                 </button>
             </div>
@@ -36,7 +40,7 @@
                         :src="`doc/images/${resourceType.toPascalCase()}Card.png`" 
                         @click="unpickPlayerResource(resourceType)" />
             </div>
-            <div id="give-wrapper">
+            <div id="give-wrapper" data-tooltip="on this bottom side, select resources you exchange for">
                 <div id="give" class="get-give">GIVE</div>
             </div>
             <div id="player-pick-resources">
@@ -45,7 +49,7 @@
                     v-for="rt4 in playerResources.types" 
                     v-bind:class="{ 'cannot-trade': cannotTradeResource(rt4) }"
                     :key="rt4">
-                    <span class="port-ratio">{{getPort(rt4).inAmount}}:{{getPort(rt4).outAmount}}</span>
+                    <span :data-tooltip="`you have a ${getPort(rt4).name} port`" class="port-ratio">{{getPort(rt4).inAmount}}:{{getPort(rt4).outAmount}}</span>
                     <img class="resource-image"
                         :src="`doc/images/${rt4.toPascalCase()}Card.png`" 
                         @click="pickPlayerResource(rt4)" />

@@ -2,27 +2,27 @@
     <div id="wrapper" >
         <div id="background-wrapper" v-bind:style="{ borderColor: player.color.css, backgroundColor: player.color.toCssRgba(0.25) }">
             <div id="player-name">{{player.user.name}}</div>
-            <div id="towns" class="stock-info"  data-indicator="amount of towns in stock">
+            <div id="towns" class="stock-info" :data-tooltip="`${player.stock.towns} towns in stock`">
                 <img src="doc/images/Town48.png" />
                 <span>{{player.stock.towns}}</span>
             </div>
-            <div id="cities" class="stock-info">
+            <div id="cities" class="stock-info" :data-tooltip="`${player.stock.cities} cities in stock`">
                 <img src="doc/images/City48.png" />
                 <span>{{player.stock.cities}}</span>
             </div>
-            <div id="roads" class="stock-info">
+            <div id="roads" class="stock-info" :data-tooltip="`${player.stock.roads} roads in stock`">
                 <img src="doc/images/Road48.png" />
                 <span>{{player.stock.roads}}</span>
             </div>
-            <div id="soldiers" class="stock-info">
+            <div id="soldiers" class="stock-info" :data-tooltip="`${player.soldiers.length} soldiers played`">
                 <img src="doc/images/LargestArmy48.png" />
                 <span v-bind:class="{ 'is-winner': game.largestArmy.player === player}">{{player.soldiers.length}}</span>
             </div>
-            <div id="route-length" class="stock-info">
+            <div id="route-length" class="stock-info" :data-tooltip="`${player.routeLength} road length`">
                 <img src="doc/images/LongestRoad48.png" />
                 <span v-bind:class="{ 'is-winner': game.longestRoad.player === player}">{{player.routeLength}}</span>
             </div>
-            <div id="developmentCards" class="stock-info">
+            <div id="developmentCards" class="stock-info" :data-tooltip="`${player.developmentCards.length} development cards`">
                 <img src="doc/images/DevelopmentCard48.png" />
                 <span >{{player.developmentCards.length}}</span>
             </div>
@@ -64,31 +64,6 @@
             </div>
         </div>
         <div id="popup" class="popper" v-bind:ref="'popup-' + player.id" v-show="actions.length > 0 || offerTrades.length > 0">
-            <!-- <div id="popup-content"> -->
-            <!-- opponent offers to you, so show response buttons -->
-                <!-- <div
-                    class="response-offer-trade-view" 
-                    v-for="offerTrade in offerTrades">
-                    <img src="doc/images/OfferTrade48.png" />
-                    <resource-list-view
-                        :resources="offerTrade.offeredResourceList"
-                        :size="48">
-                    </resource-list-view>
-                    <span>for</span>
-                    <resource-list-view
-                        :resources="offerTrade.wantedResourceList"
-                        :size="48">
-                    </resource-list-view>
-                    <div class="accept-offer-button button" @click="acceptOffer(offerTrade)">
-                        <span class="accept-logo">✔️</span>
-                    </div>
-                    <div class="counter-offer-button button" @click="counterOffer(offerTrade)">
-                        <span class="reject-logo">❌</span>
-                    </div>
-                    <div class="reject-offer-button button" @click="rejectOffer(offerTrade)">
-                        <span class="counter-logo">⇄?</span>
-                    </div>
-                </div> -->
                 <div id="actions" v-for="action in actions">
                     <div class="roll-dice-production" v-if="action instanceof RollDice">
                         <div id="roll-dice-view" v-if="action.player === player">
@@ -237,8 +212,6 @@
                         </resource-list-view>
                     </div>
                 </div>
-                
-            <!-- </div> -->
 
         </div>
         <div v-if="player === game.playerOnTurn" class="is-on-turn-indicator indicator">

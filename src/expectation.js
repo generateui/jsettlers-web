@@ -419,6 +419,7 @@ export class BuildTownThenBuildRoad extends Expectation {
         this.index = 0;
         this.maxIndex = (game.players.length * 4) - 1;
         this.action = this.actions[this.index]; // current expected action
+        this.lastBuildTown = null;
     }
     get met() {
         return this.index === this.maxIndex;
@@ -443,6 +444,9 @@ export class BuildTownThenBuildRoad extends Expectation {
         const oldYouAction = this.youAction;
         this.index += 1;
         this.action = this.actions[this.index];
+        if (action instanceof BuildTown) {
+            this.lastBuildTown = action;
+        }
         this._fireIfChanged("youAction", oldYouAction, this.youAction);
         this._fireChanged();
     }

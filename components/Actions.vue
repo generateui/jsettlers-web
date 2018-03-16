@@ -67,7 +67,8 @@
             },
             buildRoad() {
                 const player = this.$props.game.player;
-                const behavior = new gb.BuildRoad(player, this.$props.keyListener);
+                const edges = this.game.phase.roadPossibilities(this.game, this.game.player);
+                const behavior = new gb.PickRoadEdge(edges, this.$props.keyListener);
                 const createAction = (player, edge) => BuildRoad.createData(player, edge);
                 this.$emit("behaveThenAct", behavior, createAction);
             },

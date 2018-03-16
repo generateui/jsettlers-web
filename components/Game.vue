@@ -220,12 +220,14 @@
                     // popup traderesponse dialog
                 }
                 if (action instanceof BuildTown) {
-                    const behavior = new gb.BuildTown(this.player, this.keyListener);
+                    const nodes = this.game.phase.townPossibilities(this.game, this.player);
+                    const behavior = new gb.PickTownNode(nodes, this.keyListener);
                     const createActionData = (player, node) => BuildTown.createData(player, node);
                     this.behaveThenAct(behavior, createActionData);
                 }
                 if (action instanceof BuildRoad) {
-                    const behavior = new gb.BuildRoad(this.player, this.keyListener);
+                    const edges = this.game.phase.roadPossibilities(this.game, this.game.player);
+                    const behavior = new gb.PickRoadEdge(edges, this.keyListener);
                     const createAction = (player, edge) => BuildRoad.createData(player, edge);
                     this.behaveThenAct(behavior, createAction);
                 }

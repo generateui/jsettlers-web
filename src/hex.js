@@ -30,6 +30,7 @@ export class Hex extends Observable {
     get canHavePort() { return false; }
     get canHaveChit() { return false; }
     get canHaveRobber() { return false; }
+    get canBuildLandPieces() { return false; }
 }
 export class Desert extends Hex {
     constructor(coord) {
@@ -38,6 +39,7 @@ export class Desert extends Hex {
     get type() { return proto.HexType.DESERT; }
     get color() { return 0xcfa762; }
     get canHaveRobber() { return true; }
+    get canBuildLandPieces() { return true; }
 }
 export class Sea extends Hex { 
     constructor(coord) {
@@ -57,6 +59,7 @@ export class WheatField extends Hex {
     get canHaveChit() { return true; }
     get canHaveRobber() { return true; }
     get resourceType() { return proto.ResourceType.WHEAT; }
+    get canBuildLandPieces() { return true; }
 }
 export class Mountain extends Hex {
     constructor(coord) {
@@ -67,6 +70,7 @@ export class Mountain extends Hex {
     get canHaveChit() { return true; }
     get canHaveRobber() { return true; }
     get resourceType() { return proto.ResourceType.ORE; }
+    get canBuildLandPieces() { return true; }
  }
  export class River extends Hex { 
     constructor(coord) {
@@ -77,6 +81,7 @@ export class Mountain extends Hex {
     get canHaveChit() { return true; }
     get canHaveRobber() { return true; }
     get resourceType() { return proto.ResourceType.BRICK; }
+    get canBuildLandPieces() { return true; }
 }
 export class Forest extends Hex { 
     constructor(coord) {
@@ -87,6 +92,7 @@ export class Forest extends Hex {
     get canHaveChit() { return true; }
     get canHaveRobber() { return true; }
     get resourceType() { return proto.ResourceType.TIMBER; }
+    get canBuildLandPieces() { return true; }
 }
 export class Pasture extends Hex {
     constructor(coord) {
@@ -97,6 +103,7 @@ export class Pasture extends Hex {
     get canHaveChit() { return true; }
     get canHaveRobber() { return true; }
     get resourceType() { return proto.ResourceType.SHEEP; }
+    get canBuildLandPieces() { return true; }
 }
 export class NoneHex extends Hex {
     constructor(coord) {

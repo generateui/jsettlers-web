@@ -22,11 +22,11 @@ import {City} from "../city.js";
 import {KeyListener} from "./keyListener.js";
 import { EMPHASIS } from "./webgl/renderer";
 
-export class BuildRoad extends BoardBehavior {
-    constructor(player, keyListener, canCancel) {
+export class PickRoadEdge extends BoardBehavior {
+    constructor(edges, keyListener, canCancel) {
         super();
 
-        this.player = player;
+        this.edges = edges;
         canCancel = canCancel || false;
         this.emphasizeHoveredObject = new EmphasizeHoveredObject(r => r instanceof EdgeRenderer);
         this.promise = new Promise((ok, fail) => {
@@ -39,14 +39,11 @@ export class BuildRoad extends BoardBehavior {
     }
     start(boardRenderer) {
         this.boardRenderer = boardRenderer;
-        var edges = this.boardRenderer.board.getAllEdges();
-        var roadEdges = this.boardRenderer.board.roads.map.keys();
-        var edgesToShow = Util.except(edges, roadEdges);
-        this.boardRenderer.showEdges(edgesToShow);
+        this.boardRenderer.showEdges(this.edges);
     }
     click(boardRenderer, renderer) {
         if (renderer instanceof EdgeRenderer) {
-            this.ok(renderer.edge);            
+            this.ok(renderer.edge);
         }
     }
     stop(boardRenderer) {
@@ -54,7 +51,7 @@ export class BuildRoad extends BoardBehavior {
         if (this.removeSubscription !== undefined) {
             this.removeSubscription();
         }
-        this.player = null;
+        this.edges = null;
         this.boardRenderer = null;
         this.emphasizeHoveredObject = null;
     }
@@ -65,12 +62,12 @@ export class BuildRoad extends BoardBehavior {
         this.emphasizeHoveredObject.leave(boardRenderer, renderer);
     }
 }
-export class BuildTown extends BoardBehavior {
-    constructor(player, keyListener, canCancel) {
+export class PickTownNode extends BoardBehavior {
+    constructor(nodes, keyListener, canCancel) {
         super();
 
         canCancel = canCancel || false;
-        this.player = player;
+        this.nodes = nodes;
         this.emphasizeHoveredObject = new EmphasizeHoveredObject(r => r instanceof NodeRenderer);
         
         this.promise = new Promise((ok, fail) => {
@@ -83,20 +80,12 @@ export class BuildTown extends BoardBehavior {
     }
     start(boardRenderer) {
         this.boardRenderer = boardRenderer;
-        var nodes = boardRenderer.board.getAllNodes();
-        boardRenderer.showNodes(nodes);
+        boardRenderer.showNodes(this.nodes);
     }
     click(boardRenderer, renderer) {
         if (renderer instanceof NodeRenderer) {
             this.ok(renderer.node);
         }
-    }
-    stop(boardRenderer) {
-        boardRenderer.hideAllNodes();
-        this.removeSubscription();
-        this.promise = null;
-        this.player = null;
-        this.boardRenderer = null;
     }
     enter(boardRenderer, renderer) {
         this.emphasizeHoveredObject.enter(boardRenderer, renderer);
@@ -104,8 +93,15 @@ export class BuildTown extends BoardBehavior {
     leave(boardRenderer, renderer) {
         this.emphasizeHoveredObject.leave(boardRenderer, renderer);
     }
+    stop(boardRenderer) {
+        boardRenderer.hideAllNodes();
+        this.removeSubscription();
+        this.promise = null;
+        this.nodes = null;
+        this.boardRenderer = null;
+    }
 }
-export class BuildCity extends BoardBehavior {
+export class PickTownForCity extends BoardBehavior {
     constructor(player, keyListener, canCancel) {
         super();
 

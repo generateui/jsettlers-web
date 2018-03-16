@@ -215,3 +215,71 @@ ul {
     margin-left: 0;
     margin-bottom: -16px;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*** key tips */
+/* TODO: move this to keytip.css? */
+/* Base styles for the element that has a tooltip */
+[data-keytip],
+.tooltip {
+    position: relative;
+    cursor: pointer;
+}
+
+/* Base styles for the entire tooltip */
+[data-keytip]:before,
+[data-keytip]:after,
+.keytip:before,
+.keytip:after {
+    position: absolute;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Show the entire tooltip on hover and focus */
+[data-keytip]:hover:before,
+[data-keytip]:hover:after,
+[data-keytip]:focus:before,
+[data-keytip]:focus:after,
+.keytip:hover:before,
+.keytip:hover:after,
+.keytip:focus:before,
+.keytip:focus:after {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Base styles for the tooltip's directional arrow */
+.keytip:before,
+[data-keytip]:before {
+    z-index: 1001;
+    background: transparent;
+}
+
+/* Base styles for the tooltip's content area */
+.keytip:after,
+[data-keytip]:after {
+    z-index: 1000;
+    padding: 0.25em;
+    background-color: chartreuse;
+    color: black;
+    content: attr(data-keytip);
+    font-size: 16px;
+    border: 1px solid black;
+    text-transform: capitalize;
+    font-weight: 900;
+}

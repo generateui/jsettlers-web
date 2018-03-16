@@ -36,6 +36,11 @@ export class GamePhase {
     rejectOffer(game, rejectOffer) {}
     counterOffer(game, counterOffer) {}
     canPlaceTownOnBoard(game, player) {}
+    /** since the possibilities to build roads & towns depends on the game phase, 
+     * the game phase is responsible to returning a list of possibilties. It's
+     * fine to delegate it to another object though. */
+    townPossibilities(game, player) { } // Set<Node>
+    roadPossibilities(game, player) { } // Set<Edge>
 }
 export class InitialPlacement extends GamePhase {
     constructor() {
@@ -69,6 +74,41 @@ export class InitialPlacement extends GamePhase {
     canPlaceTownOnBoard(game, player) {
         return true;
     }
+    townPossibilities(game, player) { // Node[]
+        const hexes = game.board.hexes.map;
+        const nodePieces = game.board.nodePieces.map;
+        const nodes = new Set(); // <Node>
+        const notOkNodes = new Set(); // <Node>
+        for (let coord of hexes.keys()) {
+            nodesLoop: for (let node of coord.nodes) {
+                // no need to check nodes twice
+                if (nodes.has(node) || notOkNodes.has(node)) {
+                    continue nodesLoop;
+                }
+                const hex1 = hexes.get(node.coord1);
+                const hex2 = hexes.get(node.coord2);
+                const hex3 = hexes.get(node.coord3);
+                const canBuildLandPiece = (hex1 !== undefined && hex1.canBuildLandPieces) || 
+                    (hex2 !== undefined && hex2.canBuildLandPieces) || 
+                    (hex3 !== undefined && hex3.canBuildLandPieces);
+                const notYetTaken = !nodePieces.has(node) &&
+                    !nodePieces.has(node.nodes[0]) &&
+                    !nodePieces.has(node.nodes[1]) &&
+                    !nodePieces.has(node.nodes[2]);
+                if (canBuildLandPiece && notYetTaken) {
+                    nodes.add(node);
+                } else {
+                    notOkNodes.add(node);
+                }
+            }
+        }
+        return nodes;
+    }
+    roadPossibilities(game, player) { // Edge[]
+        const buildTown = this.expectation.lastBuildTown;
+        return buildTown.node.edges;
+    }
+
 }
 /** Phase in the game where players play turns.
  * 
@@ -181,10 +221,18 @@ export class PlayTurns extends GamePhase {
     canPlaceTownOnBoard(game, player) {
         
     }
+    townPossibilities(game, player) {
+        return game.board.townPossibilities(player);
+    }
+    roadPossibilities(game, player) {
+        return game.board.roadPossibilities(player);
+    }
 }
 export class Finished extends GamePhase {
     constructor() {
         super();
+
+        this.name = "Finished";
     }
 }
 export class TurnPhase {

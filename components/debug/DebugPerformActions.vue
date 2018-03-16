@@ -10,7 +10,7 @@
         </li>
         <li>
             <ul>
-                <li>
+                <li data-keytip="ctrl + t">
                     <img src="doc/images/Town48.png" style="height:24px; width: 24px;">
                     <button @click="buildTown()">build town</button>
                 </li>
@@ -20,7 +20,7 @@
                 </li>
                 <li>
                     <img src="doc/images/City48.png" style="height:24px; width: 24px;">
-                    <button @click="buildCity()">build city</button>
+                    <button @click="buildCity()"  data-keytip="c">build city</button>
                 </li>
                 <li>
                     <img src="doc/images/DevelopmentCard48.png" style="height:24px; width: 24px;">
@@ -70,6 +70,13 @@
                     </select>
                     <button @click="setPlayerOnTurn(p)">set</button>
                 </li>
+                <li>
+                    <span>set game phase</span>
+                    <select v-model="phase">
+                        <option v-for="phase in game.phases" v-bind:value="phase">{{phase.name}}</option>
+                    </select>
+                    <button @click="setGamePhase()">set</button>
+                </li>
             </ul>
         </li>
     </ul>
@@ -115,37 +122,37 @@ export default {
             autoRespond: true,
             opponents: [],
             playerOnTurn: null,
+            phase: null,
         }
     },
     methods: {
-        buildTown: async function() {
-            const behavior = new gb.BuildTown(this.game.player, this.keyListener, true);
+        buildTown() {
+            const nodes = this.game.phase.townPossibilities(this.game, this.player);
+            const behavior = new gb.PickTownNode(nodes, this.keyListener, true);
             const createActionData = (player, node) => BuildTown.createData(player, node);
             this.behaveThenAct(behavior, createActionData);
         },
-        buildRoad: function() {
-            const behavior = new gb.BuildRoad(this.game.player, this.keyListener, true);
+        buildRoad() {
+            const edges = this.game.phase.roadPossibilities(this.game, this.game.player);
+            const behavior = new gb.PickRoadEdge(this.game.player, this.keyListener, true);
             const createAction = (player, edge) => BuildRoad.createData(player, edge);
             this.behaveThenAct(behavior, createAction);
         },
-        buildCity: function() {
-            const behavior = new gb.BuildCity(this.game.player, this.keyListener, true);
+        buildCity() {
+            const behavior = new gb.PickTownForCity(this.game.player, this.keyListener, true);
             const createAction = (player, node) => BuildCity.createData(player, node);
             this.behaveThenAct(behavior, createAction);
         },
-        buyDevelopmentCard: function() {
+        buyDevelopmentCard() {
             const createAction = (player) => BuyDevelopmentCard.createData(player, null);
             this.act(createAction);
         },
-        playDevelopmentCard: function() {
-
-        },
-        moveRobber: function() {
+        moveRobber() {
             const behavior = new gb.MoveRobber();
             const createAction = (player, coord) => MoveRobber.createData(player, coord);
             this.behaveThenAct(behavior, createAction);
         },
-        robPlayer: function() {
+        robPlayer() {
             const behavior = new gb.PickPlayer(this.opponents);
             const createAction = (player, opponent) => RobPlayer.createData(player, opponent);
             this.behaveThenAct(behavior, createAction);
@@ -156,6 +163,9 @@ export default {
         },
         setPlayerOnTurn() {
             this.game.playerOnTurn = this.playerOnTurn;
+        },
+        setGamePhase(phase) {
+            this.game.phase = this.phase;
         },
         act: async function(createAction) {
             try {
