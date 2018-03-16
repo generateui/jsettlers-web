@@ -31,6 +31,7 @@
 
             <popper v-for="dc in player.developmentCards" class="root"
                 trigger="hover" 
+                :key="dc.id"
                 :options="{placement: 'top'}">
                 <ul class="popper popup">
                     <div v-if="dc instanceof Soldier">

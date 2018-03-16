@@ -6,6 +6,9 @@ import { RobPlayer } from "./actions/robPlayer";
 import { MoveRobberThenRobPlayer, BuildTwoRoads } from "./expectation";
 
 export class DevelopmentCard {
+    constructor() {
+        this.id = DevelopmentCard.nextId();
+    }
     static fromData(data) {
         var developmentCard = null;
         if (data.hasMonopoly()) {
@@ -23,6 +26,13 @@ export class DevelopmentCard {
         developmentCard.turnBoughtIndex = data.getTurnBoughtIndex();
         developmentCard.turnPlayedIndex = data.getTurnPlayedIndex();
         return developmentCard;
+    }
+    static nextId() {
+        if (Resource.currentId === undefined) {
+            Resource.currentId = 0;
+        }
+        Resource.currentId++;
+        return Resource.currentId;
     }
     // calling super.property does not work in es6
     _getData() {
