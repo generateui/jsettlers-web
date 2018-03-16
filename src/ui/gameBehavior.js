@@ -20,12 +20,13 @@ import {Road} from "../road.js";
 import {Town} from "../town.js";
 import {City} from "../city.js";
 import {KeyListener} from "./keyListener.js";
+import { EMPHASIS } from "./webgl/renderer";
 
-export class BuildRoad extends BoardBehavior {
-    constructor(player, keyListener, canCancel) {
+export class PickRoadEdge extends BoardBehavior {
+    constructor(edges, keyListener, canCancel) {
         super();
 
-        this.player = player;
+        this.edges = edges;
         canCancel = canCancel || false;
         this.emphasizeHoveredObject = new EmphasizeHoveredObject(r => r instanceof EdgeRenderer);
         this.promise = new Promise((ok, fail) => {
@@ -38,14 +39,11 @@ export class BuildRoad extends BoardBehavior {
     }
     start(boardRenderer) {
         this.boardRenderer = boardRenderer;
-        var edges = this.boardRenderer.board.getAllEdges();
-        var roadEdges = this.boardRenderer.board.roads.map.keys();
-        var edgesToShow = Util.except(edges, roadEdges);
-        this.boardRenderer.showEdges(edgesToShow);
+        this.boardRenderer.showEdges(this.edges);
     }
     click(boardRenderer, renderer) {
         if (renderer instanceof EdgeRenderer) {
-            this.ok(renderer.edge);            
+            this.ok(renderer.edge);
         }
     }
     stop(boardRenderer) {
@@ -53,7 +51,7 @@ export class BuildRoad extends BoardBehavior {
         if (this.removeSubscription !== undefined) {
             this.removeSubscription();
         }
-        this.player = null;
+        this.edges = null;
         this.boardRenderer = null;
         this.emphasizeHoveredObject = null;
     }
@@ -64,12 +62,12 @@ export class BuildRoad extends BoardBehavior {
         this.emphasizeHoveredObject.leave(boardRenderer, renderer);
     }
 }
-export class BuildTown extends BoardBehavior {
-    constructor(player, keyListener, canCancel) {
+export class PickTownNode extends BoardBehavior {
+    constructor(nodes, keyListener, canCancel) {
         super();
 
         canCancel = canCancel || false;
-        this.player = player;
+        this.nodes = nodes;
         this.emphasizeHoveredObject = new EmphasizeHoveredObject(r => r instanceof NodeRenderer);
         
         this.promise = new Promise((ok, fail) => {
@@ -82,20 +80,12 @@ export class BuildTown extends BoardBehavior {
     }
     start(boardRenderer) {
         this.boardRenderer = boardRenderer;
-        var nodes = boardRenderer.board.getAllNodes();
-        boardRenderer.showNodes(nodes);
+        boardRenderer.showNodes(this.nodes);
     }
     click(boardRenderer, renderer) {
         if (renderer instanceof NodeRenderer) {
             this.ok(renderer.node);
         }
-    }
-    stop(boardRenderer) {
-        boardRenderer.hideAllNodes();
-        this.removeSubscription();
-        this.promise = null;
-        this.player = null;
-        this.boardRenderer = null;
     }
     enter(boardRenderer, renderer) {
         this.emphasizeHoveredObject.enter(boardRenderer, renderer);
@@ -103,8 +93,15 @@ export class BuildTown extends BoardBehavior {
     leave(boardRenderer, renderer) {
         this.emphasizeHoveredObject.leave(boardRenderer, renderer);
     }
+    stop(boardRenderer) {
+        boardRenderer.hideAllNodes();
+        this.removeSubscription();
+        this.promise = null;
+        this.nodes = null;
+        this.boardRenderer = null;
+    }
 }
-export class BuildCity extends BoardBehavior {
+export class PickTownForCity extends BoardBehavior {
     constructor(player, keyListener, canCancel) {
         super();
 
@@ -164,23 +161,23 @@ export class ShowProduction extends BoardBehavior {
             .filter(h => h.chit.number !== null && 
                 h.chit.number === this.diceRoll && 
                 h.coord !== board.robber.coord);
-        boardRenderer.lightenHexes(affectedHexes);
+        boardRenderer.setHexesEmphasis(EMPHASIS.light, affectedHexes);
         const nonAffectedHexes = new Set(board.hexes.values());
         const robberHex = board.hexes.get(board.robber.coord);
         for (let affected of affectedHexes) {
             nonAffectedHexes.delete(affected);
         }
         if (robberHex.chit.number === this.diceRoll) {
-            boardRenderer.redifyHexes([robberHex]);
+            boardRenderer.setHexesEmphasis(EMPHASIS.red, [robberHex]);
             nonAffectedHexes.delete(robberHex);
         }
-        boardRenderer.darkenHexes(nonAffectedHexes);
+        boardRenderer.setHexesEmphasis(EMPHASIS.dark, nonAffectedHexes);
     }
     click(boardRenderer, renderer) {
         this.ok();
     }
     stop(boardRenderer, renderer) {
-        this.boardRenderer.normalizeHexes(this.boardRenderer.board.hexes.values());
+        this.boardRenderer.setHexesEmphasis(EMPHASIS.normal, this.boardRenderer.board.hexes.values());
     }
 }
 export class MoveRobber extends BoardBehavior {
@@ -211,11 +208,11 @@ export class MoveRobber extends BoardBehavior {
         var all = Array.from(boardRenderer.board.hexes.values());
         const robberHex = boardRenderer.board.hexes.get(boardRenderer.board.robber.coord);
         var possible = all.filter(h => h.canHaveRobber && h.coord !== robberHex.coord);
-        boardRenderer.redifyHexes([robberHex]);
+        boardRenderer.setHexesEmphasis(EMPHASIS.red, [robberHex]);
         const notPossible = Util.except(all, possible);
         notPossible.remove(robberHex);
-        boardRenderer.lightenHexes(possible);
-        boardRenderer.darkenHexes(notPossible);
+        boardRenderer.setHexesEmphasis(EMPHASIS.light, possible);
+        boardRenderer.setHexesEmphasis(EMPHASIS.dark, notPossible);
     }
     enter(boardRenderer, renderer) {
         this.emphasizeHoveredHex.enter(boardRenderer, renderer);
@@ -224,7 +221,7 @@ export class MoveRobber extends BoardBehavior {
         this.emphasizeHoveredHex.leave(boardRenderer, renderer);
     }
     stop(boardRenderer) {
-        boardRenderer.normalizeHexes(boardRenderer.board.hexes.values());
+        boardRenderer.setHexesEmphasis(EMPHASIS.normal, boardRenderer.board.hexes.values());
         this.ok = null;
         this.fail = null;
     }
@@ -244,7 +241,7 @@ export class PickPlayer extends BoardBehavior {
         this.boardRenderer = boardRenderer;
         const board = boardRenderer.board;
         const opponentsSet = new Set(this.opponents);
-        boardRenderer.darkenHexes(board.hexes.values());
+        boardRenderer.setHexesEmphasis(EMPHASIS.dark, board.hexes.values());
         const toLighten = [];
         const toDarken = [];
         for (let [player, renderers] of boardRenderer.renderersForPlayer.entries()) {
@@ -254,8 +251,8 @@ export class PickPlayer extends BoardBehavior {
                 toDarken.pushAll(renderers);
             }
         }
-        boardRenderer.darkenPieces(toDarken);
-        boardRenderer.lightenPieces(toLighten);
+        boardRenderer.setPiecesEmphasis(EMPHASIS.dark, toDarken);
+        boardRenderer.setPiecesEmphasis(EMPHASIS.light, toLighten);
         this.lightened = new Set(toLighten);
         this.darkened = new Set(toDarken);
     }
@@ -271,9 +268,9 @@ export class PickPlayer extends BoardBehavior {
         this.emphasizeHoveredHex.leave(boardRenderer, renderer);
     }
     stop(boardRenderer) {
-        boardRenderer.normalizePieces(this.lightened);
-        boardRenderer.normalizePieces(this.darkened);
-        boardRenderer.normalizeHexes(boardRenderer.board.hexes.values());
+        boardRenderer.setPiecesEmphasis(EMPHASIS.normal, this.lightened);
+        boardRenderer.setPiecesEmphasis(EMPHASIS.normal, this.darkened);
+        boardRenderer.setHexesEmphasis(EMPHASIS.normal, boardRenderer.board.hexes.values());
         this.ok = null;
         this.fail = null;
         this.emphasizeHoveredHex = null;

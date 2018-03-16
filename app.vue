@@ -2,34 +2,14 @@
     <div id="app-wrapper">
         <div id="sidedrawer" class="mui--no-user-select">
             <div id="sidedrawer-brand" class="mui--appbar-line-height">
-                    <img id="side-logo" src="https://raw.githubusercontent.com/jdmonin/JSettlers2/master/doc/graf/Logo24.png">
+                <img id="side-logo" src="https://raw.githubusercontent.com/jdmonin/JSettlers2/master/doc/graf/Logo24.png">
                 <span class="mui--text-title">jsettlers-web</span>
             </div>
-            <div class="mui-divider"></div>
             <ul>
-                <li>
-                    <h1>Play</h1>
-                    <ul>
-                        <li><router-link to="/play-test-game">play test game</router-link></li>
-                        <li><router-link to="/">welcome</router-link></li>
-                    </ul>
-                </li>
-                <li>
-                    <strong>Edit</strong>
-                    <ul>
-                    </ul>
-                </li>
-                <li>
-                    <strong>Develop</strong>
-                    <ul>
-                        <li>
-                            <router-link to="/tech-demo">Tech demo</router-link>
-                        </li>
-                        <li>
-                            <router-link to="/attribution">Attribution</router-link>
-                        </li>                            
-                    </ul>
-                </li>
+                <li><router-link to="/">welcome</router-link></li>
+                <li><router-link to="/play-test-game">play (test)</router-link></li>
+                <li><router-link to="/tech-demo">tech demo</router-link></li>
+                <li><router-link to="/attribution">attribution</router-link></li>                            
             </ul>
         </div>
 
@@ -43,20 +23,21 @@
 
 <script>
     import Welcome from './components/Welcome.vue';
-    import Hello from './components/Hello.vue';
-    import TechDemo from './components/TechDemo.vue';
+    import TechDemo from './components/techdemo/TechDemo.vue';
     import VueRouter from 'vue-router';
 
     export default {
         name: 'app',
         components: {
-            Hello, TechDemo
+            TechDemo
         }
     }
 </script>
-
 <style>
-
+li a {
+    font-family: "Nanum Pen Script";
+    font-size: 32px
+}
     #app-wrapper {
         height: 100%;
         display: flex;
@@ -79,7 +60,7 @@
         left: -200px;
         overflow: auto;
         z-index: 2;
-        background-color: #fff;
+        background-color: #eee;
         transition: transform 0.2s;
     }
     #content-wrapper {
@@ -159,7 +140,7 @@
         list-style: none;
     }
     #sidedrawer > ul {
-        padding-left: 0px;
+        padding-left: 1.5em;
     }
     #sidedrawer > ul > li:first-child {
         padding-top: 15px;

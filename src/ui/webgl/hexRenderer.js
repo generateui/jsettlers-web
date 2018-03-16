@@ -1,6 +1,6 @@
 var proto = require("../../../data_pb");
 
-import {Renderer} from "./renderer.js";
+import {Renderer, EMPHASIS} from "./renderer.js";
 import {ChitRenderer} from "./chitRenderer.js";
 import {PortRenderer} from "./portRenderer.js";
 import {Util} from "../../util.js";
@@ -163,45 +163,29 @@ export class HexRenderer extends Renderer {
         this.removePortChangedSubscription = hex.portChanged(this.portChanged.bind(this));
         this.removeChitChangedSubscription = hex.chitChanged(this.chitChanged.bind(this));
 	}
-	lighten() {
-		this.topMaterial.color = new THREE.Color(0xffffff);
-		this.topMaterial.needsUpdate = true;
-		if (this.portRenderer !== null) {
-			this.portRenderer.lighten();
-		}
-		if (this.chitRenderer !== null) {
-			this.chitRenderer.lighten();
-		}
+	get emphasis() {
+		return this._emphasis;
 	}
-	normalize() {
-		this.topMaterial.color = new THREE.Color(0xdddddd);
+	set emphasis(emphasis) {
+		if (this._emphasis === emphasis) {
+			return;
+		}
+		let color = null;
+		switch (emphasis) {
+			case EMPHASIS.light: color = 0xffffff; break;
+			case EMPHASIS.dark: color = 0x444444; break;
+			case EMPHASIS.red: color = 0xff0000; break;
+			case EMPHASIS.normal: color = 0xdddddd; break;
+		}
+		this.topMaterial.color = new THREE.Color(color);
 		this.topMaterial.needsUpdate = true;
 		if (this.portRenderer !== null) {
-			this.portRenderer.normalize();
+			this.portRenderer.emphasis = emphasis;
 		}
 		if (this.chitRenderer !== null) {
-			this.chitRenderer.normalize();
+			this.chitRenderer.emphasis = emphasis;
 		}
-	}
-	darken() {
-		this.topMaterial.color = new THREE.Color(0x444444);
-		this.topMaterial.needsUpdate = true;
-		if (this.portRenderer !== null) {
-			this.portRenderer.darken();
-		}
-		if (this.chitRenderer !== null) {
-			this.chitRenderer.darken();
-		}
-	}
-	redify() {
-		this.topMaterial.color = new THREE.Color(0xff0000);
-		this.topMaterial.needsUpdate = true;
-		if (this.portRenderer !== null) {
-			this.portRenderer.redify();
-		}
-		if (this.chitRenderer !== null) {
-			this.chitRenderer.redify();
-		}
+		this._emphasis = emphasis;
 	}
 
 	dispose() {

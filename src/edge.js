@@ -83,5 +83,8 @@ export class Edge {
         data.setCoord2(this.coord2.data);
         return data;
     }
+    toString() {
+        return `${this.coord1.toString()} | ${this.coord2.toString()}`;
+    }
 }
 Edge._cache = new Map();

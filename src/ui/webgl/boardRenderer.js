@@ -156,47 +156,17 @@ export class BoardRenderer {
         }
         renderers.clear();
     }
-
-    lightenHexes(hexes) {
+    setHexesEmphasis(emphasis, hexes) { // EMPHASIS, Iterable<Hex>
         for (var hex of hexes) {
             const renderer = this.hexRenderers.get(hex.coord);
-            renderer.lighten();
+            renderer.emphasis = emphasis;
         }
     }
-    darkenHexes(hexes) {
-        for (var hex of hexes) {
-            const renderer = this.hexRenderers.get(hex.coord);
-            renderer.darken();
+    setPiecesEmphasis(emphasis, renderers) { // EMPHASIS, Iterable<Hex>
+        for (var renderer of renderers) {
+            renderer.emphasis = emphasis;
         }
     }
-    normalizeHexes(hexes) {
-        for (var hex of hexes) {
-            const renderer = this.hexRenderers.get(hex.coord);
-            renderer.normalize();
-        }
-    }
-    redifyHexes(hexes) {
-        for (var hex of hexes) {
-            const renderer = this.hexRenderers.get(hex.coord);
-            renderer.redify();
-        }
-    }
-    darkenPieces(renderers) {
-        for (let renderer of renderers) {
-            renderer.darken();
-        }
-    }
-    lightenPieces(renderers) {
-        for (let renderer of renderers) {
-            renderer.lighten();
-        }
-    }
-    normalizePieces(renderers) {
-        for (let renderer of renderers) {
-            renderer.normalize();
-        }
-    }
-
     async animateLongestRoad(edges) {
         const timer = ms => new Promise(result => setTimeout(result, ms));
         const scale = 1.5;
@@ -304,11 +274,6 @@ export class BoardRenderer {
 		}
 		return new Coord3D(rx, ry, rz);
 	}
-
-	distance(coord1, coord2) {
-		return Math.max(Math.abs(coord1.x - coord2.x), Math.abs(coord1.y - coord2.y), Math.abs(coord1.z - coord2.z));
-	}
-
 	dispose() {
         this._behavior.stop(this);
         this._behavior = null;

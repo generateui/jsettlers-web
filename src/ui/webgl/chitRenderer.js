@@ -1,5 +1,5 @@
 var proto = require("../../../data_pb");
-import {Renderer} from "./renderer.js";
+import {Renderer, EMPHASIS} from "./renderer.js";
 import {Util} from "../../util.js";
 
 export class ChitRenderer extends Renderer {
@@ -62,17 +62,19 @@ export class ChitRenderer extends Renderer {
         var texture = new THREE.TextureLoader().load(`doc/images/${name.toPascalCase()}.png`);
         return texture;
     }
-	lighten() {
-		this.topMaterial.color = new THREE.Color(0xffffff);
-	}
-	normalize() {
-		this.topMaterial.color = new THREE.Color(0xdddddd);
-	}
-	darken() {
-		this.topMaterial.color = new THREE.Color(0x444444);
+    get emphasis() {
+        return this._emphasis;
     }
-    redify() {
-		this.topMaterial.color = new THREE.Color(0xff0000);
+    set emphasis(emphasis) {
+		let color = null;
+		switch (emphasis) {
+			case EMPHASIS.light: color = 0xffffff; break;
+			case EMPHASIS.dark: color = 0x444444; break;
+			case EMPHASIS.red: color = 0xff0000; break;
+			case EMPHASIS.normal: color = 0xdddddd; break;
+        }
+        this.topMaterial.color = new THREE.Color(color);
+        this._emphasis = emphasis;
     }
     dispose() {
         this.topMaterial = null;

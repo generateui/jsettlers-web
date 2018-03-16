@@ -1,7 +1,19 @@
 <template>
     <popper trigger="hover" :options="{placement: 'top'}" class="root">
-        <ul class="popper">
-            <li v-for="message in messages" :key="message">{{message}}</li>
+        <ul class="popper popup">
+            <div class="popup-hero">
+                <img class="popup-logo" src="doc/images/Town48.png" />
+                <span class="popup-title">Build a town</span>
+                <div class="popup-cost">
+                    <div v-for="resourceType in cost.types" :key="resourceType">
+                        <img class="popup-resource" v-for="resource in cost.of(resourceType)" :key="resource.id"
+                            :src="`doc/images/${resource.name}Card.png`" />
+                    </div>
+                </div>
+            </div>
+            <ul>
+                <li v-for="message in messages" :key="message">{{message}}</li>
+            </ul>
         </ul>
 
         <div id="build-town" class="build-button" slot="reference" v-bind:class="{ disabled: !canBuildTown }">
@@ -42,6 +54,7 @@ export default {
             amountGold: 0,
             edgePieces: game.player.edgePieces,
             stockTowns: game.player.stock.towns,
+            cost: Town.cost,
         }
     },
     methods: {

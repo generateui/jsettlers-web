@@ -43,15 +43,15 @@
 </template>
 
 <script>
-    var proto = require("../data_pb");
+    var proto = require("../../data_pb");
     import ChitTypePicker from './ChitTypePicker.vue'
     import HexTypePicker from './HexTypePicker.vue'
     import PlayerPicker from './PlayerPicker.vue'
     import PortTypePicker from './PortTypePicker.vue'
-    import * as bb from "../src/ui/boardBehavior.js";
-    import {Standard4pDesign} from "../src/board.js";
-    import {BoardRenderer} from "../src/ui/webgl/boardRenderer.js";
-    import {Game} from "../src/game.js";
+    import * as bb from "../../src/ui/boardBehavior.js";
+    import {Standard4pDesign} from "../../src/board.js";
+    import {BoardRenderer} from "../../src/ui/webgl/boardRenderer.js";
+    import {Game} from "../../src/game.js";
 
     const setHex = new bb.SetHex();
     const setChit = new bb.SetChit();
@@ -128,6 +128,9 @@
             boardDesign.generateBoardForPlay();
             var brEl = this.$refs["board-renderer"];
             boardRenderer = new BoardRenderer(brEl, boardDesign, setHex);
+        },
+        destroyed() {
+            boardRenderer.dispose();
         }
     }
 </script>
@@ -144,19 +147,17 @@
     background-color: rgba(33, 150, 243, 0.75);
     grid-row-start: 1;
     grid-column-start: 1;
-    /* height: 100%; */
+    padding-left: 1em;
 }
 #vertical-menu-2 {
     background-color: rgba(33, 150, 243, 0.5);
     grid-row-start: 1;
     grid-column-start: 2;
-    /* height: 100%; */
 }
 #board-renderer {
     background-color: #000;
     grid-row-start: 1;
     grid-column-start: 3;
-    /* height: 100%; */
 }
 </style>
 

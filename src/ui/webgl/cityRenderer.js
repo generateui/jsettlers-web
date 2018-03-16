@@ -1,4 +1,4 @@
-import {Renderer} from "./renderer.js";
+import {Renderer, EMPHASIS} from "./renderer.js";
 
 export class CityRenderer extends Renderer {
     constructor(boardRenderer, city) {
@@ -7,7 +7,8 @@ export class CityRenderer extends Renderer {
         this.boardRenderer = boardRenderer;
         var loader = new THREE.STLLoader();
         loader.load('models3D/city.stl', (geometry) => {
-            this.material = new THREE.MeshPhongMaterial({color: city.player.color.integer});
+            this.color = new THREE.Color(city.player.color.integer);
+            this.material = new THREE.MeshPhongMaterial({color: this.color});
             this.geometry = new THREE.EdgesGeometry(geometry);
             this.lines = new THREE.LineSegments(this.geometry, new THREE.LineBasicMaterial({ color: 0x000000 }));
             var mesh = new THREE.Mesh(this.geometry, this.material);
@@ -19,10 +20,39 @@ export class CityRenderer extends Renderer {
             this.boardRenderer.addMesh(mesh);
             this.mesh = mesh;
             this.mesh.userData.structure = this;
+            this.lines.userData.structure = this;
         });
     }
     get player() {
         return this.city.player;
+    }
+    get emphasis() {
+        return this._emphasis;
+    }
+    set emphasis(emphasis) {
+        if (this._emphasis === emphasis) {
+            return;
+        }
+        this._emphasis = emphasis;
+        if (emphasis === EMPHASIS.normal) {
+            this.material.color = this.color;
+            return;
+        }
+        if (emphasis === EMPHASIS.red) {
+            // not supported
+            this.material.color = this.color;
+            return;
+        }
+        let color = null;
+        let lerpFactor = null;
+		switch (emphasis) {
+			case EMPHASIS.light: color = 0xdddddd; lerpFactor = 0.4; break;
+			case EMPHASIS.dark: color = 0x0; lerpFactor = 0.8; break;
+        }
+        const lerpColor = new THREE.Color(color);
+        const clone = this.color.clone();
+        clone.lerp(lerpColor, lerpFactor);
+        this.material.color = clone;
     }
 
     dispose() {

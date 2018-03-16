@@ -144,6 +144,9 @@ export class Coord3D extends Coord {
         }
         return this._edges;
     }
+    toString() {
+        return `[${this.x} ${this.y} ${this.z}]`;
+    }
 }
 Coord3D._cache = new Map();
 Coord3D.center = new Coord3D(0, 0, 0);

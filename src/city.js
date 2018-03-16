@@ -1,4 +1,5 @@
 var proto = require("../data_pb.js");
+import { ResourceList } from "./resource";
 export class City {
     constructor(player, node) {
         this.player = player;

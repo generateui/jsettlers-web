@@ -38,7 +38,7 @@
     </div>
 
     <div id="right">
-      <board-preview id="board-preview" v-bind:board="board"></board-preview>
+      <board-preview id="board-preview" :board="board"></board-preview>
     </div>
 
   </div>

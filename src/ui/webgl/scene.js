@@ -22,11 +22,19 @@ export class Scene {
 		this.orthoZoom = 4;
 
 		this.scene = new THREE.Scene();
-		this.scene.add(new THREE.AmbientLight(0xdddddd));
+		this.scene.add(new THREE.AmbientLight(0x606060), 1);
 
-		this.light = new THREE.DirectionalLight(0xffffff)
-		this.light.position.set(-1, 1, -1).normalize();
-		this.scene.add(this.light);
+		this.light1 = new THREE.DirectionalLight(0x606060, 1)
+		this.light1.position.set(10, 10, 10).normalize();
+		this.scene.add(this.light1);
+
+		this.light2 = new THREE.DirectionalLight(0x606060, 1)
+		this.light2.position.set(-10, 10, -10).normalize();
+		this.scene.add(this.light2);
+
+		this.light3 = new THREE.DirectionalLight(0x606060, 1)
+		this.light3.position.set(0, 10, 0).normalize();
+		this.scene.add(this.light3);
 
 		this.camera = new THREE.PerspectiveCamera(50, this.width / this.height, 1, 5000);
 
@@ -110,7 +118,9 @@ export class Scene {
 		this.mouse.dispose();
 		this.renderer = null;
 		this.mouse = null;
-		this.light = null;
+		this.light1 = null;
+		this.light2 = null;
+		this.light3 = null;
 		this.scene = null;
 		this.camera = null;
 		window.removeEventListener('resize', this._onWindowResize.bind(this), false);

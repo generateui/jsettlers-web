@@ -32,18 +32,32 @@ export class DevelopmentCard {
         data.setTurnPlayedIndex(this.turnPlayedIndex);
         return data;
     }
+    static get cost() {
+        return new ResourceList([
+            proto.ResourceType.WHEAT,
+            proto.ResourceType.ORE,
+            proto.ResourceType.SHEEP,
+        ]);
+    }
+    get maxOnePerTurn() {
+        return true;
+    }
 }
 export class YearOfPlenty extends DevelopmentCard {
     constructor() {
         super();
         this.resourceType1 = null;
         this.resourceType2 = null;
+        this.resourceList = null;
     }
     static fromData(data) {
         const yop = new YearOfPlenty();
         yop.resourceType1 = data.getResourceType1();
         yop.resourceType2 = data.getResourceType2();
         return yop;
+    }
+    setReferences(game) {
+        this.resourceList = new ResourceList([this.resourceType1, this.resourceType2]);
     }
     get data() {
         const data = super._getData();
@@ -63,6 +77,7 @@ export class Monopoly extends DevelopmentCard {
     constructor() {
         super();
         this.resourceType = null;
+        this.stolen = null;
     }
     static fromData(data) {
         const monopoly = new Monopoly();
@@ -77,11 +92,14 @@ export class Monopoly extends DevelopmentCard {
         return data;
     }
     play(game, player) {
+        const stolen = new ResourceList();
         for (var opponent of game.getOpponents(player)) {
             const resourcesOfType = opponent.resources.of(this.resourceType);
             const toMove = new ResourceList(resourcesOfType);
             player.resources.moveFrom(opponent.resources, toMove);
+            stolen.add(toMove);
         }
+        this.stolen = stolen;
     }
     get name() { return "Monopoly"; }
 }
@@ -133,6 +151,7 @@ export class VictoryPoint extends DevelopmentCard {
         return data;
     }
     get name() { return "VictoryPoint"; }
+    get maxOnePerTurn() { return false; }
 }
 export class RoadBuilding extends DevelopmentCard {
     constructor() {

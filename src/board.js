@@ -179,16 +179,45 @@ export class Board {
     }
     townPossibilities(player) {
         const possibilities = [];
-        const edgePieces = Array.from(player.edgePieces);
+        const edgePieces = Array.from(player.edgePieces.map.keys());
+        const nodePieces = this.nodePieces.map;
         const nodes = new Set(edgePieces.mapMany(ep => ep.nodes));
         for (let node of nodes) {
-            const isNodeUsed = this.nodePieces.has(node);
+            const isNodeUsed = nodePieces.has(node);
             const anyNeighborUsed = 
-                this.nodePieces.has(node.nodes[0]) ||
-                this.nodePieces.has(node.nodes[1]) ||
-                this.nodePieces.has(node.nodes[2]);
+                nodePieces.has(node.nodes[0]) ||
+                nodePieces.has(node.nodes[1]) ||
+                nodePieces.has(node.nodes[2]);
             if (!isNodeUsed && !anyNeighborUsed) {
                 possibilities.push(node);
+            }
+        }
+        return possibilities;
+    }
+    roadPossibilities(player) {
+        const possibilities = [];
+        if (player.nodePieces.length === 0) {
+            return possibilities;
+        }
+        const nodePieces = this.nodePieces.map;
+        for (let edge of player.edgePieces.map.keys()) {
+            const node1IsUsed = nodePieces.has(edge.node1);
+            const opponentUsesNode1 = node1IsUsed && nodePieces.get(edge.node1).player !== player;
+            const otherEdges1 = edge.node1.otherEdges(edge);
+            if (!opponentUsesNode1 && !this.edgePieces.has(otherEdges1[0])) {
+                possibilities.push(otherEdges1[0]);
+            }
+            if (!opponentUsesNode1 && !this.edgePieces.has(otherEdges1[1])) {
+                possibilities.push(otherEdges1[1]);
+            }
+            const node2IsUsed = nodePieces.has(edge.node2);
+            const opponentUsesNode2 = node2IsUsed && nodePieces.get(edge.node2).player !== player;
+            const otherEdges2 = edge.node2.otherEdges(edge);
+            if (!opponentUsesNode2 && !this.edgePieces.has(otherEdges2[0])) {
+                possibilities.push(otherEdges2[0]);
+            }
+            if (!opponentUsesNode2 && !this.edgePieces.has(otherEdges2[1])) {
+                possibilities.push(otherEdges2[1]);
             }
         }
         return possibilities;

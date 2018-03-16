@@ -33,14 +33,14 @@
             },
         },
         methods: {
-          looseResources: function() {
+          looseResources() {
               const resources = new ResourceList(this.selectedResources);
               const looseResources = LooseResources.createData(this.game.player, resources);
               this.$emit("looseResources", looseResources);
           }
         },
         computed: {
-            notEnoughSelected: function() {
+            notEnoughSelected() {
               return this.selectedResources.length !== this.game.player.resources.halfCount;
             }
         }

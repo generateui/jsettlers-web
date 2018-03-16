@@ -14,6 +14,10 @@ export class RejectOffer extends GameAction {
         game.phase.rejectOffer(game, this);
     }
     static createData(player, tradeOffer, reason) {
+        if (reason === undefined) {
+            // TODO: implement reject reasons
+            reason = proto.RejectOffer.Reason.NOT_GIVEN;
+        }
         const rejectOffer = new proto.RejectOffer();
         rejectOffer.setTradeOfferId(tradeOffer.id);
         rejectOffer.setReason(reason);

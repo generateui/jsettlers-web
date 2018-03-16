@@ -3,14 +3,19 @@ import { GameAction } from "./gameAction";
 import { DevelopmentCard } from "../developmentCard";
 
 export class PlayDevelopmentCard extends GameAction {
-    constructor() {
+    constructor(config) {
         super();
+        this.player = config.player;
+        this.developmentCard = config.developmentCard;
     }
     static fromData(data) {
-        const playDevelopmentCard = new PlayDevelopmentCard();
         const developmentCard = DevelopmentCard.fromData(data.getDevelopmentCard());
-        playDevelopmentCard.developmentCard = developmentCard;
-        return playDevelopmentCard;
+        return new PlayDevelopmentCard({developmentCard: developmentCard});
+    }
+    setReferences(game) {
+        if (this.developmentCard.setReferences !== undefined) {
+            this.developmentCard.setReferences(game);
+        }
     }
     perform(game) {
         this.developmentCard.play(game, this.player);
@@ -18,6 +23,7 @@ export class PlayDevelopmentCard extends GameAction {
             .find(dc => dc.constructor.name === this.developmentCard.constructor.name)
         this.player.developmentCards.remove(toRemove);
         this.player.playedDevelopmentCards.push(this.developmentCard); // this instance retains the info
+        game.phase.playDevelopmentCard(game, this);
     }
     static createData(player, developmentCard) {
         const action = new proto.GameAction();
