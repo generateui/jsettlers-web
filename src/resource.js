@@ -172,13 +172,13 @@ export class ResourceList {
             this._removeSafe(item);
             return;
         } else if (Array.isArray(item)) {
-            for (var resource of item) {
-                this._removeSafe(resource);
+            for (let resource of item) {
+                this.remove(resource);
             }
             return;
         } else if (item instanceof ResourceList) {
-            for (var resourceType of item._map.keys()) {
-                for (var resource of item._map.get(resourceType)) {
+            for (let resourceType of item._map.keys()) {
+                for (let resource of item._map.get(resourceType)) {
                     this._removeSafe(resource);
                 }
             }
@@ -191,7 +191,7 @@ export class ResourceList {
     }
     /** true if no resource instances are contained in this list */
     get isEmpty() {
-        for (var resourceType of this._map.keys()) {
+        for (let resourceType of this._map.keys()) {
             if (this._map.get(resourceType).length !== 0) {
                 return false;
             }
@@ -212,7 +212,7 @@ export class ResourceList {
     }
     /** true if this list has at least all resource instances of given resourceList  */
     hasAtLeast(resourceList) {
-        for (var resourceType of resourceList.types) {
+        for (let resourceType of resourceList.types) {
             if (resourceList.of(resourceType) > this.of(resourceType)) {
                 return false;
             }
@@ -221,7 +221,7 @@ export class ResourceList {
     }
     /** true if this list has resources of given resourceType */
     hasOf(resourceType) {
-        var resourceTypeString = resourceType;
+        let resourceTypeString = resourceType;
         if (typeof(resourceType) === "number") {
             resourceTypeString = Util.getEnumName(proto.ResourceType, resourceType);
         }
@@ -232,7 +232,7 @@ export class ResourceList {
     }
     /** returns amount of resourceTypes this list contains */
     get amountTypes() {
-        var amount = 0;
+        let amount = 0;
         for (var resourceType of this.types) {
             if (this.of(resourceType).length > 0) {
                 amount++;
