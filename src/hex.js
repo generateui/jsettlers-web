@@ -1,7 +1,6 @@
 var proto = require("../data_pb");
 import {Observable} from "./generic/observable.js";
 import {Chit} from "./chit.js";
-// import {proto} from "../data_pb.js";
 
 export class Hex extends Observable {
     constructor(coord) {
