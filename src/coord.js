@@ -125,7 +125,7 @@ export class Coord3D extends Coord {
                 new Node(this, n[3], n[4]),
                 new Node(this, n[4], n[5]),
                 new Node(this, n[5], n[0]),
-            ]
+            ];
         }
         return this._nodes;
     }
