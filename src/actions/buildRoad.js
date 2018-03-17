@@ -6,6 +6,7 @@ import {Road} from "../road.js";
 export class BuildRoad extends GameAction {
     constructor(config) {
         super();
+        
         config = config || {};
         this.edge = config.edge;
         this.player = config.player;

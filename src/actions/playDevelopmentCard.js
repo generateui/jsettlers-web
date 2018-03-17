@@ -5,6 +5,8 @@ import { DevelopmentCard } from "../developmentCard";
 export class PlayDevelopmentCard extends GameAction {
     constructor(config) {
         super();
+        
+        config = config || {};
         this.player = config.player;
         this.developmentCard = config.developmentCard;
     }

@@ -260,7 +260,7 @@ export class PlaySoldierOrRollDice extends Expectation {
 
         this.player = game.player;
         this.playerOnTurn = game.playerOnTurn;
-        this.canPlaySoldier = this.player.developmentCards.find(dc => dc instanceof Soldier) !== undefined;
+        this.canPlaySoldier = this.playerOnTurn.developmentCards.find(dc => dc instanceof Soldier) !== undefined;
         this.maybeCanPlaySoldier = this.playerOnTurn.developmentCards.length > 0;
         this.playedSoldier = false;
         this.rolledDice = false;
@@ -275,7 +275,7 @@ export class PlaySoldierOrRollDice extends Expectation {
         if (this.rolledDice) {
             return false;
         }
-        const expectedPlayer = action.player === this.player;
+        const expectedPlayer = action.player === this.playerOnTurn;
         if (!expectedPlayer) {
             return false;
         }

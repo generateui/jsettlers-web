@@ -6,6 +6,8 @@ import {Node} from "../node.js";
 export class BuildTown extends GameAction {
     constructor(config) {
         super();
+
+        config = config || {};
         this.node = config.node;
         this.player = config.player;
     }

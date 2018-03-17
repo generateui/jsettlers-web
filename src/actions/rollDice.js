@@ -38,12 +38,14 @@ export class Dice {
     }
 }
 export class RollDice extends GameAction {
-    constructor(productions) {
+    constructor(config) {
         super();
 
+        config = config || {};
+        this.player = config.player;
         this.dice = null;
-        this.productions = productions;
-        this.productionByPlayer = new Map(); // <Player, ResourceList>
+        this.productions = config.productions;
+        this.productionByPlayer = config.productionByPlayer || new Map(); // <Player, ResourceList>
     }
     static createData(player) {
         const action = new proto.GameAction();
