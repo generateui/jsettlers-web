@@ -3,10 +3,13 @@ import { GameAction } from "./gameAction";
 import { ResourceList } from "../resource";
 
 export class RobPlayer extends GameAction {
-    constructor() {
+    constructor(config) {
         super();
 
-        this.opponentId = null;
+        config = config || {};
+        this.opponentId = config.opponent;
+        this.player = config.player;
+
         this.opponent = null;
         this.resourceType = null;
     }

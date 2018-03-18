@@ -3,10 +3,12 @@ import { GameAction } from "./gameAction";
 import { Coord } from "../coord";
 
 export class MoveRobber extends GameAction {
-    constructor() {
+    constructor(config) {
         super();
 
-        this.coord = null;
+        config = config || {};
+        this.coord = config.coord;
+        this.player = config.player;
     }
     perform(game) {
         game.board.robber.coord = this.coord;

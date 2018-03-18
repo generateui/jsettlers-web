@@ -4,8 +4,11 @@ import {GameAction} from "./gameAction.js";
 import { DevelopmentCard, VictoryPoint, YearOfPlenty, RoadBuilding, Monopoly, Soldier} from "../developmentCard.js";
 
 export class BuyDevelopmentCard extends GameAction {
-    constructor() {
+    constructor(config) {
         super();
+
+        config = config || {};
+        this.player = config.player;
     }
     static fromData(data) {
         const buyDev = new BuyDevelopmentCard();

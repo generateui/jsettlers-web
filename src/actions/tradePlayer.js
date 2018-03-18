@@ -10,8 +10,11 @@ import { ResourceList } from "../resource.js";
  *  3. Player chooses an Accept or Counter
  *  4. TradePlayer is send with TradeOffer and Response (Accept|Counter) */
 export class TradePlayer extends GameAction {
-    constructor() {
+    constructor(config) {
         super();
+
+        config = config || {};
+        this.player = config.player;
         this.tradeOfferId = null;
         this.tradeResponseId = null;
 

@@ -3,9 +3,11 @@ import { GameAction } from "./gameAction";
 import { ResourceList } from "../resource";
 
 export class LooseResources extends GameAction {
-    constructor() {
+    constructor(config) {
         super();
 
+        config = config || {};
+        this.player = config.player;
         this.resources = null;
     }
     perform(game) {

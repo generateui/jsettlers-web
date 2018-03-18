@@ -3,9 +3,11 @@ import {GameAction} from "./gameAction";
 import {ResourceList} from "../resource";
 
 export class OfferTrade extends GameAction {
-    constructor() {
-        super();
+    constructor(config) {
+        super(config);
 
+        config = config || {};
+        this.player = config.player;
         this.responses = new Map(); // <Player, TradeResponse (RejectOffer|AcceptOffer|CounterOffer)>
         this.offered = null; // ResourceType[]
         this.wanted = null; // ResourceType[]
