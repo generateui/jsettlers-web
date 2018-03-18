@@ -7,7 +7,7 @@ import { ObservableArray } from "./generic/observableArray.js";
 import { LongestRoad } from "./longestRoad.js";
 import { InitialPlacement, PlayTurns, Finished, GamePhase } from "./gamePhase.js";
 import { ExpectAnything } from "./expectation";
-import { LargestArmy } from "./actions/largestArmy.js";
+import { LargestArmy } from "./largestArmy.js";
 import { Dice } from "./actions/rollDice.js";
 
 export class GameSettings {

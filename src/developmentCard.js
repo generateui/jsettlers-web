@@ -114,9 +114,12 @@ export class Monopoly extends DevelopmentCard {
     get name() { return "Monopoly"; }
 }
 export class Soldier extends DevelopmentCard {
-    constructor() {
+    constructor(config) {
         super();
-        this.coord = null;
+
+        config = config || {};
+        this.coord = config.coord;
+        this.player = config.player;
     }
     static fromData(data) {
         return new Soldier();

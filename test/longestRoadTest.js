@@ -2,9 +2,6 @@ require('babel-register')();
 var proto = require("../data_pb")
 var assert = require('assert');
 require("../src/generic/shims");
-import { PortList, Any4To1Port, Timber2To1Port, Any3To1Port, 
-    Wheat2To1Port, Sheep2To1Port, Clay2To1Port} from "../src/port";
-import { Timber, ResourceList, Wheat, Brick, Ore, Sheep } from '../src/resource';
 import { Standard4pDesign } from '../src/board';
 import { Road } from '../src/road';
 import { Coord3D } from '../src/coord';
