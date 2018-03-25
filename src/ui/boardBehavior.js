@@ -7,7 +7,7 @@
 * of a board, the `.showEdges()` method is called on a BoardRenderer. The BoardRenderer
 * instance then takes care to update his rendering to show the edges.
 */
-var proto = require("../../data_pb");
+var proto = require("../../src/generated/data_pb");
 import {Player, User} from "../player.js";
 import {RobberRenderer} from "./webgl/robberRenderer.js";
 import {ChitRenderer} from "./webgl/chitRenderer.js";

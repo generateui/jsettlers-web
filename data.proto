@@ -1,5 +1,5 @@
 syntax = "proto3";
-package carcattonne_data;
+package jsettlers;
 
 message Coord {
 	oneof coord_oneof {

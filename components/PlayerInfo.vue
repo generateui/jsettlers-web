@@ -222,7 +222,7 @@
 </template>
 
 <script>
-var proto = require("../data_pb");
+var proto = require("../src/generated/data_pb");
 import Popper from 'vue-popperjs';
 import ResourceListView from './ResourceListView.vue';
 import PopperJs from "../node_modules/popper.js/dist/esm/popper.js";

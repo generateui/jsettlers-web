@@ -1,4 +1,4 @@
-var proto = require("../data_pb.js");
+var proto = require("../src/generated/data_pb");
 import { ResourceList } from "./resource";
 
 export class Town {

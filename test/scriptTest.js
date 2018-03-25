@@ -1,5 +1,5 @@
 require('babel-register')();
-var proto = require("../data_pb")
+var proto = require("../src/generated/data_pb")
 import * as assert from 'assert';
 import "../src/generic/shims";
 import { ResourceList } from "../src/resource";

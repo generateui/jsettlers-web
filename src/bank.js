@@ -1,4 +1,4 @@
-var proto = require("../data_pb");
+var proto = require("./generated/data_pb");
 import {ResourceList} from "./resource.js";
 
 export class Bank {

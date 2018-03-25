@@ -1,4 +1,4 @@
-var proto = require("../data_pb");
+var proto = require("../src/generated/data_pb");
 import {Coord} from "./coord.js";
 import { ResourceList, Resource } from "./resource";
 import { MoveRobber } from "./actions/moveRobber";

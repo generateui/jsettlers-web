@@ -1,4 +1,4 @@
-var proto = require("../data_pb");
+var proto = require("../src/generated/data_pb");
 import {Edge} from "./edge.js";
 import {Coord} from "./coord.js";
 

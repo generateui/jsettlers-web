@@ -129,7 +129,7 @@
 import Vue from 'vue';
 import ResourceListView from "./ResourceListView.vue";
 
-var proto = require("../data_pb");
+var proto = require("../src/generated/data_pb");
 import { Util } from "../src/util.js";
 import { OfferTrade } from '../src/actions/offerTrade';
 import { AcceptOffer } from '../src/actions/acceptOffer';

@@ -454,7 +454,7 @@ hex: pasture | forest | mountain | river | wheatField | sea | none | desert;
     pasture: 'pasture' | 'P'; // produces sheep 🐑
     forest: 'timber' | 'F'; //produces timber 🌳
     mountain: 'mountain' | 'M'; // produces ore ⛰️
-    river: 'river' | 'R'; // produces brick
+    river: 'river' | 'R'; // produces brick 🏞️
     wheatField: 'field' | 'W'; // produces wheat 🌾
     sea: 'sea' | 'S'; // 🌊
     none: 'none' | '.';

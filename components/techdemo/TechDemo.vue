@@ -44,7 +44,7 @@
 </template>
 
 <script>
-    var proto = require("../../data_pb");
+    var proto = require("../../src/generated/data_pb");
     import ChitTypePicker from './ChitTypePicker.vue'
     import HexTypePicker from './HexTypePicker.vue'
     import PlayerPicker from './PlayerPicker.vue'

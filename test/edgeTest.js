@@ -1,5 +1,5 @@
 require('babel-register')();
-var proto = require("../data_pb.js")
+var proto = require("../src/generated/data_pb")
 var assert = require('assert');
 require("../src/generic/shims");
 import {Edge} from "../src/edge";

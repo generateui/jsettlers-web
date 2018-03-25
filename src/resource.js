@@ -1,4 +1,4 @@
-var proto = require("../data_pb.js");
+var proto = require("../src/generated/data_pb");
 import {Util} from "./util.js";
 
 export class Resource {

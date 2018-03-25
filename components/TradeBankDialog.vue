@@ -60,7 +60,7 @@
 </template>
 
 <script>
-    var proto = require("../data_pb");
+    var proto = require("../src/generated/data_pb");
     import {Util} from "../src/util.js";
     import {ResourceList} from "../src/resource.js";
     import {TradeBank} from "../src/actions/tradeBank.js";

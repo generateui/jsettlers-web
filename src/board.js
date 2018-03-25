@@ -1,4 +1,4 @@
-var proto = require("../data_pb");
+var proto = require("../src/generated/data_pb");
 
 import {ObservableMap} from "./generic/observableMap"; 
 import {Robber} from "./robber";

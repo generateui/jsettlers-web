@@ -1,4 +1,4 @@
-var proto = require("../../data_pb");
+var proto = require("../../src/generated/data_pb");
 import {Town} from "../town.js";
 import {GameAction} from "./gameAction.js";
 import {Node} from "../node.js";

@@ -1,5 +1,5 @@
 require('babel-register')();
-var proto = require("../data_pb")
+var proto = require("../src/generated/data_pb")
 var assert = require('assert');
 require("../src/generic/shims");
 import { Standard4pDesign } from '../src/board';
