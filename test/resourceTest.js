@@ -5,6 +5,7 @@ import {ResourceList, Timber, Wheat, Ore} from "../src/resource";
 import {Town} from "../src/town";
 import {City} from "../src/city";
 import {Road} from "../src/road";
+import { Parser } from '../src/parser.js';
 
 describe("ResourceList", () => {
     describe("add", () => {
@@ -330,6 +331,18 @@ describe("ResourceList", () => {
         it("empty needs 5 gold for City cost", () => {
             const resourceList = ResourceList.empty;
             assert.ok(resourceList.amountGoldNeeded(City.cost) === 5);
+        });
+    });
+    describe("parse", () => {
+        it("parses a resourceSet [🌲🌾🐑⛰⚌]", () => {
+            var parser = Parser.parseString("[🌲🌾🐑⛰⚌]");
+            var resourceListExpression = parser.resourceSet();
+            var resourceList = ResourceList.parse(resourceListExpression);
+            assert.ok(resourceList.of(proto.ResourceType.TIMBER).length === 1);
+            assert.ok(resourceList.of(proto.ResourceType.WHEAT).length === 1);
+            assert.ok(resourceList.of(proto.ResourceType.ORE).length === 1);
+            assert.ok(resourceList.of(proto.ResourceType.SHEEP).length === 1);
+            assert.ok(resourceList.of(proto.ResourceType.BRICK).length === 1);
         });
     });
 });

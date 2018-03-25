@@ -91,6 +91,17 @@ export class ResourceList {
             proto.ResourceType.BRICK,
         ]);
     }
+    static parse(resourceListExpression) {
+        var rl = new ResourceList();
+        for (let resource of resourceListExpression.resource()) {
+            if (resource.timber() !== null) { rl.add(new Timber()); }
+            if (resource.wheat() !== null) { rl.add(new Wheat()); }
+            if (resource.sheep() !== null) { rl.add(new Sheep()); }
+            if (resource.brick() !== null) { rl.add(new Brick()); }
+            if (resource.ore() !== null) { rl.add(new Ore()); }
+        }
+        return rl;
+    }
     /** singleton instance for empty resource list */
     static get empty() {
         if (ResourceList._empty === undefined) {

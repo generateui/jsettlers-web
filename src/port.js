@@ -1,6 +1,5 @@
 var proto = require("../data_pb");
 import {Edge} from "./edge.js";
-import { get } from "https";
 
 export class Port {
     constructor(partIndex, seaCoord) {
@@ -18,6 +17,18 @@ export class Port {
     get canPlaceOnBoard() { return true; }
     divide(resources, resourceType) {
         return Math.floor(resources.of(resourceType).length / this.inAmount);
+    }
+    static parse(portExpression) {
+        if (portExpression.any3To1Port() !== null) { return new Any3To1Port(); }
+        if (portExpression.any4To1Port() !== null) { return new Any4To1Port(); }
+        if (portExpression.fromBagPort() !== null) { return new FromBagPort(); }
+        
+        if (portExpression.timber2To1Port() !== null) { return new Timber2To1Port(); }
+        if (portExpression.wheat2To1Port() !== null) { return new Wheat2To1Port(); }
+        if (portExpression.ore2To1Port() !== null) { return new Ore2To1Port(); }
+        if (portExpression.brick2To1Port() !== null) { return new Clay2To1Port(); }
+        if (portExpression.sheep2To1Port() !== null) { return new Sheep2To1Port(); }
+        return null;
     }
     static fromType(portType, partIndex, seaCoord, landCoord) {
         switch (portType) {

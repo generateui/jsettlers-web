@@ -14,10 +14,12 @@ export class Edge {
         Edge._cache.set(hash, this);
     }
     static fromPartIndex(coord1, partIndex) {
-        let pi = 5 - partIndex; // reverse clock
-        pi = pi === 5 ? 0 : pi + 1;
-        const coord2 = coord1.neighbors[pi];
+        const coord2 = coord1.neighbors[partIndex];
         return new Edge(coord1, coord2);
+    }
+    static partIndexFromEdge(edge, seaCoord) {
+        const landCoord = seaCoord === edge.coord1 ? edge.coord2 : edge.coord1;
+        return seaCoord.neighbors.indexOf(landCoord);
     }
     get coord1() { return this._coord1; }
     get coord2() { return this._coord2; }
@@ -75,6 +77,13 @@ export class Edge {
     static fromData(data) {
         const coord1 = Coord.fromData(data.getCoord1());
         const coord2 = Coord.fromData(data.getCoord2());
+        return new Edge(coord1, coord2);
+    }
+    static parse(edgeExpression) {
+        const coordExpression1 = edgeExpression.coord()[0];
+        const coordExpression2 = edgeExpression.coord()[1];
+        const coord1 = Coord.parse(coordExpression1);
+        const coord2 = Coord.parse(coordExpression2);
         return new Edge(coord1, coord2);
     }
     get data() {

@@ -10,12 +10,14 @@ export class BuildTown extends GameAction {
         config = config || {};
         this.node = config.node;
         this.player = config.player;
+        this.portAdded = false; // when the player built on a port
     }
     perform(game) {
         const town = new Town(this.player, this.node);
         if (game.board.portsByNode.has(town.node)) {
             const port = game.board.portsByNode.get(town.node);
             this.player.ports.add(port);
+            this.portAdded = true;
         }
         town.addToPlayer(this.player);
         town.addToBoard(game.board);

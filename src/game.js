@@ -18,6 +18,37 @@ export class GameSettings {
     }
 }
 
+export class GameOptions {
+    constructor() {
+        this.stockRoads = new StockRoads();
+        this.stockTowns = new StockTowns();
+        this.stockCities = new StockCities();
+    }
+}
+export class GameOption {
+    constructor() {
+
+    }
+}
+export class StockRoads extends GameOption {
+    constructor() {
+        super();
+        this.roads = 15;
+    }
+}
+export class StockCities extends GameOption {
+    constructor() {
+        super();
+        this.cities = 4;
+    }
+}
+export class StockTowns extends GameOption {
+    constructor() {
+        super();
+        this.towns = 5;
+    }
+}
+
 export class Game extends Observable {
     constructor() {
         super();
@@ -46,11 +77,14 @@ export class Game extends Observable {
 
         this.makeObservable(["expectation"]);
     }
-
-    start() {
+    start(gameOptions) {
+        for (let player of this.players) {
+            player.stock.towns = gameOptions.stockTowns.towns;
+            player.stock.roads = gameOptions.stockRoads.roads;
+            player.stock.cities = gameOptions.stockCities.cities;
+        }
         this.phase.start(this);
     }
-
     goToNextPhase() {
         let index = this.phases.indexOf(this.phase);
         const newIndex = index += 1;
@@ -59,7 +93,6 @@ export class Game extends Observable {
         this.phase = newPhase;
         this.phase.start(this);
     }
-    
     getPlayerById(id) {
         for (var player of this.players) {
             if (player.id === id) {

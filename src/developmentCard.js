@@ -27,6 +27,15 @@ export class DevelopmentCard {
         developmentCard.turnPlayedIndex = data.getTurnPlayedIndex();
         return developmentCard;
     }
+    static parse(developmentCardExpression) {
+        const dce = developmentCardExpression;
+        if (dce.monopoly() !== null) { return new Monopoly(); }
+        if (dce.soldier() !== null) { return new Soldier(); }
+        if (dce.yearOfPlenty() !== null) { return new YearOfPlenty(); }
+        if (dce.roadBuilding() !== null) { return new RoadBuilding(); }
+        if (dce.victoryPoint() !== null) { return new VictoryPoint(); }
+        return null;
+    }
     static nextId() {
         if (Resource.currentId === undefined) {
             Resource.currentId = 0;
@@ -84,8 +93,11 @@ export class YearOfPlenty extends DevelopmentCard {
     get name() { return "YearOfPlenty"; }
 }
 export class Monopoly extends DevelopmentCard {
-    constructor() {
+    constructor(config) {
         super();
+
+        config = config || {};
+        this.player = config.player;
         this.resourceType = null;
         this.stolen = null;
     }

@@ -45,6 +45,9 @@
             var brEl = document.getElementById("bp-board-renderer");
             boardRenderer = new BoardRenderer(brEl, createdBoard);
         },
+        unmount() {
+            boardRenderer.dispose();
+        },
         watch: { 
             board: function(newBoardDescriptor, oldBoardDescriptor) {
                 const id = this.$props.board.id;

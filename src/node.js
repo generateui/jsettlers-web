@@ -67,6 +67,12 @@ export class Node {
         data.setCoord3(this.coord3.data);
         return data;
     }
+    static parse(nodeExpression) {
+        const coord1 = Coord.parse(nodeExpression.coord()[0]);
+        const coord2 = Coord.parse(nodeExpression.coord()[1]);
+        const coord3 = Coord.parse(nodeExpression.coord()[2]);
+        return new Node(coord1, coord2, coord3);
+    }
     static fromData(data) {
         const coord1 = Coord.fromData(data.getCoord1());
         const coord2 = Coord.fromData(data.getCoord2());

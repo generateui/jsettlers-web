@@ -11,12 +11,12 @@ export class PortPickerRenderer extends Renderer {
 
         this.group = new THREE.Group();
         this.group.visible = false;
-        this.hexPart0 = new HexPartRenderer(boardRenderer, 0);
-        this.hexPart1 = new HexPartRenderer(boardRenderer, 1);
-        this.hexPart2 = new HexPartRenderer(boardRenderer, 2);
-        this.hexPart3 = new HexPartRenderer(boardRenderer, 3);
-        this.hexPart4 = new HexPartRenderer(boardRenderer, 4);
-        this.hexPart5 = new HexPartRenderer(boardRenderer, 5);
+        this.hexPart0 = new HexPartRenderer(0);
+        this.hexPart1 = new HexPartRenderer(1);
+        this.hexPart2 = new HexPartRenderer(2);
+        this.hexPart3 = new HexPartRenderer(3);
+        this.hexPart4 = new HexPartRenderer(4);
+        this.hexPart5 = new HexPartRenderer(5);
         this.group.add(this.hexPart0.mesh);
         this.group.add(this.hexPart1.mesh);
         this.group.add(this.hexPart2.mesh);

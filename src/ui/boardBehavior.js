@@ -29,8 +29,9 @@ import {Town} from "../town.js";
 import {City} from "../city.js";
 import {Edge} from "../edge.js";
 import { EMPHASIS } from "./webgl/renderer";
+import { Observable } from "../generic/observable";
 
-export class BoardBehavior {
+export class BoardBehavior extends Observable {
     start(boardRenderer) {} // set the behavior as active behavior on the BoardRenderer
     click(boardRenderer, renderer) { }
     enter(boardRenderer, renderer) { }
@@ -340,7 +341,6 @@ export class BuildTown extends BoardBehavior {
         boardRenderer.hideAllNodes();
     }
 }
-
 export class BuildCity extends BoardBehavior {
     constructor() {
         super();
@@ -395,5 +395,30 @@ export class BuildRoad extends BoardBehavior {
     }
     leave(boardRenderer, renderer) {
         this.emphasizeHoveredObject.leave(boardRenderer, renderer);
+    }
+}
+export class ShowHexInfo extends BoardBehavior {
+    constructor() {
+        super();
+
+        this.emphasizeHoveredHex = new EmphasizeHoveredObject(r => {r instanceof HexRenderer});
+        this.hex = null;
+        this.showXaxis = false;
+        this.showYaxis = false;
+        this.showZaxis = false;
+        this.makeObservable(["hex"]);
+    }
+    enter(boardRenderer, renderer) {
+        this.emphasizeHoveredHex.enter(boardRenderer, renderer);
+        if (renderer instanceof HexRenderer) {
+            this.hex = renderer.hex;
+        }
+    }
+    leave(boardRenderer, renderer) {
+        this.emphasizeHoveredHex.leave(boardRenderer, renderer);
+        this.hex = null;
+    }
+    stop(boardRenderer) {
+        this.hex = null;
     }
 }

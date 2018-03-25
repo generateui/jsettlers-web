@@ -1,12 +1,14 @@
 var proto = require("../data_pb");
 
-import {ObservableMap} from "./generic/observableMap.js"; 
-import {Robber} from "./robber.js";
-import {Chit} from "./chit.js";
-import {Coord3D} from "./coord.js";
-import {Edge} from "./edge.js";
-import {Forest, WheatField, River, Sea, Mountain, Pasture, Desert, HexFromBag} from "./hex.js";
-import {Any3To1Port, Clay2To1Port, Any4To1Port, FromBagPort, Ore2To1Port, Sheep2To1Port, Timber2To1Port, Wheat2To1Port} from "./port.js";
+import {ObservableMap} from "./generic/observableMap"; 
+import {Robber} from "./robber";
+import {Chit} from "./chit";
+import {Coord3D, Coord2D, Coord1D} from "./coord";
+import {Edge} from "./edge";
+import {Forest, WheatField, River, Sea, Mountain, Pasture, Desert, HexFromBag, NoneHex, Hex} from "./hex.js";
+import {Any3To1Port, Clay2To1Port, Any4To1Port, FromBagPort, Ore2To1Port, Sheep2To1Port, Timber2To1Port, Wheat2To1Port, Port} from "./port.js";
+import { Parser } from "./parser";
+import { Node } from "./node";
 
 export class BoardDescriptor {
     constructor(config) {
@@ -45,9 +47,6 @@ export class Board {
         this.edgePieces = new Map(); // <Edge, Piece> Piece = Road | ??
         this.portsByNode = new Map();
         this.producersByNode = new Map(); // <Node, Producer>
-
-        const c = Coord3D.center;
-        const n1 = new Edge(c, c.neighbors[0]);
     }
     static create(id) {
         if (Board.factoryCache === undefined) {
@@ -55,6 +54,7 @@ export class Board {
             cache.set(Standard4pDesign.descriptor.id, Standard4pDesign.descriptor);
             cache.set(JustSomeSea.descriptor.id, JustSomeSea.descriptor);
             cache.set(TheGreatForest.descriptor.id, TheGreatForest.descriptor);
+            cache.set(From2DBoard.descriptor.id, From2DBoard.descriptor);
             Board.factoryCache = cache;
         }
         if (Board.factoryCache.has(id)) {
@@ -134,6 +134,15 @@ export class Board {
                 this.portsByNode.set(edge.node2, hex.port);
             }
         }
+    }
+    getSeaCoord(edge) {
+        if (this._hexes.get(edge.coord1) instanceof Sea) {
+            return this._hexes.get(edge.coord1).coord;
+        }
+        if (this._hexes.get(edge.coord2) instanceof Sea) {
+            return this._hexes.get(edge.coord2).coord;
+        }
+        return null;
     }
     placeHexes() {
         for (var hex of this._config.hexes) {
@@ -319,15 +328,15 @@ export class Standard4pDesign extends Board {
         ];
         var seaCoords = super.getCoordsByRadius(3);
         var portsConfig = new Map();
-        portsConfig.set(new Coord3D(0,   3, -3), 1);
-        portsConfig.set(new Coord3D(2,   1, -3), 2);
+        portsConfig.set(new Coord3D(0,   3, -3), 4);
+        portsConfig.set(new Coord3D(2,   1, -3), 3);
         portsConfig.set(new Coord3D(3,  -1, -2), 2);
-        portsConfig.set(new Coord3D(3,  -3,  0), 3);
-        portsConfig.set(new Coord3D(1,  -3,  2), 4);
-        portsConfig.set(new Coord3D(-1, -2,  3), 4);
-        portsConfig.set(new Coord3D(-3,  0,  3), 5);
-        portsConfig.set(new Coord3D(-3,  2 , 1), 0);
-        portsConfig.set(new Coord3D(2,   3, -1), 0);
+        portsConfig.set(new Coord3D(3,  -3,  0), 2);
+        portsConfig.set(new Coord3D(1,  -3,  2), 1);
+        portsConfig.set(new Coord3D(-1, -2,  3), 1);
+        portsConfig.set(new Coord3D(-3,  0,  3), 0);
+        portsConfig.set(new Coord3D(-3,  2,  1), 0);
+        portsConfig.set(new Coord3D(-2,  3, -1), 5);
         var hexes = [];
         for (let coord of fromBagCoords) {
             var hex = new HexFromBag(coord);
@@ -360,3 +369,233 @@ Standard4pDesign.descriptor = new BoardDescriptor({
     author: "Ruud Poutsma",
     createBoard: function(config) { return new Standard4pDesign() }
 });
+
+export class From2DBoard extends Board {
+    constructor(boardExpression) {
+        super();
+
+        var hexSetup = null;
+        var chitSetup = null;
+        var portSetup = null;
+        for (let boardOption of boardExpression.boardOption()) {
+            if (boardOption.hexSetup() !== null) {
+                hexSetup = boardOption.hexSetup();
+            }
+            if (boardOption.chitSetup() !== null) {
+                chitSetup = boardOption.chitSetup();
+            }
+            if (boardOption.portsSetup() !== null) {
+                portSetup = boardOption.portsSetup();
+            }
+        }
+        var maxRow = 0;
+        var maxColumn = 0;
+        var rowNumber = 0;
+        var columnNumber = 0;
+        var hexes = [];
+        var coord2Ds = []; // index - 1 is coord1D
+        for (let hexRow of hexSetup.hexRow()) {
+            columnNumber = 0;
+            var row = hexRow.oddHexRow() === null ? hexRow.evenHexRow() : hexRow.oddHexRow();
+            for (let hexExpression of row.hex()) {
+                const coord2D = new Coord2D(rowNumber, columnNumber);
+                if (hexExpression.none() === null) { 
+                    // only register coord2D and coord1D when we have a usable hex
+                    coord2Ds.push(coord2D);
+                }
+                var hex = Hex.parse(hexExpression);
+                hex.coord = coord2D; //set the coord2D now, convert later to coord3D
+                hexes.push(hex);
+                columnNumber += 1;
+            }
+            maxColumn = Math.max(maxColumn, columnNumber);
+            rowNumber += 1;
+        }
+        var maxRow = rowNumber;
+        let convert1DTo2D = new Convert1DTo2D(coord2Ds);
+        let convert2DTo3D = new Convert2DTo3D(coord2Ds, maxRow, maxColumn);
+        let convert1DTo3D = new Convert1DTo3D(convert1DTo2D, convert2DTo3D);
+        this.convertTo3D = new ConvertTo3D(convert1DTo3D, convert2DTo3D);
+        for (let hex of hexes) {
+            if (hex instanceof NoneHex) {
+                continue;
+            }
+            const coord2D = hex.coord;
+            const coord3D = convert2DTo3D.convertCoord(coord2D);
+            hex.coord = coord3D; // convert it to coord3D
+            this._hexes.set(coord3D, hex);
+        }
+
+        rowNumber = 0;
+        for (let chitRow of chitSetup.chitRow()) {
+            columnNumber = 0;
+            var row = chitRow.oddChitRow() === null ? chitRow.evenChitRow() : chitRow.oddChitRow();
+            for (let chitExpression of row.chit()) {
+                let chit = Chit.parse(chitExpression);
+                const coord2D = new Coord2D(rowNumber, columnNumber);
+                const coord3D = this.convertTo3D.convertCoord(coord2D);
+                if (this._hexes.map.has(coord3D)) {
+                    this._hexes.get(coord3D).chit = chit;
+                }
+                columnNumber += 1;
+            }
+            rowNumber += 1;
+        }
+        const ports = [];
+        for (let portAtEdge of portSetup.portAtEdge()) {
+            const portExpression = portAtEdge.port();
+            var port = Port.parse(portExpression);
+
+            const edgeExpression = portAtEdge.edge();
+            const edge = Edge.parse(edgeExpression);
+            const edge3D = this.convertTo3D.convertEdge(edge);
+            const seaCoord = this.getSeaCoord(edge3D);
+
+            if (seaCoord === null) {
+                console.log(`port at edge ${edge2D.toString()} does not have a sea hex`);
+                continue;
+            }
+            port.seaCoord = seaCoord;
+            port.partIndex = Edge.partIndexFromEdge(edge3D, seaCoord);
+            ports.push(port);
+        }
+        for (let port of ports) {
+            this._hexes.get(port.seaCoord).port = port;
+        }
+    }
+}
+From2DBoard.descriptor = new BoardDescriptor({
+    id: 4,
+    name: "Expression",
+    author: "Ruud Poutsma",
+    createBoard: function(config) { return new From2DBoard() }
+});
+
+/** converts a Coord, Edge or Node from one dimension to another */
+class Converter {
+    convertCoord(coord) {}
+    convertEdge(edge) {}
+    convertNode(node) {}
+}
+class ConvertTo3D extends Converter {
+    constructor(convert1DTo3D, convert2DTo3D) {
+        super();
+
+        this.convert1DTo3D = convert1DTo3D;
+        this.convert2Dto3D = convert2DTo3D;
+    }
+    convertCoord(coord) {
+        if (coord instanceof Coord1D) {
+            return this.convert1DTo3D.convertCoord(coord);
+        }
+        if (coord instanceof Coord2D) {
+            return this.convert2Dto3D.convertCoord(coord);
+        }
+        if (coord instanceof Coord3D) {
+            return coord;
+        }
+    }
+    convertEdge(edge) {
+        if (edge.coord1 instanceof Coord1D) {
+            return this.convert1DTo3D.convertEdge(edge);
+        }
+        if (edge.coord1 instanceof Coord2D) {
+            return this.convert2DTo3D.convertEdge(edge);
+        }
+        if (edge.coord1 instanceof Coord3D) {
+            return edge;
+        }
+    }
+    convertNode(node) {
+        if (node.coord1 instanceof Coord1D) {
+            return this.convert1DTo3D.convertNode(node);
+        }
+        if (node.coord1 instanceof Coord2D) {
+            return this.convert2DTo3D.convertNode(node);
+        }
+        if (node.coord1 instanceof Coord3D) {
+            return node;
+        }
+    }
+}
+class Convert1DTo3D extends Converter {
+    constructor(convert1DTo2D, convert2DTo3D) {
+        super();
+        
+        this.convert1DTo2D = convert1DTo2D;
+        this.convert2Dto3D = convert2DTo3D;
+    }
+    convertCoord(coord1D) {
+        const coord2D = this.convert1DTo2D.convertCoord(coord1D);
+        const coord3D = this.convert2Dto3D.convertCoord(coord2D);
+        return coord3D;
+    }
+    convertEdge(edge1D) {
+        const coord3D1 = this.convertCoord(edge1D.coord1);
+        const coord3D2 = this.convertCoord(edge1D.coord2);
+        return new Edge(coord3D1, coord3D2);
+    }
+    convertNode(node1D) {
+        const coord3D1 = this.convertCoord(node1D.coord1);
+        const coord3D2 = this.convertCoord(node1D.coord2);
+        const coord3D3 = this.convertCoord(node1D.coord3);
+        return new Node(coord3D1, coord3D2, coord3D3);
+    }
+}
+class Convert2DTo3D extends Converter {
+    constructor(coord2Ds, maxRow, maxColumn) {
+        super();
+
+        this.coord3DsByCoord2D = new Map(); // <Coord2D, Coord3D>
+        var rowCompensation = Math.floor(maxRow / 2);
+        var columnCompensation = Math.floor(maxColumn / 2);
+        const q = rowCompensation % 2;
+        rowCompensation = rowCompensation % 2 == 0 ? rowCompensation : rowCompensation - 1;
+        for (let coord2D of coord2Ds) {
+            // minus: compensate for backwards rendering
+            const r = -(coord2D.r - rowCompensation);
+            const c = -(coord2D.c - columnCompensation);
+            const z = c - (r + (r & 1)) / 2;
+            const x = r + q;
+            const y = -x - z;
+            const coord3D = new Coord3D(x, y, z);
+            this.coord3DsByCoord2D.set(coord2D, coord3D);
+        }
+    }
+    convertCoord(coord2D) {
+        const coord3D = this.coord3DsByCoord2D.get(coord2D);
+        return coord3D;
+    }
+    convertEdge(edge2D) {
+        var coord3D1 = this.coord3DsByCoord2D.get(edge2D.coord1);
+        var coord3D2 = this.coord3DsByCoord2D.get(edge2D.coord2);
+        return new Edge(coord3D1, coord3D2);
+    }
+    convertNode(node2D) {
+        var coord3D1 = this.coord3DsByCoord2D.get(node2D.coord1);
+        var coord3D2 = this.coord3DsByCoord2D.get(node2D.coord2);
+        var coord3D3 = this.coord3DsByCoord2D.get(node2D.coord3);
+        return new Node(coord3D1, coord3D2, coord3D3);
+    }
+}
+class Convert1DTo2D extends Converter {
+    constructor(coord2DsByCoord1D) { // Coord2D[], index is id of Coord1D
+        super();
+
+        this.coord2DsByCoord1D = coord2DsByCoord1D;
+    }
+    convertCoord(coord1D) {
+        return this.coord2DsByCoord1D[coord1D.id - 1]; // arrays are 0-based
+    }
+    convertEdge(edge1D) {
+        var coord2D1 = this.coord2DsByCoord1D[edge1D.coord1];
+        var coord2D2 = this.coord2DsByCoord1D[edge1D.coord2];
+        return new Edge(coord2D1, coord2D2);
+    }
+    convertNode(node1D) {
+        var coord2D1 = this.coord2DsByCoord1D.get(node1D.coord1);
+        var coord2D2 = this.coord2DsByCoord1D.get(node1D.coord2);
+        var coord2D3 = this.coord2DsByCoord1D.get(node1D.coord3);
+        return new Node(coord2D1, coord2D2, coord2D3);
+    }
+}

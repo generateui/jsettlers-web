@@ -1,4 +1,7 @@
 import { BuildTown } from "./actions/buildTown";
+import { Road } from "./road";
+import { Town } from "./town";
+import { City } from "./city";
 
 /** validates given state */
 export class Matcher {
@@ -158,6 +161,63 @@ class NotYetPlayedDevelopmentCard extends Matcher {
     }
     get message() {
         return "max one development card per turn";
+    }
+}
+export class HasRoadAt extends Matcher {
+    constructor(player, edge) {
+        super();
+        this.player = player;
+        this.edge = edge;
+    }
+    match() {
+        return this.player.roads.has(this.edge);
+    }
+    get message() {
+        return `player does not have road at ${this.edge.toString()}`;
+    }
+}
+export class HasTownAt extends Matcher {
+    constructor(player, node) {
+        super();
+        this.player = player;
+        this.node = node;
+    }
+    match() {
+        return this.player.towns.has(this.node);
+    }
+    get message() {
+        return `player does not have town at ${this.node.toString()}`;
+    }
+}
+export class HasAmountPiecesInStock extends Matcher {
+    constructor(player, amount, piece) {
+        super();
+
+        this.player = player;
+        this.amount = amount;
+        this.piece = piece;
+        this.name = null;
+        this.actualAmount = 0;
+    }
+    match() {
+        if (this.piece instanceof Road) {
+            this.name = "roads";
+            this.actualAmount = this.player.stock.roads;
+            return this.player.stock.roads === this.amount;
+        }
+        if (this.piece instanceof Town) {
+            this.name = "towns";
+            this.actualAmount = this.player.stock.towns;
+            return this.player.stock.towns === this.amount;
+        }
+        if (this.piece instanceof City) {
+            this.name = "cities";
+            this.actualAmount = this.player.stock.cities;
+            return this.player.stock.cities === this.amount;
+        }
+    }
+    get message() {
+        return `player does not have ${this.amount} ${this.name} in stock, but has ${this.actualAmount}`;
     }
 }
 const canPayPiece = (player, resourceList) => new CanPayPiece(player, resourceList);

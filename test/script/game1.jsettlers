@@ -1,0 +1,117 @@
+game
+    options
+        roads: 15
+        cities: 4
+        settlements: 5
+        robber at 7
+
+    board
+        system2D: pointy even
+        hexes
+            . . S S S S
+             . S F D W S
+            . S M R P F S
+             S D R P W P S
+            . S M F P M S
+             . S W D F S
+            . . S S S S
+
+        chits
+            ..  ..  ..  ..  ..  ..
+              ..  ..  8   5   9   ..
+            ..  ..  9   10  4   8   ..
+              ..  ..  4   6   3   11  ..
+            ..  ..  11  3   11  12  ..
+              ..  ..  10  2   5   ..
+            ..  ..  ..  ..  ..  ..
+
+        ports
+            any3:1Port at 1|6
+            ⚓3:1 at 4|8
+            any3:1Port at 14|15
+            ⚓🌲 at 30|34
+            timber2:1Port at 10|11
+            ⚓⛰ at 31|36
+            ⚓🐑 at 32|33
+            ⚓🌾 at 29|24
+            ⚓⚌ at 21|22
+            ⚓ర at 21|22
+
+
+    player1
+        hand []
+        stock []
+        devCards []
+        ports []
+
+    player2
+        hand []
+        stock []
+        devCards []
+        ports []
+
+    player3
+        hand []
+        stock []
+        devCards []
+        ports []
+
+placement
+        ✔ p1 has exactly 5 town in stock
+        ✔ p1 has exactly 15 road in stock
+        ✔ p1 has exactly 4 city in stock
+    p1 🔨🏠 6*11*12
+        v/ p1 has town at 6*11*12
+        v/ p1 has exactly 4 town in stock
+    p1 🔨🛣 11|12
+        v/ p1 has road at 11|12
+        v/ p1 has exactly 14 road in stock
+    p2 🔨🏠 7*12*13
+    p2 🔨🛣 12|13
+    p3 🔨🏠 11*17*18
+    p3 🔨🛣 17|18
+    p3 🔨🏠 12*18*19 and gains [s b o]
+    p3 🔨🛣 18|19
+    p2 🔨🏠 24*25*30 and gains [brick ore timber]
+    p2 🔨🛣 24|25
+    p1 🔨🏠 26*31*32 and gains [wheat wheat timber]
+    p1 🔨🛣 31|32
+turns
+    turn 1
+        player1 builds road at 0,0,0|1,1,-2
+            ✔ player1 has exactly 14 🛣 in stock
+            ✔ player1 has road at 0,0,0|1,1,-2
+        player1 builds road at 0,0,0|1,1,-2
+            ✔ player1 is on turn
+            v/ player1 is on turn
+            check player1 is on turn
+            ✔ player2 is not on turn
+            ✔ player1 has [🌾🌾⚌⚌⛰⛰]
+        player1 moves robber to 0,0,0
+        player1 moves robber to 0,0
+        player1 moves robber to 0
+        player1 builds town at 0*0*0
+        player1 builds town at 0,0*0,0*0,0
+        player1 builds town at -1,-2,-3*0,0,0*0,0,0
+        player1 builds city at 0,0,0*0,0,0*0,0,0
+        player1 🔨⛪ 6•11•12
+        player1 🔨🏠 7•8•13
+        player1 🔨🛣 1|6
+        p1 🔨⛵ @ 1|5
+
+    turn 2
+        player2 builds ship at -2,-2,4|3,3,-6
+        player2 ends turn
+            v/ player1 is not on turn
+            check player1 is not on turn
+        player2 looses [🌾🐑🌲]
+        player2 moves ship from 0|0 to 0,0,0|1,1,1
+        player1 accepts offer from player2
+
+    turn 3
+        player2 rolls 8 [player1 [🌾⚌]]
+        player2 🎲8 [player1 [🌾⚌]]
+        player2 🎲8 []
+
+    turn 4
+

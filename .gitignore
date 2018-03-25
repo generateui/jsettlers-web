@@ -4,3 +4,5 @@ node_modules
 data_pb.js
 dist/build.js
 dist/build.css
+src/generated
+.antlr
