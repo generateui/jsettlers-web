@@ -373,6 +373,12 @@ Standard4pDesign.descriptor = new BoardDescriptor({
 export class From2DBoard extends Board {
     constructor(boardExpression) {
         super();
+        if (boardExpression === undefined) {
+            var parser = Parser.parseFileXhr("game1");
+            var scriptExpression = parser.script();
+            var gameExpression = scriptExpression.game();
+            boardExpression = gameExpression.board();
+        }
 
         var hexSetup = null;
         var chitSetup = null;

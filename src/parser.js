@@ -20,15 +20,13 @@ export class Parser {
         return parser;
     }
     static parseFileXhr(fileName) {
-        console.log(fs === undefined);
         fileName = fileName.endsWith(".jsettlers") ? fileName : `${fileName}.jsettlers`;
-        var lexer = null;
         var request = new XMLHttpRequest();
         request.open('GET', `test/script/${fileName}`, false);  // `false` makes the request synchronous
         request.send(null);
         var text = request.responseText;
-        var q = antlr4.CharStreams.fromString(text);
-        lexer = new jsettlersLexer(q);
+        var stream = CharStreams.fromString(text);
+        var lexer = new jsettlersLexer(stream);
         var tokens  = new CommonTokenStream(lexer);
         var parser = new jsettlersParser(tokens);
         return parser;

@@ -30,4 +30,10 @@ export class BuildRoad extends GameAction {
         action.setBuildRoad(buildRoad);
         return action;
     }
+    static parse(buildRoadExpression, resolver) {
+        const expression = buildRoadExpression;
+        const player = resolver.parsePlayer(expression.player());
+        const edge = resolver.parseEdge(expression.edge());
+        return new BuildRoad({ player: player, edge: edge });
+    }
 }

@@ -18,7 +18,7 @@ describe("Script", () => {
         let hasError = false;
 
         let script = parser.script();
-        // assert.ok(script.placements().buildActionWithChecks()[0].check().length === 1);
+        
         assert.ok(hasError === false);
     });
     it("parses a resourceSet [🌲🌾🐑⛰⚌]", () => {

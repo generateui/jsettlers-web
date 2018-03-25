@@ -12,6 +12,19 @@ export class Matcher {
     match() {
         return false;
     }
+    static parse(matchExpression, resolver) {
+        const expr = matchExpression;
+        if (expr.hasRoadAt() !== null) {
+            return HasRoadAt.parse(expr.hasRoadAt(), resolver);
+        }
+        if (expr.hasTownAt() !== null) {
+            return HasTownAt.parse(expr.hasTownAt(), resolver);
+        }
+        if (expr.hasAmountPiecesInStock() !== null) {
+            return HasAmountPiecesInStock.parse(expr.hasAmountPiecesInStock(), resolver);
+        }
+        return null;
+    }
 }
 const match = function(matchers) {
     const result = [];
@@ -169,6 +182,11 @@ export class HasRoadAt extends Matcher {
         this.player = player;
         this.edge = edge;
     }
+    static parse(hasRoadAtExpression, resolver) {
+        const player = resolver.parsePlayer(hasRoadAtExpression.player());
+        const edge = resolver.parseEdge(hasRoadAtExpression.edge());
+        return new HasRoadAt(player, edge);
+    }
     match() {
         return this.player.roads.has(this.edge);
     }
@@ -181,6 +199,12 @@ export class HasTownAt extends Matcher {
         super();
         this.player = player;
         this.node = node;
+    }
+    static parse(hasTownAtExpression, resolver) {
+        const expr = hasTownAtExpression;
+        const player = resolver.parsePlayer(expr.player());
+        const node = resolver.parseNode(expr.node());
+        return new HasRoadAt(player, node);
     }
     match() {
         return this.player.towns.has(this.node);
@@ -198,6 +222,22 @@ export class HasAmountPiecesInStock extends Matcher {
         this.piece = piece;
         this.name = null;
         this.actualAmount = 0;
+    }
+    static parse(hasAmountPiecesInStockExpression, resolver) {
+        const expr = hasAmountPiecesInStockExpression;
+        const player = resolver.parsePlayer(expr.player());
+        const amount = parseInt(expr.NUMBER());
+        let piece = null;
+        if (expr.piece().town() !== null) {
+            piece = new Town();
+        }
+        if (expr.piece().city() !== null) {
+            piece = new City();
+        }
+        if (expr.piece().road() !== null) {
+            piece = new Road();
+        }
+        return new HasAmountPiecesInStock(player, amount, piece);
     }
     match() {
         if (this.piece instanceof Road) {

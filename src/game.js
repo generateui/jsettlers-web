@@ -9,6 +9,7 @@ import { InitialPlacement, PlayTurns, Finished, GamePhase } from "./gamePhase.js
 import { ExpectAnything } from "./expectation";
 import { LargestArmy } from "./largestArmy.js";
 import { Dice } from "./actions/rollDice.js";
+import { Stock } from "./stock.js";
 
 export class GameSettings {
     constructor(config) {
@@ -17,38 +18,6 @@ export class GameSettings {
         this.bots = config.bots;
     }
 }
-
-export class GameOptions {
-    constructor() {
-        this.stockRoads = new StockRoads();
-        this.stockTowns = new StockTowns();
-        this.stockCities = new StockCities();
-    }
-}
-export class GameOption {
-    constructor() {
-
-    }
-}
-export class StockRoads extends GameOption {
-    constructor() {
-        super();
-        this.roads = 15;
-    }
-}
-export class StockCities extends GameOption {
-    constructor() {
-        super();
-        this.cities = 4;
-    }
-}
-export class StockTowns extends GameOption {
-    constructor() {
-        super();
-        this.towns = 5;
-    }
-}
-
 export class Game extends Observable {
     constructor() {
         super();
@@ -78,11 +47,8 @@ export class Game extends Observable {
         this.makeObservable(["expectation"]);
     }
     start(gameOptions) {
-        for (let player of this.players) {
-            player.stock.towns = gameOptions.stockTowns.towns;
-            player.stock.roads = gameOptions.stockRoads.roads;
-            player.stock.cities = gameOptions.stockCities.cities;
-        }
+        this.gameOptions = gameOptions;
+        this.gameOptions.set(this);
         this.phase.start(this);
     }
     goToNextPhase() {

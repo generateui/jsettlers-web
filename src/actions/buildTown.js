@@ -10,7 +10,8 @@ export class BuildTown extends GameAction {
         config = config || {};
         this.node = config.node;
         this.player = config.player;
-        this.portAdded = false; // when the player built on a port
+        this.portAdded = null; // when the player built on a port
+        this.resourcesGained = null; // in initialplacement phase
     }
     perform(game) {
         const town = new Town(this.player, this.node);
@@ -43,5 +44,11 @@ export class BuildTown extends GameAction {
         bt.setNode(node.data);
         action.setBuildTown(bt);
         return action;
+    }
+    static parse(buildTownExpression, resolver) {
+        const expr = buildTownExpression;
+        const player = resolver.parsePlayer(expr.player());
+        const node = resolver.parseNode(expr.node());
+        return new BuildTown({ player: player, node: node });
     }
 }

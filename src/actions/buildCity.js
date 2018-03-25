@@ -32,4 +32,10 @@ export class BuildCity extends GameAction {
         action.setBuildCity(buildCity);
         return action;
     }
+    static parse(buildCityExpression, resolver) {
+        const expression = buildCityExpression;
+        const player = resolver.parsePlayer(expression.player());
+        const node = resolver.parseNode(expression.node());
+        return new BuildCity({ player: player, node: node });
+    }
 }

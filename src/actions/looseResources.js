@@ -28,6 +28,12 @@ export class LooseResources extends GameAction {
         action.setLooseResources(looseResources);
         return action;
     }
+    static parse(looseResourcesExpression, resolver) {
+        const expression = looseResourcesExpression;
+        const player = resolver.parsePlayer(expression.player);
+        const resources = ResourceList.parse(expression.resourceSet());
+        return new LooseResources({ player: player, resources: resources });
+    }
     get youShouldMessage() {
         const amount = this.player.resources.halfCount;
         return `you should discard ${amount} resources`;

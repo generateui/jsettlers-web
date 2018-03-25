@@ -55,6 +55,7 @@ Useful unicode characters:
 𝇘 brick? 0x1d1d8
 🝙 1F759
 🝚
+🧱 \u{1F9F1} late 2018: https://emojipedia.org/brick/ YEY :)
 
 
 Naming convention:
@@ -115,12 +116,7 @@ game: 'game' NL
     gameOptions: INDENT 'options' NL
         (INDENT INDENT gameOption NL)*;
 
-        gameOption: stockRoads | stockShips | stockCities | stockTowns |
-                    pirate | board | robber | placementSequence;
-        stockRoads: 'roads:' SPACE NUMBER;
-        stockShips: 'ships:' SPACE NUMBER;
-        stockCities: 'cities:' SPACE NUMBER;
-        stockTowns: 'settlements:' SPACE NUMBER;
+        gameOption: stock | pirate | board | robber | placementSequence;
          // not specified? no robber
          // specified but no location? put somewhere random?
          // specified with location -> put at location
@@ -296,8 +292,6 @@ game: 'game' NL
             cities: 'cities' SPACE '[' (node SPACE?)* ']';
             roads: 'roads' SPACE '[' (edge SPACE?)* ']';
 
-buildActionWithChecks: (INDENT buildAction NL)
-                    (INDENT check NL)*;  //checks are optional after action
 placementItem: buildAction | checkItem;
 placements: 'placement' NL
                 (INDENT placementItem NL)*;
@@ -312,8 +306,8 @@ turns: 'turns' NL
            (INDENT turn NL)+;
 
     turn: 'turn' SPACE NUMBER NL
-              ((INDENT INDENT action NL)
-               (INDENT INDENT checkItem NL)*)*; //checks are optional after action
+              (INDENT INDENT turnItem NL)*; //checks are optional after action
+        turnItem: action | checkItem;
 
         // Equivalent to SOCMessage
         // Many elements have shorthand unicodes, but are stil able

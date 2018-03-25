@@ -27,13 +27,14 @@ export class DevelopmentCard {
         developmentCard.turnPlayedIndex = data.getTurnPlayedIndex();
         return developmentCard;
     }
-    static parse(developmentCardExpression) {
-        const dce = developmentCardExpression;
-        if (dce.monopoly() !== null) { return new Monopoly(); }
-        if (dce.soldier() !== null) { return new Soldier(); }
-        if (dce.yearOfPlenty() !== null) { return new YearOfPlenty(); }
-        if (dce.roadBuilding() !== null) { return new RoadBuilding(); }
-        if (dce.victoryPoint() !== null) { return new VictoryPoint(); }
+    static parse(developmentCardExpression, resolver) {
+        const expr = developmentCardExpression;
+        const player = resolver.parsePlayer(expr.player());
+        if (expr.monopoly() !== null) { return new Monopoly({ player: player }); }
+        if (expr.soldier() !== null) { return new Soldier({ player: player }); }
+        if (expr.yearOfPlenty() !== null) { return new YearOfPlenty({ player: player }); }
+        if (expr.roadBuilding() !== null) { return new RoadBuilding({ player: player }); }
+        if (expr.victoryPoint() !== null) { return new VictoryPoint({ player: player }); }
         return null;
     }
     static nextId() {

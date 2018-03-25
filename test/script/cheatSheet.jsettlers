@@ -1,9 +1,6 @@
 game
     options
-        roads: 15
-        cities: 4
-        settlements: 5
-        pirate at 1
+        stock [🏠×5 ⛪×4 🛣×15]
         robber at 17
 
     board

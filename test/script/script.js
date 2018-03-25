@@ -14,18 +14,64 @@ import { City } from "../../src/city";
 import { BuildCity } from "../../src/actions/buildCity";
 import { BuildTown } from "../../src/actions/buildTown";
 import { BuildRoad } from "../../src/actions/buildRoad";
-import { Game, GameOptions } from "../../src/game";
+import { GameOptions } from "../../src/gameOption";
+import { Game, StockOption, RobberOption } from "../../src/game";
 import { HasRoadAt, HasTownAt, Matcher, HasAmountPiecesInStock } from "../../src/matcher";
 import { GameAction } from "../../src/actions/gameAction";
+import { LooseResources } from "../../src/actions/looseResources";
+import { Coord } from "../../src/coord";
 
+/** Resolves instances when the class itself cannot.
+For instance, an Edge can parse its child coords. However, it cannot convert
+from Edge1D or Edge2D into an Edge3D. */
+export class Resolver {
+    constructor(convertTo3D) {
+        this.convertTo3D = convertTo3D;
+        this.players = null; // []
+    }
+    /** player instance can be of several game instances, which classes should 
+    not be concerned about */
+    parsePlayer(playerExpression) {
+        // TODO: support client/server
+        var playerId = parseInt(playerExpression.NUMBER());
+        return this.players.find(p => p.id === playerId);
+    }
+    parseNode(nodeExpression) {
+        let node = Node.parse(nodeExpression);
+        return this.convertTo3D.convertNode(node);
+    }
+    parseEdge(edgeExpression) {
+        let edge = Edge.parse(edgeExpression);
+        return this.convertTo3D.convertEdge(edge);
+    }
+    parseCoord(coordExpression) {
+        let coord = Coord.parse(coordExpression);
+        return this.convertTo3D.convertCoord(coord);
+    }
+}
+export class ScriptExecutor {
+    constructor(script) {
+        this.script = script;
+    }
+}
 export class Script {
     constructor() {
         this.actionsOrChecks = [];
+        this.turnActionsOrChecks = [];
         this.stepIndex = 0;
         this.game = null;
+        this.turnIndex = 0;
     }
     get hasStepsLeft() {
-        return this.stepIndex < this.actionsOrChecks.length;
+        if (this.game.phase === this.game.initialPlacement) {
+            return this.stepIndex < this.actionsOrChecks.length;
+        }
+        if (this.game.phase === this.game.playTurns) {
+            if (this.turnIndex === this.turns.length) {
+                return false;
+            }
+            return true;
+        }
     }
     parse(scriptName) {
         var parser = Parser.parseFile("test/script/game1");
@@ -34,22 +80,10 @@ export class Script {
         var boardExpression = gameExpression.board();
         var board = new From2DBoard(boardExpression);
 
-        var gameOptions = new GameOptions();
-        for (let gameOption of gameExpression.gameOptions().gameOption()) {
-            if (gameOption.stockCities() !== null) {
-                let amount = parseInt(gameOption.stockCities().NUMBER());
-                gameOptions.stockCities.cities = amount;
-            }
-            if (gameOption.stockTowns() !== null) {
-                let amount = parseInt(gameOption.stockTowns().NUMBER());
-                gameOptions.stockTowns.towns = amount;
-            }
-            if (gameOption.stockRoads() !== null) {
-                let amount = parseInt(gameOption.stockRoads().NUMBER());
-                gameOptions.stockRoads.roads = amount;
-            }
-        }
-        this.gameOptions = gameOptions;
+        this.game = new Game();
+        let resolver = new Resolver(board.convertTo3D);
+
+        this.gameOptions = GameOptions.parse(gameExpression.gameOptions(), resolver);
 
         var players = [];
         for (let playerExpression of gameExpression.players()) {
@@ -58,18 +92,14 @@ export class Script {
             player.id = playerId;
             for (let spo of playerExpression.setupPlayerOption()) {
                 if (spo.hand() !== null) {
-                    var resources = ResourceList.parse(spo.hand().resourceSet());
-                    player.resources = resources;
+                    player.resources = ResourceList.parse(spo.hand().resourceSet());
                 }
                 if (spo.stock() !== null) {
-                    var stockExpression = spo.stock();
-                    var stock = Stock.parse(stockExpression);
-                    player.stock = stock;
+                    player.stock = Stock.parse(spo.stock());
                 }
                 if (spo.devCards() !== null) {
                     for (let dce of spo.devCards().devCard()) {
-                        let developmentCard = DevelopmentCard.parse(dce);
-                        developmentCard.player = player;
+                        let developmentCard = DevelopmentCard.parse(dce, resolver);
                         player.developmentCards.push(developmentCard);
                     }
                 }
@@ -82,27 +112,24 @@ export class Script {
                 // if (spo.victoryPoints() !== null) TODO
                 if (spo.towns() !== null) {
                     for (let nodeExpression of spo.towns().node()) {
-                        let node = Node.parse(nodeExpression);
-                        const node3D = board.convertTo3D.convertNode(node);
-                        let town = new Town(player, node3D);
+                        let node = resolver.parseNode(nodeExpression);
+                        let town = new Town(player, node);
                         town.addToPlayer(player);
                         town.addToBoard(board);
                     }
                 }
                 if (spo.cities() !== null) {
                     for (let nodeExpression of spo.cities().node()) {
-                        let node = Node.parse(nodeExpression);
-                        const node3D = board.convertTo3D.convertNode(node);
-                        let city = new City(player, node3D);
+                        let node = resolver.parseNode(nodeExpression);
+                        let city = new City(player, node);
                         city.addToPlayer(player);
                         city.addToBoard(board);
                     }
                 }
                 if (spo.roads() !== null) {
                     for (let edgeExpression of spo.roads().edge()) {
-                        let edge = Edge.parse(edgeExpression);
-                        const edge3D = board.convertTo3D.convertEdge(edge);
-                        let road = new Road(player, edge3D);
+                        let edge = resolver.parseEdge(edgeExpression);
+                        let road = new Road(player, edge);
                         road.addToPlayer(player);
                         road.addToBoard(board);
                     }
@@ -110,80 +137,87 @@ export class Script {
             }
             players.push(player);
         }
-        this.game = new Game();
+        resolver.players = players;
         this.game.players = players;
         this.game.board = board;
         this.placementActionsWithChecks = [];
         for (let placementItem of scriptExpression.placements().placementItem()) {
             let buildAction = placementItem.buildAction();
             let checkItem = placementItem.checkItem();
-            let check = checkItem === null ? null : checkItem.check();
-
-            if (check !== null) {
-                if (check.hasRoadAt() !== null) {
-                    const playerId = parseInt(check.hasRoadAt().player().NUMBER());
-                    const player = this.game.getPlayerById(playerId);
-                    const edge = Edge.parse(check.hasRoadAt().edge());
-                    const edge3D = board.convertTo3D.convertEdge(edge)
-                    this.actionsOrChecks.push(new HasRoadAt(player, edge3D));
-                }
-                if (check.hasTownAt() !== null) {
-                    const playerId = parseInt(check.hasTownAt().player().NUMBER());
-                    const player = this.game.getPlayerById(playerId);
-                    const node = Node.parse(check.hasTownAt().node());
-                    const node3D = board.convertTo3D.convertNode(node);
-                    this.actionsOrChecks.push(new HasTownAt(player, node3D));
-                }
-                if (check.hasAmountPiecesInStock() !== null) {
-                    const playerId = parseInt(check.hasAmountPiecesInStock().player().NUMBER());
-                    const player = this.game.getPlayerById(playerId);
-                    const amount = parseInt(check.hasAmountPiecesInStock().NUMBER());
-                    let piece = null;
-                    if (check.hasAmountPiecesInStock().piece().town() !== null) {
-                        piece = new Town();
-                    }
-                    if (check.hasAmountPiecesInStock().piece().city() !== null) {
-                        piece = new City();
-                    }
-                    if (check.hasAmountPiecesInStock().piece().road() !== null) {
-                        piece = new Road();
-                    }
-                    this.actionsOrChecks.push(new HasAmountPiecesInStock(player, amount, piece));
-                }
+            let checkExpression = checkItem === null ? null : checkItem.check();
+            if (checkExpression !== null) {
+                const check = Matcher.parse(checkExpression, resolver);
+                this.actionsOrChecks.push(check);
             }
-            
             if (buildAction !== null) {
-                if (buildAction.buildCity() !== null) {
-                    const playerId = parseInt(buildAction.buildCity().player().NUMBER());
-                    const player = this.game.getPlayerById(playerId);
-                    const action = new BuildCity({ player: player });
-                    this.actionsOrChecks.push(action);
-                }
-                if (buildAction.buildTown() !== null) {
-                    const playerId = parseInt(buildAction.buildTown().player().NUMBER());
-                    const player = this.game.getPlayerById(playerId);
-                    const node = Node.parse(buildAction.buildTown().node());
-                    const node3D = board.convertTo3D.convertNode(node);
-                    const action = new BuildTown({ player: player, node: node3D });
-                    this.actionsOrChecks.push(action);
-                }
-                if (buildAction.buildRoad() !== null) {
-                    const playerId = parseInt(buildAction.buildRoad().player().NUMBER());
-                    const player = this.game.getPlayerById(playerId);
-                    const edge = Edge.parse(buildAction.buildRoad().edge());
-                    const edge3D = board.convertTo3D.convertEdge(edge)
-                    const action = new BuildRoad({ player: player, edge: edge3D });
-                    this.actionsOrChecks.push(action);
-                }
+                const action = this._parseAction(buildAction, resolver);
+                this.actionsOrChecks.push(action);
             }
         }
+        const turns = [];
+        for (let turn of scriptExpression.turns().turn()) {
+            // const turnNumber = parseInt(turn.NUMBER());
+            const actionOrChecks = [];
+            for (let turnItem of turn.turnItem()) {
+                const actionExpression = turnItem.action();
+                const checkItem = turnItem.checkItem();
+                let checkExpression = checkItem === null ? null : checkItem.check();
+                if (actionExpression !== null) {
+                    const action = this._parseAction(actionExpression, resolver);
+                    actionOrChecks.push(action);
+                }
+                if (checkExpression !== null) {
+                    const check = Matcher.parse(checkExpression, resolver);
+                    actionOrChecks.push(check);
+                }
+            }
+            turns.push(actionOrChecks);
+        }
+        this.turns = turns;
+    }
+    // can't be moved to GameAction because it causes circular references which
+    // are not supported by babel.js
+    _parseAction(actionExpression, resolver) {
+        const expr = actionExpression;
+        let action = null;
+        if (expr.buildCity() !== null) {
+            return BuildCity.parse(expr.buildCity(), resolver);
+        }
+        if (expr.buildTown() !== null) {
+            return BuildTown.parse(expr.buildTown(), resolver);
+        }
+        if (expr.buildRoad() !== null) {
+            return BuildRoad.parse(expr.buildRoad(), resolver);
+        }
+        if (expr.looseResources() !== null) {
+            return LooseResources.parse(expr.looseResources(), resolver);
+        }
+        return null;
     }
     start() {
         this.game.start(this.gameOptions);
         this.game.goToNextPhase();
     }
     executeStep() {
-        const actionOrCheck = this.actionsOrChecks[this.stepIndex];
+        if (this.game.phase === this.game.initialPlacement) {
+            const actionOrCheck = this.actionsOrChecks[this.stepIndex];
+            this.executeActionOrCheck(actionOrCheck);
+            this.stepIndex += 1;
+        }
+        if (this.game.phase === this.game.playTurns) {
+            const actionOrCheck = this.turnActionsOrChecks[this.stepIndex];
+            this.executeActionOrCheck(actionOrCheck);
+            this.stepIndex += 1;
+            if (this.stepIndex === this.turnActionsOrChecks.length) {
+                this.turnIndex += 1;
+                if (this.turnIndex < this.turns.length) {
+                    this.turnActionsOrChecks = this.turns[this.turnIndex];
+                    this.stepIndex = 0;
+                }
+            }
+        }
+    }
+    executeActionOrCheck(actionOrCheck) {
         if (actionOrCheck instanceof GameAction) {
             actionOrCheck.perform(this.game);
         }
@@ -193,6 +227,5 @@ export class Script {
                 throw new Error(actionOrCheck.message);
             }
         }
-        this.stepIndex += 1;
     }
 }
