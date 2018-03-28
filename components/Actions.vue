@@ -1,18 +1,16 @@
 <template>
     <div id="actions">
-        <build-town-button id="build-town-button" :game="game"></build-town-button>
-        <build-city-button id="build-city-button" :game="game"></build-city-button>
-        <build-road-button id="build-road-button" :game="game"></build-road-button>
-        <buy-development-card-button id="buy-development-card-button" :game="game"></buy-development-card-button>
+        <build-town-button id="build-town-button" @buildTown="buildTown()" :game="game"></build-town-button>
+        <build-city-button id="build-city-button" @buildCity="buildCity()" :game="game"></build-city-button>
+        <build-road-button id="build-road-button" @buildRoad="buildRoad()" :game="game"></build-road-button>
+        <buy-development-card-button id="buy-development-card-button" @buyDevelopmentCard="buyDevelopmentCard()" :game="game"></buy-development-card-button>
         <div id="trade-player" class="build-button">
             <img src="doc/images/TradePlayer48.png" @click="toggleTradePlayerDialog" />
         </div>
         <div id="trade-bank" class="build-button" @click="toggleTradeBankDialog">
             <img src="doc/images/TradeBank48.png" />
         </div>
-        <div id="end-turn" class="build-button" @click="endTurn">
-            <img src="doc/images/EndTurn48.png" />
-        </div>
+        <end-turn-button id="end-turn-button" @endTurn="endTurn()" :game="game"></end-turn-button>
         <dice-view id="dice-view" class="build-button" v-on:rolldice="rollDice" :dice="dice"></dice-view>
         <game-phases-view id="game-phases-view"
             :game="game">
@@ -28,67 +26,90 @@
 </template>
 
 <script>
-    import DiceView from "./DiceView.vue";
-    import TradeBankDialog from "./TradeBankDialog.vue";
-    import TradePlayerDialog from './TradePlayerDialog.vue';
-    import BuildTownButton from './BuildTownButton.vue';
-    import BuildCityButton from './BuildCityButton.vue';
-    import BuildRoadButton from './BuildRoadButton.vue';
-    import BuyDevelopmentCardButton from './BuyDevelopmentCardButton.vue';
-    import GamePhasesView from './GamePhasesView.vue';
+import DiceView from "./DiceView.vue";
+import TradeBankDialog from "./TradeBankDialog.vue";
+import TradePlayerDialog from './TradePlayerDialog.vue';
+import BuildTownButton from './BuildTownButton.vue';
+import BuildCityButton from './BuildCityButton.vue';
+import BuildRoadButton from './BuildRoadButton.vue';
+import EndTurnButton from './EndTurnButton.vue';
+import BuyDevelopmentCardButton from './BuyDevelopmentCardButton.vue';
+import GamePhasesView from './GamePhasesView.vue';
 
-    import * as gb from "../src/ui/gameBehavior.js";
-    import {BuildRoad} from "../src/actions/buildRoad.js";
+import * as gb from "../src/ui/gameBehavior.js";
+import { BuildRoad } from "../src/actions/buildRoad.js";
+import { BuildTown } from '../src/actions/buildTown';
+import { BuildCity } from '../src/actions/buildCity';
+import { BuyDevelopmentCard } from '../src/actions/buyDevelopmentCard';
 
-    export default {
-        components: {
-            DiceView, TradeBankDialog, TradePlayerDialog, GamePhasesView, BuildTownButton, 
-            BuildRoadButton, BuildCityButton, BuyDevelopmentCardButton
+export default {
+    components: {
+        DiceView, TradeBankDialog, TradePlayerDialog, GamePhasesView,
+        BuildTownButton, BuildRoadButton, BuildCityButton,
+        BuyDevelopmentCardButton, EndTurnButton
+    },
+    props: {
+        game: {
+            type: Object
         },
-        props: {
-            game: {
-                type: Object
-            },
-            keyListener: {
-                type: Object
-            }
+        keyListener: {
+            type: Object
+        }
+    },
+    name: 'actions',
+    data() {
+        return {
+            dice: game.dice,
+            showTradeBankDialog: false,
+            showTradePlayerDialog: false,
+        }
+    },
+    methods: {
+        action(action) {
+            this.$emit("action", action);
         },
-        name: 'actions',
-        data() {
-            return {
-                dice: game.dice,
-                showTradeBankDialog: false,
-                showTradePlayerDialog: false,
-            }
+        buildTown() {
+            const player = this.game.player;
+            const nodes = this.game.phase.townPossibilities(this.game, player);
+            const behavior = new gb.PickTownNode(nodes, this.keyListener);
+            const createAction = (player, node) => BuildTown.createData(player, node);
+            this.$emit("behaveThenAct", behavior, createAction);
         },
-        methods: {
-            action(action) {
-                this.$emit("action", action);
-            },
-            buildRoad() {
-                const player = this.$props.game.player;
-                const edges = this.game.phase.roadPossibilities(this.game, this.game.player);
-                const behavior = new gb.PickRoadEdge(edges, this.$props.keyListener);
-                const createAction = (player, edge) => BuildRoad.createData(player, edge);
-                this.$emit("behaveThenAct", behavior, createAction);
-            },
-            toggleTradeBankDialog() {
-                this.$emit("toggleTradeBankDialog");
-            },
-            rollDice() {
-                this.$emit("rolldice");
-            },
-            endTurn() {
-                this.$emit("endTurn");
-            },
-            toggleTradePlayerDialog() {
-                this.showTradePlayerDialog = !this.showTradePlayerDialog;
-            },
-            closeTradePlayerDialog() {
-                this.showTradePlayerDialog = false;
-            }
+        buildRoad() {
+            const player = this.game.player;
+            const edges = this.game.phase.roadPossibilities(this.game, this.game.player);
+            const behavior = new gb.PickRoadEdge(edges, this.keyListener);
+            const createAction = (player, edge) => BuildRoad.createData(player, edge);
+            this.$emit("behaveThenAct", behavior, createAction);
+        },
+        buildCity() {
+            const player = this.game.player;
+            const behavior = new gb.PickTownForCity(player, this.keyListener, true);
+            const createAction = (player, node) => BuildCity.createData(player, node);
+            this.$emit("behaveThenAct", behavior, createAction);
+        },
+        buyDevelopmentCard() {
+            const player = this.game.player;
+            const buyDevelopmentCard = BuyDevelopmentCard.createData(player, null);
+            this.$emit("action", buyDevelopmentCard);
+        },
+        toggleTradeBankDialog() {
+            this.$emit("toggleTradeBankDialog");
+        },
+        rollDice() {
+            this.$emit("rolldice");
+        },
+        endTurn() {
+            this.$emit("endTurn");
+        },
+        toggleTradePlayerDialog() {
+            this.showTradePlayerDialog = !this.showTradePlayerDialog;
+        },
+        closeTradePlayerDialog() {
+            this.showTradePlayerDialog = false;
         }
     }
+}
 </script>
 
 <style>
@@ -187,7 +208,6 @@
     grid-column-start: 5;
     grid-row-start: 1;
 }
-
 #play-developmentCard {
     grid-column-start: 5;
     grid-row-start: 1;
@@ -200,7 +220,7 @@
     grid-column-start: 7;
     grid-row-start: 1;
 }
-#end-turn {
+#end-turn-button {
     grid-column-start: 8;
     grid-row-start: 1;
 }

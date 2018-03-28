@@ -49,7 +49,7 @@ export class Game extends Observable {
     start(gameOptions) {
         this.gameOptions = gameOptions;
         this.gameOptions.set(this);
-        this.phase.start(this);
+        this.goToNextPhase();
     }
     goToNextPhase() {
         let index = this.phases.indexOf(this.phase);

@@ -28,6 +28,9 @@
             isUnknown: function(resourceType) {
                 return proto.ResourceType[resourceType] === proto.ResourceType.UNKNOWN;
             }
+        },
+        mounted() {
+            // this.removeActionAddedHandler = this.game.
         }
     }
 </script>

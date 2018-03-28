@@ -73,7 +73,9 @@ export class RollDice extends GameAction {
     }
     static fromData(data) {
         const rollDice = new RollDice();
-        rollDice.dice = Dice.fromData(data.getDice());
+        if (data.hasDice()) {
+            rollDice.dice = Dice.fromData(data.getDice());
+        }
         const productions = [];
         for (var production of data.getProductionsList()) {
             const playerId = production.getPlayerId();
@@ -91,9 +93,20 @@ export class RollDice extends GameAction {
         }
     }
     perform(game) {
-        if (this.dice.total === 7) {
-            game.expectation = new LooseResourcesMoveRobberRobPlayer(game);
-        } else {
+        for (var [player, production] of this.productionByPlayer.entries()) {
+            player.resources.moveFrom(game.bank.resources, production);
+        }
+        game.dice = this.dice;
+        game.phase.rollDice(game, this);
+    }
+    performServer(host) {
+        const game = host.game;
+        if (this.dice === null) {
+            const die1 = host.random.intFromOne(6);
+            const die2 = host.random.intFromOne(6);
+            this.dice = new Dice(die1, die2);
+        }
+        if (this.dice.total !== 7) {
             // distribute resources. Fair distribution is complicated, as shortages
             // of bank resources should be divided evenly.
             // For instance, consider:
@@ -203,19 +216,6 @@ export class RollDice extends GameAction {
                     }
                 }
             }
-            for (var [player, production] of this.productions.entries()) {
-                player.resources.moveFrom(game.bank.resources, production);
-            }
-        }
-        game.dice = this.dice;
-        game.phase.rollDice(game, this);
-    }
-    performServer(host) {
-        // this if is here to support debugging. but this should be removed somehow.
-        if (this.dice === null) {
-            const die1 = host.random.intFromOne(6);
-            const die2 = host.random.intFromOne(6);
-            this.dice = new Dice(die1, die2);
         }
     }
 }

@@ -8,7 +8,8 @@ export class City {
         this.name = "City";
     }
     produce(hex) {
-        return [hex.resourceType, hex.resourceType];
+        return hex.resourceType == undefined ? [] : 
+            [hex.resourceType, hex.resourceType];
     }
     static get cost() {
         return new ResourceList([

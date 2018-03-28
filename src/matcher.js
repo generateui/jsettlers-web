@@ -84,7 +84,7 @@ class IsOnTurn extends Matcher {
         this.player = player;
     }
     match() {
-        return this.game.playerOnTurn !== this.player;
+        return this.game.playerOnTurn === this.player;
     }
     get message() {
         return `${this.player.user.name} is not on turn`;
@@ -113,7 +113,7 @@ class CanPlaceTownOnBoard extends Matcher {
         this.player = player;
     }
     match() {
-        return this.game.board.townPossibilities(this.player).length > 0;
+        return this.game.phase.townPossibilities(this.game, this.player).length > 0;
     }
     get message() {
         return "no suitable place";
@@ -131,7 +131,7 @@ class CanPlaceRoadOnBoard extends Matcher {
         this.player = player;
     }
     match() {
-        return this.game.board.roadPossibilities(this.player).length > 0;
+        return this.game.phase.roadPossibilities(this.game, this.player).length > 0;
     }
     get message() {
         return "no suitable place";
@@ -152,13 +152,14 @@ class CanPlaceCityOnBoard extends Matcher {
 }
 /** A player must be able to pay for a piece directly or indirectly (with bank trades) */
 class CanPayPiece extends Matcher {
-    constructor(player, cost) {
+    constructor(player, cost, gamePhase) {
         super();
         this.player = player;
         this.cost = cost;
+        this.gamePhase = gamePhase;
     }
     match() {
-        return this.player.canPayWith(this.cost);
+        return this.gamePhase.canPayPiece(this.player, this.cost);
     }
     get message() {
         return "not enough resources";
@@ -260,7 +261,7 @@ export class HasAmountPiecesInStock extends Matcher {
         return `player does not have ${this.amount} ${this.name} in stock, but has ${this.actualAmount}`;
     }
 }
-const canPayPiece = (player, resourceList) => new CanPayPiece(player, resourceList);
+const canPayPiece = (player, resourceList, gamePhase) => new CanPayPiece(player, resourceList, gamePhase);
 const canPlaceCityOnBoard = (player) => new CanPlaceCityOnBoard(player);
 const canPlaceTownOnBoard = (game, player) => new CanPlaceTownOnBoard(game, player);
 const canPlaceRoadOnBoard = (game, player) => new CanPlaceRoadOnBoard(game, player);
@@ -274,5 +275,5 @@ const notYetPlayedDevelopmentCard = (game) => new NotYetPlayedDevelopmentCard(ga
 export { 
     match, hasTownInStock, isOnTurn, isExpected, canPlaceTownOnBoard, 
     canPlaceCityOnBoard, canPlaceRoadOnBoard, hasRoadInStock, hasCityInStock,
-    notYetPlayedDevelopmentCard
+    notYetPlayedDevelopmentCard, canPayPiece
 };

@@ -16,7 +16,7 @@
             </ul>
         </ul>
 
-        <div id="build-town" class="build-button" slot="reference" v-bind:class="{ disabled: !canBuildTown }">
+        <div id="build-town" @click="buildTown()" class="build-button" slot="reference" v-bind:class="{ disabled: !canBuildTown }">
             <img id="button" src="doc/images/Town48.png" />
             <img id="trade1" class="trade" src="doc/images/Trade48.png"
                 v-if="!canPayTownDirectly && amountGoldNeeded >= 1 && amountGold >= 1" />
@@ -74,8 +74,14 @@ export default {
                 m.isOnTurn(game, player),
                 m.isExpected(game, new BuildTown({player: player})),
                 m.canPlaceTownOnBoard(game, player),
+                m.canPayPiece(player, Town.cost, game.phase),
             ]);
             this.canBuildTown = this.messages.length === 0;
+        },
+        buildTown() {
+            if (this.canBuildTown) {
+                this.$emit("buildTown");
+            }
         }
     },
     mounted() {
@@ -84,7 +90,7 @@ export default {
         this.removeActionAddedHandler = this.game.actions.added((action) => {
             this.updateGold();
             this.updateCanBuildTown();
-        })
+        });
     },
     unmount() {
         this.removeActionAddedHandler();

@@ -19,6 +19,7 @@ export class BuildCity extends GameAction {
         const city = new City(this.player, this.node);
         city.addToPlayer(this.player);
         city.addToBoard(game.board);
+        game.bank.resources.moveFrom(this.player.resources, City.cost);
     }
     static fromData(data) {
         const node = Node.fromData(data.getNode());

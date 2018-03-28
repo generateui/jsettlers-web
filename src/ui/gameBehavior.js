@@ -95,7 +95,9 @@ export class PickTownNode extends BoardBehavior {
     }
     stop(boardRenderer) {
         boardRenderer.hideAllNodes();
-        this.removeSubscription();
+        if (this.removeSubscription !== undefined) {
+            this.removeSubscription();
+        }
         this.promise = null;
         this.nodes = null;
         this.boardRenderer = null;

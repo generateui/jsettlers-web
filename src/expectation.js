@@ -447,6 +447,9 @@ export class BuildTownThenBuildRoad extends Expectation {
         // meet is called first, so index is then 8
         return this.index >= (this.maxIndex + 1) / 2;
     }
+    get playerOnTurn() {
+        return this.action.player;
+    }
     matches(action) {
         if (this.action === null) {
             return false;
@@ -469,6 +472,9 @@ export class BuildTownThenBuildRoad extends Expectation {
         this._fireChanged();
     }
     get youMessage() {
+        if (this.action === null) {
+            return null;
+        }
         if (this.action.player !== this.player) {
             return null;
         }
@@ -478,6 +484,9 @@ export class BuildTownThenBuildRoad extends Expectation {
         return "build a town";
     }
     get opponentsMessage() {
+        if (this.action === null) {
+            return null;
+        }
         if (this.action.player === this.player) {
             return null;
         }

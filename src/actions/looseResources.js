@@ -29,19 +29,9 @@ export class LooseResources extends GameAction {
         return action;
     }
     static parse(looseResourcesExpression, resolver) {
-        const expression = looseResourcesExpression;
-        const player = resolver.parsePlayer(expression.player);
-        const resources = ResourceList.parse(expression.resourceSet());
+        const expr = looseResourcesExpression;
+        const player = resolver.parsePlayer(expr.player);
+        const resources = ResourceList.parse(expr.resourceSet());
         return new LooseResources({ player: player, resources: resources });
-    }
-    get youShouldMessage() {
-        const amount = this.player.resources.halfCount;
-        return `you should discard ${amount} resources`;
-    }
-    get opponentShouldMessage() {
-        const amount = this.player.resources.halfCount;
-        const player = `player ${this.player.id}`;
-        const user = this.player.user.name;
-        return `${user} (${player}) should discard ${amount} resources`;
     }
 }

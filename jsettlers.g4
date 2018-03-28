@@ -56,6 +56,8 @@ Useful unicode characters:
 🝙 1F759
 🝚
 🧱 \u{1F9F1} late 2018: https://emojipedia.org/brick/ YEY :)
+⤸ end turn
+⤻➔➜
 
 
 Naming convention:
@@ -122,8 +124,12 @@ game: 'game' NL
          // specified with location -> put at location
         robber: 'robber' (SPACE at)? (SPACE coord)?;
         pirate: 'pirate' (SPACE at)? (SPACE coord)?;
+        // withShips
+        // maxTradesPerTurn
+        //
         placementSequence: 'standard' | 'standardWithCities' | 'seaFarers';
         //boardName: NAME;
+
 
     board: INDENT 'board' NL
         (INDENT INDENT boardOption NL)*;
@@ -316,8 +322,9 @@ turns: 'turns' NL
         //      player1 builds city at 0,1|0,2|1,1
         action: buildRoad | buildTown | buildShip | buildCity |
                 endTurn | moveRobber | rollDice | moveShip |
-                offerTrade | acceptOffer | rejectOffer | counterOffer | tradePlayer |
-                looseResources | robPlayer | buyDevelopmentCard | playDevelopmentCard;
+                offerTrade | acceptOffer | rejectOffer | counterOffer | 
+                tradePlayer | looseResources | robPlayer | buyDevelopmentCard | 
+                playDevelopmentCard;
 
             build: 'builds' | 'build' | U_BUILD; // careful: significant order
             endTurn: player SPACE 'ends turn';
@@ -361,8 +368,10 @@ turns: 'turns' NL
                     playSoldier: soldier;
                     playVictoryPoint: victoryPoint;
                     playRoadBuilding: roadBuilding;
-                    playMonopoly: monopoly SPACE 'and gains' SPACE resourceSet;
-                    playYearOfPlenty: yearOfPlenty SPACE 'and gains' resource resource;
+                    playMonopoly: monopoly SPACE 'on' SPACE resource SPACE 
+                        'and gains' SPACE resourceSet;
+                    playYearOfPlenty: yearOfPlenty SPACE 'and gains' resource 
+                        resource;
 
         // Equivalent to a unit test assertion
         // Possibly name-parity can be reached on IValidator<T>
@@ -391,20 +400,27 @@ turns: 'turns' NL
                 lessThenOrEqual: 'less then or equal' | '<=';
                 not: 'not' | '!';
 
-        check: playerHasResources |
-                hasAmountPiecesInStock | isOnTurn | isNotOnTurn | hasRoadAt |
-                hasXRoads | hasStockRoadAmount | hasTownAt;
-            playerHasResources: player SPACE 'has' SPACE resourceSet;
-            hasAmountPiecesInStock: player SPACE 'has' SPACE precision SPACE NUMBER
-                              SPACE piece SPACE 'in stock';
+        check: hasResources | hasAmountPiecesInStock | isOnTurn | 
+            isNotOnTurn | hasRoadAt | hasXRoads | hasTownAt;
+            hasResources: player SPACE 'has' SPACE resourceSet;
+            hasAmountPiecesInStock: player SPACE 'has' SPACE precision SPACE 
+                NUMBER SPACE piece SPACE 'in stock';
             isNotOnTurn: player SPACE 'is not on turn';
             isOnTurn: player SPACE 'is on turn';
             hasRoadAt: player SPACE 'has road' (SPACE at)? SPACE edge;
-            hasTownAt: player SPACE 'has town' (SPACE at)?
-                             SPACE node;
+            hasTownAt: player SPACE 'has town' (SPACE at)? SPACE node;
             hasXRoads: player 'hasXRoads:' NUMBER 'roads';
-            hasStockRoadAmount: player SPACE 'has' SPACE NUMBER SPACE 'roads';
             // etc etc etc
+            // hasDevelopmentCard
+            // hasLongestRoad (not)
+            // hasLargestArmy (not)
+            // hasRoadBuildingTokens
+            // hasVictoryPoints town city dc lr la
+            // hasAmountSoldiers
+            // bankHasResources
+            // expectAction  e.g. player buildRoad
+            // hasPorts [port1, ...]
+            // 
 
 // It would be nice if every resource has its own single-ascii-character
 // shorthand. However, JSettlers has ambiguous WOOD and WHEAT. Proposal is to
@@ -426,14 +442,14 @@ piece: city | town | ship | road;
     road: '\u{1f6e3}' | 'road'; // 🛣
 
 devCard: soldier | monopoly | roadBuilding | victoryPoint | yearOfPlenty;
-    soldier: 's' | 'soldier'; // 🛡️👤
-    monopoly: 'm' | 'monopoly'; // 🎩
+    soldier: 's' | 'soldier'; // 🛡️👤🤺⚔️🗡️
+    monopoly: 'm' | 'monopoly'; // 🎩 🧐
     roadBuilding: 'rb' | 'roadBuilding'; // 🛣🛣
     victoryPoint: 'vp' | 'victoryPoint'; // 🏆
     yearOfPlenty: 'yop' | 'yearOfPlenty'; // 🌟
 
-port: any3To1Port | any4To1Port | brick2To1Port | wheat2To1Port | timber2To1Port | ore2To1Port |
-      sheep2To1Port | fromBagPort;
+port: any3To1Port | any4To1Port | brick2To1Port | wheat2To1Port |
+        timber2To1Port | ore2To1Port | sheep2To1Port | fromBagPort;
     portPrefix: U_PORT | 'port';
     any3To1Port: 'any3:1Port' | portPrefix '3:1'; // ⚓3:1 or port4:1
     any4To1Port: 'any4:1Port' | portPrefix '4:1'; // ⚓4:1 or port3:1
@@ -462,6 +478,13 @@ victoryPointt: city | town | victoryPoint | longestRoad | largestArmy;
     roadBuildingToken: 'rbt' | 'token'; // 🎁
 
 /*
+            ..  ..  🌊  🌊  🌊  🌊
+              ..  🌊  🌾  🌳  🌾  🌊
+            ..  🌊  ⛰️  🏞️  🐑  🌾  🌊
+              🌊  ⛰️  🏞️  🐑  🌳  🐑  🌊
+            ..  🌊  ⛰️  🌾  🐑  ⛰️  🌊
+              ..  🌊  🌳  🌵  🌳  🌊
+            ..  ..  🌊  🌊  🌊  🌊
 
 Embedded MarkDown syntax extensions. Inline is `done using backticks` and
 multiline is
