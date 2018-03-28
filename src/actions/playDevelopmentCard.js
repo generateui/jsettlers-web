@@ -1,10 +1,12 @@
-var proto = require("../../data_pb");
+var proto = require("../../src/generated/data_pb");
 import { GameAction } from "./gameAction";
 import { DevelopmentCard } from "../developmentCard";
 
 export class PlayDevelopmentCard extends GameAction {
     constructor(config) {
         super();
+        
+        config = config || {};
         this.player = config.player;
         this.developmentCard = config.developmentCard;
     }

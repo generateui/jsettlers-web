@@ -1,16 +1,22 @@
-var proto = require("../../data_pb");
+var proto = require("../../src/generated/data_pb");
 
 import {GameAction} from "./gameAction.js";
-import { DevelopmentCard, VictoryPoint, YearOfPlenty, RoadBuilding, Monopoly, Soldier} from "../developmentCard.js";
+import { DevelopmentCard, VictoryPoint, YearOfPlenty, RoadBuilding, 
+    Monopoly, Soldier} from "../developmentCard.js";
 
 export class BuyDevelopmentCard extends GameAction {
-    constructor() {
+    constructor(config) {
         super();
+
+        config = config || {};
+        this.player = config.player;
+        this.developmentCard = null;
     }
     static fromData(data) {
         const buyDev = new BuyDevelopmentCard();
         if (data.hasDevelopmentCard()) {
-            buyDev.developmentCard = DevelopmentCard.fromData(data.getDevelopmentCard());
+            buyDev.developmentCard = DevelopmentCard.fromData(
+                data.getDevelopmentCard());
         }
         return buyDev;
     }
@@ -32,8 +38,21 @@ export class BuyDevelopmentCard extends GameAction {
         action.setBuyDevelopmentCard(buyDev);
         return action;
     }
+    static parse(buyDevelopmentCardExpression, resolver) {
+        const expr = buyDevelopmentCardExpression;
+        const player = resolver.parsePlayer(expr.player());
+        let developmentCard = null;
+        if (expr.developmentCard() !== null) {
+            developmentCard = DevelopmentCard.parse(expr.developmentCard());
+        }
+        return new BuyDevelopmentCard({ 
+            player: player, 
+            developmentCard: developmentCard
+        });
+    }
     perform(game) {
         this.player.developmentCards.push(this.developmentCard);
+        game.bank.resources.moveFrom(this.player.resources, DevelopmentCard.cost);
     }
     performServer(host) {
         const index = host.random.intFromZero(host.developmentCards.length);

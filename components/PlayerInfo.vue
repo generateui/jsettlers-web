@@ -49,7 +49,7 @@
                     </div>
                     <div slot="reference">
                         <img src="doc/images/VictoryPoint48.png" class="image" />
-                        <span>{{player.victoryPoints.length > 0 ? player.victoryPoints.reduce((vp1, vp2) => vp1.victoryPoints + vp2.victoryPoints) : 0 }}</span>
+                        <span>{{player.victoryPointsCount}}</span>
                     </div>
                 </popper>
             </div>
@@ -222,7 +222,7 @@
 </template>
 
 <script>
-var proto = require("../data_pb");
+var proto = require("../src/generated/data_pb");
 import Popper from 'vue-popperjs';
 import ResourceListView from './ResourceListView.vue';
 import PopperJs from "../node_modules/popper.js/dist/esm/popper.js";

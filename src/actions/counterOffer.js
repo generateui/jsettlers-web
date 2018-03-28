@@ -1,11 +1,13 @@
-var proto = require("../../data_pb");
+var proto = require("../../src/generated/data_pb");
 import {GameAction} from "./gameAction.js";
 import { ResourceList } from "../resource.js";
 
 export class CounterOffer extends GameAction {
-    constructor() {
+    constructor(config) {
         super();
 
+        config = config || {};
+        this.player = config.player;
         this.offered = null; // ResourceType[]
         this.wanted = null; // ResourceType[]
         this.offeredResourceList = null;

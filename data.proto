@@ -1,5 +1,5 @@
 syntax = "proto3";
-package carcattonne_data;
+package jsettlers;
 
 message Coord {
 	oneof coord_oneof {
@@ -145,13 +145,18 @@ message LooseResources {
 	repeated ResourceType resources = 1;
 }
 message RobPlayer {
-	int32 opponent_id = 1;
-	ResourceType resource_type = 2;
+	oneof opponent_id_value {
+		int32 opponent_id = 1;
+	}
+	oneof resource_type_value {
+		ResourceType resource_type = 2;
+	}
 }
 message MoveRobber {
 	Coord coord = 1;
 }
 message EndTurn { }
+message StartGame { }
 // a client requests to perform a game action
 message GameActionRequest {
 	int32 request_id = 1; // client-generated id to match response with request to update state
@@ -172,6 +177,7 @@ message GameActionRequest {
 		RobPlayer rob_player = 15;
 		MoveRobber move_robber = 16;
 		EndTurn end_turn = 17;
+		StartGame start_game = 18;
 	}
 }
 message GameAction {
@@ -199,6 +205,7 @@ message GameAction {
 		RobPlayer rob_player = 21;
 		MoveRobber move_robber = 22;
 		EndTurn end_turn = 23;
+		StartGame start_game = 24;
 	}
 }
 message DevelopmentCard {

@@ -1,0 +1,89 @@
+game
+    options
+        stock [🏠×5 ⛪×4 🛣×15]
+        robber at 7
+
+    board
+        system2D: pointy even
+        hexes
+            . . S S S S
+             . S F D W S
+            . S M R P F S
+             S W R P W P S
+            . S M F P M S
+             . S W R F S
+            . . S S S S
+
+        locationIds
+            ..  ..  1   2   3   4
+              ..  5   6   7   8   9
+            ..  10  11  12  13  14  15
+              16  17  18  19  20  21  22
+            ..  23  24  25  26  27  28
+              ..  29  30  31  32  33
+            ..  ..  34  35  36  37
+
+        chits
+            ..  ..  ..  ..  ..  ..
+              ..  ..  8   ..  9   ..
+            ..  ..  9   10  4   8   ..
+              ..  6   4   6   3   11  ..
+            ..  ..  5   3   11  12  ..
+              ..  ..  10  2   5   ..
+            ..  ..  ..  ..  ..  ..
+
+        ports
+            any3:1Port at 1|6
+            ⚓3:1 at 4|8
+            any3:1Port at 14|15
+            ⚓🌲 at 30|34
+            timber2:1Port at 10|11
+            ⚓⛰ at 31|36
+            ⚓🐑 at 32|33
+            ⚓🌾 at 29|24
+            ⚓⚌ at 21|22
+            any3:1Port at 21|22
+
+
+    player1
+        hand []
+        stock []
+        devCards []
+        ports []
+
+    player2
+        hand []
+        stock []
+        devCards []
+        ports []
+
+    player3
+        hand []
+        stock []
+        devCards []
+        ports []
+
+placement
+        ✔ p1 has exactly 5 town in stock
+        ✔ p1 has exactly 15 road in stock
+        ✔ p1 has exactly 4 city in stock
+    p1 🔨🏠 6*11*12
+        v/ p1 has town at 6*11*12
+        v/ p1 has exactly 4 town in stock
+    p1 🔨🛣 11|12
+        v/ p1 has road at 11|12
+        v/ p1 has exactly 14 road in stock
+    p2 🔨🏠 7*12*13
+    p2 🔨🛣 12|13
+    p3 🔨🏠 11*17*18
+    p3 🔨🛣 17|18
+    p3 🔨🏠 12*18*19 and gains [s b o]
+    p3 🔨🛣 18|19
+    p2 🔨🏠 24*25*30 and gains [brick ore timber]
+    p2 🔨🛣 24|25
+    p1 🔨🏠 26*31*32 and gains [wheat wheat timber]
+    p1 🔨🛣 31|32
+turns
+    turn 1
+        player2 🎲8 [player1 [🌾⚌]]
+

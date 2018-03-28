@@ -7,8 +7,9 @@ import { ObservableArray } from "./generic/observableArray.js";
 import { LongestRoad } from "./longestRoad.js";
 import { InitialPlacement, PlayTurns, Finished, GamePhase } from "./gamePhase.js";
 import { ExpectAnything } from "./expectation";
-import { LargestArmy } from "./actions/largestArmy.js";
+import { LargestArmy } from "./largestArmy.js";
 import { Dice } from "./actions/rollDice.js";
+import { Stock } from "./stock.js";
 
 export class GameSettings {
     constructor(config) {
@@ -17,7 +18,6 @@ export class GameSettings {
         this.bots = config.bots;
     }
 }
-
 export class Game extends Observable {
     constructor() {
         super();
@@ -46,11 +46,11 @@ export class Game extends Observable {
 
         this.makeObservable(["expectation"]);
     }
-
-    start() {
-        this.phase.start(this);
+    start(gameOptions) {
+        this.gameOptions = gameOptions;
+        this.gameOptions.set(this);
+        this.goToNextPhase();
     }
-
     goToNextPhase() {
         let index = this.phases.indexOf(this.phase);
         const newIndex = index += 1;
@@ -59,7 +59,6 @@ export class Game extends Observable {
         this.phase = newPhase;
         this.phase.start(this);
     }
-    
     getPlayerById(id) {
         for (var player of this.players) {
             if (player.id === id) {

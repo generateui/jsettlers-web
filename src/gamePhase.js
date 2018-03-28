@@ -3,7 +3,9 @@ import { BuildRoad } from "./actions/buildRoad";
 import { RollDice } from "./actions/rollDice";
 import { PlayDevelopmentCard } from "./actions/playDevelopmentCard";
 import { Town } from "./town";
-import { PlaySoldierOrRollDice, PlayTurnActions, BuildTownThenBuildRoad } from "./expectation";
+import { PlaySoldierOrRollDice, PlayTurnActions, BuildTownThenBuildRoad, 
+    LooseResourcesMoveRobberRobPlayer } from "./expectation";
+import { Road } from "./road";
 
 /** State of the game where certain actions are expected and performed
  * 
@@ -39,8 +41,15 @@ export class GamePhase {
     /** since the possibilities to build roads & towns depends on the game phase, 
      * the game phase is responsible to returning a list of possibilties. It's
      * fine to delegate it to another object though. */
-    townPossibilities(game, player) { } // Set<Node>
-    roadPossibilities(game, player) { } // Set<Edge>
+    townPossibilities(game, player) {
+        return [];
+    } // Set<Node>
+    roadPossibilities(game, player) {
+        return [];
+    } // Set<Edge>
+    canPayPiece(player, resourceList) {
+        return false;
+    }
 }
 export class InitialPlacement extends GamePhase {
     constructor() {
@@ -52,11 +61,12 @@ export class InitialPlacement extends GamePhase {
     }
     start(game) {
         this.expectation = new BuildTownThenBuildRoad(game);
+        game.playerOnTurn = this.expectation.action.player;
         game.expectation = this.expectation;
     }
     buildTown(game, buildTown) {
         if (this.expectation.giveResources) {
-            const town = buildTown.player.nodePieces.get(buildTown.coord);
+            const town = buildTown.player.towns.get(buildTown.node);
             const coords = town.node.coords;
             const hexes = coords.map(coord => game.board.hexes.get(coord));
             // Warning: this goes wrong when cities are introduced in initialplacement as 
@@ -67,6 +77,9 @@ export class InitialPlacement extends GamePhase {
         }
     }
     buildRoad(game, buildRoad) {
+        if (this.expectation.action !== null) {
+            game.playerOnTurn = this.expectation.action.player;
+        }
         if (this.expectation !== null && this.expectation.met) {
             game.goToNextPhase();
         }
@@ -102,13 +115,26 @@ export class InitialPlacement extends GamePhase {
                 }
             }
         }
-        return nodes;
+        return Array.from(nodes);
     }
     roadPossibilities(game, player) { // Edge[]
         const buildTown = this.expectation.lastBuildTown;
-        return buildTown.node.edges;
+        if (buildTown === null) {
+            return [];
+        }
+        const edges = [];
+        for (let edge of buildTown.node.edges) {
+            const hex1 = game.board.hexes.get(edge.coord1);
+            const hex2 = game.board.hexes.get(edge.coord2);
+            if (hex1.canBuildLandPieces || hex2.canBuildLandPieces) {
+                edges.push(edge);
+            }
+        }
+        return edges;
     }
-
+    canPayPiece(player, resourceList) {
+        return true;
+    }
 }
 /** Phase in the game where players play turns.
  * 
@@ -148,8 +174,8 @@ export class PlayTurns extends GamePhase {
         game.bank.resources.moveFrom(buildTown.player.resources, Town.cost);
     }
     buildRoad(game, buildTown) {
-        if (this.player.roadBuildingTokens > 0) {
-            this.player.roadBuildingTokens -= 1;
+        if (buildTown.player.roadBuildingTokens > 0) {
+            buildTown.player.roadBuildingTokens -= 1;
             if (game.expectation.met) {
                 game.expectation = this.playTurnActions;
             }
@@ -158,6 +184,7 @@ export class PlayTurns extends GamePhase {
         }
     }
     playDevelopmentCard(game, playDevelopmentCard) {
+        const developmentCard = playDevelopmentCard.developmentCard;
         if (developmentCard.maxOnePerTurn) {
             this.turn.hasDevelopmentCardPlayed = true;
         }
@@ -168,7 +195,10 @@ export class PlayTurns extends GamePhase {
         }
     }
     rollDice(game, rollDice) {
-        if (rollDice.dice.total !== 7) {
+        if (rollDice.dice.total === 7) {
+            game.expectation = new LooseResourcesMoveRobberRobPlayer(game);
+            this.turnPhase = this.rollDicePhase;
+        } else {
             this._moveToPlayTurnsPhase(game);
         }
     }
@@ -184,7 +214,7 @@ export class PlayTurns extends GamePhase {
     }
     _moveToPlayTurnsPhase(game) {
         this.turnPhase = this.tradeAndBuildPhase;
-        this.playTurnActions = new PlayTurnActions(game.playerOnTurn, game.player);
+        this.playTurnActions = new PlayTurnActions(game);
         game.expectation = this.playTurnActions;
     }
     endTurn(game, endTurn) {
@@ -194,8 +224,8 @@ export class PlayTurns extends GamePhase {
             index = 0;
         }
         const player = game.players[index];
-        const turn = new Turn(player, game.turn.number + 1);
-        game.turn = turn;
+        const turn = new Turn(player, game.playTurns.turn.number + 1);
+        this.turn = turn;
         game.playerOnTurn = player;
         this.turns.push(turn);
         this.turnPhase = this.beforeRollDicePhase;
@@ -226,6 +256,9 @@ export class PlayTurns extends GamePhase {
     }
     roadPossibilities(game, player) {
         return game.board.roadPossibilities(player);
+    }
+    canPayPiece(player, resourceList) {
+        return player.resources.hasAtLeast(resourceList);
     }
 }
 export class Finished extends GamePhase {

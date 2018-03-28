@@ -1,12 +1,15 @@
-var proto = require("../../data_pb");
+var proto = require("../../src/generated/data_pb");
 import { GameAction } from "./gameAction";
 
 export class EndTurn extends GameAction {
-    constructor() {
+    constructor(config) {
         super();
+
+        config = config || {};
+        this.player = config.player;
     }
     perform(game) {
-        game.phase.endTurn(this);
+        game.phase.endTurn(game, this);
         if (this.player.roadBuildingTokens > 0) {
             this.player.roadBuildingTokens = 0;
         }

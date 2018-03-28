@@ -16,7 +16,7 @@
             </ul>
         </ul>
 
-        <div id="buy-development-card" class="build-button" slot="reference" v-bind:class="{ disabled: !canBuyDevelopmentCard }">
+        <div id="buy-development-card" @click="buyDevelopmentCard()" class="build-button" slot="reference" v-bind:class="{ disabled: !canBuyDevelopmentCard }">
             <img id="button" src="doc/images/DevelopmentCard48.png" />
             <img id="trade1" class="trade" src="doc/images/Trade48.png"
                 v-if="!canPayDevelopmentCardDirectly && amountGoldNeeded >= 1 && amountGold >= 1" />
@@ -68,8 +68,14 @@ export default {
             this.messages = m.match([
                 m.isOnTurn(game, player),
                 m.isExpected(game, new BuyDevelopmentCard({player: player})),
+                m.canPayPiece(player, DevelopmentCard.cost, game.phase),
             ]);
             this.canBuyDevelopmentCard = this.messages.length === 0;
+        },
+        buyDevelopmentCard() {
+            if (this.canBuyDevelopmentCard) {
+                this.$emit("buyDevelopmentCard");
+            }
         }
     },
     mounted() {

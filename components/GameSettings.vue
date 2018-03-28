@@ -47,7 +47,7 @@
 <script>
 import BoardPreview from './BoardPreview.vue';
 import {User} from '../src/player.js';
-import { Standard4pDesign, JustSomeSea, TheGreatForest } from '../src/board.js';
+import { Standard4pDesign, JustSomeSea, TheGreatForest, From2DBoard } from '../src/board.js';
 import { GameSettings } from '../src/game.js';
 import { Player } from '../src/player.js';
 
@@ -55,6 +55,7 @@ const boards = [
   Standard4pDesign.descriptor,
   JustSomeSea.descriptor,
   TheGreatForest.descriptor,
+  From2DBoard.descriptor
 ];
 const bots = [
   { name: "SimpleBot", id: 0 },

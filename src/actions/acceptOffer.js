@@ -1,9 +1,12 @@
-var proto = require("../../data_pb");
+var proto = require("../../src/generated/data_pb");
 import {GameAction} from "./gameAction.js";
 
 export class AcceptOffer extends GameAction {
-    constructor() {
+    constructor(config) {
         super();
+
+        config = config || {};
+        this.player = config.player;
         this.offerTradeId = null;
     }
     get isTradeResponse() {

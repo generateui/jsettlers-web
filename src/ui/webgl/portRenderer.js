@@ -1,4 +1,4 @@
-var proto = require("../../../data_pb");
+var proto = require("../../../src/generated/data_pb");
 import {Renderer} from "./renderer.js";
 import {Util} from "../../util.js";
 
@@ -15,12 +15,14 @@ export class PortRenderer extends Renderer {
         }
         if (PortRenderer.geometries[port.partIndex] === undefined) {
             const cellSize = 10;
-    
-            const partIndexAngle = (Math.TAU / 6) * port.partIndex;
+            let pi = port.partIndex;
+            pi = 5 - pi;
+            
+            const partIndexAngle = (Math.TAU / 6) * pi;
             const partIndexX = cellSize * Math.cos(partIndexAngle);
             const partIndexY = cellSize * Math.sin(partIndexAngle);
     
-            const nextPartIndex = port.partIndex == 5 ? 0 : port.partIndex + 1;
+            const nextPartIndex = pi == 5 ? 0 : pi + 1;
             const nextPartIndexAngle = (Math.TAU / 6) * nextPartIndex;
             const nextPartIndexX = cellSize * Math.cos(nextPartIndexAngle);
             const nextPartIndexY = cellSize * Math.sin(nextPartIndexAngle);

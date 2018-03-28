@@ -1,10 +1,13 @@
-var proto = require("../../data_pb");
+var proto = require("../../src/generated/data_pb");
 import { ResourceList } from "../resource";
 import { GameAction } from "./gameAction";
 
 export class TradeBank extends GameAction {
-    constructor() {
+    constructor(config) {
         super();
+
+        config = config || {};
+        this.player = config.player;
         this.offeredResources = null; // ResourceType[]
         this.requestedResources = null; // ResourceType[]
         this.offered = null; // ResourceList

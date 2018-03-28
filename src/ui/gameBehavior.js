@@ -1,4 +1,4 @@
-var proto = require("../../data_pb");
+var proto = require("../../src/generated/data_pb");
 import {BoardBehavior, EmphasizeHoveredObject} from "./boardBehavior.js";
 import {Player, User} from "../player.js";
 import {RobberRenderer} from "./webgl/robberRenderer.js";
@@ -95,7 +95,9 @@ export class PickTownNode extends BoardBehavior {
     }
     stop(boardRenderer) {
         boardRenderer.hideAllNodes();
-        this.removeSubscription();
+        if (this.removeSubscription !== undefined) {
+            this.removeSubscription();
+        }
         this.promise = null;
         this.nodes = null;
         this.boardRenderer = null;

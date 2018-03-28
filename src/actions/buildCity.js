@@ -1,13 +1,16 @@
-var proto = require("../../data_pb");
+var proto = require("../../src/generated/data_pb");
 import {City} from "../city.js";
 import {Town} from "../town.js";
 import {GameAction} from "./gameAction.js";
 import {Node} from "../node.js";
 
 export class BuildCity extends GameAction {
-    constructor(node) {
+    constructor(config) {
         super();
-        this.node = node;
+
+        config = config || {};
+        this.player = config.player;
+        this.node = config.node;
     }
     perform(game) {
         const town = game.board.towns.get(this.node);
@@ -16,10 +19,11 @@ export class BuildCity extends GameAction {
         const city = new City(this.player, this.node);
         city.addToPlayer(this.player);
         city.addToBoard(game.board);
+        game.bank.resources.moveFrom(this.player.resources, City.cost);
     }
     static fromData(data) {
         const node = Node.fromData(data.getNode());
-        return new BuildCity(node);
+        return new BuildCity({ node: node });
     }
     static createData(player, node) {
         const action = new proto.GameAction();
@@ -28,5 +32,11 @@ export class BuildCity extends GameAction {
         buildCity.setNode(node.data);
         action.setBuildCity(buildCity);
         return action;
+    }
+    static parse(buildCityExpression, resolver) {
+        const expression = buildCityExpression;
+        const player = resolver.parsePlayer(expression.player());
+        const node = resolver.parseNode(expression.node());
+        return new BuildCity({ player: player, node: node });
     }
 }

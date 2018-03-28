@@ -16,7 +16,7 @@
             </ul>
         </div>
 
-        <div id="build-road" class="build-button" slot="reference" v-bind:class="{ disabled: !canBuildRoad }">
+        <div id="build-road" @click="buildRoad()" class="build-button" slot="reference" v-bind:class="{ disabled: !canBuildRoad }">
             <img id="button" src="doc/images/Road48.png" />
             <img id="trade1" class="trade" src="doc/images/Trade48.png"
                 v-if="!canPayRoadDirectly && amountGoldNeeded >= 1 && amountGold >= 1 && game.player.roadBuildingTokens === 0" />
@@ -74,8 +74,14 @@ export default {
                 m.isOnTurn(game, player),
                 m.isExpected(game, new BuildRoad({player: player})),
                 m.canPlaceRoadOnBoard(game, player),
+                m.canPayPiece(player, Road.cost, game.phase),
             ]);
             this.canBuildRoad = this.messages.length === 0;
+        },
+        buildRoad() {
+            if (this.canBuildRoad) {
+                this.$emit("buildRoad");
+            }
         }
     },
     mounted() {

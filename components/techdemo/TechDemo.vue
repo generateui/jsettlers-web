@@ -37,19 +37,21 @@
                 v-if="showPortTypePicker" 
                 v-on:portTypeChanged="portTypeChanged">
             </port-type-picker>
+            <show-hex-info v-if="showShowHexInfo" :hex="hex"></show-hex-info>
         </div>
         <div ref="board-renderer" id="board-renderer"></div>
     </div>
 </template>
 
 <script>
-    var proto = require("../../data_pb");
+    var proto = require("../../src/generated/data_pb");
     import ChitTypePicker from './ChitTypePicker.vue'
     import HexTypePicker from './HexTypePicker.vue'
     import PlayerPicker from './PlayerPicker.vue'
     import PortTypePicker from './PortTypePicker.vue'
+    import ShowHexInfo from './ShowHexInfo.vue'
     import * as bb from "../../src/ui/boardBehavior.js";
-    import {Standard4pDesign} from "../../src/board.js";
+    import {Standard4pDesign, From2DBoard} from "../../src/board.js";
     import {BoardRenderer} from "../../src/ui/webgl/boardRenderer.js";
     import {Game} from "../../src/game.js";
 
@@ -59,12 +61,13 @@
     const buildTown = new bb.BuildTown();
     const buildCity = new bb.BuildCity();
     const buildRoad = new bb.BuildRoad();
+    const showHexInfo = new bb.ShowHexInfo();
     var boardRenderer = null;
 
     export default {
         name: 'tech-demo',
         components: {
-            ChitTypePicker, HexTypePicker, PlayerPicker, PortTypePicker
+            ChitTypePicker, HexTypePicker, PlayerPicker, PortTypePicker, ShowHexInfo
         },
         data() {
             return {
@@ -85,52 +88,59 @@
                     buildTown,
                     buildCity,
                     buildRoad,
-                    new bb.RemoveHex,
+                    showHexInfo,
                 ],
                 pickedBehavior: new bb.NoBehavior(),
-                
+                hex: null,
             }
         },
         computed: {
-            showHexTypePicker: function() {
-                return this.$data.pickedBehavior === setHex;
+            showHexTypePicker() {
+                return this.pickedBehavior === setHex;
             },
-            showPlayerPicker: function() {
-                const b = this.$data.pickedBehavior;
+            showPlayerPicker() {
+                const b = this.pickedBehavior;
                 return b === buildRoad || b === buildTown || b === buildCity;
             },
-            showPortTypePicker: function() {
-                return this.$data.pickedBehavior === setPort;
+            showPortTypePicker() {
+                return this.pickedBehavior === setPort;
+            },
+            showShowHexInfo() {
+                return this.pickedBehavior === showHexInfo;
             }
         },
         methods: {
-            click: function(behavior) {
-                this.$data.pickedBehavior = behavior;
+            click(behavior) {
+                this.pickedBehavior = behavior;
                 boardRenderer.behavior = behavior;
             },
-            chitTypeChanged: function(chitType) {
+            chitTypeChanged(chitType) {
                 setChit.chitType = chitType;
             },
-            hexTypeChanged: function(hexType) {
+            hexTypeChanged(hexType) {
                 setHex.hexType = hexType;
             },
-            playerChanged: function(player) {
+            playerChanged(player) {
                 buildTown.player = player;
                 buildCity.player = player;
                 buildRoad.player = player;
             },
-            portTypeChanged: function(portType) {
+            portTypeChanged(portType) {
                 setPort.portType = portType;
             }
         },
-        mounted: function() {
+        mounted() {
             const boardDesign = new Standard4pDesign();
-            boardDesign.generateBoardForPlay();
+            // boardDesign.generateBoardForPlay();
             var brEl = this.$refs["board-renderer"];
             boardRenderer = new BoardRenderer(brEl, boardDesign, setHex);
+            this.removeHexChangedHandler = showHexInfo.hexChanged((oldHex, newHex) => {
+                this.hex = newHex;
+            });
         },
         destroyed() {
             boardRenderer.dispose();
+            this.removeHexChangedHandler();
         }
     }
 </script>

@@ -5,10 +5,10 @@
                 <div v-if="phase instanceof InitialPlacement" v-bind:class="{ selected: game.phase === phase }">
                     <img src="doc/images/InitialPlacement48.png" />
                 </div>
-                <div v-if="phase instanceof PlayTurns">
+                <div v-if="phase instanceof PlayTurns" v-bind:class="{ selected: game.phase === phase }">
                     <img src="doc/images/PlayTurns48.png" />
                 </div>
-                <div v-if="phase instanceof Finished">
+                <div v-if="phase instanceof Finished" v-bind:class="{ selected: game.phase === phase }">
                     <img src="doc/images/Finished48.png" />
                 </div>
             </div>

@@ -1,11 +1,13 @@
-var proto = require("../../data_pb");
+var proto = require("../../src/generated/data_pb");
 import { GameAction } from "./gameAction";
 import { ResourceList } from "../resource";
 
 export class LooseResources extends GameAction {
-    constructor() {
+    constructor(config) {
         super();
 
+        config = config || {};
+        this.player = config.player;
         this.resources = null;
     }
     perform(game) {
@@ -26,14 +28,10 @@ export class LooseResources extends GameAction {
         action.setLooseResources(looseResources);
         return action;
     }
-    get youShouldMessage() {
-        const amount = this.player.resources.halfCount;
-        return `you should discard ${amount} resources`;
-    }
-    get opponentShouldMessage() {
-        const amount = this.player.resources.halfCount;
-        const player = `player ${this.player.id}`;
-        const user = this.player.user.name;
-        return `${user} (${player}) should discard ${amount} resources`;
+    static parse(looseResourcesExpression, resolver) {
+        const expr = looseResourcesExpression;
+        const player = resolver.parsePlayer(expr.player);
+        const resources = ResourceList.parse(expr.resourceSet());
+        return new LooseResources({ player: player, resources: resources });
     }
 }

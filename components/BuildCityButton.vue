@@ -16,7 +16,7 @@
             </ul>
         </ul>
 
-        <div id="build-city" class="build-button" slot="reference" :class="{ disabled: !canBuildCity }">
+        <div id="build-city" @click="buildCity()" class="build-button" slot="reference" :class="{ disabled: !canBuildCity }">
             <img id="button" src="doc/images/City48.png" />
             <img id="trade1" class="trade" src="doc/images/Trade48.png"
                 v-if="!canPayCityDirectly && amountGoldNeeded >= 1 && amountGold >= 1" />
@@ -75,8 +75,14 @@ export default {
                 m.isOnTurn(game, player),
                 m.isExpected(game, new BuildCity({player: player})),
                 m.canPlaceCityOnBoard(player),
+                m.canPayPiece(player, City.cost, game.phase),
             ]);
             this.canBuildCity = this.messages.length === 0;
+        },
+        buildCity() {
+            if (this.canBuildCity) {
+                this.$emit("buildCity");
+            }
         }
     },
     mounted() {

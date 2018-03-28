@@ -1,4 +1,4 @@
-var proto = require("../data_pb");
+var proto = require("../src/generated/data_pb");
 import {Edge} from "./edge.js";
 import {Coord} from "./coord.js";
 
@@ -19,6 +19,14 @@ export class Node {
     get coord1() { return this._coord1; }
     get coord2() { return this._coord2; }
     get coord3() { return this._coord3; }
+    get coords() {
+        if (this._coords === undefined) {
+            this._coords = [
+                this.coord1, this.coord2, this.coord3
+            ];
+        }
+        return this._coords;
+    }
     /** String */
     get hash() { return this._hash; }
     /** <Edge>[3] */
@@ -66,6 +74,12 @@ export class Node {
         data.setCoord2(this.coord2.data);
         data.setCoord3(this.coord3.data);
         return data;
+    }
+    static parse(nodeExpression) {
+        const coord1 = Coord.parse(nodeExpression.coord()[0]);
+        const coord2 = Coord.parse(nodeExpression.coord()[1]);
+        const coord3 = Coord.parse(nodeExpression.coord()[2]);
+        return new Node(coord1, coord2, coord3);
     }
     static fromData(data) {
         const coord1 = Coord.fromData(data.getCoord1());

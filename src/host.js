@@ -1,4 +1,4 @@
-var proto = require("../data_pb");
+var proto = require("../src/generated/data_pb");
 import { GameAction } from "./actions/gameAction.js";
 import { BuildTown } from "./actions/buildTown.js";
 import { BuildRoad } from "./actions/buildRoad.js";
@@ -18,6 +18,8 @@ import { AcceptOffer } from "./actions/acceptOffer";
 import { MoveRobber } from "./actions/moveRobber";
 import { RobPlayer } from "./actions/robPlayer";
 import { LooseResources } from "./actions/looseResources";
+import { StartGame } from "./actions/startGame";
+import { EndTurn } from "./actions/endTurn";
 
 export class HostAtClient {
     constructor(game) {
@@ -34,6 +36,10 @@ export class HostAtClient {
             new VictoryPoint(), new VictoryPoint(), new VictoryPoint(), new VictoryPoint(), new VictoryPoint(),
         ];
         this.currentId = 0;
+        this.bots = [];
+    }
+    addBot(bot) {
+        this.bots.push(bot);
     }
     // TODO: keep separate instance of game to ensure serialization works properly
     send(actionMessage) {
@@ -92,6 +98,7 @@ export class HostAtClient {
         if (a.hasRobPlayer()) { return RobPlayer.fromData(a.getRobPlayer()); }
         if (a.hasLooseResources()) { return LooseResources.fromData(a.getLooseResources()); }
         if (a.hasEndTurn()) { return EndTurn.fromData(a.getEndTurn()); }
+        if (a.hasStartGame()) { return StartGame.fromData(a.getStartGame()); }
         throw new Error("Unsupported action in HostAtClient");
     }
 }

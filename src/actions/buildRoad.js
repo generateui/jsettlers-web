@@ -1,4 +1,4 @@
-var proto = require("../../data_pb");
+var proto = require("../../src/generated/data_pb");
 import {GameAction} from "./gameAction.js";
 import {Edge} from "../edge.js";
 import {Road} from "../road.js";
@@ -6,6 +6,7 @@ import {Road} from "../road.js";
 export class BuildRoad extends GameAction {
     constructor(config) {
         super();
+        
         config = config || {};
         this.edge = config.edge;
         this.player = config.player;
@@ -28,5 +29,11 @@ export class BuildRoad extends GameAction {
         buildRoad.setEdge(edge.data);
         action.setBuildRoad(buildRoad);
         return action;
+    }
+    static parse(buildRoadExpression, resolver) {
+        const expression = buildRoadExpression;
+        const player = resolver.parsePlayer(expression.player());
+        const edge = resolver.parseEdge(expression.edge());
+        return new BuildRoad({ player: player, edge: edge });
     }
 }

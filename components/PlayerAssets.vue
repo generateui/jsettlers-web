@@ -167,6 +167,7 @@ export default {
             canPlayVp: false,
             canPlaySoldier: false,
             canPlayOther: false,
+            update2: false,
         }
     },
     methods: {
@@ -271,6 +272,8 @@ export default {
             this.updateCanPlayVp();
             this.updateCanPlaySoldier();
             this.updateCanPlayNonVp();
+            this.update2 = !this.update2;
+            this.$forceUpdate();
         });
     },
     unmount() {
@@ -289,6 +292,7 @@ export default {
     padding-right: 0.5em;
     padding-left: 0.5em;
     padding-top: 0.5em;
+    height: 107px;
 }
 #all {
     display: flex;

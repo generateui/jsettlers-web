@@ -1,4 +1,4 @@
-var proto = require("../data_pb.js");
+var proto = require("../src/generated/data_pb");
 import { ResourceList } from "./resource";
 export class City {
     constructor(player, node) {
@@ -8,7 +8,8 @@ export class City {
         this.name = "City";
     }
     produce(hex) {
-        return [hex.resourceType, hex.resourceType];
+        return hex.resourceType == undefined ? [] : 
+            [hex.resourceType, hex.resourceType];
     }
     static get cost() {
         return new ResourceList([

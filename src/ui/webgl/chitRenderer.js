@@ -1,4 +1,4 @@
-var proto = require("../../../data_pb");
+var proto = require("../../../src/generated/data_pb");
 import {Renderer, EMPHASIS} from "./renderer.js";
 import {Util} from "../../util.js";
 

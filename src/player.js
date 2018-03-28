@@ -5,7 +5,7 @@ import {Resource, Timber, Wheat, Ore, Sheep, Brick, Gold, ResourceList} from "./
 import {DevelopmentCard, YearOfPlenty, Monopoly, Soldier, VictoryPoint, RoadBuilding} from "./developmentCard.js";
 import {Any4To1Port, Any3To1Port, PortList, Wheat2To1Port, Sheep2To1Port} from "./port.js";
 import { ObservableMap } from "./generic/observableMap.js";
-var proto = require("../data_pb");
+var proto = require("../src/generated/data_pb");
 
 export class Player extends Observable {
     constructor(config) {
@@ -17,12 +17,9 @@ export class Player extends Observable {
         this.color = config.color || 0x000000;
         this.user = config.user || new User();
         this.maxHandResources = 7;
-        this.developmentCards = [
-            new Soldier(), new Soldier(),new Soldier(), new YearOfPlenty(), new Monopoly(), new VictoryPoint(), new RoadBuilding()
-        ]; // TODO: ObservableArray
+        this.developmentCards = []; // TODO: ObservableArray
         this.playedDevelopmentCards = [];
         this.roadBuildingTokens = 0;
-        this.resources = [{}, {}, {}, {}, {}, {}, {}, {}];
         this.victoryPoints = [];
         this.soldiers = [];
         this.routeLength = 0;
@@ -35,17 +32,16 @@ export class Player extends Observable {
         this.producers = new Map(); // <Node, Piece> (Piece = Town | City)
         this.nodePieces = new Map(); // <Node, Piece> (Piece = Town | City)
         this.edgePieces = new ObservableMap(); // <Edge, Piece> (Piece = Road)
-        this.resources = new ResourceList([
-            new Timber(), new Timber(), new Timber(), new Timber(),
-            new Timber(), new Timber(), new Timber(), new Timber(),
-            new Timber(), 
-            // new Wheat(),
-            new Ore(), new Ore(), new Ore(),
-            // new Sheep(), 
-            new Brick(), new Brick(),
-        ]);
+        this.resources = new ResourceList();
 
         this.makeObservable(["user"]);
+    }
+    get victoryPointsCount() {
+        let total = 0;
+        for (let vp of this.victoryPoints) {
+            total += vp.victoryPoints;
+        }
+        return total;
     }
     /** true if player can pay for given resources taking trades into account */
     canPayWith(resourceList) {

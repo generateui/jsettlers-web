@@ -68,12 +68,15 @@
             
             <div id="rob-player-view" class="item-wrapper" v-if="action instanceof RobPlayer">
                 <img src="doc/images/RobPlayer48.png">
-                <span>{{action.player.user.name}} robbed {{action.opponent.user.name}} and stole a {{action.resourceType}}</span>
+                <span v-if="action.opponent !== null">{{action.player.user.name}} robbed {{action.opponent.user.name}} and stole a </span>
+                <resource-list-view :size="24" :resources="action.resourceList"></resource-list-view>
+                <span v-if="action.opponent === null">{{action.player.user.name}} robbed no one. How refreshing!</span>
             </div>
             
             <div id="loose-resources-view" class="item-wrapper" v-if="action instanceof LooseResources">
                 <img src="doc/images/LooseResources48.png">
                 <span>{{action.player.user.name}} lost</span>
+                <resource-list-view :size="24" :resources="action.resources"></resource-list-view>
             </div>
             
             <div id="trade-player-view" class="item-wrapper" v-if="action instanceof TradePlayer">
@@ -118,7 +121,12 @@
                 <span>for</span>
                 <resource-list-view :size="24" :resources="action.wanted"></resource-list-view>
             </div>
-            
+
+            <div id="end-turn-view" class="item-wrapper" v-if="action instanceof EndTurn">
+                <img src="doc/images/EndTurn48.png">
+                <span>{{action.player.user.name}} ended his turn</span>
+            </div>
+
         </li>
     </ol>
 </template>

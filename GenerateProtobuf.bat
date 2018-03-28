@@ -1,1 +1,1 @@
-protoc --js_out=import_style=commonjs,binary:. data.proto
+protoc --js_out=import_style=commonjs,binary:src/generated data.proto

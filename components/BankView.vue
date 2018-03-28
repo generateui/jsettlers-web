@@ -13,7 +13,7 @@
 </template>
 
 <script>
-    var proto = require("../data_pb");
+    var proto = require("../src/generated/data_pb");
     export default {
         name: 'bank-view',
         props: {
@@ -28,6 +28,9 @@
             isUnknown: function(resourceType) {
                 return proto.ResourceType[resourceType] === proto.ResourceType.UNKNOWN;
             }
+        },
+        mounted() {
+            // this.removeActionAddedHandler = this.game.
         }
     }
 </script>

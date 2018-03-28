@@ -26,7 +26,7 @@ Array.prototype.remove = function(item) {
     }
 };
 Array.prototype.mapMany = function(filterFunction) {
-    filterFunction = filterFunction || function() { return true; }
+    filterFunction = filterFunction || function(x) { return x; }
     return Array.prototype.concat(...this.map(filterFunction));
 };
 Array.prototype.pushAll = function(array) {

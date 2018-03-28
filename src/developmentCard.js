@@ -1,4 +1,4 @@
-var proto = require("../data_pb");
+var proto = require("../src/generated/data_pb");
 import {Coord} from "./coord.js";
 import { ResourceList, Resource } from "./resource";
 import { MoveRobber } from "./actions/moveRobber";
@@ -26,6 +26,16 @@ export class DevelopmentCard {
         developmentCard.turnBoughtIndex = data.getTurnBoughtIndex();
         developmentCard.turnPlayedIndex = data.getTurnPlayedIndex();
         return developmentCard;
+    }
+    static parse(developmentCardExpression, resolver) {
+        const expr = developmentCardExpression;
+        const player = resolver.parsePlayer(expr.player());
+        if (expr.monopoly() !== null) { return new Monopoly({ player: player }); }
+        if (expr.soldier() !== null) { return new Soldier({ player: player }); }
+        if (expr.yearOfPlenty() !== null) { return new YearOfPlenty({ player: player }); }
+        if (expr.roadBuilding() !== null) { return new RoadBuilding({ player: player }); }
+        if (expr.victoryPoint() !== null) { return new VictoryPoint({ player: player }); }
+        return null;
     }
     static nextId() {
         if (Resource.currentId === undefined) {
@@ -84,8 +94,11 @@ export class YearOfPlenty extends DevelopmentCard {
     get name() { return "YearOfPlenty"; }
 }
 export class Monopoly extends DevelopmentCard {
-    constructor() {
+    constructor(config) {
         super();
+
+        config = config || {};
+        this.player = config.player;
         this.resourceType = null;
         this.stolen = null;
     }
@@ -114,9 +127,12 @@ export class Monopoly extends DevelopmentCard {
     get name() { return "Monopoly"; }
 }
 export class Soldier extends DevelopmentCard {
-    constructor() {
+    constructor(config) {
         super();
-        this.coord = null;
+
+        config = config || {};
+        this.coord = config.coord;
+        this.player = config.player;
     }
     static fromData(data) {
         return new Soldier();

@@ -1,12 +1,13 @@
-var proto = require("../../../data_pb");
+var proto = require("../../../src/generated/data_pb");
 
 import {Renderer} from "./renderer.js";
 import {Util} from "../../util.js";
 
 export class HexPartRenderer  extends Renderer{
-    constructor(boardRenderer, partIndex) {
+    constructor(partIndex) {
         super();
-        this.partIndex = partIndex;
+        this.partIndex = 5 - partIndex;
+        this.partIndex = this.partIndex === 5 ? 0 : this.partIndex + 1;
         const scale = 1.05;
         const cellSize = 10;
 
@@ -14,7 +15,7 @@ export class HexPartRenderer  extends Renderer{
         const partIndexX = cellSize * Math.cos(partIndexAngle);
         const partIndexY = cellSize * Math.sin(partIndexAngle);
 
-        const nextPartIndex = partIndex == 5 ? 0 : partIndex + 1; //overflow 5 to 0
+        const nextPartIndex = partIndex == 0 ? 5 : partIndex - 1; //overflow 5 to 0
         const nextPartIndexAngle = (Math.TAU / 6) * nextPartIndex;
         const nextPartIndexX = cellSize * Math.cos(nextPartIndexAngle);
         const nextPartIndexY = cellSize * Math.sin(nextPartIndexAngle);
@@ -27,7 +28,7 @@ export class HexPartRenderer  extends Renderer{
         triangleShape.lineTo(partIndexX, partIndexY);
         triangleShape.lineTo(nextPartIndexX, nextPartIndexY);
         triangleShape.lineTo(0, 0);
-        triangleShape.autoClose = true;
+        triangleShape.autoClose = true; 
 
         this.texture = new THREE.TextureLoader().load("doc/images/Wheat2To1Port.png");
         this.texture.minFilter = THREE.LinearFilter;

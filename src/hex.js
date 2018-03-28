@@ -1,7 +1,6 @@
-var proto = require("../data_pb");
+var proto = require("../src/generated/data_pb");
 import {Observable} from "./generic/observable.js";
 import {Chit} from "./chit.js";
-// import {proto} from "../data_pb.js";
 
 export class Hex extends Observable {
     constructor(coord) {
@@ -24,6 +23,17 @@ export class Hex extends Observable {
             case hexType.WHEATFIELD: return new WheatField(coord);
             case hexType.HEXFROMBAG: return new HexFromBag(coord);
         }
+    }
+    static parse(hexExpression) {
+        if (hexExpression.none() !== null) { return new NoneHex(); }
+        if (hexExpression.sea() !== null) { return new Sea(); }
+        if (hexExpression.desert() !== null) { return new Desert(); }
+        if (hexExpression.pasture() !== null) { return new Pasture(); }
+        if (hexExpression.river() !== null) { return new River(); }
+        if (hexExpression.forest() !== null) { return new Forest(); }
+        if (hexExpression.mountain() !== null) { return new Mountain(); }
+        if (hexExpression.wheatField() !== null) { return new WheatField(); }
+        return null;
     }
     get color() { return 0x0; }
     /** True when this hex can have a port on top of it */

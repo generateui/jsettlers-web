@@ -1,11 +1,17 @@
 import { MoveRobber } from "./actions/moveRobber";
 import { RobPlayer } from "./actions/robPlayer";
+import { BuildRoad } from "./actions/buildRoad";
 import { BuildTown } from "./actions/buildTown";
+import { BuildCity } from "./actions/buildCity";
 import { LooseResources } from "./actions/looseResources";
 import { PlayDevelopmentCard } from "./actions/playDevelopmentCard";
+import { BuyDevelopmentCard } from "./actions/buyDevelopmentCard";
 import { RollDice } from "./actions/rollDice";
-import { BuildRoad } from "./actions/buildRoad";
+import { TradeBank } from "./actions/tradeBank";
+import { OfferTrade } from "./actions/offerTrade";
+import { TradePlayer } from "./actions/tradePlayer";
 import { CounterOffer } from "./actions/counterOffer";
+import { EndTurn } from "./actions/endTurn";
 import { Soldier } from "./developmentCard";
 import { Observable } from "./generic/observable";
 
@@ -155,14 +161,15 @@ export class PlayTurnActions extends Expectation {
         this.playerOnTurn = game.playerOnTurn;
         this.player = game.player;
         this.expectedActionTypeNames = new Set([
-            BuildRoad.constructor.name,
-            BuildTown.constructor.name,
-            BuildCity.constructor.name,
-            PlayDevelopmentCard.constructor.name,
-            BuyDevelopmentCard.constructor.name,
-            TradeOffer.constructor.name,
-            TradeBank.constructor.name,
-            TradePlayer.constructor.name,
+            BuildRoad.prototype.constructor.name,
+            BuildTown.prototype.constructor.name,
+            BuildCity.prototype.constructor.name,
+            PlayDevelopmentCard.prototype.constructor.name,
+            BuyDevelopmentCard.prototype.constructor.name,
+            OfferTrade.prototype.constructor.name,
+            TradeBank.prototype.constructor.name,
+            TradePlayer.prototype.constructor.name,
+            EndTurn.prototype.constructor.name,
         ]);
     }
     get youAction() {
@@ -215,10 +222,12 @@ export class MoveRobberThenRobPlayer extends Expectation {
     }
     matches(action) {
         if (action instanceof MoveRobber) {
-            return action.player === this.player;
+            return !this.hasMovedRobber && action.player === this.playerOnTurn;
         }
         if (action instanceof RobPlayer) {
-            return this.hasMovedRobber && action.player === this.player;
+            return this.hasMovedRobber &&
+                !this.hasRobbedPlayer &&
+                action.player === this.playerOnTurn;
         }
         return false;
     }
@@ -260,22 +269,22 @@ export class PlaySoldierOrRollDice extends Expectation {
 
         this.player = game.player;
         this.playerOnTurn = game.playerOnTurn;
-        this.canPlaySoldier = this.player.developmentCards.find(dc => dc instanceof Soldier) !== undefined;
+        this.canPlaySoldier = this.playerOnTurn.developmentCards.find(dc => dc instanceof Soldier) !== undefined;
         this.maybeCanPlaySoldier = this.playerOnTurn.developmentCards.length > 0;
-        this.playedSoldier = false;
-        this.rolledDice = false;
+        this.hasPlayedSoldier = false;
+        this.hasRolledDice = false;
     }
     get met() {
-        return this.rolledDice;
+        return this.hasRolledDice;
     }
     get youAction() {
         return null; // TODO: for bots? For UI not needed, user can click rolldice button
     }
     matches(action) {
-        if (this.rolledDice) {
+        if (this.hasRolledDice) {
             return false;
         }
-        const expectedPlayer = action.player === this.player;
+        const expectedPlayer = action.player === this.playerOnTurn;
         if (!expectedPlayer) {
             return false;
         }
@@ -290,10 +299,12 @@ export class PlaySoldierOrRollDice extends Expectation {
         return false;
     }
     meet(action) {
-        if (action instanceof RollDice) {
-            this.rolledDice = true;
-        } else {
-            this.playedSoldier = true;
+        if (action instanceof RollDice && action.player === this.playerOnTurn) {
+            this.hasRolledDice = true;
+        } else if (action instanceof PlayDevelopmentCard && 
+            action.player === this.playerOnTurn &&
+            action.developmentCard instanceof Soldier) {
+            this.hasPlayedSoldier = true;
         }
         this._fireChanged();
     }
@@ -329,7 +340,7 @@ export class LooseResourcesMoveRobberRobPlayer extends Expectation {
         this.moveRobberThenRobPlayer = new MoveRobberThenRobPlayer(game);
     }
     get _allPlayersLostResources() {
-        return this.lostResources.size === this.unlucky;
+        return this.lostResources.size === this.unlucky.size;
     }
     get met() {
         return this._allPlayersLostResources && this.moveRobberThenRobPlayer.met;
@@ -422,10 +433,10 @@ export class BuildTownThenBuildRoad extends Expectation {
         this.lastBuildTown = null;
     }
     get met() {
-        return this.index === this.maxIndex;
+        return this.action === null;
     }
     get youAction() {
-        if (this.action.player === this.player) {
+        if (this.action !== null && this.action.player === this.player) {
             return this.action;
         }
         return null;
@@ -436,14 +447,24 @@ export class BuildTownThenBuildRoad extends Expectation {
         // meet is called first, so index is then 8
         return this.index >= (this.maxIndex + 1) / 2;
     }
+    get playerOnTurn() {
+        return this.action.player;
+    }
     matches(action) {
+        if (this.action === null) {
+            return false;
+        }
         return action.constructor.name === this.action.constructor.name && 
             action.player === this.action.player;
     }
     meet(action) {
         const oldYouAction = this.youAction;
         this.index += 1;
-        this.action = this.actions[this.index];
+        if (this.index > this.maxIndex) {
+            this.action = null;
+        } else {
+            this.action = this.actions[this.index];
+        }
         if (action instanceof BuildTown) {
             this.lastBuildTown = action;
         }
@@ -451,6 +472,9 @@ export class BuildTownThenBuildRoad extends Expectation {
         this._fireChanged();
     }
     get youMessage() {
+        if (this.action === null) {
+            return null;
+        }
         if (this.action.player !== this.player) {
             return null;
         }
@@ -460,6 +484,9 @@ export class BuildTownThenBuildRoad extends Expectation {
         return "build a town";
     }
     get opponentsMessage() {
+        if (this.action === null) {
+            return null;
+        }
         if (this.action.player === this.player) {
             return null;
         }

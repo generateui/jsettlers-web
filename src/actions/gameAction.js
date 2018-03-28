@@ -7,6 +7,7 @@ export class GameAction {
         action.playerId = data.getPlayerId();
         action.id = data.getId();
     }
+    /** set references of this action after deserialization */
     static setReferences(action, game) {
         action.player = game.getPlayerById(action.playerId);
     }

@@ -77,6 +77,10 @@
                     </select>
                     <button @click="setGamePhase()">set</button>
                 </li>
+                <li>
+                    <span>start game</span>
+                    <button @click="startGame()">start</button>
+                </li>
             </ul>
         </li>
     </ul>
@@ -99,6 +103,7 @@ import { OfferTrade } from '../../src/actions/offerTrade';
 import { MoveRobber } from '../../src/actions/moveRobber';
 import { RobPlayer } from '../../src/actions/robPlayer';
 import { RollDice } from '../../src/actions/rollDice';
+import { StartGame } from '../../src/actions/startGame';
 
 const random = new ClientRandom();
 const timer = ms => new Promise(result => setTimeout(result, ms));
@@ -167,10 +172,14 @@ export default {
         setGamePhase(phase) {
             this.game.phase = this.phase;
         },
+        startGame() {
+            const createAction = function(player) { return StartGame.createData(player); };
+            this.act(createAction);
+        },
         act: async function(createAction) {
             try {
-                const action = createAction(this.$data.player);
-                await this.$props.host.send(action);
+                const action = createAction(this.player);
+                await this.host.send(action);
             } catch (error) {
                 alert(error.message);
             }
@@ -184,7 +193,7 @@ export default {
                 // create some data
                 const action = createAction(this.player, result);
                 // send the data
-                await this.$props.host.send(action);
+                await this.host.send(action);
             } catch (error) {
                 // add it to game errors?
                 alert(error.message);

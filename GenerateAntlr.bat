@@ -1,0 +1,1 @@
+java -jar "node_modules/antlr4-cli/bin/antlr-4.7.1-complete.jar" -Dlanguage=JavaScript jsettlers.g4 -o src/generated
