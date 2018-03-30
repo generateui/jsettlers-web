@@ -42,10 +42,6 @@ export class Port {
             case proto.PortType.FROMBAG: return new FromBagPort(partIndex, seaCoord);
         }
     }
-    static getHumanName(portType) {
-        var portName = proto.PortType[portType];
-        return Util.getPascalCasedName(portName);
-    }
 }
 export class Clay2To1Port extends Port { 
     constructor(partIndex, seaCoord) {
@@ -56,6 +52,7 @@ export class Clay2To1Port extends Port {
     get resourceType() { return proto.ResourceType.BRICK; }
     get inAmount() { return 2; }
     get outAmount() { return 1; }
+    get name() { return "Clay2To1Port"; }
 }
 export class Ore2To1Port extends Port { 
     constructor(partIndex, seaCoord) {
@@ -66,6 +63,7 @@ export class Ore2To1Port extends Port {
     get resourceType() { return proto.ResourceType.ORE; }
     get inAmount() { return 2; }
     get outAmount() { return 1; }
+    get name() { return "Ore2To1Port"; }
 }
 export class Sheep2To1Port extends Port { 
     constructor(partIndex, seaCoord) {
@@ -76,6 +74,7 @@ export class Sheep2To1Port extends Port {
     get resourceType() { return proto.ResourceType.SHEEP; }
     get inAmount() { return 2; }
     get outAmount() { return 1; }
+    get name() { return "Sheep2To1Port"; }
 }
 export class Wheat2To1Port extends Port { 
     constructor(partIndex, seaCoord) {
@@ -86,6 +85,7 @@ export class Wheat2To1Port extends Port {
     get resourceType() { return proto.ResourceType.WHEAT; }
     get inAmount() { return 2; }
     get outAmount() { return 1; }
+    get name() { return "Wheat2To1Port"; }
 }
 export class Timber2To1Port extends Port { 
     constructor(partIndex, seaCoord) {
@@ -96,6 +96,7 @@ export class Timber2To1Port extends Port {
     get resourceType() { return proto.ResourceType.TIMBER; }
     get inAmount() { return 2; }
     get outAmount() { return 1; }
+    get name() { return "Timber2To1Port"; }
 }
 export class Any3To1Port extends Port { 
     constructor(partIndex, seaCoord) {
@@ -105,6 +106,7 @@ export class Any3To1Port extends Port {
     get type() { return proto.PortType.ANY3TO1; } 
     get inAmount() { return 3; }
     get outAmount() { return 1; }
+    get name() { return "Any3To1Port"; }
 }
 export class Any4To1Port extends Port { 
     constructor(partIndex, seaCoord) {
@@ -114,6 +116,7 @@ export class Any4To1Port extends Port {
     get type() { return proto.PortType.ANY4TO1; } 
     get inAmount() { return 4; }
     get outAmount() { return 1; }
+    get name() { return "Any4To1Port"; }
 }
 /* Design-time port replaced on board-preparation time by a port from a bag */
 export class FromBagPort extends Port {
@@ -122,6 +125,7 @@ export class FromBagPort extends Port {
     }
     get color() { return 0xaaaaaa; }
     get type() { return proto.PortType.FROMBAG; } 
+    get name() { return "FromBagPort"; }
 }
 export class PortList {
     constructor(items) {

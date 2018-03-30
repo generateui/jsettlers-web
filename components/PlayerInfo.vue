@@ -30,7 +30,7 @@
                 <popper trigger="hover" :options="{placement: 'right'}">
                     <div class="popper ports">
                         <div v-for="port in player.ports.items">
-                            <img :src="`doc/images/${getPortName(port)}PortIcon48.png`" class="port" />
+                            <img :src="`doc/images/${port.name}Icon48.png`" class="port" />
                         </div>
                     </div>
                     <div slot="reference">
@@ -260,9 +260,6 @@ export default {
         }
     },
     methods: {
-        getPortName(port) {
-            return Util.getEnumName(proto.PortType, port.type).toLowerCase();
-        },
         showAction: async function(action) {
             // show resources gained for all player who gain
             const isRollDiceWithResources = action instanceof RollDice && action.productionByPlayer.has(this.player);

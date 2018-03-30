@@ -88,37 +88,31 @@ export default {
         }
     },
     methods: {
-        getName: function(resourceType) {
-        return Util.getEnumName(proto.ResourceType, resourceType);
-        },
-        getPortName: function(port) {
-        return Util.getEnumName(proto.PortType, port.type).toLowerCase();
-        },
         pickBankResource: function(resourceType) {
-        this.bankPickedResources.push(resourceType);
-        this.bankResources.remove(resourceType);
+            this.bankPickedResources.push(resourceType);
+            this.bankResources.remove(resourceType);
         },
         unpickBankResource: function(resourceType) {
-        this.bankPickedResources.remove(resourceType);
-        this.bankResources.add(resourceType);
+            this.bankPickedResources.remove(resourceType);
+            this.bankResources.add(resourceType);
         },
         unpickPlayerResource: function(resourceType) {
-        const p = this.game.player;
-        const port = p.ports.bestPortForResourceType(resourceType);
-        for (var i = 0; i < port.inAmount; i++) {
-            this.playerPickedResources.remove(resourceType);
-            this.playerResources.add(resourceType);
-        }
-        this.goldAmount--;
+            const p = this.game.player;
+            const port = p.ports.bestPortForResourceType(resourceType);
+            for (var i = 0; i < port.inAmount; i++) {
+                this.playerPickedResources.remove(resourceType);
+                this.playerResources.add(resourceType);
+            }
+            this.goldAmount--;
         },
         pickPlayerResource: function(resourceType) {
-        const p = this.game.player;
-        const port = p.ports.bestPortForResourceType(resourceType);
-        for (var i = 0; i < port.inAmount; i++) {
-            this.playerPickedResources.push(resourceType);
-            this.playerResources.remove(resourceType);
-        }
-        this.goldAmount++;
+            const p = this.game.player;
+            const port = p.ports.bestPortForResourceType(resourceType);
+            for (var i = 0; i < port.inAmount; i++) {
+                this.playerPickedResources.push(resourceType);
+                this.playerResources.remove(resourceType);
+            }
+            this.goldAmount++;
         },
         getPort(resourceType) {
             return this.game.player.ports.bestPortForResourceType(resourceType);

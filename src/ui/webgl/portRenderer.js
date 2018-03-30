@@ -1,6 +1,7 @@
 var proto = require("../../../src/generated/data_pb");
 import {Renderer} from "./renderer.js";
 import {Util} from "../../util.js";
+import { Port } from "../../port";
 
 /** Renders a port on a hexagon using a triangle and a cylinder */
 export class PortRenderer extends Renderer {
@@ -57,9 +58,8 @@ export class PortRenderer extends Renderer {
         boardRenderer.group.add(this.mesh);
     }
     _getTexture(portType) {
-        var portName = Util.getEnumName(proto.PortType, portType);
-        var humanName = Util.getPascalCasedName(portName);
-        var fileName = `doc/images/${humanName}port.png`;
+        const portName = Port.fromType(portType).name;
+        var fileName = `doc/images/${portName}.png`;
         var texture = new THREE.TextureLoader().load(fileName);
         return texture;
     }
