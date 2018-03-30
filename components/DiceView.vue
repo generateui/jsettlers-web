@@ -20,7 +20,7 @@ export default {
     },
     methods: {
         rollDice: function() {
-            this.$emit("rolldice");
+            this.$emit("rollDice");
         }
     }
 }

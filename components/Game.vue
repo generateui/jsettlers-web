@@ -46,8 +46,6 @@
             :game="game" 
             @behaveThenAct="behaveThenAct" 
             @action="performAction"
-            @rolldice="rollDice"
-            @endTurn="endTurn"
             @toggleTradeBankDialog="toggleTradeBankDialog"
             :keyListener="keyListener"></actions>
         <player-assets 
@@ -157,10 +155,6 @@ export default {
         closeTradeBankDialog() {
             this.showTradeBankDialog = false;
         },
-        rollDice() {
-            let rollDice = RollDice.createData(this.game.player);
-            this.act(rollDice);
-        },
         tradeBank(action) {
             this.performAction(action);
             this.showTradeBankDialog = false;
@@ -175,10 +169,6 @@ export default {
             this.showLooseResourcesDialog = false;
             this.performAction(action);
             this.update = !this.update;
-        },
-        endTurn() {
-            let endTurn = EndTurn.createData(this.game.player);
-            this.act(endTurn);
         },
         behaviorChanged(behavior) {
             boardRenderer.behavior = behavior;

@@ -1,18 +1,40 @@
 <template>
     <div id="actions">
-        <build-town-button id="build-town-button" @buildTown="buildTown()" :game="game"></build-town-button>
-        <build-city-button id="build-city-button" @buildCity="buildCity()" :game="game"></build-city-button>
-        <build-road-button id="build-road-button" @buildRoad="buildRoad()" :game="game"></build-road-button>
-        <buy-development-card-button id="buy-development-card-button" @buyDevelopmentCard="buyDevelopmentCard()" :game="game"></buy-development-card-button>
+        <build-town-button 
+            id="build-town-button" 
+            @buildTown="buildTown()" 
+            :game="game"></build-town-button>
+        <build-city-button 
+            id="build-city-button" 
+            @buildCity="buildCity()" 
+            :game="game"></build-city-button>
+        <build-road-button 
+            id="build-road-button" 
+            @buildRoad="buildRoad()" 
+            :game="game"></build-road-button>
+        <buy-development-card-button 
+            id="buy-development-card-button" 
+            @buyDevelopmentCard="buyDevelopmentCard()" 
+            :game="game"></buy-development-card-button>
         <div id="trade-player" class="build-button">
             <img src="doc/images/TradePlayer48.png" @click="toggleTradePlayerDialog" />
         </div>
         <div id="trade-bank" class="build-button" @click="toggleTradeBankDialog">
             <img src="doc/images/TradeBank48.png" />
         </div>
-        <end-turn-button id="end-turn-button" @endTurn="endTurn()" :game="game"></end-turn-button>
-        <claim-victory-button id="claim-victory-button" @claimVictory="claimVictory()" :game="game"></claim-victory-button>
-        <dice-view id="dice-view" class="build-button" v-on:rolldice="rollDice" :dice="dice"></dice-view>
+        <end-turn-button 
+            id="end-turn-button" 
+            @endTurn="endTurn()" 
+            :game="game"></end-turn-button>
+        <claim-victory-button 
+            id="claim-victory-button" 
+            @claimVictory="claimVictory()" 
+            :game="game"></claim-victory-button>
+        <dice-view 
+            id="dice-view" 
+            class="build-button" 
+            @rollDice="rollDice()" 
+            :dice="dice"></dice-view>
         <game-phases-view id="game-phases-view"
             :game="game">
         </game-phases-view>
@@ -44,6 +66,8 @@ import { BuildTown } from '../src/actions/buildTown';
 import { BuildCity } from '../src/actions/buildCity';
 import { BuyDevelopmentCard } from '../src/actions/buyDevelopmentCard';
 import { ClaimVictory } from '../src/actions/claimVictory';
+import { RollDice } from '../src/actions/rollDice';
+import { EndTurn } from '../src/actions/endTurn';
 
 export default {
     components: {
@@ -105,10 +129,12 @@ export default {
             this.$emit("toggleTradeBankDialog");
         },
         rollDice() {
-            this.$emit("rolldice");
+            let rollDice = RollDice.createData(this.game.player);
+            this.$emit("action", rollDice);
         },
         endTurn() {
-            this.$emit("endTurn");
+            let endTurn = EndTurn.createData(this.game.player);
+            this.$emit("action", endTurn);
         },
         toggleTradePlayerDialog() {
             this.showTradePlayerDialog = !this.showTradePlayerDialog;
