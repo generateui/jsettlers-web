@@ -468,7 +468,7 @@ devCard: soldier | monopoly | roadBuilding | victoryPoint | yearOfPlenty;
     soldier: 's' | 'soldier'; // 🛡️👤🤺⚔️🗡️
     monopoly: 'm' | 'monopoly'; // 🎩 🧐
     roadBuilding: 'rb' | 'roadBuilding'; // 🛣🛣
-    victoryPoint: 'vp' | 'victoryPoint'; // 🏆
+    victoryPoint: 'vp' | 'victoryPoint'; // 🏆 🎓
     yearOfPlenty: 'yop' | 'yearOfPlenty'; // 🌟
 
 port: any3To1Port | any4To1Port | brick2To1Port | wheat2To1Port |
