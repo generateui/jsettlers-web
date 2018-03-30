@@ -10,7 +10,12 @@
             </ul>
         </ul>
 
-        <div id="end-turn" @click="endTurn()" class="build-button" slot="reference" v-bind:class="{ disabled: !canEndTurn }">
+        <div 
+            id="end-turn"
+            @click="endTurn()"
+            class="build-button"
+            slot="reference"
+            v-bind:class="{ disabled: !canEndTurn }">
             <img id="button" src="doc/images/EndTurn48.png" />
         </div>
     </popper>

@@ -20,6 +20,7 @@ import { RobPlayer } from "./actions/robPlayer";
 import { LooseResources } from "./actions/looseResources";
 import { StartGame } from "./actions/startGame";
 import { EndTurn } from "./actions/endTurn";
+import { ClaimVictory } from "./actions/claimVictory";
 
 export class HostAtClient {
     constructor(game) {
@@ -99,6 +100,7 @@ export class HostAtClient {
         if (a.hasLooseResources()) { return LooseResources.fromData(a.getLooseResources()); }
         if (a.hasEndTurn()) { return EndTurn.fromData(a.getEndTurn()); }
         if (a.hasStartGame()) { return StartGame.fromData(a.getStartGame()); }
+        if (a.hasClaimVictory()) { return ClaimVictory.fromData(a.getClaimVictory()); }
         throw new Error("Unsupported action in HostAtClient");
     }
 }

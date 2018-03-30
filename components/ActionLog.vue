@@ -127,6 +127,11 @@
                 <span>{{action.player.user.name}} ended his turn</span>
             </div>
 
+            <div id="claim-victory-view" class="item-wrapper" v-if="action instanceof ClaimVictory">
+                <img id="claim-victory-image" src="doc/images/ClaimVictory48.png">
+                <span>{{action.player.user.name}} has won the game!</span>
+            </div>
+
         </li>
     </ol>
 </template>
@@ -171,5 +176,8 @@ li {
 }
 img {
     height: 24px;
+}
+#claim-victory-image {
+    filter: invert(100%);
 }
 </style>

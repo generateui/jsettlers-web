@@ -130,12 +130,14 @@ game: 'game' NL
     gameOptions: INDENT 'options' NL
         (INDENT INDENT gameOption NL)*;
 
-        gameOption: stock | pirate | board | robber | placementSequence;
+        gameOption: stock | pirate | board | robber | placementSequence |
+            victoryPointsToWin;
          // not specified? no robber
          // specified but no location? put somewhere random?
          // specified with location -> put at location
         robber: 'robber' (SPACE at)? (SPACE coord)?;
         pirate: 'pirate' (SPACE at)? (SPACE coord)?;
+        victoryPointsToWin: 'victory points to win' SPACE NUMBER;
         // withShips
         // maxTradesPerTurn
         // developmentCardsStack

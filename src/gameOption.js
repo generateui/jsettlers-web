@@ -57,3 +57,17 @@ export class RobberOption extends GameOption {
         return new RobberOption(coord3D, true);
     }
 }
+export class VictoryPointsToWin extends GameOption {
+    constructor(points) {
+        super();
+        this.points = points || 10;
+    }
+    set(game) {
+        game.victoryPointsToWin = this.points;
+    }
+    static parse(victoryPointsToWinExpression) {
+        const expr = victoryPointsToWinExpression;
+        const points = parseInt(expr.NUMBER());
+        return new VictoryPointsToWin(points);
+    }
+}

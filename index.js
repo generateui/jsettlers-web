@@ -130,6 +130,7 @@ import {LooseResources} from "./src/actions/looseResources";
 import {RobPlayer} from "./src/actions/robPlayer";
 import {MoveRobber} from "./src/actions/moveRobber";
 import {EndTurn} from "./src/actions/endTurn";
+import {ClaimVictory} from "./src/actions/claimVictory";
 import {BuyDevelopmentCard} from "./src/actions/buyDevelopmentCard";
 import {PlayDevelopmentCard} from "./src/actions/playDevelopmentCard";
 import {InitialPlacement, Finished, PlayTurns} from "./src/gamePhase";
@@ -176,6 +177,7 @@ Vue.prototype.BuyDevelopmentCard = BuyDevelopmentCard;
 Vue.prototype.RollDice = RollDice;
 Vue.prototype.TradeBank = TradeBank;
 Vue.prototype.EndTurn = EndTurn;
+Vue.prototype.ClaimVictory = ClaimVictory;
 
 
 new Vue({ // eslint-disable-line no-new

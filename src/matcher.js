@@ -261,7 +261,22 @@ export class HasAmountPiecesInStock extends Matcher {
         return `player does not have ${this.amount} ${this.name} in stock, but has ${this.actualAmount}`;
     }
 }
-const canPayPiece = (player, resourceList, gamePhase) => new CanPayPiece(player, resourceList, gamePhase);
+class HasEnoughVictoryPoints extends Matcher {
+    constructor(game, player) {
+        super();
+
+        this.game = game;
+        this.player = player;
+    }
+    match() {
+        return this.player.victoryPointsCount >= this.game.victoryPointsToWin;
+    }
+    get message() {
+        return `player needs ${this.game.victoryPointsToWin} victory points to win but has ${this.player.victoryPointsCount} victory points`
+    }
+}
+const canPayPiece = (player, resourceList, gamePhase) => 
+    new CanPayPiece(player, resourceList, gamePhase);
 const canPlaceCityOnBoard = (player) => new CanPlaceCityOnBoard(player);
 const canPlaceTownOnBoard = (game, player) => new CanPlaceTownOnBoard(game, player);
 const canPlaceRoadOnBoard = (game, player) => new CanPlaceRoadOnBoard(game, player);
@@ -271,9 +286,11 @@ const hasTownInStock = (stock) => new HasTownInStock(stock);
 const hasRoadInStock = (stock) => new HasRoadInStock(stock);
 const hasCityInStock = (stock) => new HasCityInStock(stock);
 const notYetPlayedDevelopmentCard = (game) => new NotYetPlayedDevelopmentCard(game);
+const hasEnoughVictoryPoints = (game, player) => 
+    new HasEnoughVictoryPoints(game, player);
 
 export { 
     match, hasTownInStock, isOnTurn, isExpected, canPlaceTownOnBoard, 
     canPlaceCityOnBoard, canPlaceRoadOnBoard, hasRoadInStock, hasCityInStock,
-    notYetPlayedDevelopmentCard, canPayPiece
+    notYetPlayedDevelopmentCard, canPayPiece, hasEnoughVictoryPoints
 };

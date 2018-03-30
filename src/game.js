@@ -25,6 +25,10 @@ export class Game extends Observable {
         this.players = [];
         this.player = null; // the player at the front-end/client
         this.playerOnTurn = null; // the player whose turn it is
+        // player who won the game. It's possible the winning player has equal
+        // or even less victorypoints then the winner, so we need to explicitly
+        // register the winner.
+        this.winner = null;
         this.board = null;
         this.developmentCards = []; // TODO: observable array
         this.bank = new Bank();
@@ -33,6 +37,7 @@ export class Game extends Observable {
         this.largestArmy = new LargestArmy();
         this.expectation = new ExpectAnything();
         this.dice = new Dice(6, 6); // keep last rolled dice for convenience
+        this.victoryPointsToWin = 10;
 
         this.initialPlacement = new InitialPlacement();
         this.playTurns = new PlayTurns();

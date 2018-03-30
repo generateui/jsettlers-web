@@ -214,8 +214,12 @@
                 </div>
 
         </div>
-        <div v-if="player === game.playerOnTurn" class="is-on-turn-indicator indicator">
-            <span class="indicator-arrow">🡐</span>
+        <div  class="is-on-turn-indicator indicator">
+            <span v-if="player === game.playerOnTurn && player !== game.winner" class="player-on-turn-arrow">🡐</span>
+            <div v-if="player === game.winner">
+                <span class="winner-emoji">🏆</span>
+                <span class="winner-message">{{player.user.name}} wins!</span>
+            </div>
             <!-- <span class="indicator-text">its your turn</span> -->
         </div>
     </div>
@@ -443,6 +447,10 @@ h3 {
     position: relative;
     color: white;
 }
+.winner-indicator {
+    position: relative;
+    color: white;
+}
 
 /** To make indicator relative, there must be an element before it which is absolute */
 .indicator:before {
@@ -457,7 +465,7 @@ h3 {
     top: -100%;
     pointer-events: none;
 }
-.indicator-arrow {
+.player-on-turn-arrow {
     font-size: 91px;
     height: 91px;
     line-height: 91px;
@@ -468,6 +476,16 @@ h3 {
     font-size: 24px;
     height: 91px;
     line-height: 91px;
+}
+.winner-emoji {
+    font-size: 72px;
+    height: 91px;
+    line-height: 91px;
+    font-weight: 900;
+}
+.winner-message {
+    font-size: 32px;
+    color: white;
 }
 
 </style>

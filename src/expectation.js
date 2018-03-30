@@ -14,6 +14,7 @@ import { CounterOffer } from "./actions/counterOffer";
 import { EndTurn } from "./actions/endTurn";
 import { Soldier } from "./developmentCard";
 import { Observable } from "./generic/observable";
+import { ClaimVictory } from "./actions/claimVictory";
 
 /** An action or set of actions expected to be played by a player */
 export class Expectation {
@@ -133,6 +134,7 @@ export class PlayTurnActions extends Expectation {
             TradeBank.prototype.constructor.name,
             TradePlayer.prototype.constructor.name,
             EndTurn.prototype.constructor.name,
+            ClaimVictory.prototype.constructor.name,
         ]);
     }
     get youAction() {
@@ -492,5 +494,39 @@ export class BuildTwoRoads extends Expectation {
             return `waiting for ${this.playerOnTurn.user.name} to build two roads`;
         }
         return `waiting for ${this.playerOnTurn.user.name} to build a road`;
+    }
+}
+export class EndOfGame extends Expectation {
+    constructor(game) {
+        super();
+
+        this.game = game;
+    }
+    /** returns true when the state of the expectation is complete */
+    get met() {
+        return false;
+    }
+    /** notifiy this expectation that an action is performed and 
+     * thus can further its state */
+    meet(action) { }
+    /** returns true when given action is expected */
+    matches(action) {
+        return false;
+    }
+    /** returns a message for the player using the client explaining what to do;
+     * returns null if the client player does not need anything to do */
+    get youMessage() {
+        if (game.player === game.winner) {
+            return "🏆 Congratulations! You won the game 😃🙌";
+        }
+        return null;
+    }
+    /** returns a message for the player using the client explaining opponent(s) what they should do;
+     * returns null if no opponents need to do anything */
+    get opponentsMessage() {
+        if (game.player === game.winner) {
+            return null;
+        }
+        return `${game.winner.user.name} won the game`;
     }
 }

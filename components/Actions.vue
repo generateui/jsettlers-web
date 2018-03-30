@@ -11,6 +11,7 @@
             <img src="doc/images/TradeBank48.png" />
         </div>
         <end-turn-button id="end-turn-button" @endTurn="endTurn()" :game="game"></end-turn-button>
+        <claim-victory-button id="claim-victory-button" @claimVictory="claimVictory()" :game="game"></claim-victory-button>
         <dice-view id="dice-view" class="build-button" v-on:rolldice="rollDice" :dice="dice"></dice-view>
         <game-phases-view id="game-phases-view"
             :game="game">
@@ -33,6 +34,7 @@ import BuildTownButton from './BuildTownButton.vue';
 import BuildCityButton from './BuildCityButton.vue';
 import BuildRoadButton from './BuildRoadButton.vue';
 import EndTurnButton from './EndTurnButton.vue';
+import ClaimVictoryButton from './ClaimVictoryButton.vue';
 import BuyDevelopmentCardButton from './BuyDevelopmentCardButton.vue';
 import GamePhasesView from './GamePhasesView.vue';
 
@@ -41,12 +43,13 @@ import { BuildRoad } from "../src/actions/buildRoad.js";
 import { BuildTown } from '../src/actions/buildTown';
 import { BuildCity } from '../src/actions/buildCity';
 import { BuyDevelopmentCard } from '../src/actions/buyDevelopmentCard';
+import { ClaimVictory } from '../src/actions/claimVictory';
 
 export default {
     components: {
         DiceView, TradeBankDialog, TradePlayerDialog, GamePhasesView,
         BuildTownButton, BuildRoadButton, BuildCityButton,
-        BuyDevelopmentCardButton, EndTurnButton
+        BuyDevelopmentCardButton, EndTurnButton, ClaimVictoryButton
     },
     props: {
         game: {
@@ -92,6 +95,11 @@ export default {
             const player = this.game.player;
             const buyDevelopmentCard = BuyDevelopmentCard.createData(player, null);
             this.$emit("action", buyDevelopmentCard);
+        },
+        claimVictory() {
+            const player = this.game.player;
+            const claimVictory = ClaimVictory.createData(player);
+            this.$emit("action", claimVictory);
         },
         toggleTradeBankDialog() {
             this.$emit("toggleTradeBankDialog");
@@ -187,7 +195,7 @@ export default {
 #actions {
     display: grid;
     height: 64px;
-    grid-template-columns: 110px repeat(8, 48px) 10em;
+    grid-template-columns: 110px repeat(9, 48px) 10em;
     grid-template-rows: repeat(9, 64px);
     grid-column-gap: 1em;
 }
@@ -224,11 +232,15 @@ export default {
     grid-column-start: 8;
     grid-row-start: 1;
 }
+#claim-victory-button {
+    grid-column-start: 9;
+    grid-row-start: 1;
+}
 #dice-view {
     grid-column-start: 1;
     grid-row-start: 1;
 }
 #game-phases-view {
-    grid-column-start: 10;
+    grid-column-start: 11;
 }
 </style>

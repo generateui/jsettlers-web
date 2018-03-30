@@ -156,6 +156,7 @@ message MoveRobber {
 	Coord coord = 1;
 }
 message EndTurn { }
+message ClaimVictory { }
 message StartGame { }
 // a client requests to perform a game action
 message GameActionRequest {
@@ -178,6 +179,7 @@ message GameActionRequest {
 		MoveRobber move_robber = 16;
 		EndTurn end_turn = 17;
 		StartGame start_game = 18;
+		ClaimVictory claim_victory = 19;
 	}
 }
 message GameAction {
@@ -206,6 +208,7 @@ message GameAction {
 		MoveRobber move_robber = 22;
 		EndTurn end_turn = 23;
 		StartGame start_game = 24;
+		ClaimVictory claim_victory = 25;
 	}
 }
 message DevelopmentCard {

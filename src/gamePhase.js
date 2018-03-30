@@ -4,7 +4,8 @@ import { RollDice } from "./actions/rollDice";
 import { PlayDevelopmentCard } from "./actions/playDevelopmentCard";
 import { Town } from "./town";
 import { PlaySoldierOrRollDice, PlayTurnActions, BuildTownThenBuildRoad, 
-    LooseResourcesMoveRobberRobPlayer } from "./expectation";
+    LooseResourcesMoveRobberRobPlayer, 
+    EndOfGame} from "./expectation";
 import { Road } from "./road";
 
 /** State of the game where certain actions are expected and performed
@@ -37,6 +38,7 @@ export class GamePhase {
     acceptOffer(game, acceptOffer) {}
     rejectOffer(game, rejectOffer) {}
     counterOffer(game, counterOffer) {}
+    claimVictory(game, claimVictory) {}
     canPlaceTownOnBoard(game, player) {}
     /** since the possibilities to build roads & towns depends on the game phase, 
      * the game phase is responsible to returning a list of possibilties. It's
