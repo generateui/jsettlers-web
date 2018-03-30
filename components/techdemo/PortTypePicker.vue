@@ -23,7 +23,7 @@ export default {
   },
   methods: {
       click(portType) {
-          this.$data.portType = portType;
+          this.portType = portType;
           this.$emit('portTypeChanged', portType);
       }
   }

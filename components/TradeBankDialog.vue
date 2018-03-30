@@ -95,19 +95,19 @@
             return Util.getEnumName(proto.PortType, port.type).toLowerCase();
           },
           pickBankResource: function(resourceType) {
-            this.$data.bankPickedResources.push(resourceType);
+            this.bankPickedResources.push(resourceType);
             this.bankResources.remove(resourceType);
           },
           unpickBankResource: function(resourceType) {
-            this.$data.bankPickedResources.remove(resourceType);
+            this.bankPickedResources.remove(resourceType);
             this.bankResources.add(resourceType);
           },
           unpickPlayerResource: function(resourceType) {
             const p = this.$props.game.player;
             const port = p.ports.bestPortForResourceType(resourceType);
             for (var i = 0; i < port.inAmount; i++) {
-                this.$data.playerPickedResources.remove(resourceType);
-                this.$data.playerResources.add(resourceType);
+                this.playerPickedResources.remove(resourceType);
+                this.playerResources.add(resourceType);
             }
             this.goldAmount--;
           },
@@ -115,8 +115,8 @@
             const p = this.$props.game.player;
             const port = p.ports.bestPortForResourceType(resourceType);
             for (var i = 0; i < port.inAmount; i++) {
-                this.$data.playerPickedResources.push(resourceType);
-                this.$data.playerResources.remove(resourceType);
+                this.playerPickedResources.push(resourceType);
+                this.playerResources.remove(resourceType);
             }
             this.goldAmount++;
           },

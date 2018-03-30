@@ -58,7 +58,7 @@
             return Util.getEnumName(proto.ResourceType, resourceType);
           },
           pickResource(resourceType) {
-            this.$data.resourceType = resourceType;
+            this.resourceType = resourceType;
           }
         }
     }

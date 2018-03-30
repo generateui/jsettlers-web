@@ -164,7 +164,6 @@ export default {
         tradeBank(action) {
             this.performAction(action);
             this.showTradeBankDialog = false;
-            this.$forceUpdate();
             this.update = !this.update;
         },
         tradePlayer(action) {
@@ -173,7 +172,7 @@ export default {
             this.closeTradeBankDialog();
         },
         looseResources(action) {
-            this.$data.showLooseResourcesDialog = false;
+            this.showLooseResourcesDialog = false;
             this.performAction(action);
             this.update = !this.update;
         },
@@ -206,9 +205,9 @@ export default {
                 // await the behavior for completion (e.g. a click on the board on some renderer)
                 const result = await behavior.promise;
                 // create some data
-                const action = createAction(this.$data.game.player, result);
+                const action = createAction(this.game.player, result);
                 // send the data
-                await this.$data.host.send(action);
+                await this.host.send(action);
             } catch (error) {
                 // add it to game errors?
                 alert(error.message);

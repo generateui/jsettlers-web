@@ -25,7 +25,7 @@ export default {
   },
   methods: {
       click(hexType) {
-          this.$data.hexType = hexType;
+          this.hexType = hexType;
           this.$emit('hexTypeChanged', hexType);
       }
   }

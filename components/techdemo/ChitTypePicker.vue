@@ -25,7 +25,7 @@ export default {
   },
   methods: {
       click(chitType) {
-          this.$data.chitType = chitType;
+          this.chitType = chitType;
           this.$emit('chitTypeChanged', chitType);
       }
   }

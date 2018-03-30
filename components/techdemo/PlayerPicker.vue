@@ -33,7 +33,7 @@
     },
     methods: {
         click(player) {
-            this.$data.pickedPlayer = player;
+            this.pickedPlayer = player;
             this.$emit('playerChanged', player);
         },
         toCssColor(integer) {

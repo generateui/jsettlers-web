@@ -80,23 +80,23 @@ export default {
   },
   methods: {
     selectBoard(board) {
-      this.$data.board = board;
+      this.board = board;
     },
     addBot(bot) {
-      const index = this.$data.bots.indexOf(bot);
-      this.$data.bots.splice(index, 1);
-      this.$data.selectedBots.push(bot);
+      const index = this.bots.indexOf(bot);
+      this.bots.splice(index, 1);
+      this.selectedBots.push(bot);
     },
     removeBot(bot) {
-      const index = this.$data.selectedBots.indexOf(bot);
-      this.$data.selectedBots.splice(index, 1);
-      this.$data.bots.push(bot);
+      const index = this.selectedBots.indexOf(bot);
+      this.selectedBots.splice(index, 1);
+      this.bots.push(bot);
     },
     startGame() {
       const gameSettings = new GameSettings({
-        boardDescriptor: this.$data.board,
-        bots: this.$data.selectedBots,
-        players: [new Player({ user: this.$data.user })]
+        boardDescriptor: this.board,
+        bots: this.selectedBots,
+        players: [new Player({ user: this.user })]
       });
       window.gameSettings = gameSettings; // how to pass in an object to receiving router component?
       this.$router.push({ name:"game", params: {settings: gameSettings } });

@@ -57,15 +57,15 @@
         },
         methods: {
             setModeToPlay: function() {
-                this.$data.mode = MODE.play;
+                this.mode = MODE.play;
                 // TODO: swicth mode on board
             },
             setModeToDesign: function() {
-                this.$data.mode = MODE.design;
+                this.mode = MODE.design;
                 // TODO: swicth mode on board
             },
             isModePlay() {
-                return this.$data.mode === MODE.play;
+                return this.mode === MODE.play;
             },
             generate() {
                 createdBoard.generateBoardForPlay();

@@ -64,10 +64,10 @@
             return Util.getEnumName(proto.ResourceType, resourceType);
           },
           pickResourceType(resourceType) {
-            this.$data.selectedResourceTypes.push(resourceType);
+            this.selectedResourceTypes.push(resourceType);
           },
           unpickResourceType(resourceType) {
-            this.$data.selectedResourceTypes.remove(resourceType);
+            this.selectedResourceTypes.remove(resourceType);
           }
         }
     }
