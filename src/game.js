@@ -32,7 +32,7 @@ export class Game extends Observable {
         this.longestRoad = new LongestRoad();
         this.largestArmy = new LargestArmy();
         this.expectation = new ExpectAnything();
-        this.dice = new Dice(6, 6); // keep las tolled dice for convenience
+        this.dice = new Dice(6, 6); // keep last rolled dice for convenience
 
         this.initialPlacement = new InitialPlacement();
         this.playTurns = new PlayTurns();

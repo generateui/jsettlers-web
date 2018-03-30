@@ -35,6 +35,14 @@ Why use a dsl for jsettlers?
 - use as serialization format for e.g. a MapEditor?
 - use as human readable format for board generator? (maybe include legend)
 
+Strategies
+Game objects should be able to generate jsettlers language snippets. For 
+instance, a resourceSet should generate [🌾🐑]. A syntax tree definition should
+be part of the class, where generation may follow a strategy:
+-ascii terse e.g. [w s]
+-ascii verbose e.g. [wheat sheep]
+-unicode e.g. [🌾🐑]
+
 Why emoji? Because it looks cool! Besides that, it *is* cool to design a language
  with useful emoji.
 
@@ -47,6 +55,7 @@ it can be varianted, so we have a different icon in the hex per extension set.
 ideas: 
 🛡 -> 1f6e1, shield for C&K
 ⛵ -> ship, seafarers
+☠️
 
 Useful unicode characters:
 → ↑ ← ↓
@@ -115,6 +124,9 @@ game: 'game' NL
     (board NL)?
     (players NL)+;
 
+    // an option is abstract and can be applied to Board and Game, where Game
+    // overrules a board option.
+    // Icons of options can be regular icons with a checkbox in the bottom right.
     gameOptions: INDENT 'options' NL
         (INDENT INDENT gameOption NL)*;
 
@@ -126,7 +138,11 @@ game: 'game' NL
         pirate: 'pirate' (SPACE at)? (SPACE coord)?;
         // withShips
         // maxTradesPerTurn
-        //
+        // developmentCardsStack
+        // pointsToWin
+        // roadBuilding (immediate | relaxed)
+        // friendlyRobber (no robbing of 2vp/3vp players)
+        // 
         placementSequence: 'standard' | 'standardWithCities' | 'seaFarers';
         //boardName: NAME;
 
@@ -434,6 +450,11 @@ resource : sheep | wheat | timber | ore | brick | unknown;
     ore: '\u{26f0}' | 'ore' | 'o'; // ⛰ // TODO: better one?
     brick: '\u{268c}' | 'brick' | 'b'; // ⚌ // TODO: better one?
     unknown: '?' | 'unknown';
+    // jungle token 💡
+    // coin 💰
+    // cloth 👘
+    // book 📗📖
+    // gold 👑
 
 piece: city | town | ship | road;
     town: '\u{1f3e0}' | 'town'; // 🏠
@@ -463,13 +484,15 @@ port: any3To1Port | any4To1Port | brick2To1Port | wheat2To1Port |
 hex: pasture | forest | mountain | river | wheatField | sea | none | desert;
     pasture: 'pasture' | 'P'; // produces sheep 🐑
     forest: 'timber' | 'F'; //produces timber 🌳
-    mountain: 'mountain' | 'M'; // produces ore ⛰️
+    mountain: 'mountain' | 'M'; // produces ore ⛰️ <- non-snow-capped
     river: 'river' | 'R'; // produces brick 🏞️
     wheatField: 'field' | 'W'; // produces wheat 🌾
     sea: 'sea' | 'S'; // 🌊
     none: 'none' | '.';
-    desert: 'desert' | 'D'; // 🌵
-    // volcano 🌋 
+    desert: 'desert' | 'D'; // 🌵🏜️ (cactus is not fullwidth)
+    // volcano 🌋
+    // jungle 🦁
+    // iceberg 🏔️ <- snow-capped
 
 
 victoryPointt: city | town | victoryPoint | longestRoad | largestArmy;
@@ -483,7 +506,7 @@ victoryPointt: city | town | victoryPoint | longestRoad | largestArmy;
             ..  🌊  ⛰️  🏞️  🐑  🌾  🌊
               🌊  ⛰️  🏞️  🐑  🌳  🐑  🌊
             ..  🌊  ⛰️  🌾  🐑  ⛰️  🌊
-              ..  🌊  🌳  🌵  🌳  🌊
+              ..  🌊  🌳  🏜️  🌳  🌊
             ..  ..  🌊  🌊  🌊  🌊
 
 Embedded MarkDown syntax extensions. Inline is `done using backticks` and
