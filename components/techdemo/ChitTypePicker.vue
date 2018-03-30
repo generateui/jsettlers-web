@@ -16,19 +16,19 @@
 var proto = require("../../src/generated/data_pb");
 
 export default {
-  name: 'chit-type-picker',
-  data () {
-    return {
-      chitTypes: proto.ChitType,
-      chitType: proto.ChitType[0],
+    name: 'chit-type-picker',
+    data () {
+        return {
+            chitTypes: proto.ChitType,
+            chitType: proto.ChitType[0],
+        }
+    },
+    methods: {
+        click(chitType) {
+            this.chitType = chitType;
+            this.$emit('chitTypeChanged', chitType);
+        }
     }
-  },
-  methods: {
-      click(chitType) {
-          this.chitType = chitType;
-          this.$emit('chitTypeChanged', chitType);
-      }
-  }
 }
 </script>
 

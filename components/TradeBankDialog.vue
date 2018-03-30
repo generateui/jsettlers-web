@@ -60,98 +60,98 @@
 </template>
 
 <script>
-    var proto = require("../src/generated/data_pb");
-    import {Util} from "../src/util.js";
-    import {ResourceList} from "../src/resource.js";
-    import {TradeBank} from "../src/actions/tradeBank.js";
+var proto = require("../src/generated/data_pb");
+import {Util} from "../src/util.js";
+import {ResourceList} from "../src/resource.js";
+import {TradeBank} from "../src/actions/tradeBank.js";
 
-    const r = ResourceList.withAllTypes();
-    r.add(proto.ResourceType.WHEAT);
-    
-    export default {
-        name: 'trade-bank-dialog',
-        props: {
-            game: {
-                type: Object
-            },
-            keyListener: {
-                type: Object
-            }
+const r = ResourceList.withAllTypes();
+r.add(proto.ResourceType.WHEAT);
+
+export default {
+    name: 'trade-bank-dialog',
+    props: {
+        game: {
+            type: Object
         },
-        data() {
-            return {
-                bankResources: new ResourceList(this.game.bank.resources),
-                bankPickedResources: [],
-                playerPickedResources: [],
-                playerResources: new ResourceList(this.game.player.resources),
-                goldAmount: 0,
-            }
+        keyListener: {
+            type: Object
+        }
+    },
+    data() {
+        return {
+            bankResources: new ResourceList(this.game.bank.resources),
+            bankPickedResources: [],
+            playerPickedResources: [],
+            playerResources: new ResourceList(this.game.player.resources),
+            goldAmount: 0,
+        }
+    },
+    methods: {
+        getName: function(resourceType) {
+        return Util.getEnumName(proto.ResourceType, resourceType);
         },
-        methods: {
-          getName: function(resourceType) {
-            return Util.getEnumName(proto.ResourceType, resourceType);
-          },
-          getPortName: function(port) {
-            return Util.getEnumName(proto.PortType, port.type).toLowerCase();
-          },
-          pickBankResource: function(resourceType) {
-            this.bankPickedResources.push(resourceType);
-            this.bankResources.remove(resourceType);
-          },
-          unpickBankResource: function(resourceType) {
-            this.bankPickedResources.remove(resourceType);
-            this.bankResources.add(resourceType);
-          },
-          unpickPlayerResource: function(resourceType) {
-            const p = this.$props.game.player;
+        getPortName: function(port) {
+        return Util.getEnumName(proto.PortType, port.type).toLowerCase();
+        },
+        pickBankResource: function(resourceType) {
+        this.bankPickedResources.push(resourceType);
+        this.bankResources.remove(resourceType);
+        },
+        unpickBankResource: function(resourceType) {
+        this.bankPickedResources.remove(resourceType);
+        this.bankResources.add(resourceType);
+        },
+        unpickPlayerResource: function(resourceType) {
+        const p = this.game.player;
+        const port = p.ports.bestPortForResourceType(resourceType);
+        for (var i = 0; i < port.inAmount; i++) {
+            this.playerPickedResources.remove(resourceType);
+            this.playerResources.add(resourceType);
+        }
+        this.goldAmount--;
+        },
+        pickPlayerResource: function(resourceType) {
+        const p = this.game.player;
+        const port = p.ports.bestPortForResourceType(resourceType);
+        for (var i = 0; i < port.inAmount; i++) {
+            this.playerPickedResources.push(resourceType);
+            this.playerResources.remove(resourceType);
+        }
+        this.goldAmount++;
+        },
+        getPort(resourceType) {
+            return this.game.player.ports.bestPortForResourceType(resourceType);
+        },
+        cannotTradeResource(resourceType) {
+            const p = this.game.player;
             const port = p.ports.bestPortForResourceType(resourceType);
-            for (var i = 0; i < port.inAmount; i++) {
-                this.playerPickedResources.remove(resourceType);
-                this.playerResources.add(resourceType);
-            }
-            this.goldAmount--;
-          },
-          pickPlayerResource: function(resourceType) {
-            const p = this.$props.game.player;
-            const port = p.ports.bestPortForResourceType(resourceType);
-            for (var i = 0; i < port.inAmount; i++) {
-                this.playerPickedResources.push(resourceType);
-                this.playerResources.remove(resourceType);
-            }
-            this.goldAmount++;
-          },
-          getPort(resourceType) {
-              return this.game.player.ports.bestPortForResourceType(resourceType);
-          },
-          cannotTradeResource(resourceType) {
-              const p = this.$props.game.player;
-              const port = p.ports.bestPortForResourceType(resourceType);
-              return this.playerResources.of(resourceType).length < port.inAmount;
-          },
-          bankHasNoResource(resourceType) {
-              return !this.game.bank.resources.hasOf(resourceType);
-          },
-          trade() {
-              const bankPicks = this.bankPickedResources.map(rt => proto.ResourceType[rt]);
-              const playerPicks = this.playerPickedResources.map(rt => proto.ResourceType[rt]);
-              const tradeBank = TradeBank.createData(this.game.player, playerPicks, bankPicks);
-              this.$emit("trade", tradeBank);
-          }
+            return this.playerResources.of(resourceType).length < port.inAmount;
         },
-        computed: {
-            cannotTrade() {
-              return this.bankPickedResources.length !== this.goldAmount || this.goldAmount === 0;
-            }
+        bankHasNoResource(resourceType) {
+            return !this.game.bank.resources.hasOf(resourceType);
         },
-        mounted() {
-            this.removeEscapeHandler = this.keyListener.escape(() => {
-                this.$emit("close");
-            });
-        },
-        destroyed() {
-            this.removeEscapeHandler();
-        },
-    }
+        trade() {
+            const bankPicks = this.bankPickedResources.map(rt => proto.ResourceType[rt]);
+            const playerPicks = this.playerPickedResources.map(rt => proto.ResourceType[rt]);
+            const tradeBank = TradeBank.createData(this.game.player, playerPicks, bankPicks);
+            this.$emit("trade", tradeBank);
+        }
+    },
+    computed: {
+        cannotTrade() {
+            return this.bankPickedResources.length !== this.goldAmount || this.goldAmount === 0;
+        }
+    },
+    mounted() {
+        this.removeEscapeHandler = this.keyListener.escape(() => {
+            this.$emit("close");
+        });
+    },
+    destroyed() {
+        this.removeEscapeHandler();
+    },
+}
 </script>
 
 <style scoped>

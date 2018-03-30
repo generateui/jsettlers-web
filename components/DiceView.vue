@@ -6,31 +6,26 @@
 </template>
 
 <script>
-    import DieView from "./DieView.vue";
+import DieView from "./DieView.vue";
 
-    export default {
-        components: {
-            DieView
-        },
-        name: 'dice-view',
-        props: {
-            dice: {
-                type: Object
-            }
-        },
-        methods: {
-            rollDice: function() {
-                this.$emit("rolldice");
-            }
+export default {
+    components: {
+        DieView
+    },
+    name: 'dice-view',
+    props: {
+        dice: {
+            type: Object
+        }
+    },
+    methods: {
+        rollDice: function() {
+            this.$emit("rolldice");
         }
     }
+}
 </script>
 
 <style scoped>
-    #first {
 
-    }
-    #second {
-        /* margin-left: 0.5em; */
-    }
 </style>

@@ -286,8 +286,8 @@ export default {
     mounted() {
         var el = this.$el;
         var popupEl = this.$refs["popup-" + this.player.id]
-        var x = new PopperJs(el, popupEl, { placement: 'right'});
-        x.update();
+        var popup = new PopperJs(el, popupEl, { placement: 'right'});
+        popup.update();
     }
 }
 </script>

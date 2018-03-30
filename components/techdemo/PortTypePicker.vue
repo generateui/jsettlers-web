@@ -14,19 +14,19 @@
 var proto = require("../../src/generated/data_pb");
 
 export default {
-  name: 'port-type-picker',
-  data () {
-    return {
-      portTypes: proto.PortType,
-      portType: proto.PortType[0]
+    name: 'port-type-picker',
+    data () {
+        return {
+            portTypes: proto.PortType,
+            portType: proto.PortType[0]
+        }
+    },
+    methods: {
+        click(portType) {
+            this.portType = portType;
+            this.$emit('portTypeChanged', portType);
+        }
     }
-  },
-  methods: {
-      click(portType) {
-          this.portType = portType;
-          this.$emit('portTypeChanged', portType);
-      }
-  }
 }
 </script>
 

@@ -36,32 +36,32 @@
 </template>
 
 <script>
-    var proto = require("../src/generated/data_pb");
-    import {Util} from "../src/util.js";
-    
-    export default {
-        name: 'monopoly-dialog',
-        data() {
-            return {
-                resourceTypes: [
-                    proto.ResourceType.WHEAT,
-                    proto.ResourceType.TIMBER,
-                    proto.ResourceType.ORE,
-                    proto.ResourceType.SHEEP,
-                    proto.ResourceType.BRICK,
-                ],
-                resourceType: null
-            }
-        },
-        methods: {
+  var proto = require("../src/generated/data_pb");
+  import {Util} from "../src/util.js";
+  
+  export default {
+      name: 'monopoly-dialog',
+      data() {
+          return {
+              resourceTypes: [
+                  proto.ResourceType.WHEAT,
+                  proto.ResourceType.TIMBER,
+                  proto.ResourceType.ORE,
+                  proto.ResourceType.SHEEP,
+                  proto.ResourceType.BRICK,
+              ],
+              resourceType: null
+          }
+      },
+      methods: {
           getName: function(resourceType) {
-            return Util.getEnumName(proto.ResourceType, resourceType);
+              return Util.getEnumName(proto.ResourceType, resourceType);
           },
           pickResource(resourceType) {
-            this.resourceType = resourceType;
+              this.resourceType = resourceType;
           }
-        }
-    }
+      }
+  }
 </script>
 
 <style scoped>

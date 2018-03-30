@@ -52,56 +52,56 @@ import { GameSettings } from '../src/game.js';
 import { Player } from '../src/player.js';
 
 const boards = [
-  Standard4pDesign.descriptor,
-  JustSomeSea.descriptor,
-  TheGreatForest.descriptor,
-  From2DBoard.descriptor
+    Standard4pDesign.descriptor,
+    JustSomeSea.descriptor,
+    TheGreatForest.descriptor,
+    From2DBoard.descriptor
 ];
 const bots = [
-  { name: "SimpleBot", id: 0 },
-  { name: "EvenSimpelerBot", id: 1 },
-  { name: "DerpyBot", id: 2 },
-  { name: "DerpierBot", id: 3 },
+    { name: "SimpleBot", id: 0 },
+    { name: "EvenSimpelerBot", id: 1 },
+    { name: "DerpyBot", id: 2 },
+    { name: "DerpierBot", id: 3 },
 ];
 
 export default {
-  name: 'game-settings',
-  components: { 
-    BoardPreview
-  },
-  data () {
-    return {
-      user: new User({name: "player 1"}),
-      boards: boards,
-      board: boards[0],
-      bots: [bots[0]],
-      selectedBots: [bots[1], bots[2], bots[3]],
+    name: 'game-settings',
+    components: { 
+        BoardPreview
+    },
+    data () {
+        return {
+            user: new User({name: "player 1"}),
+            boards: boards,
+            board: boards[0],
+            bots: [bots[0]],
+            selectedBots: [bots[1], bots[2], bots[3]],
+        }
+    },
+    methods: {
+        selectBoard(board) {
+            this.board = board;
+        },
+        addBot(bot) {
+            const index = this.bots.indexOf(bot);
+            this.bots.splice(index, 1);
+            this.selectedBots.push(bot);
+        },
+        removeBot(bot) {
+            const index = this.selectedBots.indexOf(bot);
+            this.selectedBots.splice(index, 1);
+            this.bots.push(bot);
+        },
+        startGame() {
+            const gameSettings = new GameSettings({
+                boardDescriptor: this.board,
+                bots: this.selectedBots,
+                players: [new Player({ user: this.user })]
+            });
+            window.gameSettings = gameSettings; // how to pass in an object to receiving router component?
+            this.$router.push({ name:"game", params: {settings: gameSettings } });
+        }
     }
-  },
-  methods: {
-    selectBoard(board) {
-      this.board = board;
-    },
-    addBot(bot) {
-      const index = this.bots.indexOf(bot);
-      this.bots.splice(index, 1);
-      this.selectedBots.push(bot);
-    },
-    removeBot(bot) {
-      const index = this.selectedBots.indexOf(bot);
-      this.selectedBots.splice(index, 1);
-      this.bots.push(bot);
-    },
-    startGame() {
-      const gameSettings = new GameSettings({
-        boardDescriptor: this.board,
-        bots: this.selectedBots,
-        players: [new Player({ user: this.user })]
-      });
-      window.gameSettings = gameSettings; // how to pass in an object to receiving router component?
-      this.$router.push({ name:"game", params: {settings: gameSettings } });
-    }
-  }
 }
 </script>
 
