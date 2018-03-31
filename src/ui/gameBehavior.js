@@ -125,8 +125,17 @@ export class PickTownForCity extends BoardBehavior {
     }
     click(boardRenderer, renderer) {
         if (renderer instanceof TownRenderer) {
-            this.ok(renderer.town.node);
+            const townRenderer = renderer;
+            if (townRenderer.town.player === this.player) {
+                this.ok(townRenderer.town.node);
+            }
         }
+    }
+    enter(boardRenderer, renderer) {
+        this.emphasizeHoveredObject.enter(boardRenderer, renderer);
+    }
+    leave(boardRenderer, renderer) {
+        this.emphasizeHoveredObject.leave(boardRenderer, renderer);
     }
     stop(boardRenderer) {
         boardRenderer.hideAllNodes();
@@ -136,12 +145,6 @@ export class PickTownForCity extends BoardBehavior {
         this.promise = null;
         this.player = null;
         this.boardRenderer = null;
-    }
-    enter(boardRenderer, renderer) {
-        this.emphasizeHoveredObject.enter(boardRenderer, renderer);
-    }
-    stop(boardRenderer, renderer) {
-        this.emphasizeHoveredObject.leave(boardRenderer, renderer);
     }
 }
 export class ShowProduction extends BoardBehavior {
@@ -254,7 +257,7 @@ export class PickPlayer extends BoardBehavior {
             }
         }
         boardRenderer.setPiecesEmphasis(EMPHASIS.dark, toDarken);
-        boardRenderer.setPiecesEmphasis(EMPHASIS.light, toLighten);
+        // boardRenderer.setPiecesEmphasis(EMPHASIS.light, toLighten);
         this.lightened = new Set(toLighten);
         this.darkened = new Set(toDarken);
     }
@@ -270,7 +273,7 @@ export class PickPlayer extends BoardBehavior {
         this.emphasizeHoveredHex.leave(boardRenderer, renderer);
     }
     stop(boardRenderer) {
-        boardRenderer.setPiecesEmphasis(EMPHASIS.normal, this.lightened);
+        // boardRenderer.setPiecesEmphasis(EMPHASIS.normal, this.lightened);
         boardRenderer.setPiecesEmphasis(EMPHASIS.normal, this.darkened);
         boardRenderer.setHexesEmphasis(EMPHASIS.normal, boardRenderer.board.hexes.values());
         this.ok = null;

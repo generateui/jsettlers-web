@@ -1,5 +1,5 @@
 import { Stock } from "./stock";
-import { Coord } from "./coord";
+import { Coord, Coord3D } from "./coord";
 
 export class GameOptions {
     constructor() {
@@ -52,8 +52,8 @@ export class StockOption extends GameOption {
 export class RobberOption extends GameOption {
     constructor(coord, enabled) {
         super();
-        this.coord = coord;
-        this.enabled = enabled;
+        this.coord = coord || Coord3D.center;
+        this.enabled = enabled || true;
     }
     set(game) {
         // TODO: switch on/off?

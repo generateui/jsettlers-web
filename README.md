@@ -21,32 +21,36 @@ https://generateui.github.io/jsettlers-web/
  - standardized protocol using Protobuf
  - separated layers (UI ⤑ model ⤑ data) (⤑ meams "depends on")
  - bots (although very, very basic)
+ - written in ES7, uses ES6 modules where possible
+ - seems to work on Edge, Chrome & Firefox
 
+## Dependencies
 
-## Development dependencies
+**Bold** are runtime dependencies, otherwise it is a development dependency.
 
-Generated code is not stored in the repository, so you need to generate it 
-before you run a build.
-
-### Java
-Java is used for antlr4, but only if you want to build locally. Java is not used
-in the application runtime. Antlr 4.7.1 is required (for unicode support).
-
-### Protoc
-Protocol buffers are used for communciation betwene client & server. Ensure 
-protoc is installed.
-
+ - **Vue.js** to render the main UI and most
+ - **Vue-router** for URI routing
+ - **Three.js** to render a 3D board with pieces
+ - **Popper.js** to provide rich tooltips
+ - Antlr4 to define a dsl for integration testing
+ - mocha.js for unit tests
+ - browserify for fast & easy development
+ - babel.js to transpile to ES5 code
+ - Java as transitive dependency for antlr4
+ - protobuf compiler (`protoc`) to geenrate protobuf source
 
 ## Build
 
-jsettlers-web depends on npm, browserify & protobuf. To build locally:
+jsettlers-web uses antlr4 and protobuf to generate sourcecode. It's currently 
+not nicely integrated with node.js scripts, it's on the todo-list. 
 
 1. clone repo
 2. ensure node is installed
-3. ensure protobuf compiler `protoc` is installed
-4. ensure antlr 4.7.1 is installed
-4. `npm install`
-5. `GenerateProtobuf.bat` should generate data_pb
-6. `GenerateBundle.bat` should generate bundle.js
-
-This should have you setup. To run the app, run `index.html`.
+3. `npm install`
+4. download antlr 4.7.1 from [here](http://www.antlr.org/download/antlr-4.7.1-complete.jar)
+5. place `antlr-4.7.1-complete.jar` in `node_modules/antlr4-cli/bin`
+6. `npm run generate-antlr` runs antlr and generates antlr parser for jsettlers dsl
+7. ensure protobuf compiler `protoc` is installed
+8. `protoc --js_out=import_style=commonjs,binary:src/generated data.proto` to generate protobuf code
+9. `npm run dev` to run browserify with an integrated dev-webserver locally
+10. you should now see a jsettlers-web web page served in your fav browser
