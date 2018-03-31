@@ -19,9 +19,10 @@
         <div id="trade-player" class="build-button">
             <img src="doc/images/TradePlayer48.png" @click="toggleTradePlayerDialog" />
         </div>
-        <div id="trade-bank" class="build-button" @click="toggleTradeBankDialog">
-            <img src="doc/images/TradeBank48.png" />
-        </div>
+        <trade-bank-button
+            id="trade-bank-button"
+            @tradeBank="toggleTradeBankDialog"
+            :game="game"></trade-bank-button>
         <end-turn-button
             id="end-turn-button"
             @endTurn="endTurn()"
@@ -36,6 +37,7 @@
             @rollDice="rollDice()"
             :game="game"
             :dice="dice"></roll-dice-button>
+
         <game-phases-view id="game-phases-view"
             :game="game">
         </game-phases-view>
@@ -53,6 +55,7 @@
 <script>
 import RollDiceButton from "./RollDiceButton.vue";
 import TradeBankDialog from "./TradeBankDialog.vue";
+import TradeBankButton from "./TradeBankButton.vue";
 import TradePlayerDialog from './TradePlayerDialog.vue';
 import BuildTownButton from './BuildTownButton.vue';
 import BuildCityButton from './BuildCityButton.vue';
@@ -75,7 +78,8 @@ export default {
     components: {
         RollDiceButton, TradeBankDialog, TradePlayerDialog, GamePhasesView,
         BuildTownButton, BuildRoadButton, BuildCityButton,
-        BuyDevelopmentCardButton, EndTurnButton, ClaimVictoryButton
+        BuyDevelopmentCardButton, EndTurnButton, ClaimVictoryButton,
+        TradeBankButton
     },
     props: {
         game: {
@@ -252,7 +256,7 @@ export default {
     grid-column-start: 6;
     grid-row-start: 1;
 }
-#trade-bank {
+#trade-bank-button {
     grid-column-start: 7;
     grid-row-start: 1;
 }
