@@ -23,35 +23,35 @@
             
             <div id="play-development-card-view" class="item-wrapper" v-if="action instanceof PlayDevelopmentCard">
                 <div class="development-card" v-if="action.developmentCard instanceof YearOfPlenty">
-                <img src="doc/images/PlayDevelopmentCard48.png">
-                <span>{{action.player.user.name}} played a </span>
+                    <img src="doc/images/PlayDevelopmentCard48.png">
+                    <span>{{action.player.user.name}} played a </span>
                     <img src="doc/images/YearOfPlentyLogo48.png">
                     <span>{{action.developmentCard.name}} and got</span>
                     <resource-list-view :size="24" :resources="action.developmentCard.resourceList"></resource-list-view>
                 </div>
                 <div class="development-card" v-if="action.developmentCard instanceof Soldier">
-                <img src="doc/images/PlayDevelopmentCard48.png">
-                <span>{{action.player.user.name}} played a </span>
+                    <img src="doc/images/PlayDevelopmentCard48.png">
+                    <span>{{action.player.user.name}} played a </span>
                     <img src="doc/images/SoldierLogo48.png">
                     <span>{{action.developmentCard.name}}</span>
                 </div>
                 <div class="development-card" v-if="action.developmentCard instanceof Monopoly">
-                <img src="doc/images/PlayDevelopmentCard48.png">
-                <span>{{action.player.user.name}} played a </span>
+                    <img src="doc/images/PlayDevelopmentCard48.png">
+                    <span>{{action.player.user.name}} played a </span>
                     <img src="doc/images/MonopolyLogo48.png">
                     <span>{{action.developmentCard.name}} and got</span>
                     <resource-list-view :size="24" :resources="action.developmentCard.stolen"></resource-list-view>
                 </div>
                 <div class="development-card" v-if="action.developmentCard instanceof VictoryPoint">
-                <img src="doc/images/PlayDevelopmentCard48.png">
-                <span>{{action.player.user.name}} played a </span>
+                    <img src="doc/images/PlayDevelopmentCard48.png">
+                    <span>{{action.player.user.name}} played a </span>
                     <img src="doc/images/YearOfPlentyLogo48.png">
                     <span>{{action.developmentCard.name}} and gained one victory point</span>
                 </div>
                 <div class="development-card" v-if="action.developmentCard instanceof RoadBuilding">
-                <img src="doc/images/PlayDevelopmentCard48.png">
-                <span>{{action.player.user.name}} played a </span>
-                    <img src="doc/images/YearOfPlentyLogo48.png">
+                    <img src="doc/images/PlayDevelopmentCard48.png">
+                    <span>{{action.player.user.name}} played a </span>
+                    <img src="doc/images/RoadBuildingLogo48.png">
                     <span>{{action.developmentCard.name}} and got two free roads</span>
                 </div>
             </div>
@@ -166,13 +166,14 @@ li {
     padding-left: 0.25em;
 }
 .development-card {
-    display: flex;
+    display: inline;
     align-items: center;
 }
 .development-card img {
     filter: invert(100%);
     margin-left: 0.25em;
     margin-right: 0.25em;
+    display: inline-block;
 }
 img {
     height: 24px;

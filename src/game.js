@@ -1,8 +1,8 @@
-import {Observable} from "./generic/observable.js";
-import {ObservableMap} from "./generic/observableMap.js";
-import {Robber} from "./robber.js";
-import {Coord3D} from "./coord.js";
-import {Bank} from "./bank.js";
+import { Observable } from "./generic/observable.js";
+import { ObservableMap } from "./generic/observableMap.js";
+import { Robber } from "./robber.js";
+import { Coord3D } from "./coord.js";
+import { Bank} from "./bank.js";
 import { ObservableArray } from "./generic/observableArray.js";
 import { LongestRoad } from "./longestRoad.js";
 import { InitialPlacement, PlayTurns, Finished, GamePhase } from "./gamePhase.js";

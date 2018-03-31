@@ -5,9 +5,12 @@ export class GameOptions {
     constructor() {
         this.stock = new StockOption();
         this.robber = new RobberOption();
+        this.victoryPointsToWin = new VictoryPointsToWin();
     }
     set(game) {
         this.stock.set(game);
+        this.robber.set(game);
+        this.victoryPointsToWin.set(game);
     }
     static parse(gameOptionsExpression, resolver) {
         for (let gameOption of gameOptionsExpression.gameOption()) {
@@ -22,8 +25,11 @@ export class GameOptions {
         }
     }
 }
+/** Something the user can change before starting the game */
 export class GameOption {
     constructor() { }
+    // changes the state of Game
+    set(game) { }
 }
 export class StockOption extends GameOption {
     constructor() {
@@ -41,6 +47,8 @@ export class StockOption extends GameOption {
         this.stock = Stock.parse(stockOptionExpression);
     }
 }
+// TODO: add a parameter to determine robber starting position? E.g. 
+// Desert | Random | Sea
 export class RobberOption extends GameOption {
     constructor(coord, enabled) {
         super();

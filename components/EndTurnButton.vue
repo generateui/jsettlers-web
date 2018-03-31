@@ -47,6 +47,7 @@ export default {
             this.messages = m.match([
                 m.isOnTurn(game, player),
                 m.isExpected(game, new EndTurn({player: player})),
+                // TODO: disable when the player can win the game
             ]);
             this.canEndTurn = this.messages.length === 0;
         },

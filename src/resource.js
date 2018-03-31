@@ -1,6 +1,12 @@
 var proto = require("../src/generated/data_pb");
 import {Util} from "./util.js";
 
+/** A resource is an instance of a ResourceType. 
+For instance, the Bank starts in the base game variant with 5 ResourceTypes 
+each having 19 Resource instances. Thus, a ResourceList is just a 
+Map<ResourceType, Resource[]>. While it may seem a bit overcomplicated, having 
+a class per ResourceType solves a lot of complications, and generally makes 
+things simpler. */
 export class Resource {
     constructor() {
         this.id = Resource.nextId();
@@ -73,7 +79,10 @@ export class Gold extends Resource {
     get color() { return 0x000000; } // TODO
 }
 
-/** Stores resources per resourceType */
+/** Stores a Resource[] per ResourceType
+The ResourceType is deliberately made a String type to ease in debugging. If 
+this turns out to be slow, we may eliminate this. Functions accept 
+ResourceType (string), but *always* return ResourceType(int). */
 export class ResourceList {
     constructor(item) {
         this._map = new Map(); // <ResourceType (string), Resource[]>
@@ -82,6 +91,7 @@ export class ResourceList {
         }
         this.add(item);
     }
+    // TODO: remove?
     static withAllTypes() {
         return ResourceList.onlyWithTypes([
             proto.ResourceType.TIMBER,
@@ -103,12 +113,14 @@ export class ResourceList {
         return rl;
     }
     /** singleton instance for empty resource list */
+    // TODO: have an immutable variant throwing errors on mutation
     static get empty() {
         if (ResourceList._empty === undefined) {
             ResourceList._empty = new ResourceList();
         }
         return ResourceList._empty;
     }
+    // TODO: remove?
     static onlyWithTypes(types) {
         const result = new ResourceList();
         for (var resourceType of types) {
@@ -137,7 +149,8 @@ export class ResourceList {
             this._map.set(resourceTypeString, []);
         }
     }
-    /** Resource, ResourceType (string), ResourceType (int), array, ResourceList  */
+    /** item can be of type: Resource, ResourceType (string),
+    ResourceType (int), ResourceList, or an array of them. */
     add(item) {
         if (item instanceof Resource) {
             this._addSafe(item);
@@ -165,8 +178,9 @@ export class ResourceList {
             this._addSafe(resource);
         }
     }
+    /** see add(item) for the expected type of item */
     addAmount(item, amount) {
-        for (var i = 0; i< amount; i++) {
+        for (var i = 0; i < amount; i++) {
             this.add(item);
         }
     }
@@ -209,9 +223,11 @@ export class ResourceList {
         }
         return true;
     }
+    /** Returns an array of ResourceTypes which have Resources */
     get types() {
         return Array.from(this._map.keys());
     }
+    /** Returns a Resource[] of given ResourceType */
     of(resourceType) {
         if (typeof(resourceType) === "number") {
             const resourceTypeString = Util.getEnumName(proto.ResourceType, resourceType);
@@ -251,6 +267,7 @@ export class ResourceList {
         }
         return amount;
     }
+    /** Returns total Resource instances */
     get length() {
         var amount = 0;
         for (var resourceType of this.types) {
@@ -258,9 +275,11 @@ export class ResourceList {
         }
         return amount;
     }
+    /** Returns half the amount of Resource instances (rounded down) */
     get halfCount() {
         return Math.floor(this.length / 2);
     }
+    /** Returns a Resource[] of all instances in this ResourceList */
     toArray() {
         var result = [];
         for (var resourceType of this.types) {
@@ -268,6 +287,7 @@ export class ResourceList {
         }
         return result;
     }
+    /** Returns ResourceType[] of all ResourceTypes having > 0 Resources */
     toResourceTypeArray() {
         var result = [];
         for (var resourceType of this.types) {
@@ -285,6 +305,7 @@ export class ResourceList {
             }
         }
     }
+    /** Returns amount missing Resources compared to resourceList */
     amountGoldNeeded(resourceList) {
         let amountGold = 0;
         for (var resourceType of resourceList.types) {

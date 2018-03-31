@@ -8,10 +8,8 @@ volume -->
             <div class="popup-hero">
                 <img class="popup-logo" src="doc/images/ClaimVictory48.png" />
                 <span class="popup-title">Claim victory</span>
-                <div class="explanation">
-                    <span class="victory-points-amount">{{game.victoryPointsToWin}}</span>
-                    <span>points to claim victory</span>
-                </div>
+                <span class="victory-points-amount">{{game.victoryPointsToWin}}</span>
+                <span>points to claim victory</span>
             </div>
             <ul>
                 <li v-for="message in messages" :key="message">{{message}}</li>
@@ -62,7 +60,7 @@ export default {
         this.updateCanClaimVictory();
         this.removeActionAddedHandler = this.game.actions.added((action) => {
             this.updateCanClaimVictory();
-        })
+        });
     },
     unmount() {
         this.removeActionAddedHandler();
@@ -83,8 +81,6 @@ export default {
 }
 .victory-points-amount {
     font-weight: bold;
-}
-.explanation {
-    padding: 0.5em;
+    font-size: 150%;
 }
 </style>

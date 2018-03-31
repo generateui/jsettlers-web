@@ -9,6 +9,7 @@ export class OfferTrade extends GameAction {
         config = config || {};
         this.player = config.player;
         this.responses = new Map(); // <Player, TradeResponse (RejectOffer|AcceptOffer|CounterOffer)>
+        // TODO: just use ResourceList here
         this.offered = null; // ResourceType[]
         this.wanted = null; // ResourceType[]
         this.offeredResourceList = null;

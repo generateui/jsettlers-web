@@ -1,5 +1,5 @@
 {
-  "name": "carcattonne",
+  "name": "jsettlers-web",
   "version": "0.0.1",
   "description": "a hexagonal game to build settlements, cities & roads",
   "main": "index.js",

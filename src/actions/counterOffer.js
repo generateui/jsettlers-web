@@ -8,6 +8,7 @@ export class CounterOffer extends GameAction {
 
         config = config || {};
         this.player = config.player;
+        // TODO: just use ResourceList here
         this.offered = null; // ResourceType[]
         this.wanted = null; // ResourceType[]
         this.offeredResourceList = null;

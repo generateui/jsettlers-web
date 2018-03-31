@@ -5,8 +5,10 @@ import {Robber} from "./robber";
 import {Chit} from "./chit";
 import {Coord3D, Coord2D, Coord1D} from "./coord";
 import {Edge} from "./edge";
-import {Forest, WheatField, River, Sea, Mountain, Pasture, Desert, HexFromBag, NoneHex, Hex} from "./hex.js";
-import {Any3To1Port, Clay2To1Port, Any4To1Port, FromBagPort, Ore2To1Port, Sheep2To1Port, Timber2To1Port, Wheat2To1Port, Port} from "./port.js";
+import {Forest, WheatField, River, Sea, Mountain, Pasture, Desert, HexFromBag,
+    NoneHex, Hex} from "./hex.js";
+import {Any3To1Port, Clay2To1Port, Any4To1Port, FromBagPort, Ore2To1Port,
+    Sheep2To1Port, Timber2To1Port, Wheat2To1Port, Port} from "./port.js";
 import { Parser } from "./parser";
 import { Node } from "./node";
 
@@ -19,6 +21,34 @@ export class BoardDescriptor {
         
         // prevent Vue.js from altering this member
         Object.defineProperty(this, "createFunction", {configurable: false});
+    }
+}
+
+class BoardConfig {
+    constructor() {
+        this.hexBag = [];
+        this.chitBag = [];
+        this.portBag = [];
+    }
+    /** normalize the config into a simple list of hex instances */
+    static _flattenBag(bag) {
+        const items = [];
+        for (var item of config) {
+            // expand config specification of hexes in hexBag
+            // e.g. [new Forest(), [3, () => new Mountain()]]
+            if (Array.isArray(item)) {
+                var array = item;
+                var amount = array[0];
+                var createItemFunction = array[1];
+                for (var i=0; i<amount; i++) {
+                    var createdItem = createItemFunction();
+                    items.push(createdItem);
+                }
+            } else { // a hex instance
+                items.push(item);
+            }
+        }
+        return items;
     }
 }
 
@@ -281,6 +311,7 @@ TheGreatForest.descriptor = new BoardDescriptor({
     createBoard: function(config) { return new TheGreatForest() }
 });
 
+// TODO: extract RectangularBoard class from this
 export class Standard4pDesign extends Board {
     constructor() {
         super();
@@ -317,14 +348,13 @@ export class Standard4pDesign extends Board {
             ],
         };
         this.placeHexes();
-        // super.generateBoardForPlay();
     }
 
     generateHexes() {
         var fromBagCoords = [
             ...super.getCoordsByRadius(0),
             ...super.getCoordsByRadius(1),
-            ...super.getCoordsByRadius(2), 
+            ...super.getCoordsByRadius(2),
         ];
         var seaCoords = super.getCoordsByRadius(3);
         var portsConfig = new Map();

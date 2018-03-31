@@ -16,7 +16,7 @@
                     :ref="'player' + player.id"></player-info>
             </div>
         </div>
-        <bank-view id="bank" :bank="game.bank" :update="update"></bank-view>
+        <bank-view id="bank" :game="game" :update="update"></bank-view>
 
         <div id="tabs">
             <button class="tab-button" @click="tabMode = TABMODE.actions">actions</button>
@@ -70,7 +70,6 @@ import PlayerAssets from "./PlayerAssets.vue";
 import Actions from "./Actions.vue";
 import BankView from "./BankView.vue";
 import ActionLog from "./ActionLog.vue";
-import DiceView from "./DiceView.vue";
 import DebugPerformActions from "./debug/DebugPerformActions.vue";
 import TradeBankDialog from "./TradeBankDialog.vue";
 import ActionsMessage from "./ActionsMessage.vue";
@@ -120,7 +119,7 @@ const bots = [
 export default {
     name: 'game',
     components: {
-        PlayerInfo, PlayerAssets, Actions, BankView, ActionLog, DiceView, 
+        PlayerInfo, PlayerAssets, Actions, BankView, ActionLog,
         DebugPerformActions, TradeBankDialog, ActionsMessage
     },
     props: {
@@ -131,7 +130,7 @@ export default {
                     boardDescriptor: boards[0],
                     bots: [bots[1], bots[2], bots[3]],
                     players: [new Player({ user: new User({name: "player 1"}) })],
-                })
+                });
             }
         }
     },

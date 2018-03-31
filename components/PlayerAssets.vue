@@ -305,7 +305,6 @@ export default {
     flex: 0 0 auto;
 }
 .wrapper {
-    flex: 1 1 0;
     min-width: 0;
 }
 .resource, .development-card {

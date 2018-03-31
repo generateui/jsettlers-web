@@ -1,12 +1,12 @@
 <template>
     <div id="wrapper">
-        <div class="column" v-for="resourceType in bank.resources.types" v-if="!isUnknown(key)" :key="key">
+        <div class="column" v-for="resourceType in game.bank.resources.types" v-if="!isUnknown(key)" :key="key">
             <img :src="`doc/images/${resourceType.toPascalCase()}Card.png`" />
-            <div>{{bank.resources.of(resourceType).length}}</div>
+            <div>{{game.bank.resources.of(resourceType).length}}</div>
         </div>
         <div class="column">
             <img src="doc/images/DevelopmentCard.png" />
-            <div>{{bank.developmentCards.length}}</div>
+            <div>{{game.bank.developmentCards.length}}</div>
         </div>
         <div v-if="update"></div>
     </div>
@@ -17,11 +17,13 @@
     export default {
         name: 'bank-view',
         props: {
-            bank: {
+            game: {
                 type: Object
             },
-            update: {
-                type: Boolean
+        },
+        data() {
+            return {
+                update: false
             }
         },
         methods: {
@@ -30,7 +32,12 @@
             }
         },
         mounted() {
-            // this.removeActionAddedHandler = this.game.
+            this.removeActionAddedHandler = this.game.actions.added((action) => {
+                this.update = !this.update;
+            });
+        },
+        unmount() {
+            this.removeActionAddedHandler();
         }
     }
 </script>

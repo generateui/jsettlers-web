@@ -9,8 +9,8 @@ import { LooseResourcesMoveRobberRobPlayer } from "../expectation";
 export class Production {
     constructor(playerId, resources) {
         this.playerId = null;
-        this.resources = null;
         this.player = null;
+        this.productionByPlayer = null; // Map<Player, ResourceList>
     }
 }
 export class Dice {
@@ -114,7 +114,7 @@ export class RollDice extends GameAction {
             // - the 3 cities produce 6 resources
             // - the bank has 3 timber
             // This means 3 shortage must be divided evenly. This algorithm:
-            // - loops per resource
+            // - loops per ResourceType
             // - then per player in order of turns, starting with the player who's turn it is
             // - distributes 1 resource per loop
             // Per example, if player A is on turn, the loop goes as follows:
@@ -129,8 +129,8 @@ export class RollDice extends GameAction {
             // create a copy, so when we subtract we dont immediately do it from bank
             const bankResources = new ResourceList(game.bank.resources);
             const affectedHexes = Array.from(game.board.hexes.values())
-                .filter(h => h.chit.number !== null && 
-                    h.chit.number === this.dice.total && 
+                .filter(h => h.chit.number !== null &&
+                    h.chit.number === this.dice.total &&
                     h.coord !== game.board.robber.coord);
 
             // first, get total theoretical production and get total theoretical production by player
@@ -210,7 +210,7 @@ export class RollDice extends GameAction {
                                 continue playerIndexLoop;
                             }
                             resourceCountByPlayer.get(player).get(resourceType).pop();
-                            productionByPlayer.get(player).add(resourceType);
+                            this.productionByPlayer.get(player).add(resourceType);
                             bankResources.remove(resourceType);
                         }
                     }

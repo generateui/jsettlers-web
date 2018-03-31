@@ -150,25 +150,25 @@ export default {
 
 <style scoped>
 .mask {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  display: grid;
-  pointer-events: none;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    pointer-events: none;
 }
 .container {
-  align-self: center;
-  width: 40em;
-  height: 13.5em;
-  margin: 0.5em auto;
-  padding: 0.5em;
-  background-color: #fff;
-  border-radius: 0.5em;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
-  display: grid;
-  grid-template-columns: auto 4em 1fr;
-  grid-template-rows: 6.5em 0.5em 6.5em;
-  pointer-events: all;
+    align-self: center;
+    width: 40em;
+    height: 13.5em;
+    margin: 0.5em auto;
+    padding: 0.5em;
+    background-color: #fff;
+    border-radius: 0.5em;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
+    display: grid;
+    grid-template-columns: auto 4em 1fr;
+    grid-template-rows: 6.5em 0.5em 6.5em;
+    pointer-events: all;
 }
 .cannot-trade {
     pointer-events: none;
@@ -242,6 +242,7 @@ export default {
     width: 100%;
     font-size: 1em;
     font-weight: bold;
+    z-index: 10;
 }
 
 

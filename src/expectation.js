@@ -15,6 +15,7 @@ import { EndTurn } from "./actions/endTurn";
 import { Soldier } from "./developmentCard";
 import { Observable } from "./generic/observable";
 import { ClaimVictory } from "./actions/claimVictory";
+import { AcceptOffer } from "./actions/acceptOffer";
 
 /** An action or set of actions expected to be played by a player */
 export class Expectation {
@@ -212,7 +213,7 @@ export class MoveRobberThenRobPlayer extends Expectation {
         if (!this.hasMovedRobber) {
             return "move the robber"
         }
-        return "you should build, trade or end turn";
+        return "steal a resource from an opponent"
     }
     get opponentsMessage() {
         if (this.player === this.playerOnTurn) {

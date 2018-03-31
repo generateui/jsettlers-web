@@ -5,7 +5,8 @@ import { PlayDevelopmentCard } from "./actions/playDevelopmentCard";
 import { Town } from "./town";
 import { PlaySoldierOrRollDice, PlayTurnActions, BuildTownThenBuildRoad, 
     LooseResourcesMoveRobberRobPlayer, 
-    EndOfGame} from "./expectation";
+    EndOfGame,
+    ExpectTradeResponses} from "./expectation";
 import { Road } from "./road";
 
 /** State of the game where certain actions are expected and performed
