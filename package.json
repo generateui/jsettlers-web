@@ -9,7 +9,7 @@
     "test": "mocha --compilers babel-core/register ./test/*Test.js",
     "script": "mocha --compilers babel-core/register ./test/scriptTest.js",
     "dev": "npm-run-all generate-antlr --parallel watchify serve",
-    "generate-antlr": "java -jar \"node_modules/antlr4-cli/bin/antlr-4.7.1-complete.jar\" -Dlanguage=JavaScript jsettlers.g4 -o src/generated"
+    "generate-antlr": "java -jar \"node_modules/antlr4-cli-471/bin/antlr-4.7.1-complete.jar\" -Dlanguage=JavaScript jsettlers.g4 -o src/generated"
   },
   "repository": {
     "type": "git",
@@ -36,7 +36,7 @@
     "vue": "vue/dist/vue.common.js"
   },
   "devDependencies": {
-    "antlr4-cli": "^4.5.3",
+    "antlr4-cli-471": "^4.7.1",
     "babel-core": "^6.26.0",
     "babel-plugin-transform-async-to-generator": "^6.24.1",
     "babel-plugin-transform-runtime": "^6.23.0",

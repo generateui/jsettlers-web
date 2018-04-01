@@ -67,7 +67,8 @@ Useful unicode characters:
 🧱 \u{1F9F1} late 2018: https://emojipedia.org/brick/ YEY :)
 ⤸ end turn
 ⤻➔➜
-
+🏰🏫
+🏁
 
 Naming convention:
 - U_XXX: unicode representation of XXX. e.g. U_WHEAT
@@ -486,7 +487,7 @@ port: any3To1Port | any4To1Port | brick2To1Port | wheat2To1Port |
 hex: pasture | forest | mountain | river | wheatField | sea | none | desert;
     pasture: 'pasture' | 'P'; // produces sheep 🐑
     forest: 'timber' | 'F'; //produces timber 🌳
-    mountain: 'mountain' | 'M'; // produces ore ⛰️ <- non-snow-capped
+    mountain: 'mountain' | 'M'; // produces ore ⛰️ <- non-snow-capped 🗻
     river: 'river' | 'R'; // produces brick 🏞️
     wheatField: 'field' | 'W'; // produces wheat 🌾
     sea: 'sea' | 'S'; // 🌊
