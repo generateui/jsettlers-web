@@ -9,8 +9,12 @@ export class RejectOffer extends GameAction {
         this.playerId = config.playerId;
         this.player = config.player;
         this.reason = config.reason || pb.RejectOffer.Reason.NotGiven;
-        this.tradeOffer = config.tradeOffer;
-        this.tradeOfferId = config.tradeOfferId || config.tradeOffer.id;
+        this.tradeOffer = config.tradeOffer || null;
+        if (config.tradeOfferId !== undefined) {
+            this.tradeOfferId = config.tradeOfferId;
+        } else if (config.tradeOffer !== undefined) {
+            this.tradeOfferId = config.tradeOffer.id;
+        }
     }
     get isTradeResponse() {
         return true;

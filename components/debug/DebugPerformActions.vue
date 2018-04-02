@@ -89,13 +89,13 @@
 <script>
 import * as bb from "../../src/ui/boardBehavior.js";
 import * as gb from "../../src/ui/gameBehavior.js";
-import {HostAtClient} from "../../src/host.js";
-import {BuildTown} from "../../src/actions/buildTown.js";
-import {BuildRoad} from "../../src/actions/buildRoad.js";
-import {BuildCity} from "../../src/actions/buildCity.js";
-import {BuyDevelopmentCard} from "../../src/actions/buyDevelopmentCard.js";
-import {KeyListener} from "../../src/ui/keyListener.js";
-import {ClientRandom} from "../../src/random";
+import { HostAtClient } from "../../src/host.js";
+import { BuildTown } from "../../src/actions/buildTown.js";
+import { BuildRoad } from "../../src/actions/buildRoad.js";
+import { BuildCity } from "../../src/actions/buildCity.js";
+import { BuyDevelopmentCard } from "../../src/actions/buyDevelopmentCard.js";
+import { KeyListener } from "../../src/ui/keyListener.js";
+import { ClientRandom } from "../../src/random";
 import { RejectOffer } from '../../src/actions/rejectOffer';
 import { CounterOffer } from '../../src/actions/counterOffer';
 import { AcceptOffer } from '../../src/actions/acceptOffer';
@@ -104,6 +104,7 @@ import { MoveRobber } from '../../src/actions/moveRobber';
 import { RobPlayer } from '../../src/actions/robPlayer';
 import { RollDice } from '../../src/actions/rollDice';
 import { StartGame } from '../../src/actions/startGame';
+import { ResourceList } from '../../src/resource';
 
 const random = new ClientRandom();
 const timer = ms => new Promise(result => setTimeout(result, ms));
@@ -124,7 +125,7 @@ export default {
     data() {
         return {
             player: null,
-            autoRespond: true,
+            autoRespond: false,
             opponents: [],
             playerOnTurn: null,
             phase: null,
@@ -268,8 +269,8 @@ export default {
                         this.act(() => new CounterOffer({
                             player: opponent,
                             tradeOffer: offerTrade,
-                            offered: offered,
-                            wanted: wanted
+                            offered: new ResourceList(offered),
+                            wanted: new ResourceList(wanted)
                         }));
                     }
                 }

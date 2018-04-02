@@ -10,7 +10,7 @@
                         @click="pickBankResourceType(rt1)" />
                     <div 
                         class="bank-resource-count"
-                        :data-tooltip="`the bank has ${bankResources.of(rt1).length} ${rt1.toPascalCase()} in stock`">
+                        :data-tooltip="`the bank has ${bankResources.of(rt1).length} ${rt1} in stock`">
                         {{bankResources.of(rt1).length}}
                     </div>
                 </div>
@@ -29,9 +29,9 @@
             <div id="spacer"></div>
             <div id="trade-button-wrapper">
                 <button 
-                    id="trade-button" 
-                    @click="tradeBank()" 
-                    :disabled="cannotTrade" 
+                    id="trade-button"
+                    @click="tradeBank()"
+                    :disabled="cannotTrade"
                     data-tooltip="to bank, balance the top and bottom resources and hit this button">
                     🡹 Trade! 🡻
                 </button>
@@ -39,7 +39,7 @@
             <div id="player-picked-resources">
                     <img 
                         v-for="resource in playerPickedResources"
-                        class="resource-image" 
+                        class="resource-image"
                         :key="resource.id"
                         :src="`doc/images/${resource.name}Card.png`" 
                         @click="unpickPlayerResource(resource)" />
@@ -54,7 +54,7 @@
                     v-bind:class="{ 'cannot-trade': cannotTradeResource(resourceType) }"
                     :key="resourceType">
                     <span 
-                        :data-tooltip="`you have a ${resourceType.name} port`" 
+                        :data-tooltip="`you have a ${resourceType} port`" 
                         class="port-ratio">{{getPort(rt4).inAmount}}:{{getPort(rt4).outAmount}}</span>
                     <img class="resource-image"
                         :src="`doc/images/${resourceType}Card.png`" 

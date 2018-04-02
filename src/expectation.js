@@ -77,7 +77,7 @@ export class ExpectAnything extends Expectation {
     }
 }
 export class ExpectTradeResponses extends Expectation {
-    constructor(game) {
+    constructor(game, offer) {
         super();
         
         this.responded = new Set(); // <Player>
@@ -85,9 +85,10 @@ export class ExpectTradeResponses extends Expectation {
         this.expected = new Set(opponents); // <Player>
         this.playerOnTurn = game.playerOnTurn;
         this.player = game.player;
+        this.offer = offer;
     }
     get met() {
-        return this.responded.length === players - 1;
+        return this.responded.size === this.expected.size;
     }
     get youAction() {
         // caller of this should check for .isTradeResponse, so returning Rejectoffer 

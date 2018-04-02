@@ -7,6 +7,7 @@ import { MoveRobber } from "./actions/moveRobber";
 import { RobPlayer } from "./actions/robPlayer";
 import { EndTurn } from "./actions/endTurn";
 import { ResourceList } from "./resource";
+import { RejectOffer } from "./actions/rejectOffer";
 
 export class Bot {
     constructor(host, game, player) {
@@ -17,6 +18,9 @@ export class Bot {
         this.actionAddedHandler = game.actions.added((action) => {
             this.maybeAct(action);
         });
+        this.handledOfferIds = new Set();
+
+
         this.buildTown = new BuildTown({ player: player });
         this.buildRoad = new BuildRoad({ player: player });
         this.rollDice = new RollDice({ player: player });
@@ -24,6 +28,7 @@ export class Bot {
         this.moveRobber = new MoveRobber({ player: player });
         this.robPlayer = new RobPlayer({ player: player });
         this.endTurn = new EndTurn({ player: player });
+        this.rejectOffer = new RejectOffer({ player: player });
     }
     maybeAct(action) {
         if (this.game.phase === this.game.initialPlacement) {
@@ -49,6 +54,17 @@ export class Bot {
         if (this.game.expectation.matches(this.endTurn)) {
             const endTurn = new EndTurn({ player: this.player });
             this.host.send(endTurn);
+        }
+        if (this.game.expectation.matches(this.rejectOffer)) {
+            const offer = game.expectation.offer;
+            if (!this.handledOfferIds.has(offer.id)) {
+                this.handledOfferIds.add(offer.id);
+                const rejectOffer = new RejectOffer({
+                    player: this.player,
+                    tradeOffer: offer
+                });
+                this.host.send(rejectOffer);
+            }
         }
         if (this.game.expectation.matches(this.moveRobber)) {
             const possibilities = [];

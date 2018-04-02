@@ -8,7 +8,12 @@ export class AcceptOffer extends GameAction {
         config = config || {};
         this.playerId = config.playerId;
         this.player = config.player;
-        this.offerTradeId = config.tradeOfferId;
+        this.tradeOffer = config.tradeOffer || null;
+        if (config.tradeOfferId !== undefined) {
+            this.tradeOfferId = config.tradeOfferId;
+        } else if (config.tradeOffer !== undefined) {
+            this.tradeOfferId = config.tradeOffer.id;
+        }
     }
     get isTradeResponse() {
         return true;

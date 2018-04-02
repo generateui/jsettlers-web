@@ -1,4 +1,4 @@
-<template id="modal-template">
+<template>
     <div class="modal-mask" v-show="show">
         <div class="modal-body">
             <div id="opponents-or-offers">
@@ -38,7 +38,7 @@
                 </div>
 
                 <div id="trade-offers" v-show="mode === TRADEMODE.respond">
-                    <div class="trade-offer" v-for="to in tradeOffers">
+                    <div class="trade-offer" v-for="to in tradeOffers" :key="to.id">
                         <div class="trade-offer-top">
                             <div class="trade-offer-resources">
                                 <resource-list-view
@@ -177,7 +177,7 @@ export default {
             wantedResourceTypes: [],
             offeredResources: [],
             // make a copy, so we dont change the resources of the player
-            playerResources: new ResourceList(game.player.resources), 
+            playerResources: new ResourceList(game.player.resources),
             tradeOffer: null,
             tradeOffers: [],
             counterOffering: false,
@@ -216,7 +216,7 @@ export default {
                 const counterOffer = new CounterOffer({
                     player: this.game.player,
                     tradeOffer: this.tradeOffer,
-                    offered: new ResourceList(offeredResources),
+                    offered: new ResourceList(this.offeredResources),
                     wanted: new ResourceList(this.wantedResourceTypes)
                 });
                 this.$emit("action", counterOffer);
@@ -278,6 +278,7 @@ export default {
             }
         },
         show() {
+            this.playerResources = new ResourceList(this.game.player.resources);
             if (this.tradeOffers.length > 0) {
                 this.mode = TRADEMODE.respond;
                 return;

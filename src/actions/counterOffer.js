@@ -11,7 +11,12 @@ export class CounterOffer extends GameAction {
         this.player = config.player;
         this.offered = config.offered; // ResourceList
         this.wanted = config.wanted; // ResourceList
-        this.tradeOfferId = config.tradeOfferId;
+        this.tradeOffer = config.tradeOffer || null;
+        if (config.tradeOfferId !== undefined) {
+            this.tradeOfferId = config.tradeOfferId;
+        } else if (config.tradeOffer !== undefined) {
+            this.tradeOfferId = config.tradeOffer.id;
+        }
     }
     get isTradeResponse() {
         return true;

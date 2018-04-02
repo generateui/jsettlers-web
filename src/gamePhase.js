@@ -235,7 +235,7 @@ export class PlayTurns extends GamePhase {
         game.expectation = new PlaySoldierOrRollDice(game);
     }
     offerTrade(game, offerTrade) {
-        game.expectation = new ExpectTradeResponses(game);
+        game.expectation = new ExpectTradeResponses(game, offerTrade);
     }
     acceptOffer(game, acceptOffer) {
         this._tradeResponse(game, acceptOffer);
