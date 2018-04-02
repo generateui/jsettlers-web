@@ -1,12 +1,14 @@
-var proto = require("../src/generated/data_pb");
+import { jsettlers as pb } from "../src/generated/data";
 
 import {ObservableMap} from "./generic/observableMap"; 
 import {Robber} from "./robber";
 import {Chit} from "./chit";
 import {Coord3D, Coord2D, Coord1D} from "./coord";
 import {Edge} from "./edge";
-import {Forest, WheatField, River, Sea, Mountain, Pasture, Desert, HexFromBag, NoneHex, Hex} from "./hex.js";
-import {Any3To1Port, Clay2To1Port, Any4To1Port, FromBagPort, Ore2To1Port, Sheep2To1Port, Timber2To1Port, Wheat2To1Port, Port} from "./port.js";
+import {Forest, WheatField, River, Sea, Mountain, Pasture, Desert, HexFromBag,
+    NoneHex, Hex} from "./hex.js";
+import {Any3To1Port, Clay2To1Port, Any4To1Port, FromBagPort, Ore2To1Port,
+    Sheep2To1Port, Timber2To1Port, Wheat2To1Port, Port} from "./port.js";
 import { Parser } from "./parser";
 import { Node } from "./node";
 
@@ -19,6 +21,34 @@ export class BoardDescriptor {
         
         // prevent Vue.js from altering this member
         Object.defineProperty(this, "createFunction", {configurable: false});
+    }
+}
+
+class BoardConfig {
+    constructor() {
+        this.hexBag = [];
+        this.chitBag = [];
+        this.portBag = [];
+    }
+    /** normalize the config into a simple list of hex instances */
+    static _flattenBag(bag) {
+        const items = [];
+        for (var item of config) {
+            // expand config specification of hexes in hexBag
+            // e.g. [new Forest(), [3, () => new Mountain()]]
+            if (Array.isArray(item)) {
+                var array = item;
+                var amount = array[0];
+                var createItemFunction = array[1];
+                for (var i=0; i<amount; i++) {
+                    var createdItem = createItemFunction();
+                    items.push(createdItem);
+                }
+            } else { // a hex instance
+                items.push(item);
+            }
+        }
+        return items;
     }
 }
 
@@ -99,12 +129,12 @@ export class Board {
             i++;
         }
         const bagChits = Board._flattenConfig(this._config.chitBag);
-        const hexesWithChitToReplace = Array.from(this._hexes.values()).filter(h => h.chit.type === proto.ChitType.CHITFROMBAG);
+        const hexesWithChitToReplace = Array.from(this._hexes.values()).filter(h => h.chit.type === pb.ChitType.ChitFromBag);
         var j = 0;
         while (j < hexesWithChitToReplace.length&& bagChits.length > 0) {
             const toReplace = hexesWithChitToReplace[j];
             if (!toReplace.canHaveChit) {
-                toReplace.chit.type = proto.ChitType.CHITNONE;
+                toReplace.chit.type = pb.ChitType.ChitNone;
                 j++;
                 continue;
             }
@@ -260,16 +290,34 @@ export class TheGreatForest extends Board {
     constructor() {
         super();
 
+        this._config = {
+            hexBag: [],
+            chitBag: [
+                [3, () => new Chit(pb.ChitType.Chit2)],
+                [3, () => new Chit(pb.ChitType.Chit3)],
+                [2, () => new Chit(pb.ChitType.Chit4)],
+                [1, () => new Chit(pb.ChitType.Chit5)],
+                [1, () => new Chit(pb.ChitType.Chit9)],
+                [2, () => new Chit(pb.ChitType.Chit10)],
+                [3, () => new Chit(pb.ChitType.Chit11)],
+                [3, () => new Chit(pb.ChitType.Chit12)],
+            ],
+            portBag: []
+        };
         var coords = [
             ...super.getCoordsByRadius(0),
             ...super.getCoordsByRadius(1),
-            ...super.getCoordsByRadius(2), 
+            ...super.getCoordsByRadius(2),
         ];
         for (let coord of coords) {
             if (coord == Coord3D.center) {
-                this._hexes.set(coord, new WheatField(coord));
+                var hex = new WheatField(coord);
+                hex.chit = new Chit(pb.ChitType.Chit6);
+                this._hexes.set(coord, hex);
             } else {
-                this._hexes.set(coord, new Forest(coord));
+                var hex = new Forest(coord);
+                hex.chit = new Chit(pb.ChitType.ChitFromBag);
+                this._hexes.set(coord, hex);
             }
         }
     }
@@ -281,6 +329,7 @@ TheGreatForest.descriptor = new BoardDescriptor({
     createBoard: function(config) { return new TheGreatForest() }
 });
 
+// TODO: extract RectangularBoard class from this
 export class Standard4pDesign extends Board {
     constructor() {
         super();
@@ -296,16 +345,16 @@ export class Standard4pDesign extends Board {
                 [3, () => new River()],
             ],
             chitBag: [
-                new Chit(proto.ChitType.CHIT2),
-                [2, () => new Chit(proto.ChitType.CHIT3)],
-                [2, () => new Chit(proto.ChitType.CHIT4)],
-                [2, () => new Chit(proto.ChitType.CHIT5)],
-                [2, () => new Chit(proto.ChitType.CHIT6)],
-                [2, () => new Chit(proto.ChitType.CHIT8)],
-                [2, () => new Chit(proto.ChitType.CHIT9)],
-                [2, () => new Chit(proto.ChitType.CHIT10)],
-                [2, () => new Chit(proto.ChitType.CHIT11)],
-                new Chit(proto.ChitType.CHIT12),
+                new Chit(pb.ChitType.Chit2),
+                [2, () => new Chit(pb.ChitType.Chit3)],
+                [2, () => new Chit(pb.ChitType.Chit4)],
+                [2, () => new Chit(pb.ChitType.Chit5)],
+                [2, () => new Chit(pb.ChitType.Chit6)],
+                [2, () => new Chit(pb.ChitType.Chit8)],
+                [2, () => new Chit(pb.ChitType.Chit9)],
+                [2, () => new Chit(pb.ChitType.Chit10)],
+                [2, () => new Chit(pb.ChitType.Chit11)],
+                new Chit(pb.ChitType.Chit12),
             ],
             portBag: [
                 new Clay2To1Port(),
@@ -317,14 +366,13 @@ export class Standard4pDesign extends Board {
             ],
         };
         this.placeHexes();
-        // super.generateBoardForPlay();
     }
 
     generateHexes() {
         var fromBagCoords = [
             ...super.getCoordsByRadius(0),
             ...super.getCoordsByRadius(1),
-            ...super.getCoordsByRadius(2), 
+            ...super.getCoordsByRadius(2),
         ];
         var seaCoords = super.getCoordsByRadius(3);
         var portsConfig = new Map();
@@ -340,7 +388,7 @@ export class Standard4pDesign extends Board {
         var hexes = [];
         for (let coord of fromBagCoords) {
             var hex = new HexFromBag(coord);
-            hex.chit = new Chit(proto.ChitType.CHITFROMBAG);
+            hex.chit = new Chit(pb.ChitType.ChitFromBag);
             hexes.push(hex);
         }
         for (let coord of seaCoords) {

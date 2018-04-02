@@ -1,4 +1,4 @@
-var proto = require("../../src/generated/data_pb");
+import { jsettlers as pb } from "../../src/generated/data";
 import {GameAction} from "./gameAction.js";
 import { ResourceList } from "../resource.js";
 
@@ -7,11 +7,16 @@ export class CounterOffer extends GameAction {
         super();
 
         config = config || {};
+        this.playerId = config.playerId;
         this.player = config.player;
-        this.offered = null; // ResourceType[]
-        this.wanted = null; // ResourceType[]
-        this.offeredResourceList = null;
-        this.wantedResourceList = null;
+        this.offered = config.offered; // ResourceList
+        this.wanted = config.wanted; // ResourceList
+        this.tradeOffer = config.tradeOffer || null;
+        if (config.tradeOfferId !== undefined) {
+            this.tradeOfferId = config.tradeOfferId;
+        } else if (config.tradeOffer !== undefined) {
+            this.tradeOfferId = config.tradeOffer.id;
+        }
     }
     get isTradeResponse() {
         return true;
@@ -25,21 +30,22 @@ export class CounterOffer extends GameAction {
         this.offeredResourceList = new ResourceList(this.offered);
         this.wantedResourceList = new ResourceList(this.wanted);
     }
-    static createData(player, tradeOffer, offered, wanted) {
-        const counterOffer = new proto.CounterOffer();
-        counterOffer.setOfferedList(offered);
-        counterOffer.setWantedList(wanted);
-        counterOffer.setTradeOfferId(tradeOffer.id);
-        const action = new proto.GameAction();
-        action.setPlayerId(player.id);
-        action.setCounterOffer(counterOffer);
-        return action;
+    get data() {
+        return pb.GameAction.create({
+            playerId: this.player.id,
+            counterOffer: {
+                offered: this.offered.toResourceTypeArray(),
+                wanted: this.wanted.toResourceTypeArray(),
+                tradeOfferId: this.tradeOfferId,
+            }
+        });
     }
     static fromData(data) {
-        const counterOffer = new CounterOffer();
-        counterOffer.offered = data.getOfferedList();
-        counterOffer.wanted = data.getWantedList();
-        counterOffer.tradeOfferId = data.getTradeOfferId();
-        return counterOffer;
+        return new CounterOffer({
+            playerId: data.playerId,
+            offered: new ResourceList(data.counterOffer.offered),
+            wanted: new ResourceList(data.counterOffer.wanted),
+            tradeOfferId: data.counterOffer.tradeOfferId
+        });
     }
 }

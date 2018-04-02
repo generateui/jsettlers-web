@@ -13,6 +13,19 @@
                 type: Object
             }
         },
+        data() {
+            return {
+                update: false,
+            }
+        },
+        mounted() {
+            this.removeActionAddedHandler = this.game.actions.added((action) => {
+                this.update = !this.update;
+            });
+        },
+        unmount() {
+            this.removeActionAddedHandler();
+        }
     }
 </script>
 

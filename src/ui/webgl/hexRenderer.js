@@ -1,4 +1,4 @@
-var proto = require("../../../src/generated/data_pb");
+import { jsettlers as pb } from "../../../src/generated/data";
 
 import {Renderer, EMPHASIS} from "./renderer.js";
 import {ChitRenderer} from "./chitRenderer.js";
@@ -129,7 +129,7 @@ export class HexRenderer extends Renderer {
         this.removeChitChangedSubscription = hex.chitChanged(this.chitChanged.bind(this));
 	}
 	_getTexture(hex) {
-		var name = Util.getEnumName(proto.HexType, hex.type);
+		var name = Util.getEnumName(pb.HexType, hex.type);
 		name = name.toLowerCase();
 		return `doc/images/${name}.jpg`;
 	}

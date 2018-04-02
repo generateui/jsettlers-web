@@ -1,5 +1,5 @@
-var proto = require("../src/generated/data_pb");
-import {Coord} from "./coord.js";
+import { jsettlers as pb } from "../src/generated/data";
+import { Coord } from "./coord.js";
 import { ResourceList, Resource } from "./resource";
 import { MoveRobber } from "./actions/moveRobber";
 import { RobPlayer } from "./actions/robPlayer";
@@ -11,20 +11,20 @@ export class DevelopmentCard {
     }
     static fromData(data) {
         var developmentCard = null;
-        if (data.hasMonopoly()) {
-            developmentCard = Monopoly.fromData(data.getMonopoly());
-        } else if (data.hasYearOfPlenty()) {
-            developmentCard = YearOfPlenty.fromData(data.getYearOfPlenty());
-        } else if (data.hasSoldier()) {
-            developmentCard = Soldier.fromData(data.getSoldier());
-        } else if (data.hasRoadBuilding()) {
+        if (data.monopoly) {
+            developmentCard = Monopoly.fromData(data.monopoly);
+        } else if (data.yearOfPlenty) {
+            developmentCard = YearOfPlenty.fromData(data.yearOfPlenty);
+        } else if (data.soldier) {
+            developmentCard = new Soldier();
+        } else if (data.roadBuilding) {
             developmentCard = new RoadBuilding();
-        } else if (data.hasVictoryPoint()) {
+        } else if (data.victoryPoint) {
             developmentCard = new VictoryPoint();
         }
-        developmentCard.playerId = data.getPlayerId();
-        developmentCard.turnBoughtIndex = data.getTurnBoughtIndex();
-        developmentCard.turnPlayedIndex = data.getTurnPlayedIndex();
+        developmentCard.playerId = data.playerId;
+        developmentCard.turnBoughtIndex = data.turnBoughtIndex;
+        developmentCard.turnPlayedIndex = data.turnPlayedIndex;
         return developmentCard;
     }
     static parse(developmentCardExpression, resolver) {
@@ -46,17 +46,17 @@ export class DevelopmentCard {
     }
     // calling super.property does not work in es6
     _getData() {
-        const data = new proto.DevelopmentCard();
-        data.setPlayerId(this.player.id);
-        data.setTurnBoughtIndex(this.turnBoughtIndex);
-        data.setTurnPlayedIndex(this.turnPlayedIndex);
-        return data;
+        return pb.DevelopmentCard.create({
+            playerId: this.player.id,
+            turnBoughtIndex: this.turnBoughtIndex,
+            turnPlayedIndex: this.turnPlayedIndex
+        });
     }
     static get cost() {
         return new ResourceList([
-            proto.ResourceType.WHEAT,
-            proto.ResourceType.ORE,
-            proto.ResourceType.SHEEP,
+            pb.ResourceType.Wheat,
+            pb.ResourceType.Ore,
+            pb.ResourceType.Sheep,
         ]);
     }
     get maxOnePerTurn() {
@@ -64,27 +64,30 @@ export class DevelopmentCard {
     }
 }
 export class YearOfPlenty extends DevelopmentCard {
-    constructor() {
+    constructor(config) {
         super();
-        this.resourceType1 = null;
-        this.resourceType2 = null;
+
+        config = config || {};
+        this.player = config.player;
+        this.resourceType1 = config.resourceType1;
+        this.resourceType2 = config.resourceType2;
         this.resourceList = null;
     }
     static fromData(data) {
-        const yop = new YearOfPlenty();
-        yop.resourceType1 = data.getResourceType1();
-        yop.resourceType2 = data.getResourceType2();
-        return yop;
+        return new YearOfPlenty({
+            resourceType1: data.resourceType1,
+            resourceType2: data.resourceType2
+        });
     }
     setReferences(game) {
         this.resourceList = new ResourceList([this.resourceType1, this.resourceType2]);
     }
     get data() {
         const data = super._getData();
-        const yop = new proto.YearOfPlenty();
-        yop.setResourceType1(this.resourceType1);
-        yop.setResourceType2(this.resourceType2);
-        data.setYearOfPlenty(yop);
+        data.yearOfPlenty = {
+            resourceType1: this.resourceType1,
+            resourceType2: this.resourceType2
+        }
         return data;
     }
     play(game, player) {
@@ -99,19 +102,17 @@ export class Monopoly extends DevelopmentCard {
 
         config = config || {};
         this.player = config.player;
-        this.resourceType = null;
-        this.stolen = null;
+        this.resourceType = config.resourceType;
+        this.stolen = config.stolen || null;
     }
     static fromData(data) {
-        const monopoly = new Monopoly();
-        monopoly.resourceType = data.getResourceType();
-        return monopoly;
+        return new Monopoly({ resourceType: data.resourceType })
     }
     get data() {
-        const monopoly = new proto.Monopoly();
-        monopoly.setResourceType(this.resourceType);
         const data = super._getData();
-        data.setMonopoly(monopoly);
+        data.monopoly = {
+            resourceType: this.resourceType
+        }
         return data;
     }
     play(game, player) {
@@ -131,16 +132,11 @@ export class Soldier extends DevelopmentCard {
         super();
 
         config = config || {};
-        this.coord = config.coord;
         this.player = config.player;
     }
-    static fromData(data) {
-        return new Soldier();
-    }
     get data() {
-        const soldier = new proto.Soldier();
         const data = super._getData();
-        data.setSoldier(soldier);
+        data.soldier = {};
         return data;
     }
     play(game, player) {
@@ -163,34 +159,38 @@ export class Soldier extends DevelopmentCard {
     get name() { return "Soldier"; }
 }
 export class VictoryPoint extends DevelopmentCard {
-    constructor() {
+    constructor(config) {
         super();
+
+        config = config || {};
+        this.player = config.player;
         this.victoryPoints = 1;
     }
     play(game, player) {
         player.victoryPoints.push(this);
     }
     get data() { 
-        const vp = new proto.VictoryPoint();
         const data = super._getData();
-        data.setVictoryPoint(vp);
+        data.victoryPoint = {};
         return data;
     }
     get name() { return "VictoryPoint"; }
     get maxOnePerTurn() { return false; }
 }
 export class RoadBuilding extends DevelopmentCard {
-    constructor() {
+    constructor(config) {
         super();
+
+        config = config || {};
+        this.player = config.player;
     }
     play(game, player) {
         player.roadBuildingTokens += 2;
         game.expectation = new BuildTwoRoads(game);
     }
     get data() { 
-        const roadBuilding = new proto.RoadBuilding();
         const data = super._getData();
-        data.setRoadBuilding(roadBuilding);
+        data.roadBuilding = {};
         return data;
     }
     get name() { return "RoadBuilding"; }

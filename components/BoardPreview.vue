@@ -17,61 +17,61 @@
 </template>
 
 <script>
-    import {Standard4pDesign, Board} from "../src/board.js";
-    import {BoardRenderer} from "../src/ui/webgl/boardRenderer.js";
-    
-    var boardRenderer = null;
-    var createdBoard = null;
-    const MODE = {
-        design: 0,
-        play: 1
-    };
+import {Standard4pDesign, Board} from "../src/board.js";
+import {BoardRenderer} from "../src/ui/webgl/boardRenderer.js";
 
-    export default {
-        name: 'board-preview',
-        props: {
-            board: {
-                type: Object
-            }
+var boardRenderer = null;
+var createdBoard = null;
+const MODE = {
+    design: 0,
+    play: 1
+};
+
+export default {
+    name: 'board-preview',
+    props: {
+        board: {
+            type: Object
+        }
+    },
+    data() {
+        return {
+            mode: MODE.design
+        }
+    },
+    mounted: function() {
+        const id = this.board.id;
+        createdBoard = Board.create(id);
+        var brEl = document.getElementById("bp-board-renderer");
+        boardRenderer = new BoardRenderer(brEl, createdBoard);
+    },
+    unmount() {
+        boardRenderer.dispose();
+    },
+    watch: { 
+        board: function(newBoardDescriptor, oldBoardDescriptor) {
+            const id = this.board.id;
+            createdBoard = Board.create(newBoardDescriptor.id);
+            boardRenderer.setBoard(createdBoard);
+        }
+    },
+    methods: {
+        setModeToPlay: function() {
+            this.mode = MODE.play;
+            // TODO: swicth mode on board
         },
-        data() {
-            return {
-                mode: MODE.design
-            }
+        setModeToDesign: function() {
+            this.mode = MODE.design;
+            // TODO: swicth mode on board
         },
-        mounted: function() {
-            const id = this.$props.board.id;
-            createdBoard = Board.create(id);
-            var brEl = document.getElementById("bp-board-renderer");
-            boardRenderer = new BoardRenderer(brEl, createdBoard);
+        isModePlay() {
+            return this.mode === MODE.play;
         },
-        unmount() {
-            boardRenderer.dispose();
-        },
-        watch: { 
-            board: function(newBoardDescriptor, oldBoardDescriptor) {
-                const id = this.$props.board.id;
-                createdBoard = Board.create(newBoardDescriptor.id);
-                boardRenderer.setBoard(createdBoard);
-            }
-        },
-        methods: {
-            setModeToPlay: function() {
-                this.$data.mode = MODE.play;
-                // TODO: swicth mode on board
-            },
-            setModeToDesign: function() {
-                this.$data.mode = MODE.design;
-                // TODO: swicth mode on board
-            },
-            isModePlay() {
-                return this.$data.mode === MODE.play;
-            },
-            generate() {
-                createdBoard.generateBoardForPlay();
-            }
+        generate() {
+            createdBoard.generateBoardForPlay();
         }
     }
+}
 </script>
 
 <style scoped>

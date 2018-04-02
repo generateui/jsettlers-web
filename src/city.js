@@ -1,4 +1,4 @@
-var proto = require("../src/generated/data_pb");
+import { jsettlers as pb } from "../src/generated/data";
 import { ResourceList } from "./resource";
 export class City {
     constructor(player, node) {
@@ -13,11 +13,11 @@ export class City {
     }
     static get cost() {
         return new ResourceList([
-            proto.ResourceType.WHEAT,
-            proto.ResourceType.WHEAT,
-            proto.ResourceType.ORE,
-            proto.ResourceType.ORE,
-            proto.ResourceType.ORE,
+            pb.ResourceType.Wheat,
+            pb.ResourceType.Wheat,
+            pb.ResourceType.Ore,
+            pb.ResourceType.Ore,
+            pb.ResourceType.Ore,
         ]);
     }
     addToPlayer(player) {

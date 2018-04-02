@@ -1,4 +1,4 @@
-var proto = require("../../src/generated/data_pb");
+import { jsettlers as pb } from "../../src/generated/data";
 import { GameAction } from "./gameAction";
 import { DevelopmentCard } from "../developmentCard";
 
@@ -7,12 +7,17 @@ export class PlayDevelopmentCard extends GameAction {
         super();
         
         config = config || {};
+        this.playerId = config.playerId;
         this.player = config.player;
         this.developmentCard = config.developmentCard;
     }
     static fromData(data) {
-        const developmentCard = DevelopmentCard.fromData(data.getDevelopmentCard());
-        return new PlayDevelopmentCard({developmentCard: developmentCard});
+        const developmentCard = DevelopmentCard.fromData(
+            data.playDevelopmentCard.developmentCard);
+        return new PlayDevelopmentCard({
+            playerId: data.playerId,
+            developmentCard: developmentCard
+        });
     }
     setReferences(game) {
         if (this.developmentCard.setReferences !== undefined) {
@@ -27,12 +32,12 @@ export class PlayDevelopmentCard extends GameAction {
         this.player.playedDevelopmentCards.push(this.developmentCard); // this instance retains the info
         game.phase.playDevelopmentCard(game, this);
     }
-    static createData(player, developmentCard) {
-        const action = new proto.GameAction();
-        const playDev = new proto.PlayDevelopmentCard();
-        action.setPlayerId(player.id);
-        playDev.setDevelopmentCard(developmentCard.data);
-        action.setPlayDevelopmentCard(playDev);
-        return action;
+    get data() {
+        return pb.GameAction.create({
+            playerId: this.player.id,
+            playDevelopmentCard: {
+                developmentCard: this.developmentCard.data
+            }
+        });
     }
 }

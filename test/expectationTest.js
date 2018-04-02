@@ -1,7 +1,5 @@
-require('babel-register')();
-var proto = require("../src/generated/data_pb")
-var assert = require('assert');
-require("../src/generic/shims");
+import { jsettlers as pb } from "../src/generated/data"
+import * as assert from "assert";
 import { PortList, Any4To1Port, Timber2To1Port, Any3To1Port, 
     Wheat2To1Port, Sheep2To1Port, Clay2To1Port} from "../src/port";
 import { Timber, ResourceList, Wheat, Brick, Ore, Sheep } from '../src/resource';

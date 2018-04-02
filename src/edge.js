@@ -1,4 +1,4 @@
-var proto = require("../src/generated/data_pb");
+import { jsettlers as pb } from "../src/generated/data";
 import {Node} from "./node.js";
 import {Coord} from "./coord.js";
 
@@ -75,8 +75,15 @@ export class Edge {
         return ((coord1.hash.hashCode() / 2) >> 0) + ((coord2.hash.hashCode() / 2) >> 0);
     }
     static fromData(data) {
-        const coord1 = Coord.fromData(data.getCoord1());
-        const coord2 = Coord.fromData(data.getCoord2());
+        const coord1 = Coord.fromData(data.coord1);
+        const coord2 = Coord.fromData(data.coord2);
+        return new Edge(coord1, coord2);
+    }
+    static parse(edgeExpression) {
+        const coordExpression1 = edgeExpression.coord()[0];
+        const coordExpression2 = edgeExpression.coord()[1];
+        const coord1 = Coord.parse(coordExpression1);
+        const coord2 = Coord.parse(coordExpression2);
         return new Edge(coord1, coord2);
     }
     static parse(edgeExpression) {
@@ -87,10 +94,10 @@ export class Edge {
         return new Edge(coord1, coord2);
     }
     get data() {
-        const data = new proto.Edge();
-        data.setCoord1(this.coord1.data);
-        data.setCoord2(this.coord2.data);
-        return data;
+        return pb.Edge.create({
+            coord1: this.coord1.data,
+            coord2: this.coord2.data,
+        });
     }
     toString() {
         return `${this.coord1.toString()} | ${this.coord2.toString()}`;

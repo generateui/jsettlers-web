@@ -1,20 +1,20 @@
-var proto = require("./generated/data_pb");
+import { jsettlers as pb } from "./generated/data";
 import {ResourceList} from "./resource.js";
 
 export class Bank {
     constructor() {
         this.resources = ResourceList.onlyWithTypes([
-            proto.ResourceType.TIMBER,
-            proto.ResourceType.WHEAT,
-            proto.ResourceType.ORE,
-            proto.ResourceType.SHEEP,
-            proto.ResourceType.BRICK,
+            pb.ResourceType.Timber,
+            pb.ResourceType.Wheat,
+            pb.ResourceType.Ore,
+            pb.ResourceType.Sheep,
+            pb.ResourceType.Brick,
         ]);
-        this.resources.addAmount(proto.ResourceType.TIMBER, 19);
-        this.resources.addAmount(proto.ResourceType.WHEAT, 19);
-        this.resources.addAmount(proto.ResourceType.ORE, 19);
-        this.resources.addAmount(proto.ResourceType.SHEEP, 19);
-        this.resources.addAmount(proto.ResourceType.BRICK, 19);
+        this.resources.addAmount(pb.ResourceType.Timber, 19);
+        this.resources.addAmount(pb.ResourceType.Wheat, 19);
+        this.resources.addAmount(pb.ResourceType.Ore, 19);
+        this.resources.addAmount(pb.ResourceType.Sheep, 19);
+        this.resources.addAmount(pb.ResourceType.Brick, 19);
         this.developmentCards = [];
     }
 }

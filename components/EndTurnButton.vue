@@ -10,7 +10,12 @@
             </ul>
         </ul>
 
-        <div id="end-turn" @click="endTurn()" class="build-button" slot="reference" v-bind:class="{ disabled: !canEndTurn }">
+        <div 
+            id="end-turn"
+            @click="endTurn()"
+            class="build-button"
+            slot="reference"
+            v-bind:class="{ disabled: !canEndTurn }">
             <img id="button" src="doc/images/EndTurn48.png" />
         </div>
     </popper>
@@ -42,6 +47,7 @@ export default {
             this.messages = m.match([
                 m.isOnTurn(game, player),
                 m.isExpected(game, new EndTurn({player: player})),
+                // TODO: disable when the player can win the game
             ]);
             this.canEndTurn = this.messages.length === 0;
         },

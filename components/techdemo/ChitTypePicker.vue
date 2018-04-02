@@ -13,22 +13,22 @@
 </template>
 
 <script>
-var proto = require("../../src/generated/data_pb");
+import { jsettlers as pb } from "../../src/generated/data";
 
 export default {
-  name: 'chit-type-picker',
-  data () {
-    return {
-      chitTypes: proto.ChitType,
-      chitType: proto.ChitType[0],
+    name: 'chit-type-picker',
+    data () {
+        return {
+            chitTypes: pb.ChitType,
+            chitType: pb.ChitType[0],
+        }
+    },
+    methods: {
+        click(chitType) {
+            this.chitType = chitType;
+            this.$emit('chitTypeChanged', chitType);
+        }
     }
-  },
-  methods: {
-      click(chitType) {
-          this.$data.chitType = chitType;
-          this.$emit('chitTypeChanged', chitType);
-      }
-  }
 }
 </script>
 

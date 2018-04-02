@@ -1,13 +1,6 @@
 <template>
   <div id="game">
     <div id="left">
-        <trade-bank-dialog 
-            v-if="showTradeBankDialog" 
-            :game="game" 
-            @toggleTradeBankDialog="toggleTradeBankDialog"
-            @trade="tradePlayer"
-            @close="closeTradeBankDialog"
-            :keyListener="keyListener"></trade-bank-dialog>
         <div id="players">
             <div v-for="player in game.players" :key="player.id">
                 <player-info 
@@ -16,7 +9,7 @@
                     :ref="'player' + player.id"></player-info>
             </div>
         </div>
-        <bank-view id="bank" :bank="game.bank" :update="update"></bank-view>
+        <bank-view id="bank" :game="game" :update="update"></bank-view>
 
         <div id="tabs">
             <button class="tab-button" @click="tabMode = TABMODE.actions">actions</button>
@@ -26,13 +19,13 @@
         </div>
         <div id="tab-content">
             <action-log 
-                v-show="tabMode === TABMODE.actions" 
-                id="action-log" 
+                v-show="tabMode === TABMODE.actions"
+                id="action-log"
                 :actions="game.actions.array"></action-log>
             <div v-show="tabMode === TABMODE.chat" id="chats"></div>
             <div v-show="tabMode === TABMODE.expectation" id="queue"></div>
-            <debug-perform-actions 
-                v-show="tabMode === TABMODE.debug" 
+            <debug-perform-actions
+                v-show="tabMode === TABMODE.debug"
                 :game="game" 
                 :host="host" 
                 :keyListener="keyListener"
@@ -46,9 +39,6 @@
             :game="game" 
             @behaveThenAct="behaveThenAct" 
             @action="performAction"
-            @rolldice="rollDice"
-            @endTurn="endTurn"
-            @toggleTradeBankDialog="toggleTradeBankDialog"
             :keyListener="keyListener"></actions>
         <player-assets 
             :game="game"
@@ -72,28 +62,26 @@ import PlayerAssets from "./PlayerAssets.vue";
 import Actions from "./Actions.vue";
 import BankView from "./BankView.vue";
 import ActionLog from "./ActionLog.vue";
-import DiceView from "./DiceView.vue";
 import DebugPerformActions from "./debug/DebugPerformActions.vue";
-import TradeBankDialog from "./TradeBankDialog.vue";
 import ActionsMessage from "./ActionsMessage.vue";
 
-import {HostAtClient} from "../src/host.js";
-import {Game, GameSettings} from "../src/game.js";
-import {Bank} from "../src/bank.js";
-import {RollDice} from "../src/actions/rollDice.js";
-import {BoardRenderer} from "../src/ui/webgl/boardRenderer.js";
-import {Player, User} from "../src/player.js";
+import { HostAtClient } from "../src/host.js";
+import { Game, GameSettings} from "../src/game.js";
+import { Bank } from "../src/bank.js";
+import { RollDice } from "../src/actions/rollDice.js";
+import { BoardRenderer } from "../src/ui/webgl/boardRenderer.js";
+import { Player, User } from "../src/player.js";
 import { Standard4pDesign, JustSomeSea, TheGreatForest, BoardDescriptor } from '../src/board.js';
-import {KeyListener} from "../src/ui/keyListener.js";
+import { KeyListener } from "../src/ui/keyListener.js";
 import * as bb from "../src/ui/boardBehavior.js";
 import * as gb from "../src/ui/gameBehavior.js";
-import { LooseResources } from '../src/actions/looseResources';
-import { RobPlayer } from '../src/actions/robPlayer';
-import { MoveRobber } from '../src/actions/moveRobber';
+import { Bot } from '../src/bot';
 import { BuildTown } from '../src/actions/buildTown';
 import { BuildRoad } from '../src/actions/buildRoad';
-import { EndTurn } from '../src/actions/endTurn';
-import { Bot } from '../src/bot';
+import { MoveRobber } from '../src/actions/moveRobber';
+import { RobPlayer } from '../src/actions/robPlayer';
+import { LooseResources } from '../src/actions/looseResources';
+import { StartGame } from '../src/actions/startGame';
 
 var boardRenderer = null;
 var host = null;
@@ -122,64 +110,39 @@ const bots = [
 export default {
     name: 'game',
     components: {
-        PlayerInfo, PlayerAssets, Actions, BankView, ActionLog, DiceView, 
-        DebugPerformActions, TradeBankDialog, ActionsMessage
+        PlayerInfo, PlayerAssets, Actions, BankView, ActionLog,
+        DebugPerformActions, ActionsMessage
     },
-    props: {
-        settings: {
-            type: Object,
-            default: function() {
-                return new GameSettings({
-                    boardDescriptor: boards[0],
-                    bots: [bots[1], bots[2], bots[3]],
-                    players: [new Player({ user: new User({name: "player 1"}) })],
-                })
-            }
-        }
-    },
+    // settings props through programmatic navigation dont work
+    // props: {
+    //     settings: {
+    //         type: Object,
+    //         default: function() {
+    //             return new GameSettings({
+    //                 boardDescriptor: boards[0],
+    //                 bots: [bots[1], bots[2], bots[3]],
+    //                 players: [new Player({ user: new User({name: "player 1"}) })],
+    //             });
+    //         }
+    //     }
+    // },
     data() {
         return {
-            tabMode: TABMODE.debug,
+            tabMode: TABMODE.actions,
             game: null,
             selectedPlayer: null,
             host: null,
             keyListener: new KeyListener(),
-            showTradeBankDialog: false,
             update: false,
             showLooseResourcesDialog: false,
             youAction: null,
         }
     },
     methods: {
-        toggleTradeBankDialog() {
-            this.showTradeBankDialog = !this.showTradeBankDialog;
-        },
-        closeTradeBankDialog() {
-            this.showTradeBankDialog = false;
-        },
-        rollDice() {
-            let rollDice = RollDice.createData(this.game.player);
-            this.act(rollDice);
-        },
-        tradeBank(action) {
-            this.performAction(action);
-            this.showTradeBankDialog = false;
-            this.$forceUpdate();
-            this.update = !this.update;
-        },
-        tradePlayer(action) {
-            this.performAction(action);
-            this.update = !this.update;
-            this.closeTradeBankDialog();
-        },
         looseResources(action) {
-            this.$data.showLooseResourcesDialog = false;
+            this.showLooseResourcesDialog = false;
             this.performAction(action);
             this.update = !this.update;
-        },
-        endTurn() {
-            let endTurn = EndTurn.createData(this.game.player);
-            this.act(endTurn);
         },
         behaviorChanged(behavior) {
             boardRenderer.behavior = behavior;
@@ -206,15 +169,26 @@ export default {
                 // await the behavior for completion (e.g. a click on the board on some renderer)
                 const result = await behavior.promise;
                 // create some data
-                const action = createAction(this.$data.game.player, result);
+                const action = createAction(this.game.player, result);
                 // send the data
-                await this.$data.host.send(action);
+                await this.host.send(action);
             } catch (error) {
                 // add it to game errors?
                 alert(error.message);
             } finally {
                 boardRenderer.behavior = new bb.NoBehavior();
             }
+        },
+        createDefaultSettings() {
+            return new GameSettings({
+                boardDescriptor: boards[0],
+                bots: [
+                    Bot.descriptor.createNamedInstance(),
+                    Bot.descriptor.createNamedInstance(),
+                    Bot.descriptor.createNamedInstance(),
+                ],
+                players: [new Player({ user: new User({name: "player 1"}) })],
+            });
         },
         // force a response from the player
         forceYouActionIfNeeded() {
@@ -235,18 +209,21 @@ export default {
             if (action instanceof BuildTown) {
                 const nodes = this.game.phase.townPossibilities(this.game, this.player);
                 const behavior = new gb.PickTownNode(nodes, this.keyListener);
-                const createActionData = (player, node) => BuildTown.createData(player, node);
-                this.behaveThenAct(behavior, createActionData);
+                const createAction = (player, node) => 
+                    new BuildTown({ player: player, node: node });
+                this.behaveThenAct(behavior, createAction);
             }
             if (action instanceof BuildRoad) {
                 const edges = this.game.phase.roadPossibilities(this.game, this.game.player);
                 const behavior = new gb.PickRoadEdge(edges, this.keyListener);
-                const createAction = (player, edge) => BuildRoad.createData(player, edge);
+                const createAction = (player, edge) => 
+                    new BuildRoad({ player: player, edge: edge });
                 this.behaveThenAct(behavior, createAction);
             }
             if (action instanceof MoveRobber) {
                 const behavior = new gb.MoveRobber();
-                const createAction = (player, coord) => MoveRobber.createData(player, coord);
+                const createAction = (player, coord) => 
+                    new MoveRobber({ player: player, coord: coord });
                 this.behaveThenAct(behavior, createAction);
             }
             if (action instanceof RobPlayer) {
@@ -263,7 +240,8 @@ export default {
                 }
                 if (opponents.size > 0) {
                     const behavior = new gb.PickPlayer(opponents);
-                    const createAction = (player, opponent) => RobPlayer.createData(player, opponent);
+                    const createAction = (player, opponent) => 
+                        new RobPlayer({ player: player, opponent: opponent });
                     // if we immediately execute this, MoveRobber behaveThenAct 
                     // is not yet finished. This is most likely not a problem 
                     // when async and serialization is implemented, as the 
@@ -271,8 +249,7 @@ export default {
                     // game.actions.changed eventhandler.
                     window.setTimeout(() => this.behaveThenAct(behavior, createAction), 500);
                 } else {
-                    const action = RobPlayer.createData(player, null);
-                    this.act(action);
+                    this.act(new RobPlayer({ player: player }));
                 }
             }
             if (action instanceof LooseResources) {
@@ -281,6 +258,7 @@ export default {
         }
     },
     created() {
+        this.settings = window.gameSettings || this.createDefaultSettings();
         const board = this.settings.boardDescriptor.createBoard();
         board.generateBoardForPlay();
         const game = new Game();
@@ -291,7 +269,6 @@ export default {
                     id: botSpec.id
                 })
             });
-            // this.host.addBot(bot);
             botPlayers.push(botPlayer);
             game.players.push(botPlayer);
         }
@@ -346,7 +323,7 @@ export default {
             }
             this.forceYouActionIfNeeded();
         });
-        const that = this;
+        this.act(new StartGame({ player: this.game.player }));
     },  
     destroyed() {
         boardRenderer.dispose();

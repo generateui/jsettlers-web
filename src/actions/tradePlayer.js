@@ -1,4 +1,4 @@
-var proto = require("../../src/generated/data_pb");
+import { jsettlers as pb } from "../../src/generated/data";
 import { GameAction } from "./gameAction.js";
 import { AcceptOffer } from "./acceptOffer.js";
 import { CounterOffer } from "./counterOffer.js";
@@ -14,12 +14,13 @@ export class TradePlayer extends GameAction {
         super();
 
         config = config || {};
+        this.playerId = config.playerId;
         this.player = config.player;
-        this.tradeOfferId = null;
-        this.tradeResponseId = null;
+        this.tradeOfferId = config.tradeOfferId || null;
+        this.tradeResponseId = config.tradeResponseId || null;
 
-        this.tradeOffer = null; // OfferTrade
-        this.tradeResponse = null; // <AcceptOffer | CounterOffer>
+        this.tradeOffer = config.tradeOffer; // OfferTrade
+        this.tradeResponse = config.tradeResponse; // <AcceptOffer | CounterOffer>
         this.opponent = null; // Player
         this.offered = null; // ResourceList
         this.wanted = null; // ResourceList
@@ -34,27 +35,28 @@ export class TradePlayer extends GameAction {
         this.opponent = this.tradeResponse.player;
 
         if (this.tradeResponse instanceof AcceptOffer) {
-            this.offered = new ResourceList(this.tradeOffer.offered);
-            this.wanted = new ResourceList(this.tradeOffer.wanted);
+            this.offered = this.tradeOffer.offered;
+            this.wanted = this.tradeOffer.wanted;
         } else if (this.tradeResponse instanceof CounterOffer) {
             // CounterOffer is from the perspective of the opponent, so swap
-            this.offered = new ResourceList(this.tradeResponse.wanted);
-            this.wanted = new ResourceList(this.tradeResponse.offered);
+            this.offered = this.tradeResponse.wanted;
+            this.wanted = this.tradeResponse.offered;
         }
     }
-    static createData(player, tradeOffer, tradeResponse) {
-        const tradePlayer = new proto.TradePlayer();
-        tradePlayer.setTradeOfferId(tradeOffer.id);
-        tradePlayer.setTradeResponseId(tradeResponse.id);
-        const action = new proto.GameAction();
-        action.setPlayerId(player.id);
-        action.setTradePlayer(tradePlayer);
-        return action;
+    get data() {
+        return pb.GameAction.create({
+            playerId: this.player.id,
+            tradePlayer: {
+                tradeOfferId: this.tradeOffer.id,
+                tradeResponseId: this.tradeResponse.id
+            }
+        });
     }
     static fromData(data) {
-        const tradePlayer = new TradePlayer();
-        tradePlayer.tradeOfferId = data.getTradeOfferId();
-        tradePlayer.tradeResponseId = data.getTradeResponseId();
-        return tradePlayer;
+        return new TradePlayer({
+            playerId: data.playerId,
+            tradeOfferId: data.tradePlayer.tradeOfferId,
+            tradeResponseId: data.tradePlayer.tradeResponseId
+        });
     }
 }

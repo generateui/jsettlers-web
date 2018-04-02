@@ -1,4 +1,4 @@
-<template id="modal-template">
+<template>
     <div class="modal-mask" v-show="show">
         <div class="modal-body">
             <div id="opponents-or-offers">
@@ -38,7 +38,7 @@
                 </div>
 
                 <div id="trade-offers" v-show="mode === TRADEMODE.respond">
-                    <div class="trade-offer" v-for="to in tradeOffers">
+                    <div class="trade-offer" v-for="to in tradeOffers" :key="to.id">
                         <div class="trade-offer-top">
                             <div class="trade-offer-resources">
                                 <resource-list-view
@@ -129,7 +129,7 @@
 import Vue from 'vue';
 import ResourceListView from "./ResourceListView.vue";
 
-var proto = require("../src/generated/data_pb");
+import { jsettlers as pb } from "../src/generated/data";
 import { Util } from "../src/util.js";
 import { OfferTrade } from '../src/actions/offerTrade';
 import { AcceptOffer } from '../src/actions/acceptOffer';
@@ -168,16 +168,16 @@ export default {
     data() {
         return {
             resourceTypes: [
-                proto.ResourceType.WHEAT,
-                proto.ResourceType.TIMBER,
-                proto.ResourceType.ORE,
-                proto.ResourceType.SHEEP,
-                proto.ResourceType.BRICK,
+                pb.ResourceType.Wheat,
+                pb.ResourceType.Timber,
+                pb.ResourceType.Ore,
+                pb.ResourceType.Sheep,
+                pb.ResourceType.Brick,
             ],
             wantedResourceTypes: [],
             offeredResources: [],
             // make a copy, so we dont change the resources of the player
-            playerResources: new ResourceList(game.player.resources), 
+            playerResources: new ResourceList(game.player.resources),
             tradeOffer: null,
             tradeOffers: [],
             counterOffering: false,
@@ -186,7 +186,7 @@ export default {
     },
     methods: {
         getName: function(resourceType) {
-            return Util.getEnumName(proto.ResourceType, resourceType);
+            return Util.getEnumName(pb.ResourceType, resourceType);
         },
         pickWantedResourceType(resourceType) {
             this.wantedResourceTypes.push(resourceType);
@@ -213,17 +213,28 @@ export default {
         offerTrade() {
             if (this.counterOffering) {
                 this.tradeOffers.remove(this.tradeOffer);
-                const offered = this.offeredResources.map(r => r.type);
-                const counterOffer = CounterOffer.createData(this.game.player, this.tradeOffer, offered, this.wantedResourceTypes);
+                const counterOffer = new CounterOffer({
+                    player: this.game.player,
+                    tradeOffer: this.tradeOffer,
+                    offered: new ResourceList(this.offeredResources),
+                    wanted: new ResourceList(this.wantedResourceTypes)
+                });
                 this.$emit("action", counterOffer);
             } else {
-                const offered = this.offeredResources.map(r => r.type);
-                const offerTrade = OfferTrade.createData(this.game.player, offered, this.wantedResourceTypes);
+                const offerTrade = new OfferTrade({
+                    player: this.game.player,
+                    offered: new ResourceList(this.offeredResources),
+                    wanted: new ResourceList(this.wantedResourceTypes)
+                });
                 this.$emit("action", offerTrade);
             }
         },
         tradePlayer(acceptOffer) {
-            const tradePlayer = TradePlayer.createData(this.game.player, this.tradeOffer, acceptOffer);
+            const tradePlayer = new TradePlayer({
+                player: this.game.player,
+                tradeOffer: this.tradeOffer,
+                tradeResponse: acceptOffer
+            });
             this.$emit("action", tradePlayer);
         },
         prepareCounterOffer(offer) {
@@ -234,14 +245,20 @@ export default {
             this.tradeOffer = offer;
             this.counterOffering = false;
             this.tradeOffers.remove(offer);
-            const acceptOffer = AcceptOffer.createData(game.player, offer);
+            const acceptOffer = new AcceptOffer({
+                player: this.game.player,
+                tradeOffer: offer
+            });
             this.$emit("action", acceptOffer);
         },
         rejectOffer(offer) {
             this.tradeOffer = offer;
             this.counterOffering = false;
             this.tradeOffers.remove(offer);
-            const rejectOffer = RejectOffer.createData(game.player, offer);
+            const rejectOffer = new RejectOffer({
+                player: this.game.player,
+                tradeOffer: offer
+            });
             this.$emit("action", rejectOffer);
         },
     },
@@ -261,6 +278,7 @@ export default {
             }
         },
         show() {
+            this.playerResources = new ResourceList(this.game.player.resources);
             if (this.tradeOffers.length > 0) {
                 this.mode = TRADEMODE.respond;
                 return;

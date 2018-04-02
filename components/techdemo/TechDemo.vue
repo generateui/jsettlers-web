@@ -44,105 +44,105 @@
 </template>
 
 <script>
-    var proto = require("../../src/generated/data_pb");
-    import ChitTypePicker from './ChitTypePicker.vue'
-    import HexTypePicker from './HexTypePicker.vue'
-    import PlayerPicker from './PlayerPicker.vue'
-    import PortTypePicker from './PortTypePicker.vue'
-    import ShowHexInfo from './ShowHexInfo.vue'
-    import * as bb from "../../src/ui/boardBehavior.js";
-    import {Standard4pDesign, From2DBoard} from "../../src/board.js";
-    import {BoardRenderer} from "../../src/ui/webgl/boardRenderer.js";
-    import {Game} from "../../src/game.js";
+import { jsettlers as pb } from "../../src/generated/data";
+import ChitTypePicker from './ChitTypePicker.vue'
+import HexTypePicker from './HexTypePicker.vue'
+import PlayerPicker from './PlayerPicker.vue'
+import PortTypePicker from './PortTypePicker.vue'
+import ShowHexInfo from './ShowHexInfo.vue'
+import * as bb from "../../src/ui/boardBehavior.js";
+import {Standard4pDesign, From2DBoard} from "../../src/board.js";
+import {BoardRenderer} from "../../src/ui/webgl/boardRenderer.js";
+import {Game} from "../../src/game.js";
 
-    const setHex = new bb.SetHex();
-    const setChit = new bb.SetChit();
-    const setPort = new bb.SetPort();
-    const buildTown = new bb.BuildTown();
-    const buildCity = new bb.BuildCity();
-    const buildRoad = new bb.BuildRoad();
-    const showHexInfo = new bb.ShowHexInfo();
-    var boardRenderer = null;
+const setHex = new bb.SetHex();
+const setChit = new bb.SetChit();
+const setPort = new bb.SetPort();
+const buildTown = new bb.BuildTown();
+const buildCity = new bb.BuildCity();
+const buildRoad = new bb.BuildRoad();
+const showHexInfo = new bb.ShowHexInfo();
+var boardRenderer = null;
 
-    export default {
-        name: 'tech-demo',
-        components: {
-            ChitTypePicker, HexTypePicker, PlayerPicker, PortTypePicker, ShowHexInfo
-        },
-        data() {
-            return {
-                setChit: setChit,
-                behaviors: [
-                    new bb.NoBehavior(),
-                    new bb.EmphasizeHoveredObject(),
-                    setHex,
-                    setChit,
-                    new bb.CompositeBehavior(new bb.EmphasizeHoveredObject(), new bb.ShowAllEdges()),
-                    new bb.ShowAllNodes(),
-                    new bb.ShowNodesOfClickedHex(),
-                    new bb.ShowAllEdges(),
-                    new bb.ShowEdgesOfClickedHex(),
-                    new bb.ShowEdgesOfClickedNode(),
-                    setPort,
-                    new bb.MoveRobber(),
-                    buildTown,
-                    buildCity,
-                    buildRoad,
-                    showHexInfo,
-                ],
-                pickedBehavior: new bb.NoBehavior(),
-                hex: null,
-            }
-        },
-        computed: {
-            showHexTypePicker() {
-                return this.pickedBehavior === setHex;
-            },
-            showPlayerPicker() {
-                const b = this.pickedBehavior;
-                return b === buildRoad || b === buildTown || b === buildCity;
-            },
-            showPortTypePicker() {
-                return this.pickedBehavior === setPort;
-            },
-            showShowHexInfo() {
-                return this.pickedBehavior === showHexInfo;
-            }
-        },
-        methods: {
-            click(behavior) {
-                this.pickedBehavior = behavior;
-                boardRenderer.behavior = behavior;
-            },
-            chitTypeChanged(chitType) {
-                setChit.chitType = chitType;
-            },
-            hexTypeChanged(hexType) {
-                setHex.hexType = hexType;
-            },
-            playerChanged(player) {
-                buildTown.player = player;
-                buildCity.player = player;
-                buildRoad.player = player;
-            },
-            portTypeChanged(portType) {
-                setPort.portType = portType;
-            }
-        },
-        mounted() {
-            const boardDesign = new Standard4pDesign();
-            // boardDesign.generateBoardForPlay();
-            var brEl = this.$refs["board-renderer"];
-            boardRenderer = new BoardRenderer(brEl, boardDesign, setHex);
-            this.removeHexChangedHandler = showHexInfo.hexChanged((oldHex, newHex) => {
-                this.hex = newHex;
-            });
-        },
-        destroyed() {
-            boardRenderer.dispose();
-            this.removeHexChangedHandler();
+export default {
+    name: 'tech-demo',
+    components: {
+        ChitTypePicker, HexTypePicker, PlayerPicker, PortTypePicker, ShowHexInfo
+    },
+    data() {
+        return {
+            setChit: setChit,
+            behaviors: [
+                new bb.NoBehavior(),
+                new bb.EmphasizeHoveredObject(),
+                setHex,
+                setChit,
+                new bb.CompositeBehavior(new bb.EmphasizeHoveredObject(), new bb.ShowAllEdges()),
+                new bb.ShowAllNodes(),
+                new bb.ShowNodesOfClickedHex(),
+                new bb.ShowAllEdges(),
+                new bb.ShowEdgesOfClickedHex(),
+                new bb.ShowEdgesOfClickedNode(),
+                setPort,
+                new bb.MoveRobber(),
+                buildTown,
+                buildCity,
+                buildRoad,
+                showHexInfo,
+            ],
+            pickedBehavior: new bb.NoBehavior(),
+            hex: null,
         }
+    },
+    computed: {
+        showHexTypePicker() {
+            return this.pickedBehavior === setHex;
+        },
+        showPlayerPicker() {
+            const b = this.pickedBehavior;
+            return b === buildRoad || b === buildTown || b === buildCity;
+        },
+        showPortTypePicker() {
+            return this.pickedBehavior === setPort;
+        },
+        showShowHexInfo() {
+            return this.pickedBehavior === showHexInfo;
+        }
+    },
+    methods: {
+        click(behavior) {
+            this.pickedBehavior = behavior;
+            boardRenderer.behavior = behavior;
+        },
+        chitTypeChanged(chitType) {
+            setChit.chitType = chitType;
+        },
+        hexTypeChanged(hexType) {
+            setHex.hexType = hexType;
+        },
+        playerChanged(player) {
+            buildTown.player = player;
+            buildCity.player = player;
+            buildRoad.player = player;
+        },
+        portTypeChanged(portType) {
+            setPort.portType = portType;
+        }
+    },
+    mounted() {
+        const boardDesign = new Standard4pDesign();
+        // boardDesign.generateBoardForPlay();
+        var brEl = this.$refs["board-renderer"];
+        boardRenderer = new BoardRenderer(brEl, boardDesign, setHex);
+        this.removeHexChangedHandler = showHexInfo.hexChanged((oldHex, newHex) => {
+            this.hex = newHex;
+        });
+    },
+    destroyed() {
+        boardRenderer.dispose();
+        this.removeHexChangedHandler();
     }
+}
 </script>
 
 <style scoped>

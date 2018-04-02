@@ -1,7 +1,8 @@
-var proto = require("../../../src/generated/data_pb");
+import { jsettlers as pb } from "../../../src/generated/data";
 
 import {Renderer} from "./renderer.js";
 import {Util} from "../../util.js";
+import { Port } from "../../port";
 
 export class HexPartRenderer  extends Renderer{
     constructor(partIndex) {
@@ -60,9 +61,8 @@ export class HexPartRenderer  extends Renderer{
         this.mesh.material.color = hovered ? new THREE.Color(0xaaaaaa) : new THREE.Color(0xffffff);
     }
     set portType(portType) {
-        var portName = Util.getEnumName(proto.PortType, portType);
-        var humanName = Util.getPascalCasedName(portName);
-        var fileName = `doc/images/${humanName}port.png`;
+        const portName = Port.fromType(portType).name;
+        var fileName = `doc/images/${portName}Port.png`;
         var texture = new THREE.TextureLoader().load(fileName);
         this.mesh.material.map = texture;
         this.mesh.material.needsUpdate = true;

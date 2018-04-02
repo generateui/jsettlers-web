@@ -1,4 +1,4 @@
-var proto = require("../../src/generated/data_pb");
+import { jsettlers as pb } from "../../src/generated/data";
 import {GameAction} from "./gameAction.js";
 
 export class RejectOffer extends GameAction {
@@ -6,7 +6,15 @@ export class RejectOffer extends GameAction {
         super();
 
         config = config || {};
+        this.playerId = config.playerId;
         this.player = config.player;
+        this.reason = config.reason || pb.RejectOffer.Reason.NotGiven;
+        this.tradeOffer = config.tradeOffer || null;
+        if (config.tradeOfferId !== undefined) {
+            this.tradeOfferId = config.tradeOfferId;
+        } else if (config.tradeOffer !== undefined) {
+            this.tradeOfferId = config.tradeOffer.id;
+        }
     }
     get isTradeResponse() {
         return true;
@@ -16,23 +24,20 @@ export class RejectOffer extends GameAction {
         tradeOffer.responses.set(this.player, this);
         game.phase.rejectOffer(game, this);
     }
-    static createData(player, tradeOffer, reason) {
-        if (reason === undefined) {
-            // TODO: implement reject reasons
-            reason = proto.RejectOffer.Reason.NOT_GIVEN;
-        }
-        const rejectOffer = new proto.RejectOffer();
-        rejectOffer.setTradeOfferId(tradeOffer.id);
-        rejectOffer.setReason(reason);
-        const action = new proto.GameAction();
-        action.setPlayerId(player.id);
-        action.setRejectOffer(rejectOffer);
-        return action;
+    get data() {
+        return pb.GameAction.create({
+            playerId: this.player.id,
+            rejectOffer: {
+                reason: this.reason,
+                tradeOfferId: this.tradeOfferId
+            }
+        });
     }
     static fromData(data) {
-        const rejectOffer = new RejectOffer();
-        rejectOffer.reason = data.getReason();
-        rejectOffer.tradeOfferId = data.getTradeOfferId();
-        return rejectOffer;
+        return new RejectOffer({
+            playerId: data.playerId,
+            reason: data.rejectOffer.reason,
+            tradeOfferId: data.rejectOffer.tradeOfferId
+        });
     }
 }

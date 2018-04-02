@@ -30,7 +30,7 @@
                 <popper trigger="hover" :options="{placement: 'right'}">
                     <div class="popper ports">
                         <div v-for="port in player.ports.items">
-                            <img :src="`doc/images/${getPortName(port)}PortIcon48.png`" class="port" />
+                            <img :src="`doc/images/${port.name}Icon48.png`" class="port" />
                         </div>
                     </div>
                     <div slot="reference">
@@ -214,15 +214,19 @@
                 </div>
 
         </div>
-        <div v-if="player === game.playerOnTurn" class="is-on-turn-indicator indicator">
-            <span class="indicator-arrow">🡐</span>
+        <div  class="is-on-turn-indicator indicator">
+            <span v-if="player === game.playerOnTurn && player !== game.winner" class="player-on-turn-arrow">🡐</span>
+            <div v-if="player === game.winner">
+                <span class="winner-emoji">🏆</span>
+                <span class="winner-message">{{player.user.name}} wins!</span>
+            </div>
             <!-- <span class="indicator-text">its your turn</span> -->
         </div>
     </div>
 </template>
 
 <script>
-var proto = require("../src/generated/data_pb");
+import { jsettlers as pb } from "../src/generated/data";
 import Popper from 'vue-popperjs';
 import ResourceListView from './ResourceListView.vue';
 import PopperJs from "../node_modules/popper.js/dist/esm/popper.js";
@@ -256,9 +260,6 @@ export default {
         }
     },
     methods: {
-        getPortName(port) {
-            return Util.getEnumName(proto.PortType, port.type).toLowerCase();
-        },
         showAction: async function(action) {
             // show resources gained for all player who gain
             const isRollDiceWithResources = action instanceof RollDice && action.productionByPlayer.has(this.player);
@@ -282,8 +283,8 @@ export default {
     mounted() {
         var el = this.$el;
         var popupEl = this.$refs["popup-" + this.player.id]
-        var x = new PopperJs(el, popupEl, { placement: 'right'});
-        x.update();
+        var popup = new PopperJs(el, popupEl, { placement: 'right'});
+        popup.update();
     }
 }
 </script>
@@ -443,6 +444,10 @@ h3 {
     position: relative;
     color: white;
 }
+.winner-indicator {
+    position: relative;
+    color: white;
+}
 
 /** To make indicator relative, there must be an element before it which is absolute */
 .indicator:before {
@@ -457,7 +462,7 @@ h3 {
     top: -100%;
     pointer-events: none;
 }
-.indicator-arrow {
+.player-on-turn-arrow {
     font-size: 91px;
     height: 91px;
     line-height: 91px;
@@ -468,6 +473,16 @@ h3 {
     font-size: 24px;
     height: 91px;
     line-height: 91px;
+}
+.winner-emoji {
+    font-size: 72px;
+    height: 91px;
+    line-height: 91px;
+    font-weight: 900;
+}
+.winner-message {
+    font-size: 32px;
+    color: white;
 }
 
 </style>

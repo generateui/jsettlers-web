@@ -1,7 +1,5 @@
-require('babel-register')();
-var proto = require("../src/generated/data_pb")
-var assert = require('assert');
-require("../src/generic/shims");
+import { jsettlers as pb } from "../src/generated/data"
+import * as assert from "assert";
 import {Node} from "../src/node";
 import {Coord3D} from "../src/coord";
 

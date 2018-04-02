@@ -1,5 +1,5 @@
 <template>
-    <ol id="action-log">
+    <ol id="action-log" reversed>
         <li v-for="action in actions" :key="action.id">
             <div id="build-city-view" class="item-wrapper" v-if="action instanceof BuildCity">
                 <img :src="`doc/images/City${action.player.color.name}48.png`">
@@ -23,35 +23,35 @@
             
             <div id="play-development-card-view" class="item-wrapper" v-if="action instanceof PlayDevelopmentCard">
                 <div class="development-card" v-if="action.developmentCard instanceof YearOfPlenty">
-                <img src="doc/images/PlayDevelopmentCard48.png">
-                <span>{{action.player.user.name}} played a </span>
+                    <img src="doc/images/PlayDevelopmentCard48.png">
+                    <span>{{action.player.user.name}} played a </span>
                     <img src="doc/images/YearOfPlentyLogo48.png">
                     <span>{{action.developmentCard.name}} and got</span>
                     <resource-list-view :size="24" :resources="action.developmentCard.resourceList"></resource-list-view>
                 </div>
                 <div class="development-card" v-if="action.developmentCard instanceof Soldier">
-                <img src="doc/images/PlayDevelopmentCard48.png">
-                <span>{{action.player.user.name}} played a </span>
+                    <img src="doc/images/PlayDevelopmentCard48.png">
+                    <span>{{action.player.user.name}} played a </span>
                     <img src="doc/images/SoldierLogo48.png">
                     <span>{{action.developmentCard.name}}</span>
                 </div>
                 <div class="development-card" v-if="action.developmentCard instanceof Monopoly">
-                <img src="doc/images/PlayDevelopmentCard48.png">
-                <span>{{action.player.user.name}} played a </span>
+                    <img src="doc/images/PlayDevelopmentCard48.png">
+                    <span>{{action.player.user.name}} played a </span>
                     <img src="doc/images/MonopolyLogo48.png">
                     <span>{{action.developmentCard.name}} and got</span>
                     <resource-list-view :size="24" :resources="action.developmentCard.stolen"></resource-list-view>
                 </div>
                 <div class="development-card" v-if="action.developmentCard instanceof VictoryPoint">
-                <img src="doc/images/PlayDevelopmentCard48.png">
-                <span>{{action.player.user.name}} played a </span>
-                    <img src="doc/images/YearOfPlentyLogo48.png">
+                    <img src="doc/images/PlayDevelopmentCard48.png">
+                    <span>{{action.player.user.name}} played a </span>
+                    <img src="doc/images/VictoryPointLogo48.png">
                     <span>{{action.developmentCard.name}} and gained one victory point</span>
                 </div>
                 <div class="development-card" v-if="action.developmentCard instanceof RoadBuilding">
-                <img src="doc/images/PlayDevelopmentCard48.png">
-                <span>{{action.player.user.name}} played a </span>
-                    <img src="doc/images/YearOfPlentyLogo48.png">
+                    <img src="doc/images/PlayDevelopmentCard48.png">
+                    <span>{{action.player.user.name}} played a </span>
+                    <img src="doc/images/RoadBuildingLogo48.png">
                     <span>{{action.developmentCard.name}} and got two free roads</span>
                 </div>
             </div>
@@ -69,7 +69,7 @@
             <div id="rob-player-view" class="item-wrapper" v-if="action instanceof RobPlayer">
                 <img src="doc/images/RobPlayer48.png">
                 <span v-if="action.opponent !== null">{{action.player.user.name}} robbed {{action.opponent.user.name}} and stole a </span>
-                <resource-list-view :size="24" :resources="action.resourceList"></resource-list-view>
+                <resource-list-view :size="24" :resources="action.resources"></resource-list-view>
                 <span v-if="action.opponent === null">{{action.player.user.name}} robbed no one. How refreshing!</span>
             </div>
             
@@ -91,9 +91,9 @@
             <div id="trade-player-view" class="item-wrapper" v-if="action instanceof CounterOffer">
                 <img src="doc/images/CounterOffer48.png">
                 <span>{{action.player.user.name}} counter-offers </span>
-                <resource-list-view :size="24" :resources="action.offeredResourceList"></resource-list-view>
+                <resource-list-view :size="24" :resources="action.offered"></resource-list-view>
                 <span>for</span>
-                <resource-list-view :size="24" :resources="action.wantedResourceList"></resource-list-view>
+                <resource-list-view :size="24" :resources="action.wanted"></resource-list-view>
             </div>
             
             <div id="trade-player-view" class="item-wrapper" v-if="action instanceof AcceptOffer">
@@ -109,9 +109,9 @@
             <div id="trade-player-view" class="item-wrapper" v-if="action instanceof OfferTrade">
                 <img src="doc/images/OfferTrade48.png">
                 <span>{{action.player.user.name}} offered</span>
-                <resource-list-view :size="24" :resources="action.offeredResourceList"></resource-list-view>
+                <resource-list-view :size="24" :resources="action.offered"></resource-list-view>
                 <span>for</span>
-                <resource-list-view :size="24" :resources="action.wantedResourceList"></resource-list-view>
+                <resource-list-view :size="24" :resources="action.wanted"></resource-list-view>
             </div>
             
             <div id="trade-bank-view" class="item-wrapper" v-if="action instanceof TradeBank">
@@ -125,6 +125,11 @@
             <div id="end-turn-view" class="item-wrapper" v-if="action instanceof EndTurn">
                 <img src="doc/images/EndTurn48.png">
                 <span>{{action.player.user.name}} ended his turn</span>
+            </div>
+
+            <div id="claim-victory-view" class="item-wrapper" v-if="action instanceof ClaimVictory">
+                <img id="claim-victory-image" src="doc/images/ClaimVictory48.png">
+                <span>{{action.player.user.name}} has won the game!</span>
             </div>
 
         </li>
@@ -148,9 +153,12 @@ export default {
 <style scoped>
 ol {
     color: white;
+    display: flex;
+    flex-direction: column-reverse;
 }
 li {
     list-style: none;
+    flex: 0 0 auto;
 }
 .item-wrapper {
     display: table;
@@ -161,15 +169,19 @@ li {
     padding-left: 0.25em;
 }
 .development-card {
-    display: flex;
+    display: inline;
     align-items: center;
 }
 .development-card img {
     filter: invert(100%);
     margin-left: 0.25em;
     margin-right: 0.25em;
+    display: inline-block;
 }
 img {
     height: 24px;
+}
+#claim-victory-image {
+    filter: invert(100%);
 }
 </style>

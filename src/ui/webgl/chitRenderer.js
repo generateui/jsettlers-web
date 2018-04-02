@@ -1,4 +1,4 @@
-var proto = require("../../../src/generated/data_pb");
+import { jsettlers as pb } from "../../../src/generated/data";
 import {Renderer, EMPHASIS} from "./renderer.js";
 import {Util} from "../../util.js";
 
@@ -44,7 +44,7 @@ export class ChitRenderer extends Renderer {
         this._updateVisibility();
     }
     _updateVisibility() {
-        const show = this.chit != null && this._chit.type !== proto.ChitType.CHITNONE && this._chit.type !== undefined;
+        const show = this.chit != null && this._chit.type !== pb.ChitType.ChitNone && this._chit.type !== undefined;
         this.mesh.visible = show;
     }
     get chit() { return this._chit; }
@@ -55,10 +55,10 @@ export class ChitRenderer extends Renderer {
         this._updateVisibility();
     }
     _getTexture(chit) {
-        if (chit !== null && chit.type === proto.ChitType.CHITNONE || chit.type === undefined) {
+        if (chit !== null && chit.type === pb.ChitType.ChitNone || chit.type === undefined) {
             return null;
         }
-        const name = Util.getEnumName(proto.ChitType, chit.type);
+        const name = Util.getEnumName(pb.ChitType, chit.type);
         var texture = new THREE.TextureLoader().load(`doc/images/${name.toPascalCase()}.png`);
         return texture;
     }

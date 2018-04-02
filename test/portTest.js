@@ -1,8 +1,7 @@
-require('babel-register')();
-var proto = require("../src/generated/data_pb")
-var assert = require('assert');
-require("../src/generic/shims");
-import {PortList, Any4To1Port, Timber2To1Port, Any3To1Port, Wheat2To1Port, Sheep2To1Port, Clay2To1Port} from "../src/port";
+import { jsettlers as pb } from "../src/generated/data"
+import * as assert from "assert";
+import { PortList, Any4To1Port, Timber2To1Port, Any3To1Port, Wheat2To1Port, 
+    Sheep2To1Port, Clay2To1Port } from "../src/port";
 import { Timber, ResourceList, Wheat, Brick, Ore, Sheep } from '../src/resource';
 
 describe("PortList", () => {
@@ -14,7 +13,7 @@ describe("PortList", () => {
             portList.add(new Any4To1Port());
             portList.add(new Any3To1Port());
 
-            assert.ok(portList.bestPortForResourceType(proto.ResourceType.TIMBER) === timberPort);
+            assert.ok(portList.bestPortForResourceType(pb.ResourceType.Timber) === timberPort);
         });
         it("any 3:1 when having port of other types", () => {
             const portList = new PortList();
@@ -24,9 +23,9 @@ describe("PortList", () => {
             portList.add(new Wheat2To1Port());
             portList.add(new Sheep2To1Port());
 
-            assert.ok(portList.bestPortForResourceType(proto.ResourceType.TIMBER) === any31port);
-            assert.ok(portList.bestPortForResourceType(proto.ResourceType.ORE) === any31port);
-            assert.ok(portList.bestPortForResourceType(proto.ResourceType.BRICK) === any31port);
+            assert.ok(portList.bestPortForResourceType(pb.ResourceType.Timber) === any31port);
+            assert.ok(portList.bestPortForResourceType(pb.ResourceType.Ore) === any31port);
+            assert.ok(portList.bestPortForResourceType(pb.ResourceType.Brick) === any31port);
         });
     });
     describe("amountGold", () => {

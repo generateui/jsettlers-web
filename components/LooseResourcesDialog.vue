@@ -35,7 +35,10 @@
         methods: {
           looseResources() {
               const resources = new ResourceList(this.selectedResources);
-              const looseResources = LooseResources.createData(this.game.player, resources);
+              const looseResources = new LooseResources({
+                  player: this.game.player,
+                  resources: resources
+              });
               this.$emit("looseResources", looseResources);
           }
         },

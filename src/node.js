@@ -1,4 +1,4 @@
-var proto = require("../src/generated/data_pb");
+import { jsettlers as pb } from "../src/generated/data";
 import {Edge} from "./edge.js";
 import {Coord} from "./coord.js";
 
@@ -69,11 +69,17 @@ export class Node {
             ((c3.hash.hashCode() / 3) >> 0);
     }
     get data() {
-        var data = new proto.Node();
-        data.setCoord1(this.coord1.data);
-        data.setCoord2(this.coord2.data);
-        data.setCoord3(this.coord3.data);
-        return data;
+        return pb.Node.create({
+            coord1: this.coord1.data,
+            coord2: this.coord2.data,
+            coord3: this.coord3.data,
+        });
+    }
+    static parse(nodeExpression) {
+        const coord1 = Coord.parse(nodeExpression.coord()[0]);
+        const coord2 = Coord.parse(nodeExpression.coord()[1]);
+        const coord3 = Coord.parse(nodeExpression.coord()[2]);
+        return new Node(coord1, coord2, coord3);
     }
     static parse(nodeExpression) {
         const coord1 = Coord.parse(nodeExpression.coord()[0]);
@@ -82,9 +88,9 @@ export class Node {
         return new Node(coord1, coord2, coord3);
     }
     static fromData(data) {
-        const coord1 = Coord.fromData(data.getCoord1());
-        const coord2 = Coord.fromData(data.getCoord2());
-        const coord3 = Coord.fromData(data.getCoord3());
+        const coord1 = Coord.fromData(data.coord1);
+        const coord2 = Coord.fromData(data.coord2);
+        const coord3 = Coord.fromData(data.coord3);
         return new Node(coord1, coord2, coord3);
     }
     toString() {

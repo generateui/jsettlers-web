@@ -1,4 +1,4 @@
-var proto = require("../../src/generated/data_pb");
+import { jsettlers as pb } from "../../src/generated/data";
 import { ResourceList } from "../resource";
 import { GameAction } from "./gameAction";
 
@@ -7,35 +7,29 @@ export class TradeBank extends GameAction {
         super();
 
         config = config || {};
+        this.playerId = config.playerId;
         this.player = config.player;
-        this.offeredResources = null; // ResourceType[]
-        this.requestedResources = null; // ResourceType[]
-        this.offered = null; // ResourceList
-        this.wanted = null; // ResourceList
+        this.offered = config.offered; // ResourceList
+        this.wanted = config.wanted; // ResourceList
     }
     perform(game) {
-        const requestedResourceList = new ResourceList(this.requestedResources);
-        const offeredResourceList = new ResourceList(this.offeredResources);
-        game.bank.resources.moveFrom(this.player.resources, offeredResourceList);
-        this.player.resources.moveFrom(game.bank.resources, requestedResourceList);
-    }
-    setReferences(game) {
-        this.wanted = new ResourceList(this.requestedResources);
-        this.offered = new ResourceList(this.offeredResources);
+        game.bank.resources.moveFrom(this.player.resources, this.offered);
+        this.player.resources.moveFrom(game.bank.resources, this.wanted);
     }
     static fromData(data) {
-        const tradeBank = new TradeBank();
-        tradeBank.offeredResources = data.getOfferedResourcesList();
-        tradeBank.requestedResources = data.getRequestedResourcesList();
-        return tradeBank;
+        return new TradeBank({
+            playerId: data.playerId,
+            wanted: new ResourceList(data.tradeBank.wanted),
+            offered: new ResourceList(data.tradeBank.offered)
+        });
     }
-    static createData(player, offeredResources, requestedResources) {
-        const action = new proto.GameAction();
-        action.setPlayerId(player.id);
-        var tradeBank = new proto.TradeBank();
-        tradeBank.setOfferedResourcesList(offeredResources);
-        tradeBank.setRequestedResourcesList(requestedResources);
-        action.setTradeBank(tradeBank);
-        return action;
+    get data() {
+        return pb.GameAction.create({
+            playerId: this.player.id,
+            tradeBank: {
+                offered: this.offered.toResourceTypeArray(),
+                wanted: this.wanted.toResourceTypeArray()
+            }
+        });
     }
 }

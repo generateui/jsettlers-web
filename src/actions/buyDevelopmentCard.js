@@ -1,4 +1,4 @@
-var proto = require("../../src/generated/data_pb");
+import { jsettlers as pb } from "../../src/generated/data";
 
 import {GameAction} from "./gameAction.js";
 import { DevelopmentCard, VictoryPoint, YearOfPlenty, RoadBuilding, 
@@ -9,33 +9,42 @@ export class BuyDevelopmentCard extends GameAction {
         super();
 
         config = config || {};
+        this.playerId = config.playerId;
         this.player = config.player;
-        this.developmentCard = null;
+        this.developmentCard = config.developmentCard || null;
     }
     static fromData(data) {
-        const buyDev = new BuyDevelopmentCard();
-        if (data.hasDevelopmentCard()) {
-            buyDev.developmentCard = DevelopmentCard.fromData(
-                data.getDevelopmentCard());
+        let developmentCard = null;
+        if (data.buyDevelopmentCard.developmentCard) {
+            developmentCard = DevelopmentCard.fromData(
+                data.buyDevelopmentCard.developmentCard);
         }
-        return buyDev;
+        return new BuyDevelopmentCard({
+            playerId: data.playerId,
+            developmentCard: developmentCard
+        });
     }
-    static createData(player, developmentCard) {
-        const action = new proto.GameAction();
-        action.setPlayerId(player.id);
-        const buyDev = new proto.BuyDevelopmentCard();
-        if (developmentCard instanceof VictoryPoint) {
-            buyDev.setVictoryPoint(developmentCard.data);
-        } else if(developmentCard instanceof Soldier) {
-            buyDev.setSoldier(developmentCard.data);
-        } else if(developmentCard instanceof RoadBuilding) {
-            buyDev.setRoadBuilding(developmentCard.data);
-        } else if(developmentCard instanceof YearOfPlenty) {
-            buyDev.setYearOfPlenty(developmentCard.data);
-        } else if(developmentCard instanceof Monopoly) {
-            buyDev.setMonopoly(developmentCard.data);
+    get data() {
+        const dc = this.developmentCard;
+        const action = new pb.GameAction.create({
+            playerId: this.player.id
+        });
+        const buyDev = {};
+        if (dc !== null) {
+            buyDev.developmentCard = dc.data;
+            // if (dc instanceof VictoryPoint) {
+            //     buyDev.victoryPoint = dc.data;
+            // } else if(dc instanceof Soldier) {
+            //     buyDev.soldier = dc.data;
+            // } else if(dc instanceof RoadBuilding) {
+            //     buyDev.roadBuilding = dc.data;
+            // } else if(dc instanceof YearOfPlenty) {
+            //     buyDev.yearOfPlenty = dc.data;
+            // } else if(dc instanceof Monopoly) {
+            //     buyDev.monopoly = dc.data;
+            // }
         }
-        action.setBuyDevelopmentCard(buyDev);
+        action.buyDevelopmentCard = buyDev;
         return action;
     }
     static parse(buyDevelopmentCardExpression, resolver) {

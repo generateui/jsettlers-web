@@ -1,5 +1,4 @@
 <template id="modal-template">
-  <!-- <transition name="modal"> -->
     <div class="modal-mask">
       <div class="modal-wrapper">
         <div class="modal-container">
@@ -23,54 +22,50 @@
 
           <div class="modal-footer">
             <slot name="footer">
-              <!-- <span v-if="resourceType === null">No resource type chosen yet</span> -->
-              <!-- <span v-if="resourceType !== null">You selected {{getName(resourceType)}}.</span> -->
               <button 
                 class="modal-default-button" 
                 @click="$emit('close', selectedResourceTypes)" 
                 :disabled="selectedResourceTypes.length !== 2">
                 <span v-if="selectedResourceTypes.length !== 2">Can't do...</span>
                 <span v-if="selectedResourceTypes.length === 2">OK</span>
-                <!-- <span v-if="resourceType !== null">Mono the {{getName(resourceType)}}!</span> -->
               </button>
             </slot>
           </div>
         </div>
       </div>
     </div>
-  <!-- </transition> -->
 </template>
 
 <script>
-    var proto = require("../src/generated/data_pb");
-    import {Util} from "../src/util.js";
-    
-    export default {
-        name: 'year-of-plenty-dialog',
-        data() {
-            return {
-                resourceTypes: [
-                    proto.ResourceType.WHEAT,
-                    proto.ResourceType.TIMBER,
-                    proto.ResourceType.ORE,
-                    proto.ResourceType.SHEEP,
-                    proto.ResourceType.BRICK,
-                ],
-                selectedResourceTypes: []
-            }
+import { jsettlers as pb } from "../src/generated/data";
+import {Util} from "../src/util.js";
+
+export default {
+    name: 'year-of-plenty-dialog',
+    data() {
+        return {
+            resourceTypes: [
+                pb.ResourceType.Wheat,
+                pb.ResourceType.Timber,
+                pb.ResourceType.Ore,
+                pb.ResourceType.Sheep,
+                pb.ResourceType.Brick,
+            ],
+            selectedResourceTypes: []
+        }
+    },
+    methods: {
+        getName: function(resourceType) {
+            return Util.getEnumName(pb.ResourceType, resourceType);
         },
-        methods: {
-          getName: function(resourceType) {
-            return Util.getEnumName(proto.ResourceType, resourceType);
-          },
-          pickResourceType(resourceType) {
-            this.$data.selectedResourceTypes.push(resourceType);
-          },
-          unpickResourceType(resourceType) {
-            this.$data.selectedResourceTypes.remove(resourceType);
-          }
+        pickResourceType(resourceType) {
+            this.selectedResourceTypes.push(resourceType);
+        },
+        unpickResourceType(resourceType) {
+            this.selectedResourceTypes.remove(resourceType);
         }
     }
+}
 </script>
 
 <style scoped>

@@ -1,4 +1,4 @@
-var proto = require("../../src/generated/data_pb");
+import { jsettlers as pb } from "../../src/generated/data";
 import {GameAction} from "./gameAction.js";
 import {ResourceList, Resource} from "../resource.js";
 import { MoveRobber } from "./moveRobber";
@@ -6,13 +6,6 @@ import { RobPlayer } from "./robPlayer";
 import { LooseResources } from "./looseResources";
 import { LooseResourcesMoveRobberRobPlayer } from "../expectation";
 
-export class Production {
-    constructor(playerId, resources) {
-        this.playerId = null;
-        this.resources = null;
-        this.player = null;
-    }
-}
 export class Dice {
     constructor(die1, die2) {
         this.die1 = die1;
@@ -22,19 +15,10 @@ export class Dice {
         return this.die1 + this.die2;
     }
     static fromData(data) {
-        return new Dice(data.getDie1(), data.getDie2());
-    }
-    static createData(die1, die2) {
-        const dice = new proto.RollDice.Dice();
-        dice.setDie1(die1);
-        dice.setDie2(die2);
-        return dice;
+        return new Dice(data.die1, data.die2);
     }
     get data() {
-        const dice = new proto.RollDice.Dice();
-        dice.setDie1(this.die1);
-        dice.setDie2(this.die2);
-        return dice;
+        return pb.RollDice.Dice.create({ die1: this.die1, die2: this.die2 });
     }
 }
 export class RollDice extends GameAction {
@@ -42,22 +26,34 @@ export class RollDice extends GameAction {
         super();
 
         config = config || {};
+        this.playerId = config.playerId;
         this.player = config.player;
-        this.dice = null;
-        this.productions = config.productions;
+        this.dice = config.dice || null;
+        this.productionByPlayerId = config.productionByPlayerId;
         this.productionByPlayer = config.productionByPlayer || new Map(); // <Player, ResourceList>
     }
-    static createData(player) {
-        const action = new proto.GameAction();
-        action.setPlayerId(player.id);
-        const rollDice =  new proto.RollDice();
-        action.setRollDice(rollDice);
-        return action;
+    get data() {
+        const data = pb.GameAction.create({
+            playerId: this.player.id,
+            rollDice: { }
+        });
+        if (this.productionByPlayer !== null) {
+            var productions = [];
+            for (var [player, resources] of this.productionByPlayer.entries()) {
+                var production = pb.RollDice.Production.create({
+                    playerId: player.id,
+                    resources: resources.toResourceTypeArray()
+                });
+                productions.push(production);
+            }
+            data.rollDice.productions = productions;
+        }
+        if (this.dice !== null) {
+            data.rollDice.dice = this.dice.data;
+        }
+        return data;
     }
     static createDataDebug(player, number) {
-        const action = new proto.GameAction();
-        action.setPlayerId(player.id);
-        const rollDice = new proto.RollDice();
         let die1 = null;
         let die2 = null;
         if (number < 8) {
@@ -67,28 +63,34 @@ export class RollDice extends GameAction {
             die1 = 6;
             die2 = number - 6;
         }
-        rollDice.setDice(Dice.createData(die1, die2));
-        action.setRollDice(rollDice);
-        return action;
+        return pb.GameAction.create({
+            playerId: player.id,
+            rollDice: {
+                dice: new Dice(die1, die2).data
+            }
+        });
     }
     static fromData(data) {
         const rollDice = new RollDice();
-        if (data.hasDice()) {
-            rollDice.dice = Dice.fromData(data.getDice());
+        let dice = null;
+        if (data.rollDice.dice) {
+            dice = Dice.fromData(data.rollDice.dice);
         }
-        const productions = [];
-        for (var production of data.getProductionsList()) {
-            const playerId = production.getPlayerId();
-            const resources = production.getProduceList();
-            productions.push(new Production(playerId, resources));
+        const productionByPlayerId = new Map();
+        for (var production of data.rollDice.productions) {
+            const playerId = production.playerId;
+            const resources = new ResourceList(production.resources);
+            productionByPlayerId.set(playerId, resources);
         }
-        rollDice.productions = productions;
-        return rollDice;
+        return new RollDice({
+            playerId: data.playerId,
+            dice: dice,
+            productionByPlayerId: productionByPlayerId
+        });
     }
     setReferences(game) {
-        for (var production of this.productions) {
-            const player = game.getPlayerById(production.playerId);
-            const resources = new ResourceList(production.resources);
+        for (var [playerId, resources] of this.productionByPlayerId) {
+            const player = game.getPlayerById(playerId);
             this.productionByPlayer.set(player, resources);
         }
     }
@@ -114,7 +116,7 @@ export class RollDice extends GameAction {
             // - the 3 cities produce 6 resources
             // - the bank has 3 timber
             // This means 3 shortage must be divided evenly. This algorithm:
-            // - loops per resource
+            // - loops per ResourceType
             // - then per player in order of turns, starting with the player who's turn it is
             // - distributes 1 resource per loop
             // Per example, if player A is on turn, the loop goes as follows:
@@ -129,8 +131,8 @@ export class RollDice extends GameAction {
             // create a copy, so when we subtract we dont immediately do it from bank
             const bankResources = new ResourceList(game.bank.resources);
             const affectedHexes = Array.from(game.board.hexes.values())
-                .filter(h => h.chit.number !== null && 
-                    h.chit.number === this.dice.total && 
+                .filter(h => h.chit.number !== null &&
+                    h.chit.number === this.dice.total &&
                     h.coord !== game.board.robber.coord);
 
             // first, get total theoretical production and get total theoretical production by player
@@ -210,7 +212,7 @@ export class RollDice extends GameAction {
                                 continue playerIndexLoop;
                             }
                             resourceCountByPlayer.get(player).get(resourceType).pop();
-                            productionByPlayer.get(player).add(resourceType);
+                            this.productionByPlayer.get(player).add(resourceType);
                             bankResources.remove(resourceType);
                         }
                     }

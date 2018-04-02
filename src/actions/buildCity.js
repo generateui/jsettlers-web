@@ -1,4 +1,4 @@
-var proto = require("../../src/generated/data_pb");
+import { jsettlers as pb } from "../../src/generated/data";
 import {City} from "../city.js";
 import {Town} from "../town.js";
 import {GameAction} from "./gameAction.js";
@@ -9,6 +9,7 @@ export class BuildCity extends GameAction {
         super();
 
         config = config || {};
+        this.playerId = config.playerId;
         this.player = config.player;
         this.node = config.node;
     }
@@ -22,16 +23,24 @@ export class BuildCity extends GameAction {
         game.bank.resources.moveFrom(this.player.resources, City.cost);
     }
     static fromData(data) {
-        const node = Node.fromData(data.getNode());
-        return new BuildCity({ node: node });
+        return new BuildCity({
+            playerId: data.playerId,
+            node: Node.fromData(data.buildCity.node)
+        });
     }
-    static createData(player, node) {
-        const action = new proto.GameAction();
-        action.setPlayerId(player.id);
-        var buildCity = new proto.BuildCity();
-        buildCity.setNode(node.data);
-        action.setBuildCity(buildCity);
-        return action;
+    get data() {
+        return pb.GameAction.create({
+            playerId: this.player.id,
+            buildCity: {
+                node: this.node.data
+            }
+        });
+    }
+    static parse(buildCityExpression, resolver) {
+        const expression = buildCityExpression;
+        const player = resolver.parsePlayer(expression.player());
+        const node = resolver.parseNode(expression.node());
+        return new BuildCity({ player: player, node: node });
     }
     static parse(buildCityExpression, resolver) {
         const expression = buildCityExpression;

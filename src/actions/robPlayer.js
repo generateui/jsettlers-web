@@ -1,4 +1,4 @@
-var proto = require("../../src/generated/data_pb");
+import { jsettlers as pb } from "../../src/generated/data";
 import { GameAction } from "./gameAction";
 import { ResourceList } from "../resource";
 
@@ -7,18 +7,15 @@ export class RobPlayer extends GameAction {
         super();
 
         config = config || {};
-        this.opponentId = config.opponent || null;
+        this.playerId = config.playerId;
         this.player = config.player;
-
-        this.opponent = null; // can be null to rob no one
-        this.resourceType = null; // can be null when opponent is null
-        this.resourceList = null;
+        this.opponentId = config.opponentId || null;
+        this.opponent = config.opponent || null; // can be null to rob no one
+        this.resources = config.resources || null; // can be null when opponent is null
     }
     perform(game) {
         if (this.opponent !== null) {
-            const stolen = new ResourceList();
-            stolen.add(this.resourceType);
-            this.player.resources.moveFrom(this.opponent.resources, stolen);
+            this.player.resources.moveFrom(this.opponent.resources, this.resources);
         }
         game.phase.robPlayer(game, this);
     }
@@ -26,7 +23,7 @@ export class RobPlayer extends GameAction {
         if (this.opponent !== null) {
             const index = host.random.intFromZero(this.opponent.resources.length - 1);
             const resource = this.opponent.resources.toArray()[index];
-            this.resourceType = resource.type;
+            this.resources = new ResourceList(resource);
         }
     }
     setReferences(game) {
@@ -34,27 +31,35 @@ export class RobPlayer extends GameAction {
             this.opponent = game.getPlayerById(this.opponentId);
         }
         if (this.resourceType !== null) {
-            this.resourceList = new ResourceList(this.resourceType);
+            this.resources = new ResourceList(this.resourceType);
         }
     }
     static fromData(data) {
-        const robPlayer = new RobPlayer();
-        if (data.hasOpponentId()) {
-            robPlayer.opponentId = data.getOpponentId();
+        let opponentId = null;
+        if (data.robPlayer.opponentId) {
+            opponentId = data.robPlayer.opponentId;
         }
-        if (data.hasResourceType()) {
-            robPlayer.resourceType = data.getResourceType();
+        let resources = null;
+        if (data.robPlayer.resourceType) {
+            resources = new ResourceList(data.robPlayer.resourceType);
         }
-        return robPlayer;
+        return new RobPlayer({
+            playerId: data.playerId,
+            opponentId: opponentId,
+            resources: resources
+        });
     }
-    static createData(player, opponent) {
-        const robPlayer = new proto.RobPlayer();
-        if (opponent !== null) {
-            robPlayer.setOpponentId(opponent.id);
+    get data() {
+        const data = pb.GameAction.create({
+            playerId: this.player.id,
+            robPlayer: { }
+        });
+        if (this.opponent !== null) {
+            data.robPlayer.opponentId = this.opponent.id;
         }
-        const action = new proto.GameAction();
-        action.setPlayerId(player.id);
-        action.setRobPlayer(robPlayer);
-        return action;
+        if (this.resources !== null) {
+            data.robPlayer.resourceType = this.resources.toResourceTypeArray()[0];
+        }
+        return data;
     }
 }

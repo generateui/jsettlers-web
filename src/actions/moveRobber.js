@@ -1,4 +1,4 @@
-var proto = require("../../src/generated/data_pb");
+import { jsettlers as pb } from "../../src/generated/data";
 import { GameAction } from "./gameAction";
 import { Coord } from "../coord";
 
@@ -7,23 +7,25 @@ export class MoveRobber extends GameAction {
         super();
 
         config = config || {};
-        this.coord = config.coord;
+        this.playerId = config.playerId;
         this.player = config.player;
+        this.coord = config.coord;
     }
     perform(game) {
         game.board.robber.coord = this.coord;
     }
-    static createData(player, coord) {
-        const moveRobber = new proto.MoveRobber();
-        moveRobber.setCoord(coord.data);
-        const action = new proto.GameAction();
-        action.setPlayerId(player.id);
-        action.setMoveRobber(moveRobber);
-        return action;
+    get data() {
+        return pb.GameAction.create({
+            playerId: this.player.id,
+            moveRobber: {
+                coord: this.coord.data
+            }
+        });
     }
     static fromData(data) {
-        const moveRobber = new MoveRobber();
-        moveRobber.coord = Coord.fromData(data.getCoord());
-        return moveRobber;
+        return new MoveRobber({
+            playerId: data.playerId,
+            coord: Coord.fromData(data.moveRobber.coord)
+        });
     }
 }

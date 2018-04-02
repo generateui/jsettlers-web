@@ -185,18 +185,26 @@ export default {
             } else if (typeName === "RoadBuilding") {
                 const rb = this.developmentCard;
                 rb.player = this.player;
-                const playRoadBuilding = PlayDevelopmentCard.createData(this.player, rb);
+                const playRoadBuilding = new PlayDevelopmentCard({
+                    player: this.player,
+                    developmentCard: rb
+                });
                 this.$emit('action', playRoadBuilding)
             } else if (typeName === "VictoryPoint") {
                 const vp = this.developmentCard;
                 vp.player = this.player;
-                const playVp = PlayDevelopmentCard.createData(this.player, vp);
+                const playVp = new PlayDevelopmentCard({
+                    player: this.player,
+                    developmentCard: vp
+                });
                 this.$emit('action', playVp)
             } else if (typeName === "Soldier") {
                 const soldier = this.developmentCard;
                 soldier.player = this.player;
-                const playSoldier = PlayDevelopmentCard.createData(this.player, soldier);
-                playSoldier.player = this.player;
+                const playSoldier = new PlayDevelopmentCard({
+                    player: this.player,
+                    developmentCard: soldier
+                });
                 this.$emit('action', playSoldier);
             }
         },
@@ -209,7 +217,10 @@ export default {
             const monopoly = this.developmentCard;
             monopoly.resourceType = resourceType;
             monopoly.player = player;
-            const playMonopoly = PlayDevelopmentCard.createData(player, monopoly);
+            const playMonopoly = new PlayDevelopmentCard({
+                player: player,
+                developmentCard: monopoly
+            });
             this.$emit('action', playMonopoly)
         },
         closeYearOfPlentyDialog(resourceTypes) {
@@ -219,7 +230,10 @@ export default {
             yop.resourceType2 = resourceTypes[1];
             const player = this.player;
             yop.player = player;
-            const playYop = PlayDevelopmentCard.createData(player, yop);
+            const playYop = new PlayDevelopmentCard({
+                player: player,
+                developmentCard: yop
+            });
             this.$emit('action', playYop)
         },
         toggleResource(resource) {
@@ -231,7 +245,10 @@ export default {
         },
         looseResources() {
             const resourceList = new ResourceList(this.selectedResources);
-            const looseResources = LooseResources.createData(this.player, resourceList);
+            const looseResources = new LooseResources({
+                player: this.player,
+                resources: resourceList
+            });
             this.selectedResources.length = 0;
             this.$emit('looseResources', looseResources)
         },
@@ -305,7 +322,6 @@ export default {
     flex: 0 0 auto;
 }
 .wrapper {
-    flex: 1 1 0;
     min-width: 0;
 }
 .resource, .development-card {

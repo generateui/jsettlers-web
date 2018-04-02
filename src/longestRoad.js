@@ -1,5 +1,6 @@
 import { Observable } from "./generic/observable";
 
+/** Route starting with an edge going the direction of a Node */
 class Route {
     //         edge1
     //        /  
@@ -7,7 +8,7 @@ class Route {
     //     🡑  \
     //   edge  edge2
     // The edge is the reference edge. From there we try to look ahead
-    // to edge1 and edge2. 
+    // to edge1 and edge2.
     constructor(config) {
         this.edge = config.edge; // starting edge of this route
         this.node = config.node; // combined with edge makes this the *direction*

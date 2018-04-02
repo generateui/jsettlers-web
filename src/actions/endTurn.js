@@ -1,4 +1,4 @@
-var proto = require("../../src/generated/data_pb");
+import { jsettlers as pb } from "../../src/generated/data";
 import { GameAction } from "./gameAction";
 
 export class EndTurn extends GameAction {
@@ -6,6 +6,7 @@ export class EndTurn extends GameAction {
         super();
 
         config = config || {};
+        this.playerId = config.playerId;
         this.player = config.player;
     }
     perform(game) {
@@ -14,14 +15,15 @@ export class EndTurn extends GameAction {
             this.player.roadBuildingTokens = 0;
         }
     }
-    static createData(player) {
-        const action = new proto.GameAction();
-        action.setPlayerId(player.id);
-        const endTurn = new proto.EndTurn();
-        action.setEndTurn(endTurn);
-        return action;
+    get data() {
+        return pb.GameAction.create({
+            playerId: this.player.id,
+            endTurn: { }
+        });
     }
-    static fromData() {
-        return new EndTurn();
+    static fromData(data) {
+        return new EndTurn({
+            playerId: data.playerId
+        });
     }
 }

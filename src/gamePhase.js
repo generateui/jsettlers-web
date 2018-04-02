@@ -4,7 +4,9 @@ import { RollDice } from "./actions/rollDice";
 import { PlayDevelopmentCard } from "./actions/playDevelopmentCard";
 import { Town } from "./town";
 import { PlaySoldierOrRollDice, PlayTurnActions, BuildTownThenBuildRoad, 
-    LooseResourcesMoveRobberRobPlayer } from "./expectation";
+    LooseResourcesMoveRobberRobPlayer, 
+    EndOfGame,
+    ExpectTradeResponses} from "./expectation";
 import { Road } from "./road";
 
 /** State of the game where certain actions are expected and performed
@@ -37,6 +39,7 @@ export class GamePhase {
     acceptOffer(game, acceptOffer) {}
     rejectOffer(game, rejectOffer) {}
     counterOffer(game, counterOffer) {}
+    claimVictory(game, claimVictory) {}
     canPlaceTownOnBoard(game, player) {}
     /** since the possibilities to build roads & towns depends on the game phase, 
      * the game phase is responsible to returning a list of possibilties. It's
@@ -126,7 +129,8 @@ export class InitialPlacement extends GamePhase {
         for (let edge of buildTown.node.edges) {
             const hex1 = game.board.hexes.get(edge.coord1);
             const hex2 = game.board.hexes.get(edge.coord2);
-            if (hex1.canBuildLandPieces || hex2.canBuildLandPieces) {
+            if ((hex1 !== undefined && hex1.canBuildLandPieces) ||
+                (hex2 !== undefined && hex2.canBuildLandPieces)) {
                 edges.push(edge);
             }
         }
@@ -232,7 +236,7 @@ export class PlayTurns extends GamePhase {
         game.expectation = new PlaySoldierOrRollDice(game);
     }
     offerTrade(game, offerTrade) {
-        game.expectation = new ExpectTradeResponses(game);
+        game.expectation = new ExpectTradeResponses(game, offerTrade);
     }
     acceptOffer(game, acceptOffer) {
         this._tradeResponse(game, acceptOffer);

@@ -7,7 +7,7 @@
 * of a board, the `.showEdges()` method is called on a BoardRenderer. The BoardRenderer
 * instance then takes care to update his rendering to show the edges.
 */
-var proto = require("../../src/generated/data_pb");
+import { jsettlers as pb } from "../../src/generated/data";
 import {Player, User} from "../player.js";
 import {RobberRenderer} from "./webgl/robberRenderer.js";
 import {ChitRenderer} from "./webgl/chitRenderer.js";
@@ -45,7 +45,7 @@ export class SetHex extends BoardBehavior {
     constructor() {
         super();
         // the hextype to use for the setted hex
-        this.hexType = proto.HexType.FOREST; 
+        this.hexType = pb.HexType.Forest; 
     }
     click(boardRenderer, renderer) {
         var hex = renderer.hex;
@@ -62,7 +62,7 @@ export class SetChit extends BoardBehavior {
     constructor() {
         super();
         this.composite = new EmphasizeHoveredObject(r => r.chit !== undefined || r.hex !== undefined);
-        this.chitType = proto.ChitType.HEXFROMBAG;
+        this.chitType = pb.ChitType.HexFromBag;
     }
     click(boardRenderer, renderer) {
         if (renderer instanceof ChitRenderer) {
@@ -231,7 +231,7 @@ export class SetPort {
     constructor() {
         this.selectedHexPartRenderer = null;
         this.selectedHexRenderer = null;
-        this._portType = proto.PortType.Clay2To1;
+        this._portType = pb.PortType.Clay2To1;
     }
     get portType() {
         return this._portType;
