@@ -1,8 +1,4 @@
 node_modules
 
 # generated source files
-data_pb
-dist/build.js
-dist/build.css
 src/generated
-.antlr
