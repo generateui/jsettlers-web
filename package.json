@@ -10,7 +10,9 @@
     "watchify": "watchify -vd -p browserify-hmr -t [ browserify-css index.css ] -e index.js -o dist/build.js",
     "serve": "http-server -o -c 1 -a localhost",
     "test": "mocha --recursive --require babel-core/register ./test/testSetup.js ./test",
-    "script": "mocha --require babel-core/register ./test/scriptTest.js"
+    "script": "mocha --require babel-core/register ./test/scriptTest.js",
+    "build-debug": "browserify -t [ browserify-css index.css ] -e index.js -o dist/build.js",
+    "build-release": "browserify -p tinyify -t [ browserify-css index.css ] -e index.js -o dist/build.js" 
   },
   "repository": {
     "type": "git",
@@ -28,6 +30,7 @@
     "circular-json-es6": "^2.0.2",
     "protobufjs": "^6.8.6",
     "three-js": "^79.0.0",
+    "tinyify": "^2.4.0",
     "vue": "^2.0.1",
     "vue-directive-tooltip": "^1.4.2",
     "vue-markdown": "^2.2.4",
