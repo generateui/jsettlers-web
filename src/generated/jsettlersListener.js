@@ -83,6 +83,15 @@ jsettlersListener.prototype.exitPirate = function(ctx) {
 };
 
 
+// Enter a parse tree produced by jsettlersParser#victoryPointsToWin.
+jsettlersListener.prototype.enterVictoryPointsToWin = function(ctx) {
+};
+
+// Exit a parse tree produced by jsettlersParser#victoryPointsToWin.
+jsettlersListener.prototype.exitVictoryPointsToWin = function(ctx) {
+};
+
+
 // Enter a parse tree produced by jsettlersParser#placementSequence.
 jsettlersListener.prototype.enterPlacementSequence = function(ctx) {
 };
