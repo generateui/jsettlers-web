@@ -40,15 +40,15 @@ message Hex {
 	PortType port = 4;
 }
 	enum HexType {
-		NONEHEX = 0; // Used for boards that have fixed amount of hexagons
-		RIVER = 1; // clay
-		MOUNTAIN = 2; // ore
-		PASTURE = 3; // sheep
-		WHEATFIELD = 4; // wheatField instead of Field to have W as first letter
-		FOREST = 5; // timber
-		SEA = 6;
-		DESERT = 7;
-		HEXFROMBAG = 8; // the hex is picked from a bag
+		NoneHex = 0; // Used for boards that have fixed amount of hexagons
+		River = 1; // clay
+		Mountain = 2; // ore
+		Pasture = 3; // sheep
+		WheatField = 4; // wheatField instead of Field to have W as first letter
+		Forest = 5; // timber
+		Sea = 6;
+		Desert = 7;
+		HexFromBag = 8; // the hex is picked from a bag
 	}
 	enum ChitType {
 		ChitNone = 0; // the hex does not have a chit
@@ -99,20 +99,20 @@ message PlayDevelopmentCard {
 	DevelopmentCard development_card = 1;
 }
 message TradeBank {
-	repeated ResourceType offered_resources = 1;
-	repeated ResourceType requested_resources = 2;
+	repeated ResourceType offered = 1;
+	repeated ResourceType wanted = 2;
 }
 message RollDice {
 	message Production {
 		int32 player_id = 1;
-		repeated ResourceType produce = 2;
+		repeated ResourceType resources = 2;
 	}
 	message Dice {
 		int32 die1 = 1;
 		int32 die2 = 2;
 	}
-	Dice dice = 2;
-	repeated Production productions = 3;
+	Dice dice = 1;
+	repeated Production productions = 2;
 }
 message OfferTrade {
 	repeated ResourceType offered = 1;
@@ -120,11 +120,11 @@ message OfferTrade {
 }
 message RejectOffer {
 	enum Reason {
-		NOT_GIVEN = 0; // opponent just rejects
-		DONT_HAVE = 1; // opponent does not have wanted resources
-		NO_RESOURCES = 2; // opponent does not have any resources
-		WANT_MORE = 3; // opponent wants more resources
-		TIME_OUT = 4; // maximum time has passed for opponent to respond, so it is auto-rejected
+		NotGiven = 0; // opponent just rejects
+		DontHave = 1; // opponent does not have wanted resources
+		NoResources = 2; // opponent does not have any resources
+		WantMore = 3; // opponent wants more resources
+		TimeOut = 4; // maximum time has passed for opponent to respond, so it is auto-rejected
 	}
 	int32 trade_offer_id = 1;
 	Reason reason = 2;

@@ -37,7 +37,7 @@
 </template>
 
 <script>
-var proto = require("../src/generated/data_pb");
+import { jsettlers as pb } from "../src/generated/data";
 import {Util} from "../src/util.js";
 
 export default {
@@ -45,18 +45,18 @@ export default {
     data() {
         return {
             resourceTypes: [
-                proto.ResourceType.WHEAT,
-                proto.ResourceType.TIMBER,
-                proto.ResourceType.ORE,
-                proto.ResourceType.SHEEP,
-                proto.ResourceType.BRICK,
+                pb.ResourceType.Wheat,
+                pb.ResourceType.Timber,
+                pb.ResourceType.Ore,
+                pb.ResourceType.Sheep,
+                pb.ResourceType.Brick,
             ],
             selectedResourceTypes: []
         }
     },
     methods: {
         getName: function(resourceType) {
-            return Util.getEnumName(proto.ResourceType, resourceType);
+            return Util.getEnumName(pb.ResourceType, resourceType);
         },
         pickResourceType(resourceType) {
             this.selectedResourceTypes.push(resourceType);

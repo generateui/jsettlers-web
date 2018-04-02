@@ -1,4 +1,4 @@
-var proto = require("../../src/generated/data_pb");
+import { jsettlers as pb } from "../../src/generated/data";
 import { GameAction } from "./gameAction";
 import { ResourceList } from "../resource";
 
@@ -7,8 +7,9 @@ export class LooseResources extends GameAction {
         super();
 
         config = config || {};
+        this.playerId = config.playerId;
         this.player = config.player;
-        this.resources = null;
+        this.resources = config.resources;
     }
     perform(game) {
         const lost = new ResourceList();
@@ -16,17 +17,18 @@ export class LooseResources extends GameAction {
         game.bank.resources.moveFrom(this.player.resources, lost);
     }
     static fromData(data) {
-        const looseResources = new LooseResources();
-        looseResources.resources = new ResourceList(data.getResourcesList());
-        return looseResources;
+        return new LooseResources({
+            playerId: data.playerId,
+            resources: new ResourceList(data.looseResources.resources) 
+        });
     }
-    static createData(player, resourceList) {
-        const action = new proto.GameAction();
-        action.setPlayerId(player.id);
-        const looseResources = new proto.LooseResources();
-        looseResources.setResourcesList(resourceList.toResourceTypeArray());
-        action.setLooseResources(looseResources);
-        return action;
+    get data() {
+        return pb.GameAction.create({
+            playerId: this.player.id,
+            looseResources: {
+                resources: this.resources.toResourceTypeArray()
+            }
+        });
     }
     static parse(looseResourcesExpression, resolver) {
         const expr = looseResourcesExpression;

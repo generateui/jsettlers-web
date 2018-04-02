@@ -1,4 +1,4 @@
-var proto = require("../../src/generated/data_pb");
+import { jsettlers as pb } from "../../src/generated/data";
 import { GameAction } from "./gameAction";
 import { EndOfGame } from "../expectation";
 
@@ -7,6 +7,7 @@ export class ClaimVictory extends GameAction {
         super();
 
         config = config || {};
+        this.playerId = config.playerId;
         this.player = config.player;
     }
     perform(game) {
@@ -15,14 +16,15 @@ export class ClaimVictory extends GameAction {
         game.winner = this.player;
         game.expectation = new EndOfGame(game);
     }
-    static createData(player) {
-        const action = new proto.GameAction();
-        action.setPlayerId(player.id);
-        const claimVictory = new proto.ClaimVictory();
-        action.setClaimVictory(claimVictory);
-        return action;
+    get data() {
+        return pb.ClaimVictory.create({
+            playerId: this.player.id,
+            claimVictory: { }
+        });
     }
-    static fromData() {
-        return new ClaimVictory();
+    static fromData(data) {
+        return new ClaimVictory({
+            playerId: data.playerId
+        });
     }
 }

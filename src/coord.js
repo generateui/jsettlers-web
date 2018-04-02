@@ -1,4 +1,4 @@
-var proto = require("../src/generated/data_pb");
+import { jsettlers as pb } from "../src/generated/data";
 import {Node} from "./node.js";
 import {Edge} from "./edge.js";
 
@@ -11,23 +11,16 @@ Coordinates are interned, meaning that creating an instance with the same
 values yields the same instance. 
 Example: `let equal = new Coord3D(0,0,0) === new Coord(0,0,0);` true */
 export class Coord {
-    constructor() {
-
-        // converted cooords may keep a reference to the source coordinates
-        this.coord1D = null;
-        this.coord2D = null;
-        this.coord3D = null;
-    }
     // get neighbors;
     // get nodes();
     // get edges();
     static fromData(data) {
-        if (data.hasCoord1D()) {
-            // not implemented
-        } else if (data.hasCoord2D()) {
-            // not implemented
-        } else if (data.hasCoord3D()) {
-            return Coord3D.fromData(data.getCoord3D());
+        if (data.coord1D) {
+            return Coord1D.fromData(data.coord1D);
+        } else if (data.coord2D) {
+            return Coord2D.fromData(data.coord2D);
+        } else if (data.coord3D) {
+            return Coord3D.fromData(data.coord3D);
         }
     }
     static parse(coordExpression) {
@@ -54,7 +47,7 @@ export class Coord1D extends Coord {
         this.constructor._cache.set(hash, this);
     }
     static fromData(data) { 
-        return new Coord1D(data.getId());
+        return new Coord1D(data.id);
     }
     static parse(coord1DExpression) {
         if (coord1DExpression.NUMBER() !== null) {
@@ -64,9 +57,11 @@ export class Coord1D extends Coord {
         return null;
     }
     get data() {
-        var data = new proto.Coord1D();
-        data.setId(this.id);
-        return data;
+        return pb.Coord1D.create({
+            coord1D: {
+                id: this.id
+            }
+        });
     }
     static _getHash(id) { return id.toString(); }
     get hash() { return this._hash; }
@@ -91,7 +86,15 @@ export class Coord2D extends Coord {
     }
     static _getHash(r, c) { return r + "." + c; }
     static fromData(data) { 
-        return new Coord2D(data.getRow(), data.getColumn()); 
+        return new Coord2D(data.row, data.column); 
+    }
+    get data() {
+        return pb.Coord.create({
+            coord2D: {
+                row: this.r,
+                column: this.c
+            }
+        });
     }
     static parse(coord2DExpression) {
         let row = null;
@@ -136,7 +139,7 @@ export class Coord3D extends Coord {
     get hash() { return this._hash; }
     static _getHash(x, y, z) { return x + "." + y + "." + z; }
     static fromData(data) {
-        return new Coord3D(data.getX(), data.getY(), data.getZ());
+        return new Coord3D(data.x, data.y, data.z);
     }
     static parse(coord3DExpression) {
         let x = null;
@@ -157,13 +160,11 @@ export class Coord3D extends Coord {
         return null;
     }
     get data() {
-        const data = new proto.Coord3D();
-        data.setX(this.x);
-        data.setY(this.y);
-        data.setZ(this.z);
-        const coord = new proto.Coord();
-        coord.setCoord3D(data);
-        return coord;
+        return pb.Coord3D.create({
+            coord3D: {
+                x: this.x, y: this.y, z: this.z
+            }
+        });
     }
     /** <Coord3D>[6] */
     get neighbors() {

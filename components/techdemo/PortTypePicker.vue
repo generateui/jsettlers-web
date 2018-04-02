@@ -11,14 +11,14 @@
 </template>
 
 <script>
-var proto = require("../../src/generated/data_pb");
+import { jsettlers as pb } from "../../src/generated/data";
 
 export default {
     name: 'port-type-picker',
     data () {
         return {
-            portTypes: proto.PortType,
-            portType: proto.PortType[0]
+            portTypes: pb.PortType,
+            portType: pb.PortType[0]
         }
     },
     methods: {

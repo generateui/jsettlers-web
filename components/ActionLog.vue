@@ -45,7 +45,7 @@
                 <div class="development-card" v-if="action.developmentCard instanceof VictoryPoint">
                     <img src="doc/images/PlayDevelopmentCard48.png">
                     <span>{{action.player.user.name}} played a </span>
-                    <img src="doc/images/YearOfPlentyLogo48.png">
+                    <img src="doc/images/VictoryPointLogo48.png">
                     <span>{{action.developmentCard.name}} and gained one victory point</span>
                 </div>
                 <div class="development-card" v-if="action.developmentCard instanceof RoadBuilding">
@@ -69,7 +69,7 @@
             <div id="rob-player-view" class="item-wrapper" v-if="action instanceof RobPlayer">
                 <img src="doc/images/RobPlayer48.png">
                 <span v-if="action.opponent !== null">{{action.player.user.name}} robbed {{action.opponent.user.name}} and stole a </span>
-                <resource-list-view :size="24" :resources="action.resourceList"></resource-list-view>
+                <resource-list-view :size="24" :resources="action.resources"></resource-list-view>
                 <span v-if="action.opponent === null">{{action.player.user.name}} robbed no one. How refreshing!</span>
             </div>
             
@@ -91,9 +91,9 @@
             <div id="trade-player-view" class="item-wrapper" v-if="action instanceof CounterOffer">
                 <img src="doc/images/CounterOffer48.png">
                 <span>{{action.player.user.name}} counter-offers </span>
-                <resource-list-view :size="24" :resources="action.offeredResourceList"></resource-list-view>
+                <resource-list-view :size="24" :resources="action.offered"></resource-list-view>
                 <span>for</span>
-                <resource-list-view :size="24" :resources="action.wantedResourceList"></resource-list-view>
+                <resource-list-view :size="24" :resources="action.wanted"></resource-list-view>
             </div>
             
             <div id="trade-player-view" class="item-wrapper" v-if="action instanceof AcceptOffer">
@@ -109,9 +109,9 @@
             <div id="trade-player-view" class="item-wrapper" v-if="action instanceof OfferTrade">
                 <img src="doc/images/OfferTrade48.png">
                 <span>{{action.player.user.name}} offered</span>
-                <resource-list-view :size="24" :resources="action.offeredResourceList"></resource-list-view>
+                <resource-list-view :size="24" :resources="action.offered"></resource-list-view>
                 <span>for</span>
-                <resource-list-view :size="24" :resources="action.wantedResourceList"></resource-list-view>
+                <resource-list-view :size="24" :resources="action.wanted"></resource-list-view>
             </div>
             
             <div id="trade-bank-view" class="item-wrapper" v-if="action instanceof TradeBank">

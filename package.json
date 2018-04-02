@@ -4,18 +4,19 @@
   "description": "a hexagonal game to build settlements, cities & roads",
   "main": "index.js",
   "scripts": {
+    "dev": "npm-run-all generate-antlr generate-proto --parallel watchify serve",
+    "generate-antlr": "java -jar \"node_modules/antlr4-cli-471/bin/antlr-4.7.1-complete.jar\" -Dlanguage=JavaScript jsettlers.g4 -o src/generated",
+    "generate-proto": "node \"node_modules/protobufjs/cli/bin/pbjs\" -t static-module -w es6 -o \"src/generated/data.js\" data.proto",
     "watchify": "watchify -vd -p browserify-hmr -t [ browserify-css index.css ] -e index.js -o dist/build.js",
     "serve": "http-server -o -c 1 -a localhost",
-    "test": "mocha --compilers babel-core/register ./test/*Test.js",
-    "script": "mocha --compilers babel-core/register ./test/scriptTest.js",
-    "dev": "npm-run-all generate-antlr --parallel watchify serve",
-    "generate-antlr": "java -jar \"node_modules/antlr4-cli-471/bin/antlr-4.7.1-complete.jar\" -Dlanguage=JavaScript jsettlers.g4 -o src/generated"
+    "test": "mocha --recursive --require babel-core/register ./test/testSetup.js ./test",
+    "script": "mocha --require babel-core/register ./test/scriptTest.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/generateui/jsettlers-web.git"
   },
-  "author": "",
+  "author": "Ruud Poutsma",
   "license": "AGPL-3.0",
   "bugs": {
     "url": "https://github.com/generateui/jsettlers-web/issues"
@@ -25,7 +26,7 @@
     "antlr4": "^4.7.1",
     "circular-json": "^0.5.1",
     "circular-json-es6": "^2.0.2",
-    "google-protobuf": "^3.4.0",
+    "protobufjs": "^6.8.6",
     "three-js": "^79.0.0",
     "vue": "^2.0.1",
     "vue-directive-tooltip": "^1.4.2",

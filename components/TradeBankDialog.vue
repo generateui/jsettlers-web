@@ -60,13 +60,13 @@
 </template>
 
 <script>
-var proto = require("../src/generated/data_pb");
+import { jsettlers as pb } from "../src/generated/data";
 import {Util} from "../src/util.js";
 import {ResourceList} from "../src/resource.js";
 import {TradeBank} from "../src/actions/tradeBank.js";
 
 const r = ResourceList.withAllTypes();
-r.add(proto.ResourceType.WHEAT);
+r.add(pb.ResourceType.Wheat);
 
 export default {
     name: 'trade-bank-dialog',
@@ -88,15 +88,15 @@ export default {
         }
     },
     methods: {
-        pickBankResource: function(resourceType) {
+        pickBankResource(resourceType) {
             this.bankPickedResources.push(resourceType);
             this.bankResources.remove(resourceType);
         },
-        unpickBankResource: function(resourceType) {
+        unpickBankResource(resourceType) {
             this.bankPickedResources.remove(resourceType);
             this.bankResources.add(resourceType);
         },
-        unpickPlayerResource: function(resourceType) {
+        unpickPlayerResource(resourceType) {
             const p = this.game.player;
             const port = p.ports.bestPortForResourceType(resourceType);
             for (var i = 0; i < port.inAmount; i++) {
@@ -105,7 +105,7 @@ export default {
             }
             this.goldAmount--;
         },
-        pickPlayerResource: function(resourceType) {
+        pickPlayerResource(resourceType) {
             const p = this.game.player;
             const port = p.ports.bestPortForResourceType(resourceType);
             for (var i = 0; i < port.inAmount; i++) {
@@ -126,9 +126,13 @@ export default {
             return !this.game.bank.resources.hasOf(resourceType);
         },
         trade() {
-            const bankPicks = this.bankPickedResources.map(rt => proto.ResourceType[rt]);
-            const playerPicks = this.playerPickedResources.map(rt => proto.ResourceType[rt]);
-            const tradeBank = TradeBank.createData(this.game.player, playerPicks, bankPicks);
+            const bankPicks = this.bankPickedResources.map(rt => pb.ResourceType[rt]);
+            const playerPicks = this.playerPickedResources.map(rt => pb.ResourceType[rt]);
+            const tradeBank = new TradeBank({
+                player: this.game.player,
+                wanted: new ResourceList(bankPicks),
+                offered: new ResourceList(playerPicks)
+            });
             this.$emit("trade", tradeBank);
         }
     },

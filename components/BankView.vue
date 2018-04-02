@@ -1,6 +1,8 @@
 <template>
     <div id="wrapper">
-        <div class="column" v-for="resourceType in game.bank.resources.types" v-if="!isUnknown(key)" :key="key">
+        <div class="column" 
+            v-for="resourceType in game.bank.resources.types" v-if="!isUnknown(resourceType)" 
+            :key="resourceType">
             <img :src="`doc/images/${resourceType.toPascalCase()}Card.png`" />
             <div>{{game.bank.resources.of(resourceType).length}}</div>
         </div>
@@ -13,7 +15,7 @@
 </template>
 
 <script>
-    var proto = require("../src/generated/data_pb");
+    import { jsettlers as pb } from "../src/generated/data";
     export default {
         name: 'bank-view',
         props: {
@@ -27,8 +29,8 @@
             }
         },
         methods: {
-            isUnknown: function(resourceType) {
-                return proto.ResourceType[resourceType] === proto.ResourceType.UNKNOWN;
+            isUnknown(resourceType) {
+                return pb.ResourceType[resourceType] === pb.ResourceType.UNKNOWN;
             }
         },
         mounted() {

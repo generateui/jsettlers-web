@@ -1,4 +1,4 @@
-var proto = require("../src/generated/data_pb");
+import { jsettlers as pb } from "./generated/data";
 import {Util} from "./util.js";
 
 /** A resource is an instance of a ResourceType. 
@@ -13,12 +13,12 @@ export class Resource {
     }
     static fromType(resourceType) {
         switch (resourceType) {
-            case proto.ResourceType.TIMBER: return new Timber();
-            case proto.ResourceType.WHEAT: return new Wheat();
-            case proto.ResourceType.ORE: return new Ore();
-            case proto.ResourceType.SHEEP: return new Sheep();
-            case proto.ResourceType.BRICK: return new Brick();
-            case proto.ResourceType.GOLD: return new Gold();
+            case pb.ResourceType.Timber: return new Timber();
+            case pb.ResourceType.Wheat: return new Wheat();
+            case pb.ResourceType.Ore: return new Ore();
+            case pb.ResourceType.Sheep: return new Sheep();
+            case pb.ResourceType.Brick: return new Brick();
+            case pb.ResourceType.Gold: return new Gold();
         }
         throw new Error(`Unsupported resource type [${resourceType}]`);
     }
@@ -35,7 +35,7 @@ export class Timber extends Resource {
         super();
     }
     get name() { return "Timber" }
-    get type() { return proto.ResourceType.TIMBER; }
+    get type() { return pb.ResourceType.Timber; }
     get color() { return 0x006400; }
 }
 export class Wheat extends Resource {
@@ -43,7 +43,7 @@ export class Wheat extends Resource {
         super();
     }
     get name() { return "Wheat" }
-    get type() { return proto.ResourceType.WHEAT; }
+    get type() { return pb.ResourceType.Wheat; }
     get color() { return 0xFFD700; }
 }
 export class Brick extends Resource {
@@ -51,7 +51,7 @@ export class Brick extends Resource {
         super();
     }
     get name() { return "Brick" }
-    get type() { return proto.ResourceType.BRICK; }
+    get type() { return pb.ResourceType.Brick; }
     get color() { return 0xFF3232; }
 }
 export class Sheep extends Resource {
@@ -59,7 +59,7 @@ export class Sheep extends Resource {
         super();
     }
     get name() { return "Sheep" }
-    get type() { return proto.ResourceType.SHEEP; }
+    get type() { return pb.ResourceType.Sheep; }
     get color() { return 0x00FF00; }
 }
 export class Ore extends Resource {
@@ -67,7 +67,7 @@ export class Ore extends Resource {
         super();
     }
     get name() { return "Ore" }
-    get type() { return proto.ResourceType.ORE; }
+    get type() { return pb.ResourceType.Ore; }
     get color() { return 0x8A2BE2; }
 }
 export class Gold extends Resource {
@@ -75,7 +75,7 @@ export class Gold extends Resource {
         super();
     }
     get name() { return "Gold" }
-    get type() { return proto.ResourceType.GOLD; }
+    get type() { return pb.ResourceType.Gold; }
     get color() { return 0x000000; } // TODO
 }
 
@@ -94,11 +94,11 @@ export class ResourceList {
     // TODO: remove?
     static withAllTypes() {
         return ResourceList.onlyWithTypes([
-            proto.ResourceType.TIMBER,
-            proto.ResourceType.WHEAT,
-            proto.ResourceType.ORE,
-            proto.ResourceType.SHEEP,
-            proto.ResourceType.BRICK,
+            pb.ResourceType.Timber,
+            pb.ResourceType.Wheat,
+            pb.ResourceType.Ore,
+            pb.ResourceType.Sheep,
+            pb.ResourceType.Brick,
         ]);
     }
     static parse(resourceListExpression) {
@@ -124,14 +124,14 @@ export class ResourceList {
     static onlyWithTypes(types) {
         const result = new ResourceList();
         for (var resourceType of types) {
-            const resourceTypeString = Util.getEnumName(proto.ResourceType, resourceType);
+            const resourceTypeString = Util.getEnumName(pb.ResourceType, resourceType);
             // TODO: mechanism to exclude other types from being added and error when tried
             result._map.set(resourceTypeString, []);            
         }
         return result;
     }
     _addSafe(resource) {
-        const resourceTypeString = Util.getEnumName(proto.ResourceType, resource.type);
+        const resourceTypeString = Util.getEnumName(pb.ResourceType, resource.type);
         if (!this._map.has(resourceTypeString)) {
             this._map.set(resourceTypeString, [resource]);
         } else {
@@ -141,7 +141,7 @@ export class ResourceList {
     _ensureTypeExists(resourceType) {
         var resourceTypeString = null;
         if (typeof(resourceType) === "number") {
-            resourceTypeString = Util.getEnumName(proto.ResourceType, resourceType);
+            resourceTypeString = Util.getEnumName(pb.ResourceType, resourceType);
         } else {
             resourceTypeString = resourceType;
         }
@@ -169,7 +169,7 @@ export class ResourceList {
             }
             return;
         } else if (typeof(item) === "string") {
-            const resourceType = proto.ResourceType[item];
+            const resourceType = pb.ResourceType[item];
             const resource = Resource.fromType(resourceType);
             this._addSafe(resource);
             return;
@@ -185,7 +185,7 @@ export class ResourceList {
         }
     }
     _removeSafe(resource) {
-        const resourceTypeString = Util.getEnumName(proto.ResourceType, resource.type);
+        const resourceTypeString = Util.getEnumName(pb.ResourceType, resource.type);
         if (this._map.has(resourceTypeString)) {
             this._map.get(resourceTypeString).pop(); // ignore returned instance
         } 
@@ -210,7 +210,7 @@ export class ResourceList {
         } else if (typeof(item) === "string") {
             this._map.get(item).pop(); // ignore returned instance
         } else if (typeof(item) === "number") {
-            const resourceTypeString = Util.getEnumName(proto.ResourceType, item);
+            const resourceTypeString = Util.getEnumName(pb.ResourceType, item);
             this._map.get(resourceTypeString).pop(); // ignore returned instance
         }
     }
@@ -230,7 +230,7 @@ export class ResourceList {
     /** Returns a Resource[] of given ResourceType */
     of(resourceType) {
         if (typeof(resourceType) === "number") {
-            const resourceTypeString = Util.getEnumName(proto.ResourceType, resourceType);
+            const resourceTypeString = Util.getEnumName(pb.ResourceType, resourceType);
             return this._map.has(resourceTypeString) ? this._map.get(resourceTypeString) : [];    
         } else if (typeof(resourceType) === "string") {
             return this._map.has(resourceType) ? this._map.get(resourceType) : [];
@@ -250,7 +250,7 @@ export class ResourceList {
     hasOf(resourceType) {
         let resourceTypeString = resourceType;
         if (typeof(resourceType) === "number") {
-            resourceTypeString = Util.getEnumName(proto.ResourceType, resourceType);
+            resourceTypeString = Util.getEnumName(pb.ResourceType, resourceType);
         }
         if (typeof(resourceType) !== "string" && typeof(resourceType) !== "number") {
             throw new Error(".hasOf in ResourceList expects a ResourceType (String) or (Number)");
@@ -314,5 +314,22 @@ export class ResourceList {
             amountGold += difference;
         }
         return amountGold;
+    }
+    equals(other) {
+        if (!(other instanceof ResourceList)) {
+            return false;
+        }
+        for (var resourceType of other.types) {
+            if (this.of(resourceType).length !== other.of(resourceType).length) {
+                return false;
+            }
+        }
+        // do it both ways, as one may not have a ResourceType defined
+        for (var resourceType of this.types) {
+            if (this.of(resourceType).length !== other.of(resourceType).length) {
+                return false;
+            }
+        }
+        return true;
     }
 }

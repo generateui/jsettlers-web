@@ -105,41 +105,44 @@ export default {
             const player = this.game.player;
             const nodes = this.game.phase.townPossibilities(this.game, player);
             const behavior = new gb.PickTownNode(nodes, this.keyListener);
-            const createAction = (player, node) => BuildTown.createData(player, node);
+            const createAction = (player, node) => 
+                new BuildTown({ player: player, node: node });
             this.$emit("behaveThenAct", behavior, createAction);
         },
         buildRoad() {
             const player = this.game.player;
             const edges = this.game.phase.roadPossibilities(this.game, this.game.player);
             const behavior = new gb.PickRoadEdge(edges, this.keyListener);
-            const createAction = (player, edge) => BuildRoad.createData(player, edge);
+            const createAction = (player, edge) => 
+                new BuildRoad({ player: player, edge: edge });
             this.$emit("behaveThenAct", behavior, createAction);
         },
         buildCity() {
             const player = this.game.player;
             const behavior = new gb.PickTownForCity(player, this.keyListener, true);
-            const createAction = (player, node) => BuildCity.createData(player, node);
+            const createAction = (player, node) =>
+                new BuildCity({ player: player, node: node });
             this.$emit("behaveThenAct", behavior, createAction);
         },
         buyDevelopmentCard() {
             const player = this.game.player;
-            const buyDevelopmentCard = BuyDevelopmentCard.createData(player, null);
+            const buyDevelopmentCard = new BuyDevelopmentCard({ player: player });
             this.$emit("action", buyDevelopmentCard);
         },
         claimVictory() {
             const player = this.game.player;
-            const claimVictory = ClaimVictory.createData(player);
+            const claimVictory = new ClaimVictory({ player: player });
             this.$emit("action", claimVictory);
         },
         toggleTradeBankDialog() {
             this.$emit("toggleTradeBankDialog");
         },
         rollDice() {
-            let rollDice = RollDice.createData(this.game.player);
+            let rollDice = new RollDice({ player: this.game.player });
             this.$emit("action", rollDice);
         },
         endTurn() {
-            let endTurn = EndTurn.createData(this.game.player);
+            let endTurn = new EndTurn({ player: this.game.player });
             this.$emit("action", endTurn);
         },
         toggleTradePlayerDialog() {

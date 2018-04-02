@@ -1,4 +1,4 @@
-var proto = require("../src/generated/data_pb");
+import { jsettlers as pb } from "../src/generated/data";
 import { ResourceList } from "./resource";
 
 export class Town {
@@ -13,10 +13,10 @@ export class Town {
     }
     static get cost() {
         return new ResourceList([
-            proto.ResourceType.TIMBER,
-            proto.ResourceType.WHEAT,
-            proto.ResourceType.SHEEP,
-            proto.ResourceType.BRICK,
+            pb.ResourceType.Timber,
+            pb.ResourceType.Wheat,
+            pb.ResourceType.Sheep,
+            pb.ResourceType.Brick,
         ]);
     }
     addToPlayer(player) {

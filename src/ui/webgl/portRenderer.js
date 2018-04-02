@@ -1,4 +1,4 @@
-var proto = require("../../../src/generated/data_pb");
+import { jsettlers as pb } from "../../../src/generated/data";
 import {Renderer} from "./renderer.js";
 import {Util} from "../../util.js";
 import { Port } from "../../port";

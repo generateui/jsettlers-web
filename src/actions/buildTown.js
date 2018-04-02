@@ -1,4 +1,4 @@
-var proto = require("../../src/generated/data_pb");
+import { jsettlers as pb } from "../../src/generated/data";
 import {Town} from "../town.js";
 import {GameAction} from "./gameAction.js";
 import {Node} from "../node.js";
@@ -9,6 +9,7 @@ export class BuildTown extends GameAction {
 
         config = config || {};
         this.node = config.node;
+        this.playerId = config.playerId;
         this.player = config.player;
         this.portAdded = null; // when the player built on a port
         this.resourcesGained = null; // in initialplacement phase
@@ -34,16 +35,19 @@ export class BuildTown extends GameAction {
         game.phase.buildTown(game, this);
     }
     static fromData(data) {
-        const node = Node.fromData(data.getNode());
-        return new BuildTown({node: node});
+        const node = Node.fromData(data.buildTown.node);
+        return new BuildTown({ 
+            playerId: data.playerId,
+            node: node 
+        });
     }
-    static createData(player, node) {
-        const action = new proto.GameAction();
-        action.setPlayerId(player.id);
-        var bt = new proto.BuildTown();
-        bt.setNode(node.data);
-        action.setBuildTown(bt);
-        return action;
+    get data() {
+        return pb.GameAction.create({
+            playerId: this.player.id,
+            buildTown: {
+                node: this.node.data
+            }
+        });
     }
     static parse(buildTownExpression, resolver) {
         const expr = buildTownExpression;

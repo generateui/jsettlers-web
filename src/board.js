@@ -1,4 +1,4 @@
-var proto = require("../src/generated/data_pb");
+import { jsettlers as pb } from "../src/generated/data";
 
 import {ObservableMap} from "./generic/observableMap"; 
 import {Robber} from "./robber";
@@ -129,12 +129,12 @@ export class Board {
             i++;
         }
         const bagChits = Board._flattenConfig(this._config.chitBag);
-        const hexesWithChitToReplace = Array.from(this._hexes.values()).filter(h => h.chit.type === proto.ChitType.CHITFROMBAG);
+        const hexesWithChitToReplace = Array.from(this._hexes.values()).filter(h => h.chit.type === pb.ChitType.ChitFromBag);
         var j = 0;
         while (j < hexesWithChitToReplace.length&& bagChits.length > 0) {
             const toReplace = hexesWithChitToReplace[j];
             if (!toReplace.canHaveChit) {
-                toReplace.chit.type = proto.ChitType.CHITNONE;
+                toReplace.chit.type = pb.ChitType.ChitNone;
                 j++;
                 continue;
             }
@@ -327,16 +327,16 @@ export class Standard4pDesign extends Board {
                 [3, () => new River()],
             ],
             chitBag: [
-                new Chit(proto.ChitType.CHIT2),
-                [2, () => new Chit(proto.ChitType.CHIT3)],
-                [2, () => new Chit(proto.ChitType.CHIT4)],
-                [2, () => new Chit(proto.ChitType.CHIT5)],
-                [2, () => new Chit(proto.ChitType.CHIT6)],
-                [2, () => new Chit(proto.ChitType.CHIT8)],
-                [2, () => new Chit(proto.ChitType.CHIT9)],
-                [2, () => new Chit(proto.ChitType.CHIT10)],
-                [2, () => new Chit(proto.ChitType.CHIT11)],
-                new Chit(proto.ChitType.CHIT12),
+                new Chit(pb.ChitType.Chit2),
+                [2, () => new Chit(pb.ChitType.Chit3)],
+                [2, () => new Chit(pb.ChitType.Chit4)],
+                [2, () => new Chit(pb.ChitType.Chit5)],
+                [2, () => new Chit(pb.ChitType.Chit6)],
+                [2, () => new Chit(pb.ChitType.Chit8)],
+                [2, () => new Chit(pb.ChitType.Chit9)],
+                [2, () => new Chit(pb.ChitType.Chit10)],
+                [2, () => new Chit(pb.ChitType.Chit11)],
+                new Chit(pb.ChitType.Chit12),
             ],
             portBag: [
                 new Clay2To1Port(),
@@ -370,7 +370,7 @@ export class Standard4pDesign extends Board {
         var hexes = [];
         for (let coord of fromBagCoords) {
             var hex = new HexFromBag(coord);
-            hex.chit = new Chit(proto.ChitType.CHITFROMBAG);
+            hex.chit = new Chit(pb.ChitType.ChitFromBag);
             hexes.push(hex);
         }
         for (let coord of seaCoords) {

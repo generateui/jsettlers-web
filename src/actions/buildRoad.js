@@ -1,4 +1,4 @@
-var proto = require("../../src/generated/data_pb");
+import { jsettlers as pb } from "../../src/generated/data";
 import {GameAction} from "./gameAction.js";
 import {Edge} from "../edge.js";
 import {Road} from "../road.js";
@@ -8,8 +8,9 @@ export class BuildRoad extends GameAction {
         super();
         
         config = config || {};
-        this.edge = config.edge;
+        this.playerId = config.playerId;
         this.player = config.player;
+        this.edge = config.edge;
     }
     perform(game) {
         const road = new Road(this.player, this.edge);
@@ -19,16 +20,19 @@ export class BuildRoad extends GameAction {
         game.phase.buildRoad(game, this);
     }
     static fromData(data) {
-        const edge = Edge.fromData(data.getEdge())
-        return new BuildRoad({edge: edge});
+        const edge = Edge.fromData(data.buildRoad.edge)
+        return new BuildRoad({
+            edge: edge,
+            playerId: data.playerId
+        });
     }
-    static createData(player, edge) {
-        const action = new proto.GameAction();
-        action.setPlayerId(player.id);
-        const buildRoad = new proto.BuildRoad();
-        buildRoad.setEdge(edge.data);
-        action.setBuildRoad(buildRoad);
-        return action;
+    get data() {
+        return pb.GameAction.create({
+            playerId: this.player.id,
+            buildRoad: {
+                edge: this.edge.data
+            }
+        });
     }
     static parse(buildRoadExpression, resolver) {
         const expression = buildRoadExpression;

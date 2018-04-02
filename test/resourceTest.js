@@ -1,5 +1,5 @@
 require('babel-register')();
-var proto = require("../src/generated/data_pb")
+import { jsettlers as pb } from "../src/generated/data"
 var assert = require('assert');
 import {ResourceList, Timber, Wheat, Ore} from "../src/resource";
 import {Town} from "../src/town";
@@ -44,18 +44,18 @@ describe("ResourceList", () => {
             resourceList.add(array);
 
             assert.ok(resourceList.length === 3);
-            assert.ok(resourceList.of(proto.ResourceType.WHEAT).length === 2);
-            assert.ok(resourceList.of(proto.ResourceType.TIMBER).length === 1);
+            assert.ok(resourceList.of(pb.ResourceType.Wheat).length === 2);
+            assert.ok(resourceList.of(pb.ResourceType.Timber).length === 1);
         });
         it("a ResourceList", () => {
             const resourceList = new ResourceList();
             resourceList.add(Town.cost);
 
             assert.ok(resourceList.length === 4);
-            assert.ok(resourceList.of(proto.ResourceType.WHEAT).length === 1);
-            assert.ok(resourceList.of(proto.ResourceType.TIMBER).length === 1);
-            assert.ok(resourceList.of(proto.ResourceType.BRICK).length === 1);
-            assert.ok(resourceList.of(proto.ResourceType.SHEEP).length === 1);
+            assert.ok(resourceList.of(pb.ResourceType.Wheat).length === 1);
+            assert.ok(resourceList.of(pb.ResourceType.Timber).length === 1);
+            assert.ok(resourceList.of(pb.ResourceType.Brick).length === 1);
+            assert.ok(resourceList.of(pb.ResourceType.Sheep).length === 1);
         });
     });
     describe("remove", () => {
@@ -73,14 +73,14 @@ describe("ResourceList", () => {
         });
         it("a ResourceType", () => {
             const resourceList = new ResourceList();
-            resourceList.add(proto.ResourceType.WHEAT);
+            resourceList.add(pb.ResourceType.Wheat);
 
             assert.ok(resourceList.length === 1);
-            assert.ok(resourceList.of(proto.ResourceType.WHEAT).length === 1);
+            assert.ok(resourceList.of(pb.ResourceType.Wheat).length === 1);
 
-            resourceList.remove(proto.ResourceType.WHEAT);
+            resourceList.remove(pb.ResourceType.Wheat);
             assert.ok(resourceList.length === 0);
-            assert.ok(resourceList.of(proto.ResourceType.WHEAT).length === 0);
+            assert.ok(resourceList.of(pb.ResourceType.Wheat).length === 0);
         });
         it("multiple Resource instances", () => {
             const resourceList = new ResourceList();
@@ -99,14 +99,14 @@ describe("ResourceList", () => {
         it("multiple ResourceTypes", () => {
             const resourceList = new ResourceList();
             const wheat = new Wheat();
-            resourceList.add(proto.ResourceType.WHEAT);
-            resourceList.add(proto.ResourceType.WHEAT);
+            resourceList.add(pb.ResourceType.Wheat);
+            resourceList.add(pb.ResourceType.Wheat);
 
             assert.ok(resourceList.length === 2);
             assert.ok(resourceList.of(wheat.type).length === 2);
 
-            resourceList.remove(proto.ResourceType.WHEAT);
-            resourceList.remove(proto.ResourceType.WHEAT);
+            resourceList.remove(pb.ResourceType.Wheat);
+            resourceList.remove(pb.ResourceType.Wheat);
             assert.ok(resourceList.length === 0);
             assert.ok(resourceList.of(wheat.type).length === 0);
         });
@@ -119,7 +119,7 @@ describe("ResourceList", () => {
 
             assert.ok(resourceList.length === 3);
             assert.ok(resourceList.of(wheat.type).length === 2);
-            assert.ok(resourceList.of(proto.ResourceType.TIMBER).length === 1);
+            assert.ok(resourceList.of(pb.ResourceType.Timber).length === 1);
 
             resourceList.remove(wheat);
             resourceList.remove(new Wheat());
@@ -130,17 +130,17 @@ describe("ResourceList", () => {
         it("multiple Resource instances of multiple types", () => {
             const resourceList = new ResourceList();
             const wheat = new Wheat();
-            resourceList.add(proto.ResourceType.WHEAT);
-            resourceList.add(proto.ResourceType.WHEAT);
-            resourceList.add(proto.ResourceType.TIMBER);
+            resourceList.add(pb.ResourceType.Wheat);
+            resourceList.add(pb.ResourceType.Wheat);
+            resourceList.add(pb.ResourceType.Timber);
 
             assert.ok(resourceList.length === 3);
-            assert.ok(resourceList.of(proto.ResourceType.WHEAT).length === 2);
-            assert.ok(resourceList.of(proto.ResourceType.TIMBER).length === 1);
+            assert.ok(resourceList.of(pb.ResourceType.Wheat).length === 2);
+            assert.ok(resourceList.of(pb.ResourceType.Timber).length === 1);
 
-            resourceList.remove(proto.ResourceType.WHEAT);
-            resourceList.remove(proto.ResourceType.WHEAT);
-            resourceList.remove(proto.ResourceType.TIMBER);
+            resourceList.remove(pb.ResourceType.Wheat);
+            resourceList.remove(pb.ResourceType.Wheat);
+            resourceList.remove(pb.ResourceType.Timber);
             assert.ok(resourceList.length === 0);
             assert.ok(resourceList.of(wheat.type).length === 0);
         });
@@ -152,32 +152,32 @@ describe("ResourceList", () => {
             resourceList.add(array);
 
             assert.ok(resourceList.length === 3);
-            assert.ok(resourceList.of(proto.ResourceType.WHEAT).length === 2);
-            assert.ok(resourceList.of(proto.ResourceType.TIMBER).length === 1);
+            assert.ok(resourceList.of(pb.ResourceType.Wheat).length === 2);
+            assert.ok(resourceList.of(pb.ResourceType.Timber).length === 1);
 
             resourceList.remove(array);
             assert.ok(resourceList.length === 0);
-            assert.ok(resourceList.of(proto.ResourceType.WHEAT).length === 0);
-            assert.ok(resourceList.of(proto.ResourceType.TIMBER).length === 0);
+            assert.ok(resourceList.of(pb.ResourceType.Wheat).length === 0);
+            assert.ok(resourceList.of(pb.ResourceType.Timber).length === 0);
         });
         it("multiple Resource instances using ResourceType array", () => {
             const resourceList = new ResourceList();
             const array = [
-                proto.ResourceType.WHEAT,
-                proto.ResourceType.WHEAT,
-                proto.ResourceType.TIMBER
+                pb.ResourceType.Wheat,
+                pb.ResourceType.Wheat,
+                pb.ResourceType.Timber
             ];
             resourceList.add(array);
 
             assert.ok(resourceList.length === 3);
-            assert.ok(resourceList.of(proto.ResourceType.WHEAT).length === 2);
-            assert.ok(resourceList.of(proto.ResourceType.TIMBER).length === 1);
+            assert.ok(resourceList.of(pb.ResourceType.Wheat).length === 2);
+            assert.ok(resourceList.of(pb.ResourceType.Timber).length === 1);
 
             resourceList.remove(array);
 
             assert.ok(resourceList.length === 0);
-            assert.ok(resourceList.of(proto.ResourceType.WHEAT).length === 0);
-            assert.ok(resourceList.of(proto.ResourceType.TIMBER).length === 0);
+            assert.ok(resourceList.of(pb.ResourceType.Wheat).length === 0);
+            assert.ok(resourceList.of(pb.ResourceType.Timber).length === 0);
         });
     });
     describe("hasAtLeast", () => {
@@ -211,34 +211,34 @@ describe("ResourceList", () => {
         it("has types of Town cost", () => {
             const resourceList = new ResourceList(Town.cost);
             
-            assert.ok(resourceList.hasOf(proto.ResourceType.WHEAT));
-            assert.ok(resourceList.hasOf(proto.ResourceType.TIMBER));
-            assert.ok(resourceList.hasOf(proto.ResourceType.BRICK));
-            assert.ok(resourceList.hasOf(proto.ResourceType.SHEEP));
-            assert.ok(resourceList.hasOf(proto.ResourceType.ORE) === false);
+            assert.ok(resourceList.hasOf(pb.ResourceType.Wheat));
+            assert.ok(resourceList.hasOf(pb.ResourceType.Timber));
+            assert.ok(resourceList.hasOf(pb.ResourceType.Brick));
+            assert.ok(resourceList.hasOf(pb.ResourceType.Sheep));
+            assert.ok(resourceList.hasOf(pb.ResourceType.Ore) === false);
         });
         it("nothing when empty", () => {
             const resourceList = new ResourceList();
-            assert.ok(resourceList.hasOf(proto.ResourceType.WHEAT) === false);
-            assert.ok(resourceList.hasOf(proto.ResourceType.TIMBER) === false);
-            assert.ok(resourceList.hasOf(proto.ResourceType.BRICK) === false);
-            assert.ok(resourceList.hasOf(proto.ResourceType.SHEEP) === false);
-            assert.ok(resourceList.hasOf(proto.ResourceType.ORE) === false);
+            assert.ok(resourceList.hasOf(pb.ResourceType.Wheat) === false);
+            assert.ok(resourceList.hasOf(pb.ResourceType.Timber) === false);
+            assert.ok(resourceList.hasOf(pb.ResourceType.Brick) === false);
+            assert.ok(resourceList.hasOf(pb.ResourceType.Sheep) === false);
+            assert.ok(resourceList.hasOf(pb.ResourceType.Ore) === false);
         });
     });
     describe("addAmount", () => {
         it("19 ResourceTypes", () => {
             const resourceList = new ResourceList();
-            resourceList.addAmount(proto.ResourceType.WHEAT, 19);
+            resourceList.addAmount(pb.ResourceType.Wheat, 19);
 
-            assert.ok(resourceList.of(proto.ResourceType.WHEAT).length === 19);
+            assert.ok(resourceList.of(pb.ResourceType.Wheat).length === 19);
             assert.ok(resourceList.length === 19);
         });
         it("26 Resources", () => {
             const resourceList = new ResourceList();
             resourceList.addAmount(new Ore(), 26);
 
-            assert.ok(resourceList.of(proto.ResourceType.ORE).length === 26);
+            assert.ok(resourceList.of(pb.ResourceType.Ore).length === 26);
             assert.ok(resourceList.length === 26);
         });
     });
@@ -272,10 +272,10 @@ describe("ResourceList", () => {
             const resourceList = new ResourceList(Town.cost);
             const array = resourceList.toArray();
             
-            assert.ok(array.find(r => r.type === proto.ResourceType.WHEAT) !== null);
-            assert.ok(array.find(r => r.type === proto.ResourceType.TIMBER) !== null);
-            assert.ok(array.find(r => r.type === proto.ResourceType.BRICK) !== null);
-            assert.ok(array.find(r => r.type === proto.ResourceType.SHEEP) !== null);
+            assert.ok(array.find(r => r.type === pb.ResourceType.Wheat) !== null);
+            assert.ok(array.find(r => r.type === pb.ResourceType.Timber) !== null);
+            assert.ok(array.find(r => r.type === pb.ResourceType.Brick) !== null);
+            assert.ok(array.find(r => r.type === pb.ResourceType.Sheep) !== null);
             assert.ok(array.length === 4);
         });
         it("empty when empty ResourceList", () => {
@@ -290,20 +290,20 @@ describe("ResourceList", () => {
             const resourceList = new ResourceList(Town.cost);
             const array = resourceList.toResourceTypeArray();
             
-            assert.ok(array.find(rt => rt === proto.ResourceType.WHEAT) !== null);
-            assert.ok(array.find(rt => rt === proto.ResourceType.TIMBER) !== null);
-            assert.ok(array.find(rt => rt === proto.ResourceType.BRICK) !== null);
-            assert.ok(array.find(rt => rt === proto.ResourceType.SHEEP) !== null);
+            assert.ok(array.find(rt => rt === pb.ResourceType.Wheat) !== null);
+            assert.ok(array.find(rt => rt === pb.ResourceType.Timber) !== null);
+            assert.ok(array.find(rt => rt === pb.ResourceType.Brick) !== null);
+            assert.ok(array.find(rt => rt === pb.ResourceType.Sheep) !== null);
             assert.ok(array.length === 4);
         });
         it("twice the Town cost yields twice Town cost", () => {
             const resourceList = new ResourceList([Town.cost, Town.cost]);
             const array = resourceList.toResourceTypeArray();
             
-            assert.ok(array.filter(rt => rt === proto.ResourceType.WHEAT).length === 2);
-            assert.ok(array.filter(rt => rt === proto.ResourceType.TIMBER).length === 2);
-            assert.ok(array.filter(rt => rt === proto.ResourceType.BRICK).length === 2);
-            assert.ok(array.filter(rt => rt === proto.ResourceType.SHEEP).length === 2);
+            assert.ok(array.filter(rt => rt === pb.ResourceType.Wheat).length === 2);
+            assert.ok(array.filter(rt => rt === pb.ResourceType.Timber).length === 2);
+            assert.ok(array.filter(rt => rt === pb.ResourceType.Brick).length === 2);
+            assert.ok(array.filter(rt => rt === pb.ResourceType.Sheep).length === 2);
             assert.ok(array.length === 8);
         });
     });
@@ -338,11 +338,11 @@ describe("ResourceList", () => {
             var parser = Parser.parseString("[🌲🌾🐑⛰⚌]");
             var resourceListExpression = parser.resourceSet();
             var resourceList = ResourceList.parse(resourceListExpression);
-            assert.ok(resourceList.of(proto.ResourceType.TIMBER).length === 1);
-            assert.ok(resourceList.of(proto.ResourceType.WHEAT).length === 1);
-            assert.ok(resourceList.of(proto.ResourceType.ORE).length === 1);
-            assert.ok(resourceList.of(proto.ResourceType.SHEEP).length === 1);
-            assert.ok(resourceList.of(proto.ResourceType.BRICK).length === 1);
+            assert.ok(resourceList.of(pb.ResourceType.Timber).length === 1);
+            assert.ok(resourceList.of(pb.ResourceType.Wheat).length === 1);
+            assert.ok(resourceList.of(pb.ResourceType.Ore).length === 1);
+            assert.ok(resourceList.of(pb.ResourceType.Sheep).length === 1);
+            assert.ok(resourceList.of(pb.ResourceType.Brick).length === 1);
         });
     });
 });

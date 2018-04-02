@@ -1,40 +1,36 @@
-var proto = require("../../src/generated/data_pb");
-import {GameAction} from "./gameAction";
-import {ResourceList} from "../resource";
+import { jsettlers as pb } from "../../src/generated/data";
+import { GameAction } from "./gameAction";
+import { ResourceList } from "../resource";
 
 export class OfferTrade extends GameAction {
     constructor(config) {
         super(config);
 
         config = config || {};
+        this.playerId = config.playerId;
         this.player = config.player;
+        // TODO: put responses in pb data?
         this.responses = new Map(); // <Player, TradeResponse (RejectOffer|AcceptOffer|CounterOffer)>
-        // TODO: just use ResourceList here
-        this.offered = null; // ResourceType[]
-        this.wanted = null; // ResourceType[]
-        this.offeredResourceList = null;
-        this.wantedResourceList = null;
+        this.offered = config.offered; // ResourceList
+        this.wanted = config.wanted; // ResourceList
     }
     perform(game) {
         game.phase.offerTrade(game, this);
     }
-    setReferences(game) {
-        this.offeredResourceList = new ResourceList(this.offered);
-        this.wantedResourceList = new ResourceList(this.wanted);
-    }
-    static createData(player, offered, wanted) {
-        const offerTrade = new proto.OfferTrade();
-        offerTrade.setOfferedList(offered);
-        offerTrade.setWantedList(wanted);
-        const action = new proto.GameAction();
-        action.setPlayerId(player.id);
-        action.setOfferTrade(offerTrade);
-        return action;
+    get data() {
+        return pb.GameAction.create({
+            playerId: this.player.id,
+            offerTrade: {
+                wanted: this.wanted.toResourceTypeArray(),
+                offered: this.offered.toResourceTypeArray()
+            }
+        });
     }
     static fromData(data) {
-        const offerTrade = new OfferTrade();
-        offerTrade.offered = data.getOfferedList();
-        offerTrade.wanted = data.getWantedList();
-        return offerTrade;
+        return new OfferTrade({
+            playerId: data.playerId,
+            offered: new ResourceList(data.offerTrade.offered),
+            wanted: new ResourceList(data.offerTrade.wanted)
+        });
     }
 }

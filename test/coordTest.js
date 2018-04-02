@@ -1,8 +1,6 @@
-require('babel-register')();
-var proto = require("../src/generated/data_pb")
-var assert = require('assert');
-require("../src/generic/shims");
-import {Coord3D} from "../src/coord";
+import { jsettlers as pb } from "../src/generated/data"
+import * as assert from "assert";
+import { Coord, Coord3D, Coord2D, Coord1D} from "../src/coord";
 
 describe("Coord3D", () => {
     describe("constructor", () => {
@@ -85,5 +83,39 @@ describe("Coord3D", () => {
 
             assert.ok(edges.size === 30);
         });
+    });
+    it("serializes", () => {
+        const coord3D = new Coord3D(2, -2, 0);
+        
+        const buffer = pb.Coord.encode(coord3D.data).finish();
+        const revived = pb.Coord.decode(buffer);
+        const copy = Coord.fromData(revived);
+
+        assert.equal(coord3D.x, copy.x);
+        assert.equal(coord3D.y, copy.y);
+        assert.equal(coord3D.z, copy.z);
+    });
+});
+describe("Coord2D", () => {
+    it("serializes", () => {
+        const coord2D = new Coord2D(1, 2);
+        
+        const buffer = pb.Coord.encode(coord2D.data).finish();
+        const revived = pb.Coord.decode(buffer);
+        const copy = Coord.fromData(revived);
+
+        assert.equal(coord2D.r, copy.r);
+        assert.equal(coord2D.c, copy.c);
+    });
+});
+describe("Coord1D", () => {
+    it("serializes", () => {
+        const coord1D = new Coord1D(3);
+        
+        const buffer = pb.Coord.encode(coord1D.data).finish();
+        const revived = pb.Coord.decode(buffer);
+        const copy = Coord.fromData(revived);
+
+        assert.equal(coord1D.id, copy.id);
     });
 });

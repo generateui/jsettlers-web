@@ -226,7 +226,7 @@
 </template>
 
 <script>
-var proto = require("../src/generated/data_pb");
+import { jsettlers as pb } from "../src/generated/data";
 import Popper from 'vue-popperjs';
 import ResourceListView from './ResourceListView.vue';
 import PopperJs from "../node_modules/popper.js/dist/esm/popper.js";

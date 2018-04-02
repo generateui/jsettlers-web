@@ -1,4 +1,4 @@
-var proto = require("../../src/generated/data_pb");
+import { jsettlers as pb } from "../../src/generated/data";
 import {GameAction} from "./gameAction.js";
 
 export class AcceptOffer extends GameAction {
@@ -6,8 +6,9 @@ export class AcceptOffer extends GameAction {
         super();
 
         config = config || {};
+        this.playerId = config.playerId;
         this.player = config.player;
-        this.offerTradeId = null;
+        this.offerTradeId = config.tradeOfferId;
     }
     get isTradeResponse() {
         return true;
@@ -17,17 +18,18 @@ export class AcceptOffer extends GameAction {
         offerTrade.responses.set(this.player, this);
         game.phase.acceptOffer(game, this);
     }
-    static createData(player, offerTrade) {
-        const acceptOffer = new proto.AcceptOffer();
-        acceptOffer.setTradeOfferId(offerTrade.id);
-        const action = new proto.GameAction();
-        action.setPlayerId(player.id);
-        action.setAcceptOffer(acceptOffer);
-        return action;
+    get data() {
+        return pb.GameAction.create({
+            playerId: this.player.id,
+            acceptOffer: {
+                tradeOfferId: this.offerTradeId
+            }
+        });
     }
     static fromData(data) {
-        const acceptOffer = new AcceptOffer();
-        acceptOffer.offerTradeId = data.getTradeOfferId();
-        return acceptOffer;
+        return new AcceptOffer({
+            playerId: data.playerId,
+            tradeOfferId: data.acceptOffer.tradeOfferId
+        });
     }
 }

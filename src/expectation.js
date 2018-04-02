@@ -32,7 +32,9 @@ export class Expectation {
     }
     /** Expected action to be performed by the client player. This is for the UI
      * or bots to sign they need to popup an action UI or perform an action */
-    get youAction() { }
+    get youAction() {
+        return null;
+    }
     /** returns a message for the player using the client explaining what to do */
     get youMessage() {
         return "you should do things";

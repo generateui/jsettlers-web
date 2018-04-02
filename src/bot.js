@@ -31,23 +31,23 @@ export class Bot {
                 const possibilities = this.game.initialPlacement.townPossibilities(this.game, this.player);
                 const index = this.random.intFromZero(possibilities.length);
                 const node = possibilities[index];
-                const buildTown = BuildTown.createData(this.player, node);
-                this.host.send(buildTown);
+                const bt = new BuildTown({ player: this.player, node: node });
+                this.host.send(bt);
             }
             if (this.game.expectation.matches(this.buildRoad)) {
                 const possibilities = this.game.initialPlacement.roadPossibilities(this.game, this.player);
                 const index = this.random.intFromZero(possibilities.length);
-                const node = possibilities[index];
-                const buildRoad = BuildRoad.createData(this.player, node);
-                this.host.send(buildRoad);
+                const edge = possibilities[index];
+                const br = new BuildRoad({ player: this.player, edge: edge });
+                this.host.send(br);
             }
         }
         if (this.game.expectation.matches(this.rollDice)) {
-            const rollDice = RollDice.createData(this.player);
+            const rollDice = new RollDice({ player: this.player });
             this.host.send(rollDice);
         }
         if (this.game.expectation.matches(this.endTurn)) {
-            const endTurn = EndTurn.createData(this.player);
+            const endTurn = new EndTurn({ player: this.player });
             this.host.send(endTurn);
         }
         if (this.game.expectation.matches(this.moveRobber)) {
@@ -60,7 +60,10 @@ export class Bot {
             }
             const index = this.random.intFromZero(possibilities.length - 1);
             const coord = possibilities[index];
-            const moveRobber = MoveRobber.createData(this.player, coord);
+            const moveRobber = new MoveRobber({
+                player: this.player,
+                coord: coord
+            });
             this.host.send(moveRobber);
         }
         if (this.game.expectation.matches(this.robPlayer)) {
@@ -75,7 +78,10 @@ export class Bot {
                     }
                 }
             }
-            const robPlayer = RobPlayer.createData(this.player, victim);
+            const robPlayer = new RobPlayer({
+                player: this.player,
+                opponent: victim
+            });
             this.host.send(robPlayer);
         }
         if (this.game.expectation.matches(this.looseResources)) {
@@ -94,7 +100,10 @@ export class Bot {
                 const pick = resourceArray[i];
                 picked.push(pick);
             }
-            const looseResources = LooseResources.createData(this.player, new ResourceList(picked));
+            const looseResources = new LooseResources({
+                player: this.player,
+                resources: new ResourceList(picked)
+            });
             this.host.send(looseResources);
         }
     }

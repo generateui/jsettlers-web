@@ -5,7 +5,7 @@ import {Resource, Timber, Wheat, Ore, Sheep, Brick, Gold, ResourceList} from "./
 import {DevelopmentCard, YearOfPlenty, Monopoly, Soldier, VictoryPoint, RoadBuilding} from "./developmentCard.js";
 import {Any4To1Port, Any3To1Port, PortList, Wheat2To1Port, Sheep2To1Port} from "./port.js";
 import { ObservableMap } from "./generic/observableMap.js";
-var proto = require("../src/generated/data_pb");
+import { jsettlers as pb } from "../src/generated/data";
 
 export class Player extends Observable {
     constructor(config) {

@@ -223,18 +223,21 @@ export default {
             if (action instanceof BuildTown) {
                 const nodes = this.game.phase.townPossibilities(this.game, this.player);
                 const behavior = new gb.PickTownNode(nodes, this.keyListener);
-                const createActionData = (player, node) => BuildTown.createData(player, node);
-                this.behaveThenAct(behavior, createActionData);
+                const createAction = (player, node) => 
+                    new BuildTown({ player: player, node: node });
+                this.behaveThenAct(behavior, createAction);
             }
             if (action instanceof BuildRoad) {
                 const edges = this.game.phase.roadPossibilities(this.game, this.game.player);
                 const behavior = new gb.PickRoadEdge(edges, this.keyListener);
-                const createAction = (player, edge) => BuildRoad.createData(player, edge);
+                const createAction = (player, edge) => 
+                    new BuildRoad({ player: player, edge: edge });
                 this.behaveThenAct(behavior, createAction);
             }
             if (action instanceof MoveRobber) {
                 const behavior = new gb.MoveRobber();
-                const createAction = (player, coord) => MoveRobber.createData(player, coord);
+                const createAction = (player, coord) => 
+                    new MoveRobber({ player: player, coord: coord });
                 this.behaveThenAct(behavior, createAction);
             }
             if (action instanceof RobPlayer) {
@@ -251,7 +254,8 @@ export default {
                 }
                 if (opponents.size > 0) {
                     const behavior = new gb.PickPlayer(opponents);
-                    const createAction = (player, opponent) => RobPlayer.createData(player, opponent);
+                    const createAction = (player, opponent) => 
+                        new RobPlayer({ player: player, opponent: opponent });
                     // if we immediately execute this, MoveRobber behaveThenAct 
                     // is not yet finished. This is most likely not a problem 
                     // when async and serialization is implemented, as the 
@@ -259,8 +263,7 @@ export default {
                     // game.actions.changed eventhandler.
                     window.setTimeout(() => this.behaveThenAct(behavior, createAction), 500);
                 } else {
-                    const action = RobPlayer.createData(player, null);
-                    this.act(action);
+                    this.act(new RobPlayer({ player: player }));
                 }
             }
             if (action instanceof LooseResources) {

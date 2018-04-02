@@ -106,6 +106,7 @@ require("./von-grid/MouseCaster.js");
 require("./von-grid/Signal.js");
 require("./von-grid/STLLoader.js");
 
+import { jsettlers as pb } from "./src/generated/data";
 import Vue from 'vue';
 import App from './App.vue';
 import VueRouter from 'vue-router';
@@ -153,6 +154,7 @@ const router = new VueRouter({
 });
 Vue.use(VueMarkdown);
 Vue.use(VueRouter);
+Vue.prototype.pb = pb;
 Vue.prototype.BuildTown = BuildTown;
 Vue.prototype.BuildRoad = BuildRoad;
 Vue.prototype.BuildCity = BuildCity;

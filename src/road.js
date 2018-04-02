@@ -1,4 +1,4 @@
-var proto = require("../src/generated/data_pb");
+import { jsettlers as pb } from "../src/generated/data";
 import { ResourceList } from "./resource";
 
 export class Road {
@@ -8,8 +8,8 @@ export class Road {
     }
     static get cost() {
         return new ResourceList([
-            proto.ResourceType.TIMBER,
-            proto.ResourceType.BRICK
+            pb.ResourceType.Timber,
+            pb.ResourceType.Brick
         ]);
     }
     addToPlayer(player) {

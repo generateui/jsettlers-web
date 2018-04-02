@@ -1,4 +1,4 @@
-var proto = require("../src/generated/data_pb");
+import { jsettlers as pb } from "../src/generated/data";
 import { GameAction } from "./actions/gameAction.js";
 import { BuildTown } from "./actions/buildTown.js";
 import { BuildRoad } from "./actions/buildRoad.js";
@@ -43,16 +43,19 @@ export class HostAtClient {
         this.bots.push(bot);
     }
     // TODO: keep separate instance of game to ensure serialization works properly
-    send(actionMessage) {
-        const binary = actionMessage.serializeBinary();
+    send(gameAction) {
+        if (!(gameAction instanceof GameAction)) {
+            throw new Error("host.js: not game action instance");
+        }
+        const binary = pb.GameAction.encode(gameAction.data).finish();
         // here, we send the message to the server
         // ... and receive it back
-        const revived = proto.GameAction.deserializeBinary(binary);
+        const revived = pb.GameAction.decode(binary);
         
         // instantiate action instance
         const action = this.createAction(revived);
         // set ids
-        GameAction.setIds(action, revived);
+        // GameAction.setIds(action, revived);
         // set references?
 
         // send it to the game controller
@@ -83,24 +86,24 @@ export class HostAtClient {
     }
     createAction(actionMessage) {
         const a = actionMessage;
-        if (a.hasBuildTown()) { return BuildTown.fromData(a.getBuildTown()); }
-        if (a.hasBuildRoad()) { return BuildRoad.fromData(a.getBuildRoad()); }
-        if (a.hasBuildCity()) { return BuildCity.fromData(a.getBuildCity()); }
-        if (a.hasTradeBank()) { return TradeBank.fromData(a.getTradeBank()); }
-        if (a.hasBuyDevelopmentCard()) { return BuyDevelopmentCard.fromData(a.getBuyDevelopmentCard()); }
-        if (a.hasPlayDevelopmentCard()) { return PlayDevelopmentCard.fromData(a.getPlayDevelopmentCard()); }
-        if (a.hasRollDice()) { return RollDice.fromData(a.getRollDice()); }
-        if (a.hasOfferTrade()) { return OfferTrade.fromData(a.getOfferTrade()); }
-        if (a.hasAcceptOffer()) { return AcceptOffer.fromData(a.getAcceptOffer()); }
-        if (a.hasRejectOffer()) { return RejectOffer.fromData(a.getRejectOffer()); }
-        if (a.hasCounterOffer()) { return CounterOffer.fromData(a.getCounterOffer()); }
-        if (a.hasTradePlayer()) { return TradePlayer.fromData(a.getTradePlayer()); }
-        if (a.hasMoveRobber()) { return MoveRobber.fromData(a.getMoveRobber()); }
-        if (a.hasRobPlayer()) { return RobPlayer.fromData(a.getRobPlayer()); }
-        if (a.hasLooseResources()) { return LooseResources.fromData(a.getLooseResources()); }
-        if (a.hasEndTurn()) { return EndTurn.fromData(a.getEndTurn()); }
-        if (a.hasStartGame()) { return StartGame.fromData(a.getStartGame()); }
-        if (a.hasClaimVictory()) { return ClaimVictory.fromData(a.getClaimVictory()); }
+        if (a.buildTown) { return BuildTown.fromData(a); }
+        if (a.buildRoad) { return BuildRoad.fromData(a); }
+        if (a.buildCity) { return BuildCity.fromData(a); }
+        if (a.tradeBank) { return TradeBank.fromData(a); }
+        if (a.buyDevelopmentCard) { return BuyDevelopmentCard.fromData(a); }
+        if (a.playDevelopmentCard) { return PlayDevelopmentCard.fromData(a); }
+        if (a.rollDice) { return RollDice.fromData(a); }
+        if (a.offerTrade) { return OfferTrade.fromData(a); }
+        if (a.acceptOffer) { return AcceptOffer.fromData(a); }
+        if (a.rejectOffer) { return RejectOffer.fromData(a); }
+        if (a.counterOffer) { return CounterOffer.fromData(a); }
+        if (a.tradePlayer) { return TradePlayer.fromData(a); }
+        if (a.moveRobber) { return MoveRobber.fromData(a); }
+        if (a.robPlayer) { return RobPlayer.fromData(a); }
+        if (a.looseResources) { return LooseResources.fromData(a); }
+        if (a.endTurn) { return EndTurn.fromData(a); }
+        if (a.startGame) { return StartGame.fromData(a); }
+        if (a.claimVictory) { return ClaimVictory.fromData(a); }
         throw new Error("Unsupported action in HostAtClient");
     }
 }

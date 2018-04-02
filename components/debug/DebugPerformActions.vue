@@ -134,32 +134,36 @@ export default {
         buildTown() {
             const nodes = this.game.phase.townPossibilities(this.game, this.player);
             const behavior = new gb.PickTownNode(nodes, this.keyListener, true);
-            const createActionData = (player, node) => BuildTown.createData(player, node);
-            this.behaveThenAct(behavior, createActionData);
+            const createAction = (player, node) => 
+                new BuildTown({ player : player, node: node });
+            this.behaveThenAct(behavior, createAction);
         },
         buildRoad() {
             const edges = this.game.phase.roadPossibilities(this.game, this.game.player);
             const behavior = new gb.PickRoadEdge(this.game.player, this.keyListener, true);
-            const createAction = (player, edge) => BuildRoad.createData(player, edge);
+            const createAction = (player, edge) => 
+                new BuildRoad({ player: player, edge: edge });
             this.behaveThenAct(behavior, createAction);
         },
         buildCity() {
             const behavior = new gb.PickTownForCity(this.game.player, this.keyListener, true);
-            const createAction = (player, node) => BuildCity.createData(player, node);
+            const createAction = (player, node) => new BuildCity({ player: player, node: node });
             this.behaveThenAct(behavior, createAction);
         },
         buyDevelopmentCard() {
-            const createAction = (player) => BuyDevelopmentCard.createData(player, null);
+            const createAction = (player) => new BuyDevelopmentCard({ player: player });
             this.act(createAction);
         },
         moveRobber() {
             const behavior = new gb.MoveRobber();
-            const createAction = (player, coord) => MoveRobber.createData(player, coord);
+            const createAction = (player, coord) =>
+                new MoveRobber({ player: player, coord: coord });
             this.behaveThenAct(behavior, createAction);
         },
         robPlayer() {
             const behavior = new gb.PickPlayer(this.opponents);
-            const createAction = (player, opponent) => RobPlayer.createData(player, opponent);
+            const createAction = (player, opponent) => 
+                new RobPlayer({ player: player, opponent: opponent });
             this.behaveThenAct(behavior, createAction);
         },
         rollDice(number) {
@@ -173,7 +177,7 @@ export default {
             this.game.phase = this.phase;
         },
         startGame() {
-            const createAction = function(player) { return StartGame.createData(player); };
+            const createAction = (player) => new StartGame({ player: player });
             this.act(createAction);
         },
         act: async function(createAction) {
@@ -208,7 +212,12 @@ export default {
             const resources = opponent.resources.toArray();
             const randomIndex = random.intFromZero(resources.length - 1);
             const offered = [resources[randomIndex].type];
-            const createAction = (player) => OfferTrade.createData(opponent, offered, offered);
+            const createAction = (player) =>
+                new OfferTrade({
+                    player: opponent,
+                    offered: offered,
+                    wanted: offered
+                });
             this.act(createAction);
         }
     },
@@ -233,9 +242,15 @@ export default {
                     const i = random.intFromOne(3);
                     if (i === 1) {
                         const reason = random.intFromZero(4);
-                        this.act(() => RejectOffer.createData(opponent, offerTrade, reason));
+                        this.act(() => new RejectOffer({
+                            player: opponent,
+                            tradeOffer: offerTrade,
+                            reason: reason
+                        }));
                     } else if (i === 2) {
-                        this.act(() => AcceptOffer.createData(opponent, offerTrade));
+                        this.act(() => new AcceptOffer({
+                            player: opponent, tradeOffer: offerTrade
+                        }));
                     } else if (i === 3) {
                         const offerAmount = random.intFromOne(3);
                         const wantAmount = random.intFromOne(3);
@@ -250,7 +265,12 @@ export default {
                             const randomIndex = random.intFromZero(resources.length - 1);
                             wanted.push(resources[randomIndex].type);
                         }
-                        this.act(() => CounterOffer.createData(opponent, offerTrade, offered, wanted));
+                        this.act(() => new CounterOffer({
+                            player: opponent,
+                            tradeOffer: offerTrade,
+                            offered: offered,
+                            wanted: wanted
+                        }));
                     }
                 }
             }

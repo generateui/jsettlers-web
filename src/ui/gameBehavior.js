@@ -1,4 +1,4 @@
-var proto = require("../../src/generated/data_pb");
+import { jsettlers as pb } from "../../src/generated/data";
 import {BoardBehavior, EmphasizeHoveredObject} from "./boardBehavior.js";
 import {Player, User} from "../player.js";
 import {RobberRenderer} from "./webgl/robberRenderer.js";

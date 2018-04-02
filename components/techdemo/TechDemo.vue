@@ -44,7 +44,7 @@
 </template>
 
 <script>
-var proto = require("../../src/generated/data_pb");
+import { jsettlers as pb } from "../../src/generated/data";
 import ChitTypePicker from './ChitTypePicker.vue'
 import HexTypePicker from './HexTypePicker.vue'
 import PlayerPicker from './PlayerPicker.vue'
