@@ -256,7 +256,7 @@ export default {
             this.counterOffering = false;
             this.tradeOffers.remove(offer);
             const rejectOffer = new RejectOffer({
-                player: this.game.player, 
+                player: this.game.player,
                 tradeOffer: offer
             });
             this.$emit("action", rejectOffer);

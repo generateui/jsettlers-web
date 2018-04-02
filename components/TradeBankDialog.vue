@@ -5,11 +5,11 @@
             <div id="bank-pick-resources">
                 <div v-for="rt1 in bankResources.types" :key="rt1">
                     <img class="resource-image" 
-                        :class="{ 'cannot-trade': bankHasNoResource(rt1)}"
-                        :src="`doc/images/${rt1}Card.png`" 
-                        @click="pickBankResource(rt1)" />
+                        :class="{ 'cannot-trade': !bankHasResource(rt1)}"
+                        :src="`doc/images/${rt1}Card.png`"
+                        @click="pickBankResourceType(rt1)" />
                     <div 
-                        class="bank-resource-count" 
+                        class="bank-resource-count"
                         :data-tooltip="`the bank has ${bankResources.of(rt1).length} ${rt1.toPascalCase()} in stock`">
                         {{bankResources.of(rt1).length}}
                     </div>
@@ -17,28 +17,32 @@
             </div>
             <div id="bank-picked-resources">
                     <img 
-                        v-for="resourceType in bankPickedResources"
+                        v-for="resource in bankPickedResources"
                         class="resource-image" 
-                        :key="resourceType"
-                        :src="`doc/images/${resourceType.toPascalCase()}Card.png`" 
-                        @click="unpickBankResource(resourceType)" />
+                        :key="resource.id"
+                        :src="`doc/images/${resource.name}Card.png`" 
+                        @click="unpickBankResource(resource)" />
             </div>
             <div id="get-wrapper" data-tooltip="on this top side, select resources you want">
                 <div id="get" class="get-give">GET</div>
             </div>
             <div id="spacer"></div>
             <div id="trade-button-wrapper">
-                <button id="trade-button" @click="trade" :disabled="cannotTrade" data-tooltip="to bank, balance the top and bottom resources and hit this button">
+                <button 
+                    id="trade-button" 
+                    @click="tradeBank()" 
+                    :disabled="cannotTrade" 
+                    data-tooltip="to bank, balance the top and bottom resources and hit this button">
                     🡹 Trade! 🡻
                 </button>
             </div>
             <div id="player-picked-resources">
                     <img 
-                        v-for="resourceType in playerPickedResources"
+                        v-for="resource in playerPickedResources"
                         class="resource-image" 
-                        :key="resourceType"
-                        :src="`doc/images/${resourceType.toPascalCase()}Card.png`" 
-                        @click="unpickPlayerResource(resourceType)" />
+                        :key="resource.id"
+                        :src="`doc/images/${resource.name}Card.png`" 
+                        @click="unpickPlayerResource(resource)" />
             </div>
             <div id="give-wrapper" data-tooltip="on this bottom side, select resources you exchange for">
                 <div id="give" class="get-give">GIVE</div>
@@ -46,13 +50,15 @@
             <div id="player-pick-resources">
                 <div
                     class="resource-type-and-port" 
-                    v-for="rt4 in playerResources.types" 
-                    v-bind:class="{ 'cannot-trade': cannotTradeResource(rt4) }"
-                    :key="rt4">
-                    <span :data-tooltip="`you have a ${getPort(rt4).name} port`" class="port-ratio">{{getPort(rt4).inAmount}}:{{getPort(rt4).outAmount}}</span>
+                    v-for="resourceType in playerResources.types" 
+                    v-bind:class="{ 'cannot-trade': cannotTradeResource(resourceType) }"
+                    :key="resourceType">
+                    <span 
+                        :data-tooltip="`you have a ${resourceType.name} port`" 
+                        class="port-ratio">{{getPort(rt4).inAmount}}:{{getPort(rt4).outAmount}}</span>
                     <img class="resource-image"
-                        :src="`doc/images/${rt4.toPascalCase()}Card.png`" 
-                        @click="pickPlayerResource(rt4)" />
+                        :src="`doc/images/${resourceType}Card.png`" 
+                        @click="pickPlayerResourceType(resourceType)" />
                 </div>
             </div>
         </div>
@@ -61,12 +67,9 @@
 
 <script>
 import { jsettlers as pb } from "../src/generated/data";
-import {Util} from "../src/util.js";
-import {ResourceList} from "../src/resource.js";
-import {TradeBank} from "../src/actions/tradeBank.js";
-
-const r = ResourceList.withAllTypes();
-r.add(pb.ResourceType.Wheat);
+import { Util } from "../src/util.js";
+import { ResourceList, Resource } from "../src/resource.js";
+import { TradeBank } from "../src/actions/tradeBank.js";
 
 export default {
     name: 'trade-bank-dialog',
@@ -76,7 +79,7 @@ export default {
         },
         keyListener: {
             type: Object
-        }
+        },
     },
     data() {
         return {
@@ -88,29 +91,36 @@ export default {
         }
     },
     methods: {
-        pickBankResource(resourceType) {
-            this.bankPickedResources.push(resourceType);
-            this.bankResources.remove(resourceType);
+        resourceTypeName(resourceType) {
+            return Resource.fromType(resourceType).name;
         },
-        unpickBankResource(resourceType) {
-            this.bankPickedResources.remove(resourceType);
-            this.bankResources.add(resourceType);
+        pickBankResourceType(resourceTypeString) {
+            const resourceType = pb.ResourceType[resourceTypeString];
+            const resource = Resource.fromType(resourceType);
+            this.bankPickedResources.push(resource);
+            this.bankResources.remove(resource);
         },
-        unpickPlayerResource(resourceType) {
+        unpickBankResource(resource) {
+            this.bankPickedResources.remove(resource);
+            this.bankResources.add(resource);
+        },
+        unpickPlayerResource(resource) {
             const p = this.game.player;
             const port = p.ports.bestPortForResourceType(resourceType);
             for (var i = 0; i < port.inAmount; i++) {
-                this.playerPickedResources.remove(resourceType);
-                this.playerResources.add(resourceType);
+                this.playerPickedResources.remove(resource);
+                this.playerResources.add(resource);
             }
             this.goldAmount--;
         },
-        pickPlayerResource(resourceType) {
+        pickPlayerResourceType(resourceTypeString) {
+            const resourceType = pb.ResourceType[resourceTypeString];
             const p = this.game.player;
             const port = p.ports.bestPortForResourceType(resourceType);
             for (var i = 0; i < port.inAmount; i++) {
-                this.playerPickedResources.push(resourceType);
-                this.playerResources.remove(resourceType);
+                const resource = Resource.fromType(resourceType);
+                this.playerPickedResources.push(resource);
+                this.playerResources.remove(resource);
             }
             this.goldAmount++;
         },
@@ -122,18 +132,16 @@ export default {
             const port = p.ports.bestPortForResourceType(resourceType);
             return this.playerResources.of(resourceType).length < port.inAmount;
         },
-        bankHasNoResource(resourceType) {
-            return !this.game.bank.resources.hasOf(resourceType);
+        bankHasResource(resourceType) {
+            return this.game.bank.resources.hasOf(resourceType);
         },
-        trade() {
-            const bankPicks = this.bankPickedResources.map(rt => pb.ResourceType[rt]);
-            const playerPicks = this.playerPickedResources.map(rt => pb.ResourceType[rt]);
+        tradeBank() {
             const tradeBank = new TradeBank({
                 player: this.game.player,
-                wanted: new ResourceList(bankPicks),
-                offered: new ResourceList(playerPicks)
+                wanted: new ResourceList(this.bankPickedResources),
+                offered: new ResourceList(this.playerPickedResources)
             });
-            this.$emit("trade", tradeBank);
+            this.$emit("tradeBank", tradeBank);
         }
     },
     computed: {
@@ -157,6 +165,8 @@ export default {
     position: fixed;
     width: 100%;
     height: 100%;
+    left:0;
+    top:0;
     display: grid;
     pointer-events: none;
 }

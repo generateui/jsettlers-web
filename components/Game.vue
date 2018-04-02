@@ -1,13 +1,6 @@
 <template>
   <div id="game">
     <div id="left">
-        <trade-bank-dialog 
-            v-if="showTradeBankDialog" 
-            :game="game" 
-            @toggleTradeBankDialog="toggleTradeBankDialog"
-            @trade="tradePlayer"
-            @close="closeTradeBankDialog"
-            :keyListener="keyListener"></trade-bank-dialog>
         <div id="players">
             <div v-for="player in game.players" :key="player.id">
                 <player-info 
@@ -26,13 +19,13 @@
         </div>
         <div id="tab-content">
             <action-log 
-                v-show="tabMode === TABMODE.actions" 
-                id="action-log" 
+                v-show="tabMode === TABMODE.actions"
+                id="action-log"
                 :actions="game.actions.array"></action-log>
             <div v-show="tabMode === TABMODE.chat" id="chats"></div>
             <div v-show="tabMode === TABMODE.expectation" id="queue"></div>
-            <debug-perform-actions 
-                v-show="tabMode === TABMODE.debug" 
+            <debug-perform-actions
+                v-show="tabMode === TABMODE.debug"
                 :game="game" 
                 :host="host" 
                 :keyListener="keyListener"
@@ -46,7 +39,6 @@
             :game="game" 
             @behaveThenAct="behaveThenAct" 
             @action="performAction"
-            @toggleTradeBankDialog="toggleTradeBankDialog"
             :keyListener="keyListener"></actions>
         <player-assets 
             :game="game"
@@ -71,26 +63,24 @@ import Actions from "./Actions.vue";
 import BankView from "./BankView.vue";
 import ActionLog from "./ActionLog.vue";
 import DebugPerformActions from "./debug/DebugPerformActions.vue";
-import TradeBankDialog from "./TradeBankDialog.vue";
 import ActionsMessage from "./ActionsMessage.vue";
 
-import {HostAtClient} from "../src/host.js";
-import {Game, GameSettings} from "../src/game.js";
-import {Bank} from "../src/bank.js";
-import {RollDice} from "../src/actions/rollDice.js";
-import {BoardRenderer} from "../src/ui/webgl/boardRenderer.js";
-import {Player, User} from "../src/player.js";
+import { HostAtClient } from "../src/host.js";
+import { Game, GameSettings} from "../src/game.js";
+import { Bank } from "../src/bank.js";
+import { RollDice } from "../src/actions/rollDice.js";
+import { BoardRenderer } from "../src/ui/webgl/boardRenderer.js";
+import { Player, User } from "../src/player.js";
 import { Standard4pDesign, JustSomeSea, TheGreatForest, BoardDescriptor } from '../src/board.js';
-import {KeyListener} from "../src/ui/keyListener.js";
+import { KeyListener } from "../src/ui/keyListener.js";
 import * as bb from "../src/ui/boardBehavior.js";
 import * as gb from "../src/ui/gameBehavior.js";
-import { LooseResources } from '../src/actions/looseResources';
-import { RobPlayer } from '../src/actions/robPlayer';
-import { MoveRobber } from '../src/actions/moveRobber';
+import { Bot } from '../src/bot';
 import { BuildTown } from '../src/actions/buildTown';
 import { BuildRoad } from '../src/actions/buildRoad';
-import { EndTurn } from '../src/actions/endTurn';
-import { Bot } from '../src/bot';
+import { MoveRobber } from '../src/actions/moveRobber';
+import { RobPlayer } from '../src/actions/robPlayer';
+import { LooseResources } from '../src/actions/looseResources';
 
 var boardRenderer = null;
 var host = null;
@@ -120,7 +110,7 @@ export default {
     name: 'game',
     components: {
         PlayerInfo, PlayerAssets, Actions, BankView, ActionLog,
-        DebugPerformActions, TradeBankDialog, ActionsMessage
+        DebugPerformActions, ActionsMessage
     },
     props: {
         settings: {
@@ -141,29 +131,12 @@ export default {
             selectedPlayer: null,
             host: null,
             keyListener: new KeyListener(),
-            showTradeBankDialog: false,
             update: false,
             showLooseResourcesDialog: false,
             youAction: null,
         }
     },
     methods: {
-        toggleTradeBankDialog() {
-            this.showTradeBankDialog = !this.showTradeBankDialog;
-        },
-        closeTradeBankDialog() {
-            this.showTradeBankDialog = false;
-        },
-        tradeBank(action) {
-            this.performAction(action);
-            this.showTradeBankDialog = false;
-            this.update = !this.update;
-        },
-        tradePlayer(action) {
-            this.performAction(action);
-            this.update = !this.update;
-            this.closeTradeBankDialog();
-        },
         looseResources(action) {
             this.showLooseResourcesDialog = false;
             this.performAction(action);

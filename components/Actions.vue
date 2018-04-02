@@ -1,5 +1,19 @@
 <template>
     <div id="actions">
+
+        <trade-bank-dialog 
+            v-if="showTradeBankDialog"
+            :game="game" 
+            @tradeBank="tradeBank"
+            @close="closeTradeBankDialog"
+            :keyListener="keyListener"></trade-bank-dialog>
+        <trade-player-dialog
+            :show="showTradePlayerDialog"
+            @action="action"
+            @close="closeTradePlayerDialog"
+            :keyListener="keyListener"
+            :game="game"></trade-player-dialog>
+
         <build-town-button
             id="build-town-button"
             @buildTown="buildTown()"
@@ -21,7 +35,7 @@
         </div>
         <trade-bank-button
             id="trade-bank-button"
-            @tradeBank="toggleTradeBankDialog"
+            @tradeBank="toggleTradeBankDialog()"
             :game="game"></trade-bank-button>
         <end-turn-button
             id="end-turn-button"
@@ -42,13 +56,6 @@
             :game="game">
         </game-phases-view>
 
-        <trade-player-dialog
-            @action="action"
-            @close="closeTradePlayerDialog"
-            :keyListener="keyListener"
-            :show="showTradePlayerDialog"
-            :game="game">
-        </trade-player-dialog>
     </div>
 </template>
 
@@ -98,6 +105,18 @@ export default {
         }
     },
     methods: {
+        toggleTradePlayerDialog() {
+            this.showTradePlayerDialog = !this.showTradePlayerDialog;
+        },
+        closeTradePlayerDialog() {
+            this.showTradePlayerDialog = false;
+        },
+        toggleTradeBankDialog() {
+            this.showTradeBankDialog = !this.showTradeBankDialog;
+        },
+        closeTradeBankDialog() {
+            this.showTradeBankDialog = false;
+        },
         action(action) {
             this.$emit("action", action);
         },
@@ -134,8 +153,9 @@ export default {
             const claimVictory = new ClaimVictory({ player: player });
             this.$emit("action", claimVictory);
         },
-        toggleTradeBankDialog() {
-            this.$emit("toggleTradeBankDialog");
+        tradeBank(tradeBank) {
+            this.$emit("action", tradeBank);
+            this.closeTradeBankDialog();
         },
         rollDice() {
             let rollDice = new RollDice({ player: this.game.player });
@@ -145,12 +165,7 @@ export default {
             let endTurn = new EndTurn({ player: this.game.player });
             this.$emit("action", endTurn);
         },
-        toggleTradePlayerDialog() {
-            this.showTradePlayerDialog = !this.showTradePlayerDialog;
-        },
-        closeTradePlayerDialog() {
-            this.showTradePlayerDialog = false;
-        }
+
     }
 }
 </script>
