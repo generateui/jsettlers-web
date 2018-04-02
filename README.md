@@ -37,20 +37,18 @@ https://generateui.github.io/jsettlers-web/
  - browserify for fast & easy development
  - babel.js to transpile to ES5 code
  - Java as transitive dependency for antlr4
- - protobuf compiler (`protoc`) to geenrate protobuf source
+ - **protobuf.js** to generate javascript source from `.proto`
 
 ## Build
-
-jsettlers-web uses antlr4 and protobuf to generate sourcecode. It's currently 
-not nicely integrated with node.js scripts, it's on the todo-list. 
 
 1. clone repo
 2. ensure node is installed
 3. `npm install`
-4. download antlr 4.7.1 from [here](http://www.antlr.org/download/antlr-4.7.1-complete.jar)
-5. place `antlr-4.7.1-complete.jar` in `node_modules/antlr4-cli/bin`
-6. `npm run generate-antlr` runs antlr and generates antlr parser for jsettlers dsl
-7. ensure protobuf compiler `protoc` is installed
-8. `protoc --js_out=import_style=commonjs,binary:src/generated data.proto` to generate protobuf code
-9. `npm run dev` to run browserify with an integrated dev-webserver locally
-10. you should now see a jsettlers-web web page served in your fav browser
+4. `npm run dev` to run browserify with an integrated dev-webserver locally. Initial build of `./dist/build.js` may take a while.
+5. you should now see a jsettlers-web web page served in your fav browser at `http://localhost:8080`
+
+Note: `npm run dev` generates protobuf and antlr4 sources. I have tested this on a Windows machine only, let me know if it fails on other OSes.
+
+## Test
+
+Run `npm run test`. This will run the unit tests. To run the integration test scripts, run `npm run script`.
