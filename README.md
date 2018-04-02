@@ -5,6 +5,8 @@ the items using three.js. Most of the UI is implemented using vue.js. A complete
 and custom language is defined using antlr4, which is used for integration- and
 cucumber-style test scripts.
 
+![screenshot](doc/screenshots/02-04-2018.png)
+
 ## Demo
 https://generateui.github.io/jsettlers-web/
 
