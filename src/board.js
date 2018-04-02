@@ -290,16 +290,34 @@ export class TheGreatForest extends Board {
     constructor() {
         super();
 
+        this._config = {
+            hexBag: [],
+            chitBag: [
+                [3, () => new Chit(pb.ChitType.Chit2)],
+                [3, () => new Chit(pb.ChitType.Chit3)],
+                [2, () => new Chit(pb.ChitType.Chit4)],
+                [1, () => new Chit(pb.ChitType.Chit5)],
+                [1, () => new Chit(pb.ChitType.Chit9)],
+                [2, () => new Chit(pb.ChitType.Chit10)],
+                [3, () => new Chit(pb.ChitType.Chit11)],
+                [3, () => new Chit(pb.ChitType.Chit12)],
+            ],
+            portBag: []
+        };
         var coords = [
             ...super.getCoordsByRadius(0),
             ...super.getCoordsByRadius(1),
-            ...super.getCoordsByRadius(2), 
+            ...super.getCoordsByRadius(2),
         ];
         for (let coord of coords) {
             if (coord == Coord3D.center) {
-                this._hexes.set(coord, new WheatField(coord));
+                var hex = new WheatField(coord);
+                hex.chit = new Chit(pb.ChitType.Chit6);
+                this._hexes.set(coord, hex);
             } else {
-                this._hexes.set(coord, new Forest(coord));
+                var hex = new Forest(coord);
+                hex.chit = new Chit(pb.ChitType.ChitFromBag);
+                this._hexes.set(coord, hex);
             }
         }
     }

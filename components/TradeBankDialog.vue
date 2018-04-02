@@ -106,10 +106,11 @@ export default {
         },
         unpickPlayerResource(resource) {
             const p = this.game.player;
-            const port = p.ports.bestPortForResourceType(resourceType);
+            const port = p.ports.bestPortForResourceType(resource.type);
             for (var i = 0; i < port.inAmount; i++) {
-                this.playerPickedResources.remove(resource);
-                this.playerResources.add(resource);
+                const toRemove = this.playerPickedResources.find(r => r.type === resource.type);
+                this.playerPickedResources.remove(toRemove);
+                this.playerResources.add(toRemove);
             }
             this.goldAmount--;
         },

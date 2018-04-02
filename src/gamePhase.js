@@ -129,7 +129,8 @@ export class InitialPlacement extends GamePhase {
         for (let edge of buildTown.node.edges) {
             const hex1 = game.board.hexes.get(edge.coord1);
             const hex2 = game.board.hexes.get(edge.coord2);
-            if (hex1.canBuildLandPieces || hex2.canBuildLandPieces) {
+            if ((hex1 !== undefined && hex1.canBuildLandPieces) ||
+                (hex2 !== undefined && hex2.canBuildLandPieces)) {
                 edges.push(edge);
             }
         }

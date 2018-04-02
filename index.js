@@ -117,37 +117,38 @@ import Game from './components/Game.vue';
 import GameSettings from './components/GameSettings.vue';
 import Attribution from './components/doc/Attribution.vue';
 import VueMarkdown from 'vue-markdown';
-import {TradeBank} from "./src/actions/tradeBank.js";
-import {RollDice} from "./src/actions/rollDice.js";
-import {BuildTown} from "./src/actions/buildTown.js";
-import {BuildRoad} from "./src/actions/buildRoad.js";
-import {BuildCity} from "./src/actions/buildCity.js";
-import {RejectOffer} from "./src/actions/rejectOffer.js";
-import {AcceptOffer} from "./src/actions/acceptOffer.js";
-import {CounterOffer} from "./src/actions/counterOffer.js";
-import {OfferTrade} from "./src/actions/offerTrade";
-import {TradePlayer} from "./src/actions/tradePlayer";
-import {LooseResources} from "./src/actions/looseResources";
-import {RobPlayer} from "./src/actions/robPlayer";
-import {MoveRobber} from "./src/actions/moveRobber";
-import {EndTurn} from "./src/actions/endTurn";
-import {ClaimVictory} from "./src/actions/claimVictory";
-import {BuyDevelopmentCard} from "./src/actions/buyDevelopmentCard";
-import {PlayDevelopmentCard} from "./src/actions/playDevelopmentCard";
-import {InitialPlacement, Finished, PlayTurns} from "./src/gamePhase";
-import {Soldier, VictoryPoint, RoadBuilding, YearOfPlenty, Monopoly} from "./src/developmentCard";
-
+import { TradeBank } from "./src/actions/tradeBank.js";
+import { RollDice } from "./src/actions/rollDice.js";
+import { BuildTown } from "./src/actions/buildTown.js";
+import { BuildRoad } from "./src/actions/buildRoad.js";
+import { BuildCity } from "./src/actions/buildCity.js";
+import { RejectOffer } from "./src/actions/rejectOffer.js";
+import { AcceptOffer } from "./src/actions/acceptOffer.js";
+import { CounterOffer } from "./src/actions/counterOffer.js";
+import { OfferTrade } from "./src/actions/offerTrade";
+import { TradePlayer } from "./src/actions/tradePlayer";
+import { LooseResources } from "./src/actions/looseResources";
+import { RobPlayer } from "./src/actions/robPlayer";
+import { MoveRobber } from "./src/actions/moveRobber";
+import { EndTurn } from "./src/actions/endTurn";
+import { ClaimVictory } from "./src/actions/claimVictory";
+import { BuyDevelopmentCard } from "./src/actions/buyDevelopmentCard";
+import { PlayDevelopmentCard } from "./src/actions/playDevelopmentCard";
+import { InitialPlacement, Finished, PlayTurns } from "./src/gamePhase";
+import { Soldier, VictoryPoint, RoadBuilding, YearOfPlenty, 
+    Monopoly } from "./src/developmentCard";
+ 
 const routes = [
-  { path: "/", component: Welcome },
-  { path: "/welcome", component: Welcome },
-  { path: "/tech-demo", component: TechDemo },
-  { path: "/attribution", component: Attribution },
-  { path: "/play-test-game", component: PlayTestGame,
-    children: [
-      { path: "", component: GameSettings },
-      { path: "game", name: "game", component: Game, props: true },
-    ]
-  },
+    { path: "/", component: Welcome },
+    { path: "/welcome", component: Welcome },
+    { path: "/tech-demo", component: TechDemo },
+    { path: "/attribution", component: Attribution },
+    { path: "/play-test-game", component: PlayTestGame,
+        children: [
+            { path: "", component: GameSettings },
+            { path: "game", name: "game", component: Game, props: true },
+        ]
+    },
 ];
 const router = new VueRouter({
   routes
@@ -183,6 +184,6 @@ Vue.prototype.ClaimVictory = ClaimVictory;
 
 
 new Vue({ // eslint-disable-line no-new
-  router,
-  render: (h) => h(App)
+    router,
+    render: (h) => h(App)
 }).$mount("#app");

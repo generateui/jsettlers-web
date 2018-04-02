@@ -1,5 +1,5 @@
 <template>
-    <ol id="action-log">
+    <ol id="action-log" reversed>
         <li v-for="action in actions" :key="action.id">
             <div id="build-city-view" class="item-wrapper" v-if="action instanceof BuildCity">
                 <img :src="`doc/images/City${action.player.color.name}48.png`">
@@ -153,9 +153,12 @@ export default {
 <style scoped>
 ol {
     color: white;
+    display: flex;
+    flex-direction: column-reverse;
 }
 li {
     list-style: none;
+    flex: 0 0 auto;
 }
 .item-wrapper {
     display: table;

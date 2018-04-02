@@ -81,6 +81,7 @@ import { BuildRoad } from '../src/actions/buildRoad';
 import { MoveRobber } from '../src/actions/moveRobber';
 import { RobPlayer } from '../src/actions/robPlayer';
 import { LooseResources } from '../src/actions/looseResources';
+import { StartGame } from '../src/actions/startGame';
 
 var boardRenderer = null;
 var host = null;
@@ -112,21 +113,22 @@ export default {
         PlayerInfo, PlayerAssets, Actions, BankView, ActionLog,
         DebugPerformActions, ActionsMessage
     },
-    props: {
-        settings: {
-            type: Object,
-            default: function() {
-                return new GameSettings({
-                    boardDescriptor: boards[0],
-                    bots: [bots[1], bots[2], bots[3]],
-                    players: [new Player({ user: new User({name: "player 1"}) })],
-                });
-            }
-        }
-    },
+    // settings props through programmatic navigation dont work
+    // props: {
+    //     settings: {
+    //         type: Object,
+    //         default: function() {
+    //             return new GameSettings({
+    //                 boardDescriptor: boards[0],
+    //                 bots: [bots[1], bots[2], bots[3]],
+    //                 players: [new Player({ user: new User({name: "player 1"}) })],
+    //             });
+    //         }
+    //     }
+    // },
     data() {
         return {
-            tabMode: TABMODE.debug,
+            tabMode: TABMODE.actions,
             game: null,
             selectedPlayer: null,
             host: null,
@@ -176,6 +178,17 @@ export default {
             } finally {
                 boardRenderer.behavior = new bb.NoBehavior();
             }
+        },
+        createDefaultSettings() {
+            return new GameSettings({
+                boardDescriptor: boards[0],
+                bots: [
+                    Bot.descriptor.createNamedInstance(),
+                    Bot.descriptor.createNamedInstance(),
+                    Bot.descriptor.createNamedInstance(),
+                ],
+                players: [new Player({ user: new User({name: "player 1"}) })],
+            });
         },
         // force a response from the player
         forceYouActionIfNeeded() {
@@ -245,6 +258,7 @@ export default {
         }
     },
     created() {
+        this.settings = window.gameSettings || this.createDefaultSettings();
         const board = this.settings.boardDescriptor.createBoard();
         board.generateBoardForPlay();
         const game = new Game();
@@ -255,7 +269,6 @@ export default {
                     id: botSpec.id
                 })
             });
-            // this.host.addBot(bot);
             botPlayers.push(botPlayer);
             game.players.push(botPlayer);
         }
@@ -310,7 +323,7 @@ export default {
             }
             this.forceYouActionIfNeeded();
         });
-        const that = this;
+        this.act(new StartGame({ player: this.game.player }));
     },  
     destroyed() {
         boardRenderer.dispose();
