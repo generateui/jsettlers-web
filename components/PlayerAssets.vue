@@ -43,7 +43,7 @@
                             </p>
                         </div>
                         <ul>
-                            <li v-for="message in soldierMessages" :key="message">{{message}}</li>
+                            <li v-for="message in messagesByDevelopmentCard.get(dc)" :key="message">{{message}}</li>
                         </ul>
                     </div>
 
@@ -56,7 +56,7 @@
                             </p>
                         </div>
                         <ul>
-                            <li v-for="message in otherMessages" :key="message">{{message}}</li>
+                            <li v-for="message in messagesByDevelopmentCard.get(dc)" :key="message">{{message}}</li>
                         </ul>
                     </div>
 
@@ -69,7 +69,7 @@
                             </p>
                         </div>
                         <ul>
-                            <li v-for="message in victoryPointMessages" :key="message">{{message}}</li>
+                            <li v-for="message in messagesByDevelopmentCard.get(dc)" :key="message">{{message}}</li>
                         </ul>
                     </div>
                     <div v-if="dc instanceof YearOfPlenty">
@@ -81,7 +81,7 @@
                             </p>
                         </div>
                         <ul>
-                            <li v-for="message in otherMessages" :key="message">{{message}}</li>
+                            <li v-for="message in messagesByDevelopmentCard.get(dc)" :key="message">{{message}}</li>
                         </ul>
                     </div>
                     <div v-if="dc instanceof Monopoly">
@@ -93,27 +93,14 @@
                             </p>
                         </div>
                         <ul>
-                            <li v-for="message in otherMessages" :key="message">{{message}}</li>
+                            <li v-for="message in messagesByDevelopmentCard.get(dc)" :key="message">{{message}}</li>
                         </ul>
                     </div>
                 </ul>
                 <div slot="reference">
                     <img 
                         class="development-card" 
-                        v-if="dc instanceof RoadBuilding || dc instanceof YearOfPlenty || dc instanceof Monopoly"
-                        v-bind:class=" { disabled: !canPlayOther }"
-                        @dblclick="playDevelopmentCard(dc)"
-                        :src="`doc/images/${dc.name}.png`"/>
-                    <img 
-                        class="development-card" 
-                        v-if="dc instanceof VictoryPoint"
-                        v-bind:class=" { disabled: !canPlayVp }"
-                        @dblclick="playDevelopmentCard(dc)"
-                        :src="`doc/images/${dc.name}.png`"/>
-                    <img 
-                        class="development-card" 
-                        v-if="dc instanceof Soldier"
-                        v-bind:class=" { disabled: !canPlaySoldier }"
+                        v-bind:class=" { disabled: !canPlayDevelopmentCard.get(dc) }"
                         @dblclick="playDevelopmentCard(dc)"
                         :src="`doc/images/${dc.name}.png`"/>
                 </div>
@@ -129,7 +116,7 @@ import LooseResourcesDialog from "./LooseResourcesDialog.vue";
 import Popper from 'vue-popperjs';
 
 import * as m from "../src/matcher";
-import { Monopoly, Soldier } from '../src/developmentCard.js';
+import { Monopoly, Soldier, YearOfPlenty, RoadBuilding, VictoryPoint } from '../src/developmentCard.js';
 import { PlayDevelopmentCard } from "../src/actions/playDevelopmentCard.js";
 import { LooseResources } from "../src/actions/looseResources";
 import { ResourceList } from '../src/resource';
@@ -156,17 +143,13 @@ export default {
     },
     data() {
         return {
-            victoryPointMessages: [],
-            soldierMessages: [],
-            otherMessages: [],
+            messagesByDevelopmentCard: new Map(), // <DevelopmentCard, string[]>
             showMonopolyDialog: false,
             showYearOfPlentyDialog: false,
             developmentCard: null,
             selectedResources: [],
             selectResources: false,
-            canPlayVp: false,
-            canPlaySoldier: false,
-            canPlayOther: false,
+            canPlayDevelopmentCard: new Map(), // <DevelopmentCard, bool>
             update2: false,
         }
     },
@@ -176,13 +159,11 @@ export default {
         },
         playDevelopmentCard(developmentCard) {
             this.developmentCard = developmentCard;
-            // instanceof don't work here
-            const typeName = developmentCard.constructor.name;
-            if (typeName === "Monopoly") {
+            if (developmentCard instanceof Monopoly) {
                 this.showMonopolyDialog = true;
-            } else if (typeName === "YearOfPlenty") {
+            } else if (developmentCard instanceof YearOfPlenty) {
                 this.showYearOfPlentyDialog = true;
-            } else if (typeName === "RoadBuilding") {
+            } else if (developmentCard instanceof RoadBuilding) {
                 const rb = this.developmentCard;
                 rb.player = this.player;
                 const playRoadBuilding = new PlayDevelopmentCard({
@@ -190,7 +171,7 @@ export default {
                     developmentCard: rb
                 });
                 this.$emit('action', playRoadBuilding)
-            } else if (typeName === "VictoryPoint") {
+            } else if (developmentCard instanceof VictoryPoint) {
                 const vp = this.developmentCard;
                 vp.player = this.player;
                 const playVp = new PlayDevelopmentCard({
@@ -198,7 +179,7 @@ export default {
                     developmentCard: vp
                 });
                 this.$emit('action', playVp)
-            } else if (typeName === "Soldier") {
+            } else if (developmentCard instanceof Soldier) {
                 const soldier = this.developmentCard;
                 soldier.player = this.player;
                 const playSoldier = new PlayDevelopmentCard({
@@ -252,43 +233,31 @@ export default {
             this.selectedResources.length = 0;
             this.$emit('looseResources', looseResources)
         },
-        updateCanPlayVp() {
+        updateCanPlayDevelopmentCard() {
             const game = this.game;
             const player = this.game.player;
-            this.victoryPointMessages = m.match([
-                m.isOnTurn(game, player),
-                m.isExpected(game, new PlayDevelopmentCard({player: player})),
-            ]);
-            this.canPlayVp = this.victoryPointMessages.length === 0;
-        },
-        updateCanPlaySoldier() {
-            const game = this.game;
-            const player = this.game.player;
-            this.soldierMessages = m.match([
-                m.isOnTurn(game, player),
-                m.isExpected(game, new PlayDevelopmentCard({player: player, developmentCard: new Soldier()})),
-            ]);
-            this.canPlaySoldier = this.soldierMessages.length === 0;
-        },
-        updateCanPlayNonVp() {
-            const game = this.game;
-            const player = this.game.player;
-            this.otherMessages = m.match([
-                m.notYetPlayedDevelopmentCard(game),
-                m.isOnTurn(game, player),
-                m.isExpected(game, new PlayDevelopmentCard({player: player})),
-            ]);
-            this.canPlayOther = this.otherMessages.length === 0;
+            this.messagesByDevelopmentCard.clear();
+            this.canPlayDevelopmentCard.clear();
+            for (let dc of this.player.developmentCards) {
+                const messages = m.match([
+                    m.notYetPlayedDevelopmentCard(game, dc),
+                    m.developmentCardWaitedOneTurn(game, player, dc),
+                    m.isOnTurn(game, player),
+                    m.isExpected(game, new PlayDevelopmentCard({
+                        player: player,
+                        developmentCard: dc
+                    })),
+                ]);
+                const canPlayDevelopmentCard = messages.length === 0;
+                this.messagesByDevelopmentCard.set(dc, messages);
+                this.canPlayDevelopmentCard.set(dc, canPlayDevelopmentCard);
+            }
         }
     },
     mounted() {
-        this.updateCanPlayVp();
-        this.updateCanPlaySoldier();
-        this.updateCanPlayNonVp();
+        this.updateCanPlayDevelopmentCard();
         this.removeActionAddedHandler = this.game.actions.added((action) => {
-            this.updateCanPlayVp();
-            this.updateCanPlaySoldier();
-            this.updateCanPlayNonVp();
+            this.updateCanPlayDevelopmentCard();
             this.update2 = !this.update2;
             this.$forceUpdate();
         });

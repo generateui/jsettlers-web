@@ -166,18 +166,37 @@ class CanPayPiece extends Matcher {
     }
 }
 class NotYetPlayedDevelopmentCard extends Matcher {
-    constructor(game) {
+    constructor(game, developmentCard) {
         super();
         this.game = game;
+        this.developmentCard = developmentCard;
     }
     match() {
         if (this.game.playTurns.turn === null) {
             return false;
         }
+        if (!this.developmentCard.maxOnePerTurn) {
+            return true;
+        }
         return !this.game.playTurns.turn.hasPlayedDevelopmentCard;
     }
     get message() {
         return "max one development card per turn";
+    }
+}
+class DevelopmentCardWaitedOneTurn extends Matcher {
+    constructor(game, player, developmentCard) {
+        super();
+
+        this.game = game;
+        this.player = player;
+        this.developmentCard = developmentCard;
+    }
+    match() {
+        if (!this.developmentCard.mustWaitOneTurn) {
+            return true;
+        }
+        return this.game.playTurns.turn.number > this.developmentCard.turnBoughtIndex;
     }
 }
 export class HasRoadAt extends Matcher {
@@ -288,12 +307,16 @@ const isOnTurn = (game, player) => new IsOnTurn(game, player);
 const hasTownInStock = (stock) => new HasTownInStock(stock);
 const hasRoadInStock = (stock) => new HasRoadInStock(stock);
 const hasCityInStock = (stock) => new HasCityInStock(stock);
-const notYetPlayedDevelopmentCard = (game) => new NotYetPlayedDevelopmentCard(game);
+const notYetPlayedDevelopmentCard = (game, developmentCard) => 
+    new NotYetPlayedDevelopmentCard(game, developmentCard);
 const hasEnoughVictoryPoints = (game, player) => 
     new HasEnoughVictoryPoints(game, player);
+const developmentCardWaitedOneTurn = (game, player, developmentCard) =>
+    new DevelopmentCardWaitedOneTurn(game, player, developmentCard);
 
 export { 
     match, hasTownInStock, isOnTurn, isExpected, canPlaceTownOnBoard, 
     canPlaceCityOnBoard, canPlaceRoadOnBoard, hasRoadInStock, hasCityInStock,
-    notYetPlayedDevelopmentCard, canPayPiece, hasEnoughVictoryPoints
+    notYetPlayedDevelopmentCard, canPayPiece, hasEnoughVictoryPoints,
+    developmentCardWaitedOneTurn
 };

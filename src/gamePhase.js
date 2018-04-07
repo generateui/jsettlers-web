@@ -238,27 +238,32 @@ export class PlayTurns extends GamePhase {
         }
     }
     playDevelopmentCard(game, playDevelopmentCard) {
-        const developmentCard = playDevelopmentCard.developmentCard;
-        if (developmentCard.maxOnePerTurn) {
+        const dc = playDevelopmentCard.developmentCard;
+        if (dc.maxOnePerTurn) {
             this.turn.hasPlayedDevelopmentCard = true;
         }
     }
     playSoldier(game, soldier) {
-        if (this.turnPhase === this.beforeRollDicePhase) {
-            this.turnPhase = this.rollDicePhase;
-        }
     }
     rollDice(game, rollDice) {
         if (rollDice.dice.total === 7) {
             game.expectation = new LooseResourcesMoveRobberRobPlayer(game);
             this.turnPhase = this.rollDicePhase;
         } else {
-            this._moveToPlayTurnsPhase(game);
+            this._moveToTradeAndBuildPhase(game);
         }
     }
     robPlayer(game, robPlayer) {
+        // no dice rolled: -> RollDicePhase
+        if (this.turnPhase === this.beforeRollDicePhase) {
+            this.turnPhase = this.rollDicePhase;
+            // MoveRobberThenRobPlayer expectation, so switch back to PSORD
+            game.expectation = new PlaySoldierOrRollDice(game);
+            return;
+        }
+        // dice rolled: -> TradeAndBuild
         if (this.turnPhase === this.rollDicePhase) {
-            this._moveToPlayTurnsPhase(game);
+            this._moveToTradeAndBuildPhase(game);
             return;
         }
         // soldier played in playturns phase, so only move back
@@ -266,7 +271,7 @@ export class PlayTurns extends GamePhase {
             game.expectation = this.playTurnActions;
         }
     }
-    _moveToPlayTurnsPhase(game) {
+    _moveToTradeAndBuildPhase(game) {
         this.turnPhase = this.tradeAndBuildPhase;
         this.playTurnActions = new PlayTurnActions(game);
         game.expectation = this.playTurnActions;

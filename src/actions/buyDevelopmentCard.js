@@ -65,6 +65,7 @@ export class BuyDevelopmentCard extends GameAction {
     performServer(host) {
         const index = host.random.intFromZero(host.developmentCards.length);
         const developmentCard = host.developmentCards[index];
+        developmentCard.turnBoughtIndex = host.game.playTurns.turn.number;
         host.developmentCards.remove(developmentCard);
         this.developmentCard = developmentCard;
     }

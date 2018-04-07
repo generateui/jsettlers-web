@@ -24,6 +24,7 @@ export class PlayDevelopmentCard extends GameAction {
             .find(dc => dc.constructor.name === this.developmentCard.constructor.name)
         this.player.developmentCards.remove(toRemove);
         this.player.playedDevelopmentCards.push(this.developmentCard); // this instance retains the info
+        this.developmentCard.turnPlayedIndex = game.playTurns.turn.number;
         game.phase.playDevelopmentCard(game, this);
     }
     get data() {

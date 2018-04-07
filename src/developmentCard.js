@@ -77,6 +77,9 @@ export class DevelopmentCard {
     get maxOnePerTurn() {
         return true;
     }
+    get mustWaitOneTurn() {
+        return true;
+    }
 }
 export class YearOfPlenty extends DevelopmentCard {
     constructor(config) {
@@ -191,6 +194,8 @@ export class VictoryPoint extends DevelopmentCard {
     }
     get name() { return "VictoryPoint"; }
     get maxOnePerTurn() { return false; }
+    get mustWaitOneTurn() { return false; }
+
 }
 export class RoadBuilding extends DevelopmentCard {
     constructor(config) {
