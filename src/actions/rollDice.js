@@ -17,6 +17,18 @@ export class Dice {
     static fromData(data) {
         return new Dice(data.die1, data.die2);
     }
+    static fromNumber(number) {
+        let die1 = null;
+        let die2 = null;
+        if (number < 8) {
+            die1 = 1;
+            die2 = number - 1;
+        } else {
+            die1 = 6;
+            die2 = number - 6;
+        }
+        return new Dice(die1, die2);
+    }
     get data() {
         return pb.RollDice.Dice.create({ die1: this.die1, die2: this.die2 });
     }
@@ -49,23 +61,6 @@ export class RollDice extends GameAction {
             data.rollDice.dice = this.dice.data;
         }
         return data;
-    }
-    static createDataDebug(player, number) {
-        let die1 = null;
-        let die2 = null;
-        if (number < 8) {
-            die1 = 1;
-            die2 = number - 1;
-        } else {
-            die1 = 6;
-            die2 = number - 6;
-        }
-        return pb.GameAction.create({
-            playerId: player.id,
-            rollDice: {
-                dice: new Dice(die1, die2).data
-            }
-        });
     }
     static fromData(data, game) {
         const player = game.getPlayerById(data.playerId);

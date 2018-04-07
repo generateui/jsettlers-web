@@ -102,7 +102,7 @@ import { AcceptOffer } from '../../src/actions/acceptOffer';
 import { OfferTrade } from '../../src/actions/offerTrade';
 import { MoveRobber } from '../../src/actions/moveRobber';
 import { RobPlayer } from '../../src/actions/robPlayer';
-import { RollDice } from '../../src/actions/rollDice';
+import { RollDice, Dice } from '../../src/actions/rollDice';
 import { StartGame } from '../../src/actions/startGame';
 import { ResourceList } from '../../src/resource';
 
@@ -168,7 +168,10 @@ export default {
             this.behaveThenAct(behavior, createAction);
         },
         rollDice(number) {
-            const createAction = (player) => RollDice.createDataDebug(player, number);
+            const createAction = (player) => new RollDice({
+                player: player, 
+                dice: Dice.fromNumber(number)
+            });
             this.act(createAction);
         },
         setPlayerOnTurn() {

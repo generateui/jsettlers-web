@@ -128,6 +128,7 @@ export class PickTownForCity extends BoardBehavior {
             const townRenderer = renderer;
             if (townRenderer.town.player === this.player) {
                 this.ok(townRenderer.town.node);
+                this.emphasizeHoveredObject.leave(townRenderer, renderer);
             }
         }
     }
