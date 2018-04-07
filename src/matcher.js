@@ -198,6 +198,9 @@ class DevelopmentCardWaitedOneTurn extends Matcher {
         }
         return this.game.playTurns.turn.number > this.developmentCard.turnBoughtIndex;
     }
+    get message() {
+        return "wait one turn to play a development card"
+    }
 }
 export class HasRoadAt extends Matcher {
     constructor(player, edge) {
