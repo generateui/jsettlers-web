@@ -211,6 +211,11 @@
                             :size="48">
                         </resource-list-view>
                     </div>
+
+                    <div id="end-turn-view" v-if="action instanceof EndTurn">
+                        <img src="doc/images/EndTurn48.png" />
+                    </div>
+
                 </div>
 
         </div>
