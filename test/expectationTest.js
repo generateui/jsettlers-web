@@ -5,7 +5,8 @@ import { PortList, Any4To1Port, Timber2To1Port, Any3To1Port,
 import { Timber, ResourceList, Wheat, Brick, Ore, Sheep } from '../src/resource';
 import { PlaySoldierOrRollDice, MoveRobberThenRobPlayer, PlayTurnActions, 
     LooseResourcesMoveRobberRobPlayer, BuildTownThenBuildRoad, 
-    Expectation } from '../src/expectation';
+    Expectation, 
+    BuildTwoRoads} from '../src/expectation';
 import { Player } from '../src/player';
 import { BuildRoad } from '../src/actions/buildRoad';
 import { BuildTown } from '../src/actions/buildTown';
@@ -638,5 +639,23 @@ describe("BuildTownThenBuildRoad", () => {
         assert.ok(buildTownThenBuildRoad.matches(buildRoad1) === false);
         assert.ok(buildTownThenBuildRoad.met === true);
 
+    });
+});
+describe("BuildTwoRoads", () => {
+    it("met when no stock roads left", () => {
+        const game = new Game();
+        const player1 = new Player();
+        game.playerOnTurn = player1;
+        player1.stock.roads = 1;
+        const player2 = new Player();
+        const player3 = new Player();
+        game.players.push(player1);
+        game.players.push(player2);
+        game.players.push(player3);
+        const buildTwoRoads = new BuildTwoRoads(game);
+
+        assert.ok(buildTwoRoads.met === false);
+        player1.stock.roads = 0;
+        assert.ok(buildTwoRoads.met === true);
     });
 });

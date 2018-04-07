@@ -578,7 +578,7 @@ export class BuildTwoRoads extends Expectation {
         });
     }
     get met() {
-        return this.roadsBuilt === 2;
+        return this.roadsBuilt === 2 || this.playerOnTurn.stock.roads === 0;
     }
     get youAction() {
         if (this.met) {
