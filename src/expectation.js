@@ -452,6 +452,7 @@ export class BuildTownThenBuildRoad extends Expectation {
         super();
         
         this.actions = [];
+        this.player = game.player;
         const playerAmount = game.players.length;
         for (let i = 0; i < playerAmount; i++) {
             const player = game.players[i];
