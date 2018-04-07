@@ -53,7 +53,9 @@ export default {
             this.canClaimVictory = this.messages.length === 0;
         },
         claimVictory() {
-            this.$emit("claimVictory");
+            if (this.canClaimVictory) {
+                this.$emit("claimVictory");
+            }
         }
     },
     mounted() {

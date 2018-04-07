@@ -37,14 +37,16 @@ export default {
             this.canRollDice = this.messages.length === 0;
         },
         rollDice() {
-            this.$emit("rollDice");
+            if (this.canRollDice) {
+                this.$emit("rollDice");
+            }
         }
     },
     mounted() {
         this.updateCanRollDice();
         this.removeActionAddedHandler = this.game.actions.added((action) => {
             this.updateCanRollDice();
-        })
+        });
     },
     unmount() {
         this.removeActionAddedHandler();
