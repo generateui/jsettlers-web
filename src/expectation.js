@@ -1,3 +1,4 @@
+import { jsettlers as pb } from "../src/generated/data"
 import { MoveRobber } from "./actions/moveRobber";
 import { RobPlayer } from "./actions/robPlayer";
 import { BuildRoad } from "./actions/buildRoad";
@@ -19,6 +20,25 @@ import { AcceptOffer } from "./actions/acceptOffer";
 
 /** An action or set of actions expected to be played by a player */
 export class Expectation {
+    static fromData(data, game) {
+        if (data.expectTradeResponses) {
+            return ExpectTradeResponses.fromData(data.expectTradeResponses, game);
+        } else if(data.playTurnActions) {
+            return new PlayTurnActions(game);
+        } else if(data.moveRobberThenRobPlayer) {
+            return MoveRobberThenRobPlayer.fromData(data.moveRobberThenRobPlayer, game);
+        } else if(data.playSoldierOrRollDice) {
+            return PlaySoldierOrRollDice.fromData(data.playSoldierOrRollDice, game);
+        } else if(data.looseResourcesMoveRobberRobPlayer) {
+            return LooseResourcesMoveRobberRobPlayer.fromData(data.looseResourcesMoveRobberRobPlayer, game);
+        } else if(data.buildTownThenBuildRoad) {
+            return BuildTownThenBuildRoad.fromData(data.buildTownThenBuildRoad, game);
+        } else if (data.buildTwoRoads) {
+            return BuildTwoRoads.fromData(data.buildTwoRoads, game);
+        } else if (data.endOfGame) {
+            return new EndOfGame(game);
+        }
+    }
     /** returns true when the state of the expectation is complete */
     get met() {
         return true;
@@ -86,6 +106,21 @@ export class ExpectTradeResponses extends Expectation {
         this.playerOnTurn = game.playerOnTurn;
         this.player = game.player;
         this.offer = offer;
+    }
+    static fromData(data, game) {
+        const expectTradeResponses = new ExpectTradeResponses(game);
+        for (let playerId of data.respondedPlayerIds) {
+            const player = game.getPlayerById(playerId);
+            expectTradeResponses.responded.add(player);
+        }
+        return expectTradeResponses;
+    }
+    get data() {
+        return pb.Expectation.create({
+            expectTradeResponses: {
+                respondedPlayerIds: Array.from(this.responded).map(p => p.id)
+            }
+        });
     }
     get met() {
         return this.responded.size === this.expected.size;
@@ -174,6 +209,26 @@ export class MoveRobberThenRobPlayer extends Expectation {
         this.hasMovedRobber = false;
         this.hasRobbedPlayer = false;
     }
+    static fromData(data, game) {
+        const mrtrp = new MoveRobberThenRobPlayer(game);
+        mrtrp.hasMovedRobber = data.hasMovedRobber;
+        mrtrp.hasRobbedPlayer = data.hasRobbedPlayer;
+        return mrtrp;
+    }
+    get data() {
+        return pb.Expectation.create({
+            moveRobberThenRobPlayer: {
+                hasMovedRobber: this.hasMovedRobber,
+                hasRobbedPlayer: this.hasRobbedPlayer
+            }
+        });
+    }
+    get dataUnWrapped() {
+        return pb.MoveRobberThenRobPlayer.create({
+            hasMovedRobber: this.hasMovedRobber,
+            hasRobbedPlayer: this.hasRobbedPlayer
+        });
+    }
     get met() {
         return this.hasMovedRobber && this.hasRobbedPlayer;
     }
@@ -201,7 +256,6 @@ export class MoveRobberThenRobPlayer extends Expectation {
         return false;
     }
     meet(action) {
-        const oldYouAction = this.youAction;
         if (action instanceof RobPlayer) {
             this.hasRobbedPlayer = true;
         }
@@ -238,6 +292,18 @@ export class PlaySoldierOrRollDice extends Expectation {
         this.maybeCanPlaySoldier = this.playerOnTurn.developmentCards.length > 0;
         this.hasPlayedSoldier = false;
         this.hasRolledDice = false;
+    }
+    static fromData(data, game) {
+        const psord = new PlaySoldierOrRollDice(game);
+        psord.hasPlayedSoldier = data.hasPlayedSoldier;
+        return psord;
+    }
+    get data() {
+        return pb.Expectation.create({
+            playSoldierOrRollDice: {
+                hasPlayedSoldier: this.hasPlayedSoldier
+            }
+        });
     }
     get met() {
         return this.hasRolledDice;
@@ -303,6 +369,24 @@ export class LooseResourcesMoveRobberRobPlayer extends Expectation {
         this.lostResources = new Set(); // <Player>
         this.moveRobberThenRobPlayer = new MoveRobberThenRobPlayer(game);
     }
+    static fromData(data, game) {
+        const lrmrrp = new LooseResourcesMoveRobberRobPlayer(game);
+        for (let playerId of data.lostResourcesPlayerIds) {
+            const player = game.getPlayerById(playerId);
+            lrmrrp.lostResources.add(player);
+        }
+        lrmrrp.moveRobberThenRobPlayer = MoveRobberThenRobPlayer
+            .fromData(data.moveRobberThenRobPlayer, game);
+        return lrmrrp;
+    }
+    get data() {
+        return pb.Expectation.create({
+            looseResourcesMoveRobberRobPlayer: {
+                lostResourcesPlayerIds: Array.from(this.lostResources).map(p => p.id),
+                moveRobberThenRobPlayer: this.moveRobberThenRobPlayer.dataUnWrapped
+            }
+        });
+    }
     get _allPlayersLostResources() {
         return this.lostResources.size === this.unlucky.size;
     }
@@ -334,7 +418,6 @@ export class LooseResourcesMoveRobberRobPlayer extends Expectation {
         return false;
     }
     meet(action) {
-        const oldYouAction = this.youAction;
         if (action instanceof RobPlayer || action instanceof MoveRobber) {
             this.moveRobberThenRobPlayer.meet(action);
             return;
@@ -393,6 +476,26 @@ export class BuildTownThenBuildRoad extends Expectation {
         this.action = this.actions[this.index]; // current expected action
         this.lastBuildTown = null;
     }
+    static fromData(data, game) {
+        const bttbr = new BuildTownThenBuildRoad(game);
+        bttbr.index = data.actionIndex;
+        bttbr.action = bttbr.actions[bttbr.index];
+        for (let i = game.actions.length - 1; i > -1; i--) {
+            const gameAction = game.actions[i];
+            if (gameAction instanceof BuildTown) {
+                bttbr.lastBuildTown = gameAction;
+                break;
+            }
+        }
+        return bttbr;
+    }
+    get data() {
+        return pb.Expectation.create({
+            buildTownThenBuildRoad: {
+                actionIndex: this.index
+            }
+        });
+    }
     get met() {
         return this.action === null;
     }
@@ -419,7 +522,6 @@ export class BuildTownThenBuildRoad extends Expectation {
             action.player === this.action.player;
     }
     meet(action) {
-        const oldYouAction = this.youAction;
         this.index += 1;
         if (this.index > this.maxIndex) {
             this.action = null;
@@ -461,10 +563,22 @@ export class BuildTwoRoads extends Expectation {
 
         this.playerOnTurn = game.playerOnTurn;
         this.player = game.player;
-        this.roadsBuild = 0;
+        this.roadsBuilt = 0;
+    }
+    static fromData(data, game) {
+        const btr = new BuildTwoRoads(game);
+        btr.roadsBuilt = data.roadsBuilt;
+        return btr;
+    }
+    get data() {
+        return pb.Expectation.create({
+            buildTwoRoads: {
+                roadsBuilt: this.roadsBuilt
+            }
+        });
     }
     get met() {
-        return this.roadsBuild === 2;
+        return this.roadsBuilt === 2;
     }
     get youAction() {
         if (this.met) {
@@ -473,19 +587,19 @@ export class BuildTwoRoads extends Expectation {
         return new BuildRoad();
     }
     matches(action) {
-        return action instanceof BuildRoad && this.roadsBuild < 2;
+        return action instanceof BuildRoad && this.roadsBuilt < 2;
     }
     meet(action) {
         if (action instanceof BuildRoad) {
             const oldYouAction = this.youAction;
-            this.roadsBuild += 1;
+            this.roadsBuilt += 1;
         }
     }
     get youMessage() {
         if (this.playerOnTurn !== this.player) {
             return null;
         }
-        if (this.roadsBuild === 0) {
+        if (this.roadsBuilt === 0) {
             return "build two roads";
         }
         return "build a road";
@@ -494,7 +608,7 @@ export class BuildTwoRoads extends Expectation {
         if (this.playerOnTurn === this.player) {
             return null;
         }
-        if (this.roadsBuild === 0) {
+        if (this.roadsBuilt === 0) {
             return `waiting for ${this.playerOnTurn.user.name} to build two roads`;
         }
         return `waiting for ${this.playerOnTurn.user.name} to build a road`;

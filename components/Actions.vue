@@ -49,8 +49,7 @@
             id="roll-dice-button"
             class="build-button"
             @rollDice="rollDice()"
-            :game="game"
-            :dice="dice"></roll-dice-button>
+            :game="game"></roll-dice-button>
 
         <game-phases-view id="game-phases-view"
             :game="game">

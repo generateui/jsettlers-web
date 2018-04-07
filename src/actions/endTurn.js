@@ -3,11 +3,7 @@ import { GameAction } from "./gameAction";
 
 export class EndTurn extends GameAction {
     constructor(config) {
-        super();
-
-        config = config || {};
-        this.playerId = config.playerId;
-        this.player = config.player;
+        super(config);
     }
     perform(game) {
         game.phase.endTurn(game, this);
@@ -21,9 +17,10 @@ export class EndTurn extends GameAction {
             endTurn: { }
         });
     }
-    static fromData(data) {
+    static fromData(data, game) {
+        const player = game.getPlayerById(data.playerId);
         return new EndTurn({
-            playerId: data.playerId
+            player: player
         });
     }
 }

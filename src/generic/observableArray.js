@@ -1,6 +1,6 @@
 export class ObservableArray {
-    constructor() {
-        this._array = [];
+    constructor(array) {
+        this._array = array || [];
         this._addListeners = [];
         this._removeListeners = [];
     }

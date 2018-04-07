@@ -3,11 +3,9 @@ import {GameAction} from "./gameAction.js";
 
 export class AcceptOffer extends GameAction {
     constructor(config) {
-        super();
+        super(config);
 
         config = config || {};
-        this.playerId = config.playerId;
-        this.player = config.player;
         this.tradeOffer = config.tradeOffer || null;
         if (config.tradeOfferId !== undefined) {
             this.tradeOfferId = config.tradeOfferId;
@@ -19,22 +17,23 @@ export class AcceptOffer extends GameAction {
         return true;
     }
     perform(game) {
-        const offerTrade = game.getActionById(this.offerTradeId);
-        offerTrade.responses.set(this.player, this);
+        this.tradeOffer.responses.set(this.player, this);
         game.phase.acceptOffer(game, this);
     }
     get data() {
         return pb.GameAction.create({
             playerId: this.player.id,
             acceptOffer: {
-                tradeOfferId: this.offerTradeId
+                tradeOfferId: this.tradeOffer.id
             }
         });
     }
-    static fromData(data) {
+    static fromData(data, game) {
+        const player = game.getPlayerById(data.playerId);
+        const offer = game.getActionById(data.acceptOffer.tradeOfferId);
         return new AcceptOffer({
-            playerId: data.playerId,
-            tradeOfferId: data.acceptOffer.tradeOfferId
+            player: player,
+            tradeOffer: offer
         });
     }
 }

@@ -6,21 +6,20 @@ import { DevelopmentCard, VictoryPoint, YearOfPlenty, RoadBuilding,
 
 export class BuyDevelopmentCard extends GameAction {
     constructor(config) {
-        super();
+        super(config);
 
         config = config || {};
-        this.playerId = config.playerId;
-        this.player = config.player;
         this.developmentCard = config.developmentCard || null;
     }
-    static fromData(data) {
+    static fromData(data, game) {
+        const player = game.getPlayerById(data.playerId);
         let developmentCard = null;
         if (data.buyDevelopmentCard.developmentCard) {
             developmentCard = DevelopmentCard.fromData(
-                data.buyDevelopmentCard.developmentCard);
+                data.buyDevelopmentCard.developmentCard, game);
         }
         return new BuyDevelopmentCard({
-            playerId: data.playerId,
+            player: player,
             developmentCard: developmentCard
         });
     }

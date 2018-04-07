@@ -9,8 +9,36 @@ import { Town } from '../src/town';
 import { City } from '../src/city';
 import { PlayDevelopmentCard } from '../src/actions/playDevelopmentCard';
 import { Soldier } from '../src/developmentCard';
+import { LargestArmy } from "../src/largestArmy";
 
 describe("LargestArmy", () => {
+    it("serializes without player", () => {
+        const largestArmy = new LargestArmy();
+        const game = new Game();
+
+        assert.strictEqual(null, largestArmy.player);
+        const buffer = pb.LargestArmy.encode(largestArmy.data).finish();
+        const revived = pb.LargestArmy.decode(buffer);
+        const copy = LargestArmy.fromData(revived, game);
+
+        assert.strictEqual(null, copy.player);
+    });
+    it("serializes with player", () => {
+        const game = new Game();
+        const player = new Player({
+            id: 23,
+        });
+        game.players.push(player);
+        const largestArmy = new LargestArmy(player);
+
+        const buffer = pb.LargestArmy.encode(largestArmy.data).finish();
+        const revived = pb.LargestArmy.decode(buffer);
+        const copy = LargestArmy.fromData(revived, game);
+
+        assert.ok(copy.player !== null);
+        assert.strictEqual(23, game.getPlayerById(23).id);
+        assert.strictEqual(23, copy.player.id);
+    });
     it("3 when 3 soldiers are played", () => {
         const game = new Game();
         const board = new Standard4pDesign();
@@ -22,7 +50,6 @@ describe("LargestArmy", () => {
         for (let i = 0; i < 2; i++) {
             const soldier = new Soldier({ player: player1, coord: Coord3D.center });
             const playSoldier = new PlayDevelopmentCard({ player: player1, developmentCard: soldier });
-            playSoldier.setReferences(game);
             playSoldier.perform(game);
         }
         assert.ok(game.largestArmy.player === null);
@@ -32,7 +59,6 @@ describe("LargestArmy", () => {
 
         const soldier = new Soldier({ player: player1, coord: Coord3D.center });
         const playSoldier = new PlayDevelopmentCard({ player: player1, developmentCard: soldier });
-        playSoldier.setReferences(game);
         playSoldier.perform(game);
         assert.ok(game.largestArmy.player === player1);
         assert.ok(player1.soldiers.length === 3);
@@ -51,14 +77,12 @@ describe("LargestArmy", () => {
         for (let i = 0; i < 2; i++) {
             const soldier = new Soldier({ player: player1, coord: Coord3D.center });
             const playSoldier = new PlayDevelopmentCard({ player: player1, developmentCard: soldier });
-            playSoldier.setReferences(game);
             playSoldier.perform(game);
         }
         assert.ok(game.largestArmy.player === null);
 
         const soldier = new Soldier({ player: player1, coord: Coord3D.center });
         const playSoldier = new PlayDevelopmentCard({ player: player1, developmentCard: soldier });
-        playSoldier.setReferences(game);
         playSoldier.perform(game);
         assert.ok(game.largestArmy.player === player1);
         assert.ok(player1.victoryPoints.length === 1);
@@ -68,7 +92,6 @@ describe("LargestArmy", () => {
         for (let i = 0; i < 4; i++) {
             const soldier = new Soldier({ player: player2, coord: Coord3D.center });
             const playSoldier = new PlayDevelopmentCard({ player: player2, developmentCard: soldier });
-            playSoldier.setReferences(game);
             playSoldier.perform(game);
         }
         assert.ok(game.largestArmy.player === player2);
@@ -88,7 +111,6 @@ describe("LargestArmy", () => {
         for (let i = 0; i < 3; i++) {
             const soldier = new Soldier({ player: player1, coord: Coord3D.center });
             const playSoldier = new PlayDevelopmentCard({ player: player1, developmentCard: soldier });
-            playSoldier.setReferences(game);
             playSoldier.perform(game);
         }
         assert.ok(game.largestArmy.player === player1);
@@ -98,7 +120,6 @@ describe("LargestArmy", () => {
         for (let i = 0; i < 3; i++) {
             const soldier = new Soldier({ player: player2, coord: Coord3D.center });
             const playSoldier = new PlayDevelopmentCard({ player: player2, developmentCard: soldier });
-            playSoldier.setReferences(game);
             playSoldier.perform(game);
         }
         assert.ok(player1.soldiers.length === 3);

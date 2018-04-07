@@ -1,6 +1,7 @@
 import { jsettlers as pb } from "../src/generated/data";
-import {Observable} from "./generic/observable.js";
-import {Chit} from "./chit.js";
+import { Observable } from "./generic/observable.js";
+import { Chit } from "./chit.js";
+import { Coord3D, Coord } from "./coord";
 
 export class Hex extends Observable {
     constructor(coord) {
@@ -9,6 +10,19 @@ export class Hex extends Observable {
         this.chit = new Chit(pb.ChitType.NoneHex);
         this.port = null;
         this.makeObservable(["chit", "port"]);
+    }
+    get data() {
+        return pb.Hex.create({
+            type: this.type,
+            chitType: this.chit.type,
+            coord: this.coord.data
+        });
+    }
+    static fromData(data) {
+        const hex = Hex.fromType(data.type);
+        hex.coord = Coord.fromData(data.coord);
+        hex.chit = Chit.fromData(data.chitType);
+        return hex;
     }
     static fromType(type, coord) {
         var hexType = pb.HexType;

@@ -4,25 +4,19 @@ import { DevelopmentCard } from "../developmentCard";
 
 export class PlayDevelopmentCard extends GameAction {
     constructor(config) {
-        super();
+        super(config);
         
         config = config || {};
-        this.playerId = config.playerId;
-        this.player = config.player;
         this.developmentCard = config.developmentCard;
     }
-    static fromData(data) {
+    static fromData(data, game) {
+        const player = game.getPlayerById(data.playerId);
         const developmentCard = DevelopmentCard.fromData(
-            data.playDevelopmentCard.developmentCard);
+            data.playDevelopmentCard.developmentCard, game);
         return new PlayDevelopmentCard({
-            playerId: data.playerId,
+            player: player,
             developmentCard: developmentCard
         });
-    }
-    setReferences(game) {
-        if (this.developmentCard.setReferences !== undefined) {
-            this.developmentCard.setReferences(game);
-        }
     }
     perform(game) {
         this.developmentCard.play(game, this.player);

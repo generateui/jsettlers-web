@@ -1,7 +1,7 @@
 <template>
     <div @click="rollDice" v-bind:class="{ disabled: !canRollDice }">
-        <die-view id="first" v-bind:die="dice.die1"></die-view>
-        <die-view id="second" v-bind:die="dice.die2"></die-view>
+        <die-view id="first" v-bind:die="game.dice === null ? null: game.dice.die1"></die-view>
+        <die-view id="second" v-bind:die="game.dice === null ? null : game.dice.die2"></die-view>
     </div>
 </template>
 
@@ -16,9 +16,6 @@ export default {
     },
     name: 'roll-dice-button',
     props: {
-        dice: {
-            type: Object
-        },
         game: {
             type: Object
         }

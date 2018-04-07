@@ -1,10 +1,15 @@
 import { jsettlers as pb } from "../src/generated/data";
 import {Edge} from "./edge.js";
+import { Coord } from "./coord";
 
 export class Port {
     constructor(partIndex, seaCoord) {
-        this.partIndex = partIndex;
-        this.seaCoord = seaCoord;
+        if (partIndex !== undefined) {
+            this.partIndex = partIndex;
+        } else {
+            this.partIndex = null;
+        }
+        this.seaCoord = seaCoord || null;
         this._edge = null;
     }
     get edge() {
@@ -41,6 +46,28 @@ export class Port {
             case pb.PortType.Any4To1: return new Any4To1Port(partIndex, seaCoord);
             case pb.PortType.FromBag: return new FromBagPort(partIndex, seaCoord);
         }
+    }
+    static fromData(data) {
+        const port = Port.fromType(data.type);
+        if (data.partIndex !== undefined) {
+            port.partIndex = data.partIndex;
+        }
+        if (data.seaCoord) {
+            port.seaCoord = Coord.fromData(data.seaCoord);
+        }
+        return port;
+    }
+    get data() {
+        const data = pb.Port.create({
+            type: this.type,
+        });
+        if (this.seaCoord !== null) {
+            data.seaCoord = this.seaCoord.data;
+        }
+        if (this.partIndex !== null) {
+            data.partIndex = this.partIndex;
+        }
+        return data;
     }
 }
 export class Clay2To1Port extends Port { 

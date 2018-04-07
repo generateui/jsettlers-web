@@ -4,11 +4,9 @@ import { GameAction } from "./gameAction";
 
 export class TradeBank extends GameAction {
     constructor(config) {
-        super();
+        super(config);
 
         config = config || {};
-        this.playerId = config.playerId;
-        this.player = config.player;
         this.offered = config.offered; // ResourceList
         this.wanted = config.wanted; // ResourceList
     }
@@ -16,9 +14,10 @@ export class TradeBank extends GameAction {
         game.bank.resources.moveFrom(this.player.resources, this.offered);
         this.player.resources.moveFrom(game.bank.resources, this.wanted);
     }
-    static fromData(data) {
+    static fromData(data, game) {
+        const player = game.getPlayerById(data.playerId);
         return new TradeBank({
-            playerId: data.playerId,
+            player: player,
             wanted: new ResourceList(data.tradeBank.wanted),
             offered: new ResourceList(data.tradeBank.offered)
         });

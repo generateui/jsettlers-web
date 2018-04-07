@@ -4,11 +4,9 @@ import { ResourceList } from "../resource";
 
 export class LooseResources extends GameAction {
     constructor(config) {
-        super();
+        super(config);
 
         config = config || {};
-        this.playerId = config.playerId;
-        this.player = config.player;
         this.resources = config.resources;
     }
     perform(game) {
@@ -16,9 +14,10 @@ export class LooseResources extends GameAction {
         lost.add(this.resources);
         game.bank.resources.moveFrom(this.player.resources, lost);
     }
-    static fromData(data) {
+    static fromData(data, game) {
+        const player = game.getPlayerById(data.playerId);
         return new LooseResources({
-            playerId: data.playerId,
+            player: player,
             resources: new ResourceList(data.looseResources.resources) 
         });
     }

@@ -1,3 +1,4 @@
+import { jsettlers as pb } from "../src/generated/data";
 import { Observable } from "./generic/observable.js";
 import { ObservableMap } from "./generic/observableMap.js";
 import { Robber } from "./robber.js";
@@ -6,10 +7,14 @@ import { Bank} from "./bank.js";
 import { ObservableArray } from "./generic/observableArray.js";
 import { LongestRoad } from "./longestRoad.js";
 import { InitialPlacement, PlayTurns, Finished, GamePhase } from "./gamePhase.js";
-import { ExpectAnything } from "./expectation";
+import { ExpectAnything, Expectation } from "./expectation";
 import { LargestArmy } from "./largestArmy.js";
 import { Dice } from "./actions/rollDice.js";
 import { Stock } from "./stock.js";
+import { Player } from "./player.js";
+import { Board } from "./board.js";
+import { DevelopmentCard } from "./developmentCard.js";
+import { GameActionHelper } from "./actions/gameActionHelper.js";
 
 export class GameSettings {
     constructor(config) {
@@ -24,11 +29,11 @@ export class Game extends Observable {
 
         this.players = [];
         this.player = null; // the player at the front-end/client
-        this.playerOnTurn = null; // the player whose turn it is
+        this.playerOnTurn = null; // <Player> the player whose turn it is
         // player who won the game. It's possible the winning player has equal
         // or even less victorypoints then the winner, so we need to explicitly
         // register the winner.
-        this.winner = null;
+        this.winner = null; // <Player>
         this.board = null;
         this.developmentCards = []; // TODO: observable array
         this.bank = new Bank();
@@ -36,7 +41,7 @@ export class Game extends Observable {
         this.longestRoad = new LongestRoad();
         this.largestArmy = new LargestArmy();
         this.expectation = new ExpectAnything();
-        this.dice = new Dice(6, 6); // keep last rolled dice for convenience
+        this.dice = null; // keep last rolled dice for convenience
         this.victoryPointsToWin = 10;
 
         this.initialPlacement = new InitialPlacement();
@@ -50,6 +55,68 @@ export class Game extends Observable {
         this.phase = new GamePhase();
 
         this.makeObservable(["expectation"]);
+    }
+    static fromData(data) {
+        const game = new Game();
+        game.board = Board.fromData(data.board);
+        for (let pd of data.players) {
+            const player = Player.fromData(pd, game);
+            game.players.push(player);
+        }
+        if (data.playerOnTurnId !== undefined) {
+            game.playerOnTurn = game.getPlayerById(data.playerOnTurnId);
+        }
+        if (data.winnerId !== undefined) {
+            game.winner = game.getPlayerById(data.winnerId);
+        }
+        game.developmentCards = data.developmentCards
+            .map(dd => DevelopmentCard.fromData(dd, game));
+        game.bank = Bank.fromData(data.bank);
+        const actions = data.actions.map(ad => GameActionHelper.fromData(ad, game));
+        game.actions = new ObservableArray(actions);
+        game.longestRoad = LongestRoad.fromData(data.longestRoad, game);
+        game.largestArmy = LargestArmy.fromData(data.largestArmy, game);
+        game.expectation = Expectation.fromData(data.expectation, game);
+        if (data.dice) {
+            game.dice = Dice.fromData(data.dice);
+        }
+        game.victoryPointsToWin = data.victoryPointsToWin;
+        game.initialPlacement = GamePhase.fromData(data.initialPlacement, game);
+        game.playTurns = GamePhase.fromData(data.playTurns, game);
+        game.finished = GamePhase.fromData(data.finished, game);
+        game.phases.push(game.initialPlacement);
+        game.phases.push(game.playTurns);
+        game.phases.push(game.finished);
+        game.phase = game.phases[data.currentPhaseIndex];
+        return game;
+    }
+    get data() {
+        const data = pb.Game.create({
+            players: this.players.map(p => p.data),
+            board: this.board.data,
+            developmentCards: this.developmentCards
+                .map(dc => dc.data),
+            bank: this.bank.data,
+            actions: this.actions.array.map(a => a.data),
+            longestRoad: this.longestRoad.data,
+            largestArmy: this.largestArmy.data,
+            expectation: this.expectation.data,
+            victoryPointsToWin: this.victoryPointsToWin,
+            initialPlacement: this.initialPlacement.data,
+            playTurns: this.playTurns.data,
+            finished: this.finished.data,
+            currentPhaseIndex: this.phases.indexOf(this.phase),
+        });
+        if (this.dice !== null) {
+            data.dice = this.dice.data;
+        }
+        if (this.playerOnTurn !== null) {
+            data.playerOnTurnId = this.playerOnTurn.id;
+        }
+        if (this.winner !== null) {
+            data.winnerId = this.winner.id;
+        }
+        return data;
     }
     start(gameOptions) {
         this.gameOptions = gameOptions;

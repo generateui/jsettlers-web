@@ -4,11 +4,9 @@ import { ResourceList } from "../resource.js";
 
 export class CounterOffer extends GameAction {
     constructor(config) {
-        super();
+        super(config);
 
         config = config || {};
-        this.playerId = config.playerId;
-        this.player = config.player;
         this.offered = config.offered; // ResourceList
         this.wanted = config.wanted; // ResourceList
         this.tradeOffer = config.tradeOffer || null;
@@ -26,26 +24,24 @@ export class CounterOffer extends GameAction {
         tradeOffer.responses.set(this.player, this);
         game.phase.counterOffer(game, this);
     }
-    setReferences(game) {
-        this.offeredResourceList = new ResourceList(this.offered);
-        this.wantedResourceList = new ResourceList(this.wanted);
-    }
     get data() {
         return pb.GameAction.create({
             playerId: this.player.id,
             counterOffer: {
                 offered: this.offered.toResourceTypeArray(),
                 wanted: this.wanted.toResourceTypeArray(),
-                tradeOfferId: this.tradeOfferId,
+                tradeOfferId: this.tradeOffer.id,
             }
         });
     }
-    static fromData(data) {
+    static fromData(data, game) {
+        const player = game.getPlayerById(data.playerId);
+        const offer = game.getActionById(data.counterOffer.tradeOfferId);
         return new CounterOffer({
-            playerId: data.playerId,
+            player: player,
             offered: new ResourceList(data.counterOffer.offered),
             wanted: new ResourceList(data.counterOffer.wanted),
-            tradeOfferId: data.counterOffer.tradeOfferId
+            tradeOffer: offer
         });
     }
 }

@@ -21,6 +21,7 @@ import { LooseResources } from "./actions/looseResources";
 import { StartGame } from "./actions/startGame";
 import { EndTurn } from "./actions/endTurn";
 import { ClaimVictory } from "./actions/claimVictory";
+import { GameActionHelper } from "./actions/gameActionHelper";
 
 export class HostAtClient {
     constructor(game) {
@@ -53,7 +54,7 @@ export class HostAtClient {
         const revived = pb.GameAction.decode(binary);
         
         // instantiate action instance
-        const action = this.createAction(revived);
+        const action = GameActionHelper.fromData(revived, this.game);
         // set ids
         // GameAction.setIds(action, revived);
         // set references?
@@ -65,10 +66,6 @@ export class HostAtClient {
                 // fail(new Error(`random: ${random.toString()}`))
             // } else {
                 this.identify(action);
-                GameAction.setReferences(action, this.game);
-                if (action.setReferences !== undefined) {
-                    action.setReferences(this.game);
-                }
                 action.performServer(this);
                 if (!game.expectation.matches(action)) {
                     // what to do here?
@@ -83,27 +80,5 @@ export class HostAtClient {
     identify(obj) {
         this.currentId += 1;
         obj.id = this.currentId;
-    }
-    createAction(actionMessage) {
-        const a = actionMessage;
-        if (a.buildTown) { return BuildTown.fromData(a); }
-        if (a.buildRoad) { return BuildRoad.fromData(a); }
-        if (a.buildCity) { return BuildCity.fromData(a); }
-        if (a.tradeBank) { return TradeBank.fromData(a); }
-        if (a.buyDevelopmentCard) { return BuyDevelopmentCard.fromData(a); }
-        if (a.playDevelopmentCard) { return PlayDevelopmentCard.fromData(a); }
-        if (a.rollDice) { return RollDice.fromData(a); }
-        if (a.offerTrade) { return OfferTrade.fromData(a); }
-        if (a.acceptOffer) { return AcceptOffer.fromData(a); }
-        if (a.rejectOffer) { return RejectOffer.fromData(a); }
-        if (a.counterOffer) { return CounterOffer.fromData(a); }
-        if (a.tradePlayer) { return TradePlayer.fromData(a); }
-        if (a.moveRobber) { return MoveRobber.fromData(a); }
-        if (a.robPlayer) { return RobPlayer.fromData(a); }
-        if (a.looseResources) { return LooseResources.fromData(a); }
-        if (a.endTurn) { return EndTurn.fromData(a); }
-        if (a.startGame) { return StartGame.fromData(a); }
-        if (a.claimVictory) { return ClaimVictory.fromData(a); }
-        throw new Error("Unsupported action in HostAtClient");
     }
 }

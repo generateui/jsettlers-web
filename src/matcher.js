@@ -171,7 +171,10 @@ class NotYetPlayedDevelopmentCard extends Matcher {
         this.game = game;
     }
     match() {
-        return !this.game.playTurns.turn.hasDevelopmentCardPlayed;
+        if (this.game.playTurns.turn === null) {
+            return false;
+        }
+        return !this.game.playTurns.turn.hasPlayedDevelopmentCard;
     }
     get message() {
         return "max one development card per turn";

@@ -4,12 +4,9 @@ import { ResourceList } from "../resource";
 
 export class RobPlayer extends GameAction {
     constructor(config) {
-        super();
+        super(config);
 
         config = config || {};
-        this.playerId = config.playerId;
-        this.player = config.player;
-        this.opponentId = config.opponentId || null;
         this.opponent = config.opponent || null; // can be null to rob no one
         this.resources = config.resources || null; // can be null when opponent is null
     }
@@ -26,26 +23,19 @@ export class RobPlayer extends GameAction {
             this.resources = new ResourceList(resource);
         }
     }
-    setReferences(game) {
-        if (this.opponentId !== null) {
-            this.opponent = game.getPlayerById(this.opponentId);
-        }
-        if (this.resourceType !== null) {
-            this.resources = new ResourceList(this.resourceType);
-        }
-    }
-    static fromData(data) {
-        let opponentId = null;
-        if (data.robPlayer.opponentId) {
-            opponentId = data.robPlayer.opponentId;
+    static fromData(data, game) {
+        const player = game.getPlayerById(data.playerId);
+        let opponent = null;
+        if (data.robPlayer.opponentId !== undefined) {
+            opponent = game.getPlayerById(data.robPlayer.opponentId);
         }
         let resources = null;
         if (data.robPlayer.resourceType) {
             resources = new ResourceList(data.robPlayer.resourceType);
         }
         return new RobPlayer({
-            playerId: data.playerId,
-            opponentId: opponentId,
+            player: player,
+            opponent: opponent,
             resources: resources
         });
     }

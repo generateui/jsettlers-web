@@ -23,30 +23,51 @@
         },
         methods: {
             showLeftTop: function() {
+                if (this.die === null) {
+                    return false;
+                }
                 const n = this.die;
                 return n === 2 || n === 3 || n === 4 || n === 5 || n === 6;
             },
             showLeftCenter: function() {
+                if (this.die === null) {
+                    return false;
+                }
                 const n = this.die;
                 return n === 6;
             },
             showLeftBottom: function() {
+                if (this.die === null) {
+                    return false;
+                }
                 const n = this.die;
                 return n === 4 || n === 5 || n === 6;
             },
             showCenter: function() {
+                if (this.die === null) {
+                    return false;
+                }
                 const n = this.die;
                 return n === 1 || n === 3 || n === 5;
             },
             showRightTop: function() {
+                if (this.die === null) {
+                    return false;
+                }
                 const n = this.die;
                 return n === 4 || n === 5 || n === 6;
             },
             showRightCenter: function() {
+                if (this.die === null) {
+                    return false;
+                }
                 const n = this.die;
                 return n === 6;
             },
             showRightBottom: function() {
+                if (this.die === null) {
+                    return false;
+                }
                 const n = this.die;
                 return n === 2 || n === 3 || n === 4 || n === 5 || n === 6;
             },

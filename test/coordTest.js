@@ -3,6 +3,17 @@ import * as assert from "assert";
 import { Coord, Coord3D, Coord2D, Coord1D} from "../src/coord";
 
 describe("Coord3D", () => {
+    describe("serializes", () => {
+        const coord3D = new Coord3D(-2, 4, 2);
+
+        const buffer = pb.Coord.encode(coord3D.data).finish();
+        const revived = pb.Coord.decode(buffer);
+        const copy = Coord.fromData(revived);
+
+        assert.strictEqual(-2, copy.x);
+        assert.strictEqual(4, copy.y);
+        assert.strictEqual(2, copy.z);
+    });
     describe("constructor", () => {
         it("creates equal reference instances with the same triordinates of center", () => {
             const center = Coord3D.center;

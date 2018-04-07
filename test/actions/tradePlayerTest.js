@@ -7,6 +7,7 @@ import { TradePlayer } from "../../src/actions/tradePlayer";
 import { City } from "../../src/city";
 import { OfferTrade } from "../../src/actions/offerTrade";
 import { AcceptOffer } from "../../src/actions/acceptOffer";
+import { Game } from "../../src/game";
 
 describe("TradePlayer", () => {
     it("serializes", () => {
@@ -15,23 +16,25 @@ describe("TradePlayer", () => {
             pb.ResourceType.Timber,
             pb.ResourceType.Ore
         ]);
-        const tradeOffer = new OfferTrade();
-        tradeOffer.id = 789;
-        const tradeResponse = new AcceptOffer();
-        tradeResponse.id = 890;
+        const offer = new OfferTrade({ id: 789 });
+        const tradeResponse = new AcceptOffer({ id: 890 });
         const tradeBank = new TradePlayer({
             player: player,
-            tradeOffer: tradeOffer,
+            tradeOffer: offer,
             tradeResponse: tradeResponse,
         });
+        const game = new Game();
+        game.players.push(player);
+        game.actions.push(tradeResponse);
+        game.actions.push(offer);
 
         const buffer = pb.GameAction.encode(tradeBank.data).finish();
         const revived = pb.GameAction.decode(buffer);
-        const copy = TradePlayer.fromData(revived);
+        const copy = TradePlayer.fromData(revived, game);
             
         assert.ok(copy instanceof TradePlayer);
-        assert.equal(24, copy.playerId);
-        assert.ok(789, copy.tradeOfferId);
-        assert.ok(890, copy.tradeResponseId);
+        assert.equal(24, copy.player.id);
+        assert.ok(789, copy.tradeOffer.id);
+        assert.ok(890, copy.tradeResponse.id);
     });
 });

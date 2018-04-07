@@ -3,7 +3,9 @@ import * as assert from "assert";
 import { PortList, Any4To1Port, Timber2To1Port, Any3To1Port, 
     Wheat2To1Port, Sheep2To1Port, Clay2To1Port} from "../src/port";
 import { Timber, ResourceList, Wheat, Brick, Ore, Sheep } from '../src/resource';
-import { PlaySoldierOrRollDice, MoveRobberThenRobPlayer, PlayTurnActions, LooseResourcesMoveRobberRobPlayer, BuildTownThenBuildRoad } from '../src/expectation';
+import { PlaySoldierOrRollDice, MoveRobberThenRobPlayer, PlayTurnActions, 
+    LooseResourcesMoveRobberRobPlayer, BuildTownThenBuildRoad, 
+    Expectation } from '../src/expectation';
 import { Player } from '../src/player';
 import { BuildRoad } from '../src/actions/buildRoad';
 import { BuildTown } from '../src/actions/buildTown';
@@ -26,6 +28,23 @@ import { RejectOffer } from '../src/actions/rejectOffer';
 import { LooseResources } from '../src/actions/looseResources';
 
 describe("PlaySoldierOrRollDice", () => {
+    it("serializes", () => {
+        const game = new Game();
+        const player = new Player();
+        game.playerOnTurn = player;
+        const psord = new PlaySoldierOrRollDice(game);
+        const playSoldier = new PlayDevelopmentCard({
+            developmentCard: new Soldier(),
+            player: player,
+        });
+
+        psord.meet(playSoldier);
+        const buffer = pb.Expectation.encode(psord.data).finish();
+        const revived = pb.Expectation.decode(buffer);
+        const copy = Expectation.fromData(revived, game);
+
+        assert.ok(copy.hasPlayedSoldier === true);
+    });
     it("succeeds when only RollDice", () => {
         const game = new Game();
         const player = new Player();
@@ -313,6 +332,52 @@ describe("MoveRobberThenRobPlayer", () => {
     });
 });
 describe("LooseResourcesMoveRobberRobPlayer", () => {
+    it("serializes", () => {
+        const game = new Game();
+        const player = new Player({ id: 1 });
+        player.resources.addAmount(new Wheat(), 8);
+        const otherPlayer = new Player({ id: 2 });
+        otherPlayer.resources.addAmount(new Wheat(), 8);
+        game.playerOnTurn = player;
+        game.players.push(player);
+        game.players.push(otherPlayer);
+        const lrmrrp = new LooseResourcesMoveRobberRobPlayer(game);
+        const looseResourcesPlayer = new LooseResources({ player: player });
+        const looseResourcesOtherPlayer = new LooseResources({ player: otherPlayer });
+        const moveRobber = new MoveRobber({ player: player });
+        const robPlayer = new RobPlayer({ player: player });
+
+        lrmrrp.meet(looseResourcesPlayer);
+        const buffer1 = pb.Expectation.encode(lrmrrp.data).finish();
+        const revived1 = pb.Expectation.decode(buffer1);
+        const copy1 = Expectation.fromData(revived1, game);
+
+        assert.ok(copy1.matches(looseResourcesPlayer) === false);
+        assert.ok(copy1.matches(looseResourcesOtherPlayer) === true);
+        assert.ok(copy1.matches(moveRobber) === false);
+        assert.ok(copy1.matches(robPlayer) === false);
+
+        lrmrrp.meet(looseResourcesOtherPlayer);
+        const buffer2 = pb.Expectation.encode(lrmrrp.data).finish();
+        const revived2 = pb.Expectation.decode(buffer2);
+        const copy2 = Expectation.fromData(revived2, game);
+
+        assert.ok(copy2.matches(looseResourcesPlayer) === false);
+        assert.ok(copy2.matches(looseResourcesOtherPlayer) === false);
+        assert.ok(copy2.matches(moveRobber) === true);
+        assert.ok(copy2.matches(robPlayer) === false);
+
+        lrmrrp.meet(moveRobber);
+        const buffer3 = pb.Expectation.encode(lrmrrp.data).finish();
+        const revived3 = pb.Expectation.decode(buffer3);
+        const copy3 = Expectation.fromData(revived3, game);
+
+        assert.ok(copy3.matches(looseResourcesPlayer) === false);
+        assert.ok(copy3.matches(looseResourcesOtherPlayer) === false);
+        assert.ok(copy3.matches(moveRobber) === false);
+        assert.ok(copy3.matches(robPlayer) === true);
+
+    });
     it("succeeds when LooseResources then MoveRobber then RobPlayer", () => {
         const game = new Game();
         const player = new Player();
@@ -410,6 +475,25 @@ describe("LooseResourcesMoveRobberRobPlayer", () => {
     });
 });
 describe("BuildTownThenBuildRoad", () => {
+    it("serializes", () => {
+        const game = new Game();
+        const player1 = new Player();
+        const player2 = new Player();
+        game.players.push(player1);
+        game.players.push(player2);
+        const bttbr = new BuildTownThenBuildRoad(game);
+
+        const buildTown1 = new BuildTown({ player: player1 });
+        bttbr.meet(buildTown1);
+        bttbr.meet(new BuildRoad({ player: player1 }));
+        const buffer = pb.Expectation.encode(bttbr.data).finish();
+        const revived = pb.Expectation.decode(buffer);
+        const copy = Expectation.fromData(revived, game);
+
+        const buildTown2 = new BuildTown({ player: player2 });
+        assert.ok(bttbr.matches(buildTown1) === false);
+        assert.ok(bttbr.matches(buildTown2) === true);
+    });
     it("succeeds with BuildTown then BuildRoad for 3 players", () => {
         const game = new Game();
         const player1 = new Player();

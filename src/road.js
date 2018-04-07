@@ -1,10 +1,20 @@
 import { jsettlers as pb } from "../src/generated/data";
 import { ResourceList } from "./resource";
+import { Edge } from "./edge";
 
 export class Road {
     constructor(player, edge) {
         this.player = player;
         this.edge = edge;
+    }
+    get data() {
+        return pb.Road.create({
+            edge: this.edge.data
+        });
+    }
+    static fromData(data) {
+        const edge = Edge.fromData(data.edge);
+        return new Road(null, edge);
     }
     static get cost() {
         return new ResourceList([

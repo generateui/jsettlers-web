@@ -23,13 +23,10 @@ export class Dice {
 }
 export class RollDice extends GameAction {
     constructor(config) {
-        super();
+        super(config);
 
         config = config || {};
-        this.playerId = config.playerId;
-        this.player = config.player;
         this.dice = config.dice || null;
-        this.productionByPlayerId = config.productionByPlayerId;
         this.productionByPlayer = config.productionByPlayer || new Map(); // <Player, ResourceList>
     }
     get data() {
@@ -70,29 +67,24 @@ export class RollDice extends GameAction {
             }
         });
     }
-    static fromData(data) {
-        const rollDice = new RollDice();
+    static fromData(data, game) {
+        const player = game.getPlayerById(data.playerId);
         let dice = null;
         if (data.rollDice.dice) {
             dice = Dice.fromData(data.rollDice.dice);
         }
-        const productionByPlayerId = new Map();
+        const productionByPlayer = new Map();
         for (var production of data.rollDice.productions) {
             const playerId = production.playerId;
+            const playerr = game.getPlayerById(playerId);
             const resources = new ResourceList(production.resources);
-            productionByPlayerId.set(playerId, resources);
+            productionByPlayer.set(playerr, resources);
         }
         return new RollDice({
-            playerId: data.playerId,
+            player: player,
             dice: dice,
-            productionByPlayerId: productionByPlayerId
+            productionByPlayer: productionByPlayer
         });
-    }
-    setReferences(game) {
-        for (var [playerId, resources] of this.productionByPlayerId) {
-            const player = game.getPlayerById(playerId);
-            this.productionByPlayer.set(player, resources);
-        }
     }
     perform(game) {
         for (var [player, production] of this.productionByPlayer.entries()) {

@@ -12,7 +12,7 @@
     "test": "mocha --recursive --require babel-core/register ./test/testSetup.js ./test",
     "script": "mocha --require babel-core/register ./test/scriptTest.js",
     "build-debug": "browserify -t [ browserify-css index.css ] -e index.js -o dist/build.js",
-    "build-release": "browserify -p tinyify -t [ browserify-css index.css ] -e index.js -o dist/build.js" 
+    "build-release": "browserify -p tinyify -t [ browserify-css index.css ] -e index.js -o dist/build.js"
   },
   "repository": {
     "type": "git",
@@ -52,6 +52,7 @@
     "browserify": "^13.1.0",
     "browserify-css": "^0.14.0",
     "browserify-hmr": "^0.3.1",
+    "chai": "^4.1.2",
     "cross-env": "^2.0.0",
     "envify": "^3.4.1",
     "http-server": "^0.9.0",

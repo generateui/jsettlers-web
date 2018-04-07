@@ -69,6 +69,7 @@ export class Board {
             chitBag: [],
         };
         this._hexes = new ObservableMap(); // <Coord, Hex>
+        this.name = null;
         this.robber = new Robber(Coord3D.center); // TODO: move to desert
         this.towns = new ObservableMap(); // <Node, Town>
         this.cities = new ObservableMap(); // <Node, City>
@@ -77,6 +78,41 @@ export class Board {
         this.edgePieces = new Map(); // <Edge, Piece> Piece = Road | ??
         this.portsByNode = new Map();
         this.producersByNode = new Map(); // <Node, Producer>
+    }
+    get data() {
+        const hexes = [];
+        const ports = [];
+        for (let hex of this.hexes.values()) {
+            hexes.push(hex.data);
+            if (hex.port !== null) {
+                ports.push(hex.port.data);
+            }
+        }
+        return pb.Board.create({
+            name: this.name,
+            robber: this.robber.data,
+            hexes: hexes,
+            ports: ports
+        });
+    }
+    static fromData(data) {
+        const board = new Board();
+        const hexesByCoord = new Map();
+        const portsByNode = new Map();
+        for (let hexData of data.hexes) {
+            const hex = Hex.fromData(hexData);
+            hexesByCoord.set(hex.coord, hex);
+        }
+        for (let portData of data.ports) {
+            const port = Port.fromData(portData);
+            hexesByCoord.get(port.seaCoord).port = port;
+            portsByNode.set(port.edge.node1, port);
+            portsByNode.set(port.edge.node2, port);
+        }
+        board._hexes = new ObservableMap(hexesByCoord);
+        board.robber = Robber.fromData(data.robber);
+        board.name = data.name;
+        return board;
     }
     static create(id) {
         if (Board.factoryCache === undefined) {
@@ -218,7 +254,7 @@ export class Board {
     }
     townPossibilities(player) {
         const possibilities = [];
-        const edgePieces = Array.from(player.edgePieces.map.keys());
+        const edgePieces = Array.from(player.edgePieces.keys());
         const nodePieces = this.nodePieces.map;
         const nodes = new Set(edgePieces.mapMany(ep => ep.nodes));
         for (let node of nodes) {
@@ -239,7 +275,7 @@ export class Board {
             return possibilities;
         }
         const nodePieces = this.nodePieces.map;
-        for (let edge of player.edgePieces.map.keys()) {
+        for (let edge of player.edgePieces.keys()) {
             const node1IsUsed = nodePieces.has(edge.node1);
             const opponentUsesNode1 = node1IsUsed && nodePieces.get(edge.node1).player !== player;
             const otherEdges1 = edge.node1.otherEdges(edge);

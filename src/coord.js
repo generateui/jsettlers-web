@@ -160,7 +160,7 @@ export class Coord3D extends Coord {
         return null;
     }
     get data() {
-        return pb.Coord3D.create({
+        return pb.Coord.create({
             coord3D: {
                 x: this.x, y: this.y, z: this.z
             }

@@ -7,10 +7,13 @@ import { Node } from "../../src/node";
 import { BuildCity } from "../../src/actions/buildCity";
 import { BuyDevelopmentCard } from "../../src/actions/buyDevelopmentCard";
 import { Soldier } from "../../src/developmentCard";
+import { Game } from "../../src/game";
 
 describe("BuyDevelopmentCard", () => {
     it("serializes with development card", () => {
         const player = new Player({ id: 26 });
+        const game = new Game();
+        game.players.push(player);
         const soldier = new Soldier({ player: player });
         const buyDev = new BuyDevelopmentCard({
             player: player,
@@ -20,24 +23,26 @@ describe("BuyDevelopmentCard", () => {
         const messageError = pb.GameAction.verify(buyDev.data);
         const buffer = pb.GameAction.encode(buyDev.data).finish();
         const revived = pb.GameAction.decode(buffer);
-        const copy = BuyDevelopmentCard.fromData(revived);
+        const copy = BuyDevelopmentCard.fromData(revived, game);
 
         assert.ok(messageError === null);
         assert.ok(copy instanceof BuyDevelopmentCard);
-        assert.equal(26, copy.playerId);
+        assert.equal(26, copy.player.id);
         assert.ok(copy.developmentCard instanceof Soldier);
-        assert.equal(26, copy.developmentCard.playerId);
+        assert.equal(26, copy.developmentCard.player.id);
     });
     it("serializes without development card", () => {
         const player = new Player({ id: 26 });
+        const game = new Game();
+        game.players.push(player);
         const buyDev = new BuyDevelopmentCard({ player: player });
 
         const buffer = pb.GameAction.encode(buyDev.data).finish();
         const revived = pb.GameAction.decode(buffer);
-        const copy = BuyDevelopmentCard.fromData(revived);
+        const copy = BuyDevelopmentCard.fromData(revived, game);
 
         assert.ok(copy instanceof BuyDevelopmentCard);
-        assert.equal(26, copy.playerId);
+        assert.equal(26, copy.player.id);
         assert.equal(null, copy.developmentCard);
     });
 });
