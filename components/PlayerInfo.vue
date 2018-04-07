@@ -105,7 +105,7 @@
                                 :size="48">
                             </resource-list-view>
                         </div>
-                        <div class="development-card-view" 
+                        <div class="development-card-view"
                             v-if="action.developmentCard instanceof Monopoly">
                             <img class="development-card-logo" src="doc/images/MonopolyLogo48.png" />
                             <resource-list-view
@@ -262,6 +262,7 @@ export default {
             showPopup: false,
             actions: [],
             offerTrades: [],
+            update: false,
         }
     },
     methods: {
@@ -290,6 +291,12 @@ export default {
         var popupEl = this.$refs["popup-" + this.player.id]
         var popup = new PopperJs(el, popupEl, { placement: 'right'});
         popup.update();
+        this.removeActionAddedHandler = this.game.actions.added((action) => {
+            this.update = !this.update;
+        });
+    },
+    unmount() {
+        this.removeActionAddedHandler();
     }
 }
 </script>

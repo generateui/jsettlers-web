@@ -90,9 +90,9 @@ export class YearOfPlenty extends DevelopmentCard {
         this.resourceType1 = config.resourceType1;
         this.resourceType2 = config.resourceType2;
         if (this.resourceType1 !== undefined && this.resourceType2 !== undefined) {
-            this.resourceList = new ResourceList([this.resourceType1, this.resourceType2]);
+            this.resources = new ResourceList([this.resourceType1, this.resourceType2]);
         }
-        this.resourceList = null;
+        this.resources = null;
     }
     static fromData(data) {
         return new YearOfPlenty({
@@ -109,8 +109,7 @@ export class YearOfPlenty extends DevelopmentCard {
         return data;
     }
     play(game, player) {
-        player.resources.add(this.resourceType1);
-        player.resources.add(this.resourceType2);
+        player.resourcesmoveFrom(game.bank.resources, this.resources);
     }
     get name() { return "YearOfPlenty"; }
 }

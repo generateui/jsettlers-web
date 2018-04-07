@@ -10,6 +10,7 @@ import { PlaySoldierOrRollDice, PlayTurnActions, BuildTownThenBuildRoad,
     ExpectTradeResponses,
     Expectation} from "./expectation";
 import { Road } from "./road";
+import { ResourceList } from "./resource";
 
 /** State of the game where certain actions are expected and performed
  * 
@@ -99,8 +100,8 @@ export class InitialPlacement extends GamePhase {
             // Warning: this goes wrong when cities are introduced in initialplacement as 
             // cities produce two resources
             const productions = hexes.map(hex => town.produce(hex));
-            const production = productions.mapMany();
-            buildTown.player.resources.add(production);
+            const production = new ResourceList(productions.mapMany());
+            buildTown.player.resources.moveFrom(game.bank.resources, production);
         }
     }
     buildRoad(game, buildRoad) {
