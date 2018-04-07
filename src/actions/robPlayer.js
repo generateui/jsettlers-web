@@ -16,9 +16,9 @@ export class RobPlayer extends GameAction {
         }
         game.phase.robPlayer(game, this);
     }
-    performServer(host) {
+    performAtHost(hostGame) {
         if (this.opponent !== null) {
-            const index = host.random.intFromZero(this.opponent.resources.length - 1);
+            const index = hostGame.random.intFromZero(this.opponent.resources.length - 1);
             const resource = this.opponent.resources.toArray()[index];
             this.resources = new ResourceList(resource);
         }

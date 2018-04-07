@@ -18,7 +18,7 @@ export class BoardDescriptor {
         this.name = config.name;
         this.author = config.author;
         this.createBoard = config.createBoard;
-        
+
         // prevent Vue.js from altering this member
         Object.defineProperty(this, "createFunction", {configurable: false});
     }

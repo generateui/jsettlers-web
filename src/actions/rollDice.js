@@ -88,11 +88,11 @@ export class RollDice extends GameAction {
         game.dice = this.dice;
         game.phase.rollDice(game, this);
     }
-    performServer(host) {
-        const game = host.game;
+    performAtHost(hostGame) {
+        const game = hostGame.game;
         if (this.dice === null) {
-            const die1 = host.random.intFromOne(6);
-            const die2 = host.random.intFromOne(6);
+            const die1 = hostGame.random.intFromOne(6);
+            const die2 = hostGame.random.intFromOne(6);
             this.dice = new Dice(die1, die2);
         }
         if (this.dice.total !== 7) {
