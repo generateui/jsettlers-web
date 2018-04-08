@@ -19,6 +19,12 @@ export class Chit {
         }
         return null;
     }
+    static fromData(data) {
+        if (data === pb.ChitType.ChitNone) {
+            return null;
+        }
+        return new Chit(data);
+    }
     static parse(chitExpression) {
         if (chitExpression.NUMBER() !== null) {
             const number = parseInt(chitExpression.NUMBER());

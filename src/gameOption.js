@@ -1,16 +1,20 @@
 import { Stock } from "./stock";
 import { Coord, Coord3D } from "./coord";
+import { Soldier, YearOfPlenty, Monopoly, RoadBuilding, 
+    VictoryPoint } from "./developmentCard";
 
 export class GameOptions {
     constructor() {
         this.stock = new StockOption();
         this.robber = new RobberOption();
         this.victoryPointsToWin = new VictoryPointsToWin();
+        this.standardDevelopmentCardStack = new StandardDevelopmentCardStack();
     }
     set(game) {
         this.stock.set(game);
         this.robber.set(game);
         this.victoryPointsToWin.set(game);
+        this.standardDevelopmentCardStack.set(game);
     }
     static parse(gameOptionsExpression, resolver) {
         for (let gameOption of gameOptionsExpression.gameOption()) {
@@ -45,6 +49,23 @@ export class StockOption extends GameOption {
     }
     static parse(stockOptionExpression) {
         this.stock = Stock.parse(stockOptionExpression);
+    }
+}
+export class StandardDevelopmentCardStack extends GameOption {
+    constructor() {
+        super();
+    }
+    set(game) {
+        game.developmentCards = [
+            new Soldier(), new Soldier(), new Soldier(), new Soldier(),
+            new Soldier(), new Soldier(), new Soldier(), new Soldier(),
+            new Soldier(), new Soldier(), new Soldier(), new Soldier(),
+            new Soldier(), new Soldier(),
+            new YearOfPlenty(), new YearOfPlenty(),
+            new Monopoly(), new Monopoly(),
+            new RoadBuilding(), new RoadBuilding(),
+            new VictoryPoint(), new VictoryPoint(), new VictoryPoint(), new VictoryPoint(), new VictoryPoint(),
+        ];
     }
 }
 // TODO: add a parameter to determine robber starting position? E.g. 

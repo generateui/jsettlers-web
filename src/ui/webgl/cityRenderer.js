@@ -11,7 +11,7 @@ export class CityRenderer extends Renderer {
             this.material = new THREE.MeshPhongMaterial({color: this.color});
             this.geometry = new THREE.EdgesGeometry(geometry);
             this.lines = new THREE.LineSegments(this.geometry, new THREE.LineBasicMaterial({ color: 0x000000 }));
-            var mesh = new THREE.Mesh(this.geometry, this.material);
+            var mesh = new THREE.Mesh(geometry, this.material);
             mesh.add(this.lines);
             var p = this.boardRenderer.nodeToPixel(city.node);
             mesh.rotation.x = -0.5 * Math.PI;

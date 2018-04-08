@@ -5,7 +5,7 @@
         <label 
             :for="ct" 
             @click="click(ct)">
-            <img :src="`doc/images/${key.toLowerCase()}.png`">
+            <img :src="`doc/images/${key}.png`">
             {{key}}
         </label>
     </li>

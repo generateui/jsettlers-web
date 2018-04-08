@@ -1,11 +1,22 @@
 import { jsettlers as pb } from "../src/generated/data";
 import { ResourceList } from "./resource";
+import { Node } from "./node";
+
 export class City {
     constructor(player, node) {
         this.player = player;
         this.node = node;
         this.victoryPoints = 2;
         this.name = "City";
+    }
+    get data() {
+        return pb.City.create({
+            node: this.node.data
+        });
+    }
+    static fromData(data) {
+        const node = Node.fromData(data.node);
+        return new City(null, node);
     }
     produce(hex) {
         return hex.resourceType == undefined ? [] : 

@@ -17,19 +17,28 @@ export class Dice {
     static fromData(data) {
         return new Dice(data.die1, data.die2);
     }
+    static fromNumber(number) {
+        let die1 = null;
+        let die2 = null;
+        if (number < 8) {
+            die1 = 1;
+            die2 = number - 1;
+        } else {
+            die1 = 6;
+            die2 = number - 6;
+        }
+        return new Dice(die1, die2);
+    }
     get data() {
         return pb.RollDice.Dice.create({ die1: this.die1, die2: this.die2 });
     }
 }
 export class RollDice extends GameAction {
     constructor(config) {
-        super();
+        super(config);
 
         config = config || {};
-        this.playerId = config.playerId;
-        this.player = config.player;
         this.dice = config.dice || null;
-        this.productionByPlayerId = config.productionByPlayerId;
         this.productionByPlayer = config.productionByPlayer || new Map(); // <Player, ResourceList>
     }
     get data() {
@@ -53,46 +62,24 @@ export class RollDice extends GameAction {
         }
         return data;
     }
-    static createDataDebug(player, number) {
-        let die1 = null;
-        let die2 = null;
-        if (number < 8) {
-            die1 = 1;
-            die2 = number - 1;
-        } else {
-            die1 = 6;
-            die2 = number - 6;
-        }
-        return pb.GameAction.create({
-            playerId: player.id,
-            rollDice: {
-                dice: new Dice(die1, die2).data
-            }
-        });
-    }
-    static fromData(data) {
-        const rollDice = new RollDice();
+    static fromData(data, game) {
+        const player = game.getPlayerById(data.playerId);
         let dice = null;
         if (data.rollDice.dice) {
             dice = Dice.fromData(data.rollDice.dice);
         }
-        const productionByPlayerId = new Map();
+        const productionByPlayer = new Map();
         for (var production of data.rollDice.productions) {
             const playerId = production.playerId;
+            const playerr = game.getPlayerById(playerId);
             const resources = new ResourceList(production.resources);
-            productionByPlayerId.set(playerId, resources);
+            productionByPlayer.set(playerr, resources);
         }
         return new RollDice({
-            playerId: data.playerId,
+            player: player,
             dice: dice,
-            productionByPlayerId: productionByPlayerId
+            productionByPlayer: productionByPlayer
         });
-    }
-    setReferences(game) {
-        for (var [playerId, resources] of this.productionByPlayerId) {
-            const player = game.getPlayerById(playerId);
-            this.productionByPlayer.set(player, resources);
-        }
     }
     perform(game) {
         for (var [player, production] of this.productionByPlayer.entries()) {
@@ -101,11 +88,11 @@ export class RollDice extends GameAction {
         game.dice = this.dice;
         game.phase.rollDice(game, this);
     }
-    performServer(host) {
-        const game = host.game;
+    performAtHost(hostGame) {
+        const game = hostGame.game;
         if (this.dice === null) {
-            const die1 = host.random.intFromOne(6);
-            const die2 = host.random.intFromOne(6);
+            const die1 = hostGame.random.intFromOne(6);
+            const die2 = hostGame.random.intFromOne(6);
             this.dice = new Dice(die1, die2);
         }
         if (this.dice.total !== 7) {

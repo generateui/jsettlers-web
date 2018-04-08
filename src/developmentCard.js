@@ -8,8 +8,11 @@ import { MoveRobberThenRobPlayer, BuildTwoRoads } from "./expectation";
 export class DevelopmentCard {
     constructor() {
         this.id = DevelopmentCard.nextId();
+        this.turnPlayedIndex = null;
+        this.player = null;
+        this.turnBoughtIndex = null;
     }
-    static fromData(data) {
+    static fromData(data, game) {
         var developmentCard = null;
         if (data.monopoly) {
             developmentCard = Monopoly.fromData(data.monopoly);
@@ -22,9 +25,15 @@ export class DevelopmentCard {
         } else if (data.victoryPoint) {
             developmentCard = new VictoryPoint();
         }
-        developmentCard.playerId = data.playerId;
-        developmentCard.turnBoughtIndex = data.turnBoughtIndex;
-        developmentCard.turnPlayedIndex = data.turnPlayedIndex;
+        if (data.playerId !== undefined) {
+            developmentCard.player = game.getPlayerById(data.playerId);
+        }
+        if (data.turnBoughtIndex) {
+            developmentCard.turnBoughtIndex = data.turnBoughtIndex;
+        }
+        if (data.turnPlayedIndex) {
+            developmentCard.turnPlayedIndex = data.turnPlayedIndex;
+        }
         return developmentCard;
     }
     static parse(developmentCardExpression, resolver) {
@@ -46,11 +55,17 @@ export class DevelopmentCard {
     }
     // calling super.property does not work in es6
     _getData() {
-        return pb.DevelopmentCard.create({
-            playerId: this.player.id,
-            turnBoughtIndex: this.turnBoughtIndex,
-            turnPlayedIndex: this.turnPlayedIndex
-        });
+        const data = pb.DevelopmentCard.create({ });
+        if (this.turnBoughtIndex !== null) {
+            data.turnBoughtIndex = this.turnBoughtIndex;
+        }
+        if (this.turnPlayedIndex !== null) {
+            data.turnPlayedIndex = this.turnPlayedIndex;
+        }
+        if (this.player !== null) {
+            data.playerId = this.player.id;
+        }
+        return data;
     }
     static get cost() {
         return new ResourceList([
@@ -62,25 +77,28 @@ export class DevelopmentCard {
     get maxOnePerTurn() {
         return true;
     }
+    get mustWaitOneTurn() {
+        return true;
+    }
 }
 export class YearOfPlenty extends DevelopmentCard {
     constructor(config) {
         super();
 
         config = config || {};
-        this.player = config.player;
+        this.player = config.player || null;
         this.resourceType1 = config.resourceType1;
         this.resourceType2 = config.resourceType2;
-        this.resourceList = null;
+        if (this.resourceType1 !== undefined && this.resourceType2 !== undefined) {
+            this.resources = new ResourceList([this.resourceType1, this.resourceType2]);
+        }
+        this.resources = null;
     }
     static fromData(data) {
         return new YearOfPlenty({
             resourceType1: data.resourceType1,
             resourceType2: data.resourceType2
         });
-    }
-    setReferences(game) {
-        this.resourceList = new ResourceList([this.resourceType1, this.resourceType2]);
     }
     get data() {
         const data = super._getData();
@@ -91,8 +109,7 @@ export class YearOfPlenty extends DevelopmentCard {
         return data;
     }
     play(game, player) {
-        player.resources.add(this.resourceType1);
-        player.resources.add(this.resourceType2);
+        player.resourcesmoveFrom(game.bank.resources, this.resources);
     }
     get name() { return "YearOfPlenty"; }
 }
@@ -101,12 +118,12 @@ export class Monopoly extends DevelopmentCard {
         super();
 
         config = config || {};
-        this.player = config.player;
+        this.player = config.player || null;
         this.resourceType = config.resourceType;
         this.stolen = config.stolen || null;
     }
     static fromData(data) {
-        return new Monopoly({ resourceType: data.resourceType })
+        return new Monopoly({ resourceType: data.resourceType });
     }
     get data() {
         const data = super._getData();
@@ -132,7 +149,7 @@ export class Soldier extends DevelopmentCard {
         super();
 
         config = config || {};
-        this.player = config.player;
+        this.player = config.player || null;
     }
     get data() {
         const data = super._getData();
@@ -163,7 +180,7 @@ export class VictoryPoint extends DevelopmentCard {
         super();
 
         config = config || {};
-        this.player = config.player;
+        this.player = config.player || null;
         this.victoryPoints = 1;
     }
     play(game, player) {
@@ -176,13 +193,15 @@ export class VictoryPoint extends DevelopmentCard {
     }
     get name() { return "VictoryPoint"; }
     get maxOnePerTurn() { return false; }
+    get mustWaitOneTurn() { return false; }
+
 }
 export class RoadBuilding extends DevelopmentCard {
     constructor(config) {
         super();
 
         config = config || {};
-        this.player = config.player;
+        this.player = config.player || null;
     }
     play(game, player) {
         player.roadBuildingTokens += 2;

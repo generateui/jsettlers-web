@@ -27,7 +27,7 @@
                     <span>{{action.player.user.name}} played a </span>
                     <img src="doc/images/YearOfPlentyLogo48.png">
                     <span>{{action.developmentCard.name}} and got</span>
-                    <resource-list-view :size="24" :resources="action.developmentCard.resourceList"></resource-list-view>
+                    <resource-list-view :size="24" :resources="action.developmentCard.resources"></resource-list-view>
                 </div>
                 <div class="development-card" v-if="action.developmentCard instanceof Soldier">
                     <img src="doc/images/PlayDevelopmentCard48.png">

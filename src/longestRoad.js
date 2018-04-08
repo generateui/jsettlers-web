@@ -1,4 +1,6 @@
+import { jsettlers as pb } from "../src/generated/data"
 import { Observable } from "./generic/observable";
+import { Edge } from "./edge";
 
 /** Route starting with an edge going the direction of a Node */
 class Route {
@@ -45,16 +47,41 @@ class Route {
 }
 
 export class LongestRoad extends Observable {
-    constructor() {
+    constructor(config) {
         super();
 
-        this.player = null;
-        this.edges = null; // []
+        config = config || {};
+        this.player = config.player || null;
+        this.edges = config.edges || null; // []
         
         this.name = "LongestRoad";
         this.victoryPoints = 2;
 
         this.makeObservable(["player", "edges"]);
+    }
+    static fromData(data, game) {
+        let player = null;
+        if (data.playerId !== undefined) {
+            player = game.getPlayerById(data.playerId);
+        }
+        let edges = null;
+        if (data.edges && data.edges.length !== 0) {
+            edges = data.edges.map(ed => Edge.fromData(ed));
+        }
+        return new LongestRoad({
+            player: player,
+            edges: edges
+        });
+    }
+    get data() {
+        const data = pb.LongestRoad.create({ });
+        if (this.player !== null) {
+            data.playerId = this.player.id;
+        }
+        if (this.edges !== null) {
+            data.edges = this.edges.map(e => e.data);
+        }
+        return data;
     }
     /** Brute-force algorithm to determine the longest road per player 
      *  1. Per player: 
@@ -71,7 +98,7 @@ export class LongestRoad extends Observable {
             // TODO: use only one map here, using Edge & Node combination as key
             const routes1 = new Map(); // <Edge, RouteNode>
             const routes2 = new Map(); // <Edge, RouteNode>
-            const edgePieces = player.edgePieces.map;
+            const edgePieces = player.edgePieces;
             //     edge1     edge3
             //         \     /  
             // node1🡒  ● ―― ●  🡐node2

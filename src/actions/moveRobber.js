@@ -4,11 +4,9 @@ import { Coord } from "../coord";
 
 export class MoveRobber extends GameAction {
     constructor(config) {
-        super();
+        super(config);
 
         config = config || {};
-        this.playerId = config.playerId;
-        this.player = config.player;
         this.coord = config.coord;
     }
     perform(game) {
@@ -22,9 +20,10 @@ export class MoveRobber extends GameAction {
             }
         });
     }
-    static fromData(data) {
+    static fromData(data, game) {
+        const player = game.getPlayerById(data.playerId);
         return new MoveRobber({
-            playerId: data.playerId,
+            player: player,
             coord: Coord.fromData(data.moveRobber.coord)
         });
     }

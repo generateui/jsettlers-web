@@ -6,8 +6,8 @@
  * instance and use it to iterate over it.
  */
 export class ObservableMap {
-    constructor() {
-        this.map = new Map();
+    constructor(map) {
+        this.map = map || new Map();
         this._changeListeners = [];
         this._addListeners = [];
         this._clearListeners = [];

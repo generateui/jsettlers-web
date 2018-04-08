@@ -11,6 +11,7 @@ import {Any3To1Port, Clay2To1Port, Any4To1Port, FromBagPort, Ore2To1Port,
     Sheep2To1Port, Timber2To1Port, Wheat2To1Port, Port} from "./port.js";
 import { Parser } from "./parser";
 import { Node } from "./node";
+import { ClientRandom } from "./random";
 
 export class BoardDescriptor {
     constructor(config) {
@@ -18,7 +19,7 @@ export class BoardDescriptor {
         this.name = config.name;
         this.author = config.author;
         this.createBoard = config.createBoard;
-        
+
         // prevent Vue.js from altering this member
         Object.defineProperty(this, "createFunction", {configurable: false});
     }
@@ -31,9 +32,9 @@ class BoardConfig {
         this.portBag = [];
     }
     /** normalize the config into a simple list of hex instances */
-    static _flattenBag(bag) {
+    static flattenBag(bag) {
         const items = [];
-        for (var item of config) {
+        for (var item of bag) {
             // expand config specification of hexes in hexBag
             // e.g. [new Forest(), [3, () => new Mountain()]]
             if (Array.isArray(item)) {
@@ -49,6 +50,80 @@ class BoardConfig {
             }
         }
         return items;
+    }
+}
+/** Distributes chits on the board. Takes into account that some chits may not
+neighbor other chits. For example, the 
+ */
+class ChitDistributor {
+    // hexes: <Coord, Hex>, chitsBag: <Chit>[]
+    // returns <Coord, Chit>
+    distribute(hexes, chitsBag) {
+        const buckets = [];
+        // convert the bag config into a flat array of items
+        const chitsBagFlattened = BoardConfig.flattenBag(chitsBag);
+        // prep the buckets
+        for (let i = 0; i < 9; i++) {
+            buckets[i] = [];
+        }
+        // put chits in a bucket per adjacency. 6 and 8 can't be adjacent and
+        // identical other numbers neither
+        for (let chit of chitsBagFlattened) {
+            if (chit.number === null) {
+                continue;
+            }
+            // 68 2 3 4 5 9 10 11 12
+            if (chit.number === 6 || chit.number === 8) {
+                buckets[0].push(chit);
+            }
+            // better chanced numbers are often more popular, so add them first
+            // to reduce failed attempts
+            if (chit.number === 5) { buckets[1].push(chit); continue; }
+            if (chit.number === 9) { buckets[2].push(chit); continue; }
+            if (chit.number === 4) { buckets[3].push(chit); continue; }
+            if (chit.number === 10) { buckets[4].push(chit); continue;  }
+            if (chit.number === 3) { buckets[5].push(chit); continue; }
+            if (chit.number === 11) { buckets[6].push(chit); continue; }
+            if (chit.number === 2) { buckets[7].push(chit); continue; }
+            if (chit.number === 12) { buckets[8].push(chit); continue; }
+        }
+        const allToReplace = hexes
+            .filter(h => h.chit.type === pb.ChitType.ChitFromBag)
+            .filter(h => h.canHaveChit)
+            .map(h => h.coord);
+        var random = new ClientRandom();
+        // try a few attempts, as the algorithm is not guaranteed to succeed
+        attemptLoop: for (let attempt = 0; attempt < 10; attempt++) {
+            const chitsByCoord = new Map(); // <Coord, Chit>
+            const possibilities = new Set(allToReplace);
+            for (let chitBucket of buckets) {
+                const bucketPossibilities = new Set(possibilities);
+                for (let chit of chitBucket) {
+                    if (bucketPossibilities.size === 0) {
+                        // we have nowhere to place the chit, so new attempt
+                        continue attemptLoop;
+                    }
+                    const index = random.intFromZero(bucketPossibilities.size);
+                    const coord = Array.from(bucketPossibilities)[index];
+                    chitsByCoord.set(coord, chit); // assign chit to hex
+                    possibilities.delete(coord);
+                    // unmark the [chit coord and its neighbors] possibilities
+                    bucketPossibilities.delete(coord);
+                    for (let neighbor of coord.neighbors) {
+                        bucketPossibilities.delete(neighbor);
+                    }
+                    if (possibilities.size === 0) {
+                        // we have exhausted all possible place to put a chit on
+                        // which means we're successful
+                        console.log("attempts needed to distribute chits on the board: " + attempt);
+                        return chitsByCoord;
+                    }
+                }
+            }
+            console.log("attempts needed to distribute chits on the board: " + attempt);
+            return chitsByCoord;
+        }
+
     }
 }
 
@@ -69,6 +144,7 @@ export class Board {
             chitBag: [],
         };
         this._hexes = new ObservableMap(); // <Coord, Hex>
+        this.name = null;
         this.robber = new Robber(Coord3D.center); // TODO: move to desert
         this.towns = new ObservableMap(); // <Node, Town>
         this.cities = new ObservableMap(); // <Node, City>
@@ -77,6 +153,41 @@ export class Board {
         this.edgePieces = new Map(); // <Edge, Piece> Piece = Road | ??
         this.portsByNode = new Map();
         this.producersByNode = new Map(); // <Node, Producer>
+    }
+    get data() {
+        const hexes = [];
+        const ports = [];
+        for (let hex of this.hexes.values()) {
+            hexes.push(hex.data);
+            if (hex.port !== null) {
+                ports.push(hex.port.data);
+            }
+        }
+        return pb.Board.create({
+            name: this.name,
+            robber: this.robber.data,
+            hexes: hexes,
+            ports: ports
+        });
+    }
+    static fromData(data) {
+        const board = new Board();
+        const hexesByCoord = new Map();
+        const portsByNode = new Map();
+        for (let hexData of data.hexes) {
+            const hex = Hex.fromData(hexData);
+            hexesByCoord.set(hex.coord, hex);
+        }
+        for (let portData of data.ports) {
+            const port = Port.fromData(portData);
+            hexesByCoord.get(port.seaCoord).port = port;
+            portsByNode.set(port.edge.node1, port);
+            portsByNode.set(port.edge.node2, port);
+        }
+        board._hexes = new ObservableMap(hexesByCoord);
+        board.robber = Robber.fromData(data.robber);
+        board.name = data.name;
+        return board;
     }
     static create(id) {
         if (Board.factoryCache === undefined) {
@@ -128,21 +239,11 @@ export class Board {
             this.hexes.set(pick.coord, pick);
             i++;
         }
-        const bagChits = Board._flattenConfig(this._config.chitBag);
-        const hexesWithChitToReplace = Array.from(this._hexes.values()).filter(h => h.chit.type === pb.ChitType.ChitFromBag);
-        var j = 0;
-        while (j < hexesWithChitToReplace.length&& bagChits.length > 0) {
-            const toReplace = hexesWithChitToReplace[j];
-            if (!toReplace.canHaveChit) {
-                toReplace.chit.type = pb.ChitType.ChitNone;
-                j++;
-                continue;
-            }
-            const index = Math.floor(Math.random() * bagChits.length);
-            const pick = bagChits[index];
-            toReplace.chit = pick;
-            bagChits.splice(index, 1);
-            j++;
+        const chitDistributor = new ChitDistributor();
+        const hexes = Array.from(this._hexes.map.values());
+        const chitsByCoord = chitDistributor.distribute(hexes, this._config.chitBag);
+        for (let [coord, chit] of chitsByCoord.entries()) {
+            this._hexes.map.get(coord).chit = chit;
         }
         const bagPorts = Board._flattenConfig(this._config.portBag);
         const hexesWithPortToReplace = Array.from(this._hexes.values()).filter(h => h.port instanceof FromBagPort);
@@ -218,7 +319,7 @@ export class Board {
     }
     townPossibilities(player) {
         const possibilities = [];
-        const edgePieces = Array.from(player.edgePieces.map.keys());
+        const edgePieces = Array.from(player.edgePieces.keys());
         const nodePieces = this.nodePieces.map;
         const nodes = new Set(edgePieces.mapMany(ep => ep.nodes));
         for (let node of nodes) {
@@ -239,7 +340,7 @@ export class Board {
             return possibilities;
         }
         const nodePieces = this.nodePieces.map;
-        for (let edge of player.edgePieces.map.keys()) {
+        for (let edge of player.edgePieces.keys()) {
             const node1IsUsed = nodePieces.has(edge.node1);
             const opponentUsesNode1 = node1IsUsed && nodePieces.get(edge.node1).player !== player;
             const otherEdges1 = edge.node1.otherEdges(edge);

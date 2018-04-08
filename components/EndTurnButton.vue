@@ -52,7 +52,9 @@ export default {
             this.canEndTurn = this.messages.length === 0;
         },
         endTurn() {
-            this.$emit("endTurn");
+            if (this.canEndTurn) {
+                this.$emit("endTurn");
+            }
         }
     },
     mounted() {

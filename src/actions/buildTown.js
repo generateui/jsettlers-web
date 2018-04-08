@@ -5,12 +5,10 @@ import {Node} from "../node.js";
 
 export class BuildTown extends GameAction {
     constructor(config) {
-        super();
+        super(config);
 
         config = config || {};
         this.node = config.node;
-        this.playerId = config.playerId;
-        this.player = config.player;
         this.portAdded = null; // when the player built on a port
         this.resourcesGained = null; // in initialplacement phase
     }
@@ -34,11 +32,12 @@ export class BuildTown extends GameAction {
         }
         game.phase.buildTown(game, this);
     }
-    static fromData(data) {
+    static fromData(data, game) {
+        const player = game.getPlayerById(data.playerId);
         const node = Node.fromData(data.buildTown.node);
-        return new BuildTown({ 
-            playerId: data.playerId,
-            node: node 
+        return new BuildTown({
+            player: player,
+            node: node
         });
     }
     get data() {

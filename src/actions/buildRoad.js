@@ -5,11 +5,9 @@ import {Road} from "../road.js";
 
 export class BuildRoad extends GameAction {
     constructor(config) {
-        super();
+        super(config);
         
         config = config || {};
-        this.playerId = config.playerId;
-        this.player = config.player;
         this.edge = config.edge;
     }
     perform(game) {
@@ -19,11 +17,12 @@ export class BuildRoad extends GameAction {
         game.calculateLongestRoad();
         game.phase.buildRoad(game, this);
     }
-    static fromData(data) {
+    static fromData(data, game) {
+        const player = game.getPlayerById(data.playerId);
         const edge = Edge.fromData(data.buildRoad.edge)
         return new BuildRoad({
             edge: edge,
-            playerId: data.playerId
+            player: player
         });
     }
     get data() {

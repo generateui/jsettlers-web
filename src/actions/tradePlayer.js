@@ -11,14 +11,9 @@ import { ResourceList } from "../resource.js";
  *  4. TradePlayer is send with TradeOffer and Response (Accept|Counter) */
 export class TradePlayer extends GameAction {
     constructor(config) {
-        super();
+        super(config);
 
         config = config || {};
-        this.playerId = config.playerId;
-        this.player = config.player;
-        this.tradeOfferId = config.tradeOfferId || null;
-        this.tradeResponseId = config.tradeResponseId || null;
-
         this.tradeOffer = config.tradeOffer; // OfferTrade
         this.tradeResponse = config.tradeResponse; // <AcceptOffer | CounterOffer>
         this.opponent = null; // Player
@@ -26,14 +21,6 @@ export class TradePlayer extends GameAction {
         this.wanted = null; // ResourceList
     }
     perform(game) {
-        this.opponent.resources.moveFrom(this.player.resources, this.offered);
-        this.player.resources.moveFrom(this.opponent.resources, this.wanted);
-    }
-    setReferences(game) {
-        this.tradeOffer = game.getActionById(this.tradeOfferId);
-        this.tradeResponse = game.getActionById(this.tradeResponseId);
-        this.opponent = this.tradeResponse.player;
-
         if (this.tradeResponse instanceof AcceptOffer) {
             this.offered = this.tradeOffer.offered;
             this.wanted = this.tradeOffer.wanted;
@@ -42,6 +29,9 @@ export class TradePlayer extends GameAction {
             this.offered = this.tradeResponse.wanted;
             this.wanted = this.tradeResponse.offered;
         }
+        this.opponent = this.tradeResponse.player;
+        this.opponent.resources.moveFrom(this.player.resources, this.offered);
+        this.player.resources.moveFrom(this.opponent.resources, this.wanted);
     }
     get data() {
         return pb.GameAction.create({
@@ -52,11 +42,14 @@ export class TradePlayer extends GameAction {
             }
         });
     }
-    static fromData(data) {
+    static fromData(data, game) {
+        const player = game.getPlayerById(data.playerId);
+        const offer = game.getActionById(data.tradePlayer.tradeOfferId);
+        const response = game.getActionById(data.tradePlayer.tradeResponseId);
         return new TradePlayer({
-            playerId: data.playerId,
-            tradeOfferId: data.tradePlayer.tradeOfferId,
-            tradeResponseId: data.tradePlayer.tradeResponseId
+            player: player,
+            tradeOffer: offer,
+            tradeResponse: response,
         });
     }
 }

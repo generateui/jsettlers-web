@@ -2,22 +2,22 @@
     <popper trigger="hover" :options="{placement: 'top'}" class="root">
         <ul class="popper popup">
             <div class="popup-hero">
-                <img class="popup-logo" src="doc/images/TradeBank48.png" />
-                <span class="popup-title">Trade with the bank</span>
+                <img class="popup-logo" src="doc/images/TradePlayer48.png" />
+                <span class="popup-title">Offer a trade</span>
             </div>
-            <span>Trade resources with the bank, using your ports to get a good deal</span>
+            <span>Negotaiate and trade resources with your opponents</span>
             <ul>
                 <li v-for="message in messages" :key="message">{{message}}</li>
             </ul>
         </ul>
 
         <div 
-            id="trade-bank"
-            @click="openTradeBankDialog()"
+            id="trade-player"
+            @click="tradeOffer()"
             class="build-button"
             slot="reference"
-            v-bind:class="{ disabled: !canTradeBank }">
-            <img id="button" src="doc/images/TradeBank48.png" />
+            v-bind:class="{ disabled: !canOffer }">
+            <img id="button" src="doc/images/TradePlayer48.png" />
         </div>
     </popper>
 </template>
@@ -25,10 +25,10 @@
 <script>
 import * as m from "../src/matcher";
 import Popper from 'vue-popperjs';
-import { TradeBank } from '../src/actions/tradeBank';
+import { OfferTrade } from '../src/actions/offerTrade';
 
 export default {
-    name: 'trade-bank-button',
+    name: 'offer-trade-button',
     components: { Popper },
     props: {
         game: {
@@ -38,35 +38,35 @@ export default {
     data() {
         return {
             messages: [],
-            canTradeBank: false,
+            canOffer: false,
         }
     },
     methods: {
-        updateCanTradeBank() {
+        updateCanOffer() {
             const game = this.game;
             const player = this.game.player;
             this.messages = m.match([
                 m.isOnTurn(game, player),
-                m.isExpected(game, new TradeBank({player: player})),
-                // TODO: check if player has resource to trade with
+                m.isExpected(game, new OfferTrade({ player: player })),
             ]);
-            this.canTradeBank = this.messages.length === 0;
+            this.canOffer = this.messages.length === 0;
         },
-        openTradeBankDialog() {
-            if (this.canTradeBank) {
-                this.$emit("tradeBank");
+        tradeOffer() {
+            if (this.canOffer) {
+                this.$emit("offerTrade");
             }
         }
     },
     mounted() {
-        this.updateCanTradeBank();
+        this.updateCanOffer();
         this.removeActionAddedHandler = this.game.actions.added((action) => {
-            this.updateCanTradeBank();
-        });
+            this.updateCanOffer();
+        })
     },
     unmount() {
         this.removeActionAddedHandler();
     }
+
 }
 </script>
 

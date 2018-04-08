@@ -63,7 +63,6 @@ export class MouseCaster {
 		}
 
 		this._raycaster.setFromCamera(this.screenPosition, this._camera);
-
 		var intersects = this._raycaster.intersectObject(this.group, true);
 		var hit, obj;
 
@@ -97,7 +96,6 @@ export class MouseCaster {
 			this.pickedObject = null;
 			this.selectedObject = null;
 		}
-
 		this.allHits = intersects;
 	}
 
@@ -108,26 +106,20 @@ export class MouseCaster {
 		}
 		this.shift = evt.shiftKey;
 		this.ctrl = evt.ctrlKey;
-
 		this.down = evt.which === 1;
 		this.rightDown = evt.which === 3;
-
 		this.signal.dispatch(MouseCaster.DOWN, this.pickedObject);
 	}
-
 	_onDocumentMouseUp(evt) {
 		this.shift = evt.shiftKey;
 		this.ctrl = evt.ctrlKey;
-
 		this.signal.dispatch(MouseCaster.UP, this.pickedObject);
 		if (this.selectedObject && this.pickedObject && this.selectedObject.uniqueID === this.pickedObject.uniqueID) {
 			this.signal.dispatch(MouseCaster.CLICK, this.pickedObject);
 		}
-
 		this.down = evt.which === 1 ? false : this.down;
 		this.rightDown = evt.which === 3 ? false : this.rightDown;
 	}
-
 	_onDocumentMouseMove(event) {
 		// this.screenPosition.x = (evt.clientX / window.innerWidth) * 2 - 1;
 		// this.screenPosition.y = -(evt.clientY / window.innerHeight) * 2 + 1;
@@ -144,19 +136,16 @@ export class MouseCaster {
 		var delta = 0;
 		if (evt.wheelDelta !== undefined) { // WebKit / Opera / Explorer 9
 			delta = evt.wheelDelta;
-		}
-		else if (evt.detail !== undefined) { // Firefox
+		} else if (evt.detail !== undefined) { // Firefox
 			delta = -evt.detail;
 		}
 		if (delta > 0) {
 			this.wheel++;
-		}
-		else {
+		} else {
 			this.wheel--;
 		}
 		this.signal.dispatch(MouseCaster.WHEEL, this.wheel);
 	}
-
 	dispose() {
 		this.element.removeEventListener('mousemove', this._onDocumentMouseMove.bind(this), {capture: false, passive: true});
 		this.element.removeEventListener('mousedown', this._onDocumentMouseDown.bind(this), {capture: false, passive: true});

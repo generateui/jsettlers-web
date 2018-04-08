@@ -1,16 +1,14 @@
 import { jsettlers as pb } from "../../src/generated/data";
-import {City} from "../city.js";
-import {Town} from "../town.js";
-import {GameAction} from "./gameAction.js";
-import {Node} from "../node.js";
+import { City } from "../city.js";
+import { Town } from "../town.js";
+import { GameAction } from "./gameAction.js";
+import { Node } from "../node.js";
 
 export class BuildCity extends GameAction {
     constructor(config) {
-        super();
+        super(config);
 
         config = config || {};
-        this.playerId = config.playerId;
-        this.player = config.player;
         this.node = config.node;
     }
     perform(game) {
@@ -22,9 +20,10 @@ export class BuildCity extends GameAction {
         city.addToBoard(game.board);
         game.bank.resources.moveFrom(this.player.resources, City.cost);
     }
-    static fromData(data) {
+    static fromData(data, game) {
+        const player = game.getPlayerById(data.playerId);
         return new BuildCity({
-            playerId: data.playerId,
+            player: player,
             node: Node.fromData(data.buildCity.node)
         });
     }

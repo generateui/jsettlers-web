@@ -4,11 +4,7 @@ import { GameAction } from "./gameAction";
 
 export class StartGame extends GameAction {
     constructor(config) {
-        super();
-
-        config = config || {};
-        this.playerId = config.playerId;
-        this.player = config.player;
+        super(config);
     }
     perform(game) {
         game.start(new GameOptions());
@@ -19,9 +15,10 @@ export class StartGame extends GameAction {
             startGame: { }
         });
     }
-    static fromData(data) {
+    static fromData(data, game) {
+        const player = game.getPlayerById(data.playerId);
         return new StartGame({
-            playerId: data.playerId
+            player: player
         });
     }
 }

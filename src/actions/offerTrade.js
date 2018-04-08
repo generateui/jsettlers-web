@@ -6,10 +6,8 @@ export class OfferTrade extends GameAction {
     constructor(config) {
         super(config);
 
-        config = config || {};
-        this.playerId = config.playerId;
-        this.player = config.player;
         // TODO: put responses in pb data?
+        config = config || {};
         this.responses = new Map(); // <Player, TradeResponse (RejectOffer|AcceptOffer|CounterOffer)>
         this.offered = config.offered; // ResourceList
         this.wanted = config.wanted; // ResourceList
@@ -26,9 +24,10 @@ export class OfferTrade extends GameAction {
             }
         });
     }
-    static fromData(data) {
+    static fromData(data, game) {
+        const player = game.getPlayerById(data.playerId);
         return new OfferTrade({
-            playerId: data.playerId,
+            player: player,
             offered: new ResourceList(data.offerTrade.offered),
             wanted: new ResourceList(data.offerTrade.wanted)
         });

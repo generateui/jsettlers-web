@@ -3,9 +3,12 @@ import {Util} from "./util.js";
 import {Stock} from "./stock.js";
 import {Resource, Timber, Wheat, Ore, Sheep, Brick, Gold, ResourceList} from "./resource.js";
 import {DevelopmentCard, YearOfPlenty, Monopoly, Soldier, VictoryPoint, RoadBuilding} from "./developmentCard.js";
-import {Any4To1Port, Any3To1Port, PortList, Wheat2To1Port, Sheep2To1Port} from "./port.js";
+import {Any4To1Port, Any3To1Port, PortList, Wheat2To1Port, Sheep2To1Port, Port} from "./port.js";
 import { ObservableMap } from "./generic/observableMap.js";
 import { jsettlers as pb } from "../src/generated/data";
+import { Town } from "./town.js";
+import { City } from "./city.js";
+import { Road } from "./road.js";
 
 export class Player extends Observable {
     constructor(config) {
@@ -28,10 +31,9 @@ export class Player extends Observable {
         this.towns = new Map(); // <Node, Town>
         this.cities = new Map(); // <Node, City>
         this.roads = new Map(); // <Edge, Road>
-        this.victoryPoints = []; // <Edge, Road>
         this.producers = new Map(); // <Node, Piece> (Piece = Town | City)
         this.nodePieces = new Map(); // <Node, Piece> (Piece = Town | City)
-        this.edgePieces = new ObservableMap(); // <Edge, Piece> (Piece = Road)
+        this.edgePieces = new Map(); // <Edge, Piece> (Piece = Road)
         this.resources = new ResourceList();
 
         this.makeObservable(["user"]);
@@ -60,6 +62,94 @@ export class Player extends Observable {
             Player._colors = [Color.red, Color.green, Color.blue, Color.white, Color.brown, Color.orange];
         }
         return Player._colors;
+    }
+    get data() {
+        const data = pb.Player.create({
+            id: this.id,
+            color: this.color,
+            maxHandResources: this.maxHandResources,
+            developmentCards: this.developmentCards.map(dc => dc.data),
+            playedDevelopmentCards: this.playedDevelopmentCards.map(dc => dc.data),
+            roadBuildingTokens: this.roadBuildingTokens,
+            routeLength: this.routeLength,
+            stock: this.stock.data,
+            ports: this.ports.items.map(p => p.data),
+            towns: Array.from(this.towns.values()).map(t => t.data),
+            cities: Array.from(this.cities.values()).map(c => c.data),
+            roads: Array.from(this.roads.values()).map(r => r.data),
+            resources: this.resources.toResourceTypeArray(),
+        });
+        if (this.user !== null) {
+            data.user = this.user.data;
+        }
+        return data;
+    }
+    static fromData(data, game) {
+        var player = new Player();
+        player.id = data.id;
+        // game.getPlayerById cannot be called at this point as the player is 
+        // not yet pushed to the game.players array, so create a mock
+        const resolver = {
+            getPlayerById: function(id) {
+                return player;
+            }
+        }
+        player.color = data.color;
+        if (data.user) {
+            player.user = User.fromData(data.user);
+        } else {
+            player.user = null;
+        }
+        player.maxHandResources = data.maxHandResources;
+        player.developmentCards = data.developmentCards
+            .map(dcd => DevelopmentCard.fromData(dcd, resolver));
+        for (let pdcd of data.playedDevelopmentCards) {
+            const dc = DevelopmentCard.fromData(pdcd, resolver);
+            player.playedDevelopmentCards.push(dc);
+            if (dc instanceof Soldier) {
+                player.soldiers.push(dc);
+            }
+            if (dc instanceof VictoryPoint) {
+                player.victoryPoints.push(dc);
+            }
+        }
+        player.roadBuildingTokens = data.roadBuildingTokens;
+        player.stock = Stock.fromData(data.stock);
+        player.ports = new PortList(data.ports.map(pd => Port.fromData(pd)));
+        player.routeLength = data.routeLength;
+        for (let townData of data.towns) {
+            const town = Town.fromData(townData);
+            player.towns.set(town.node, town);
+            town.player = player;
+            player.victoryPoints.push(town);
+            player.nodePieces.set(town.node, town);
+            player.producers.set(town.node, town);
+            game.board.towns.set(town.node, town);
+            game.board.nodePieces.set(town.node, town);
+            game.board.producersByNode.set(town.node, town);
+
+        }
+        for (let cityData of data.cities) {
+            const city = City.fromData(cityData);
+            player.cities.set(city.node, city);
+            city.player = player;
+            player.victoryPoints.push(city);
+            player.nodePieces.set(city.node, city);
+            player.producers.set(city.node, city);
+            game.board.cities.set(city.node, city);
+            game.board.nodePieces.set(city.node, city);
+            game.board.producersByNode.set(city.node, city);
+        }
+        for (let roadData of data.roads) {
+            const road = Road.fromData(roadData);
+            player.roads.set(road.edge, road);
+            road.player = player;
+            player.edgePieces.set(road.edge, road);
+            game.board.roads.set(road.edge, road);
+            game.board.edgePieces.set(road.edge, road);
+        }
+        player.resources = new ResourceList(data.resources);
+        return player;
     }
 }
 export class Color {
@@ -123,7 +213,18 @@ export class User {
         config = config || {};
 
         this.name = config.name || "";
-        this.color = config.color || null;
         this.id = config.id || 0;
+    }
+    static fromData(data) {
+        return new User({
+            id: data.id,
+            name: data.name
+        });
+    }
+    get data() {
+        return pb.User.create({
+            id: this.id,
+            name: this.name
+        });
     }
 }

@@ -1,3 +1,4 @@
+import { jsettlers as pb } from "../src/generated/data";
 import { BuildTown } from "./actions/buildTown";
 import { BuildRoad } from "./actions/buildRoad";
 import { RollDice } from "./actions/rollDice";
@@ -6,8 +7,10 @@ import { Town } from "./town";
 import { PlaySoldierOrRollDice, PlayTurnActions, BuildTownThenBuildRoad, 
     LooseResourcesMoveRobberRobPlayer, 
     EndOfGame,
-    ExpectTradeResponses} from "./expectation";
+    ExpectTradeResponses,
+    Expectation} from "./expectation";
 import { Road } from "./road";
+import { ResourceList } from "./resource";
 
 /** State of the game where certain actions are expected and performed
  * 
@@ -21,6 +24,15 @@ import { Road } from "./road";
  * cleanup the state if needed after completion. 
  */
 export class GamePhase {
+    static fromData(data, game) {
+        if (data.initialPlacement) {
+            return InitialPlacement.fromData(data.initialPlacement, game);
+        } else if (data.playTurns) {
+            return PlayTurns.fromData(data.playTurns, game);
+        } else if (data.finished) {
+            return new Finished();
+        }
+    }
     // initialize this game phase and set it to the start state
     start(game) {}
     // cleanup any state and resources of this game phase
@@ -59,8 +71,21 @@ export class InitialPlacement extends GamePhase {
         super();
 
         this.name = "InitialPlacement";
-        this.queue = [];
         this.expectation = null;
+    }
+    static fromData(data, game) {
+        var initialplacement = new InitialPlacement();
+        initialplacement.expectation = Expectation.fromData(data.expectation, game);
+        return initialplacement;
+    }
+    get data() {
+        const data = pb.GamePhase.create({
+            initialPlacement: { }
+        });
+        if (this.expectation !== null) {
+            data.initialPlacement.expectation = this.expectation.data;
+        }
+        return data;
     }
     start(game) {
         this.expectation = new BuildTownThenBuildRoad(game);
@@ -75,8 +100,8 @@ export class InitialPlacement extends GamePhase {
             // Warning: this goes wrong when cities are introduced in initialplacement as 
             // cities produce two resources
             const productions = hexes.map(hex => town.produce(hex));
-            const production = productions.mapMany();
-            buildTown.player.resources.add(production);
+            const production = new ResourceList(productions.mapMany());
+            buildTown.player.resources.moveFrom(game.bank.resources, production);
         }
     }
     buildRoad(game, buildRoad) {
@@ -152,7 +177,7 @@ export class PlayTurns extends GamePhase {
         super();
 
         this.turns = []; // all played turns
-        this.turn = new Turn(); // current turn
+        this.turn = null; // current turn
 
         this.playTurnActions = null;
         this.beforeRollDicePhase = new BeforeRollDicePhase();
@@ -166,10 +191,36 @@ export class PlayTurns extends GamePhase {
         ];
         this.name = "PlayTurns";
     }
+    static fromData(data, game) {
+        const playTurns = new PlayTurns();
+        playTurns.turns = data.turns.map(td => Turn.fromData(td, game));
+        if (data.turn) {
+            playTurns.turn = Turn.fromData(data.turn, game);
+        }
+        if (data.turnPhase) {
+            playTurns.turnPhase = TurnPhase.fromData(data.turnPhase);
+        }
+        return playTurns;
+    }
+    get data() {
+        const data = pb.GamePhase.create({
+            playTurns: {
+                turns: this.turns.map(t => t.data),
+            }
+        });
+        if (this.turnPhase !== null) {
+            data.turnPhase = this.turnPhase.data;
+        }
+        if (this.turn !== null) {
+            data.turn = this.turn.data;
+        }
+        return data;
+    }
     start(game) {
         const player = game.players[0];
-        const turn = new Turn(player, 1);
+        const turn = new Turn({ player: player, number: 1 });
         this.turns.push(turn);
+        this.turn = turn;
         game.playerOnTurn = player;
         this.turnPhase = this.beforeRollDicePhase;
         game.expectation = new PlaySoldierOrRollDice(game);
@@ -188,27 +239,32 @@ export class PlayTurns extends GamePhase {
         }
     }
     playDevelopmentCard(game, playDevelopmentCard) {
-        const developmentCard = playDevelopmentCard.developmentCard;
-        if (developmentCard.maxOnePerTurn) {
-            this.turn.hasDevelopmentCardPlayed = true;
+        const dc = playDevelopmentCard.developmentCard;
+        if (dc.maxOnePerTurn) {
+            this.turn.hasPlayedDevelopmentCard = true;
         }
     }
     playSoldier(game, soldier) {
-        if (this.turnPhase === this.beforeRollDicePhase) {
-            this.turnPhase = this.rollDicePhase;
-        }
     }
     rollDice(game, rollDice) {
         if (rollDice.dice.total === 7) {
             game.expectation = new LooseResourcesMoveRobberRobPlayer(game);
             this.turnPhase = this.rollDicePhase;
         } else {
-            this._moveToPlayTurnsPhase(game);
+            this._moveToTradeAndBuildPhase(game);
         }
     }
     robPlayer(game, robPlayer) {
+        // no dice rolled: -> RollDicePhase
+        if (this.turnPhase === this.beforeRollDicePhase) {
+            this.turnPhase = this.rollDicePhase;
+            // MoveRobberThenRobPlayer expectation, so switch back to PSORD
+            game.expectation = new PlaySoldierOrRollDice(game);
+            return;
+        }
+        // dice rolled: -> TradeAndBuild
         if (this.turnPhase === this.rollDicePhase) {
-            this._moveToPlayTurnsPhase(game);
+            this._moveToTradeAndBuildPhase(game);
             return;
         }
         // soldier played in playturns phase, so only move back
@@ -216,7 +272,7 @@ export class PlayTurns extends GamePhase {
             game.expectation = this.playTurnActions;
         }
     }
-    _moveToPlayTurnsPhase(game) {
+    _moveToTradeAndBuildPhase(game) {
         this.turnPhase = this.tradeAndBuildPhase;
         this.playTurnActions = new PlayTurnActions(game);
         game.expectation = this.playTurnActions;
@@ -228,7 +284,10 @@ export class PlayTurns extends GamePhase {
             index = 0;
         }
         const player = game.players[index];
-        const turn = new Turn(player, game.playTurns.turn.number + 1);
+        const turn = new Turn({
+            player: player,
+            number: game.playTurns.turn.number + 1
+        });
         this.turn = turn;
         game.playerOnTurn = player;
         this.turns.push(turn);
@@ -271,14 +330,33 @@ export class Finished extends GamePhase {
 
         this.name = "Finished";
     }
+    get data() {
+        return pb.GamePhase.create({
+            finished: {}
+        });
+    }
 }
 export class TurnPhase {
-
+    static fromData(data) {
+        if (data.beforeRollDicePhase) {
+            return new BeforeRollDicePhase();
+        } else if (data.rollDicePhase) {
+            return new RollDicePhase();
+        } else  if(data.tradeAndBuildPhase) {
+            return new TradeAndBuildPhase();
+        }
+        throw new Error("unsupported turnphase in TurnPhase");
+    }
 }
 export class BeforeRollDicePhase extends TurnPhase {
     constructor() {
         super();
         this.name = "BeforeRollDicePhase";
+    }
+    get data() {
+        return pb.TurnPhase.create({
+            beforeRollDicePhase: {}
+        });
     }
 }
 export class RollDicePhase extends TurnPhase {
@@ -286,18 +364,44 @@ export class RollDicePhase extends TurnPhase {
         super();
         this.name = "RollDicePhase";
     }
+    get data() {
+        return pb.TurnPhase.create({
+            rollDicePhase: {}
+        });
+    }
 }
 export class TradeAndBuildPhase extends TurnPhase {
     constructor() {
         super();
         this.name = "TradeAndBuildPhase";
     }
+    get data() {
+        return pb.TurnPhase.create({
+            tradeAndBuildPhase: {}
+        });
+    }
 }
 
 export class Turn {
-    constructor(player, number) {
-        this.player = player;
-        this.nunmber = number; // 1-based index
-        this.hasDevelopmentCardPlayed = false;
+    constructor(config) {
+        config = config || {}
+        this.player = config.player;
+        this.number = config.number; // 1-based index
+        this.hasPlayedDevelopmentCard = config.hasPlayedDevelopmentCard || false;
+    }
+    static fromData(data, game) {
+        const player = game.getPlayerById(data.playerId);
+        return new Turn({
+            player: player,
+            number: data.number,
+            hasPlayedDevelopmentCard: data.hasPlayedDevelopmentCard
+        });
+    }
+    get data() {
+        return pb.Turn.create({
+            playerId: this.player.id,
+            number: this.number,
+            hasPlayedDevelopmentCard: this.hasPlayedDevelopmentCard
+        });
     }
 }

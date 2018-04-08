@@ -4,11 +4,7 @@ import { EndOfGame } from "../expectation";
 
 export class ClaimVictory extends GameAction {
     constructor(config) {
-        super();
-
-        config = config || {};
-        this.playerId = config.playerId;
-        this.player = config.player;
+        super(config);
     }
     perform(game) {
         game.goToNextPhase();
@@ -22,9 +18,10 @@ export class ClaimVictory extends GameAction {
             claimVictory: { }
         });
     }
-    static fromData(data) {
+    static fromData(data, game) {
+        const player = game.getPlayerById(data.playerId);
         return new ClaimVictory({
-            playerId: data.playerId
+            player: player
         });
     }
 }

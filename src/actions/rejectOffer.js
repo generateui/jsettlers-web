@@ -3,25 +3,17 @@ import {GameAction} from "./gameAction.js";
 
 export class RejectOffer extends GameAction {
     constructor(config) {
-        super();
+        super(config);
 
         config = config || {};
-        this.playerId = config.playerId;
-        this.player = config.player;
         this.reason = config.reason || pb.RejectOffer.Reason.NotGiven;
         this.tradeOffer = config.tradeOffer || null;
-        if (config.tradeOfferId !== undefined) {
-            this.tradeOfferId = config.tradeOfferId;
-        } else if (config.tradeOffer !== undefined) {
-            this.tradeOfferId = config.tradeOffer.id;
-        }
     }
     get isTradeResponse() {
         return true;
     }
     perform(game) {
-        const tradeOffer = game.getActionById(this.tradeOfferId);
-        tradeOffer.responses.set(this.player, this);
+        this.tradeOffer.responses.set(this.player, this);
         game.phase.rejectOffer(game, this);
     }
     get data() {
@@ -29,15 +21,17 @@ export class RejectOffer extends GameAction {
             playerId: this.player.id,
             rejectOffer: {
                 reason: this.reason,
-                tradeOfferId: this.tradeOfferId
+                tradeOfferId: this.tradeOffer.id
             }
         });
     }
-    static fromData(data) {
+    static fromData(data, game) {
+        const player = game.getPlayerById(data.playerId);
+        const offer = game.getActionById(data.rejectOffer.tradeOfferId);
         return new RejectOffer({
-            playerId: data.playerId,
+            player: player,
             reason: data.rejectOffer.reason,
-            tradeOfferId: data.rejectOffer.tradeOfferId
+            tradeOffer: offer
         });
     }
 }

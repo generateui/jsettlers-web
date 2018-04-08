@@ -6,21 +6,20 @@ import { DevelopmentCard, VictoryPoint, YearOfPlenty, RoadBuilding,
 
 export class BuyDevelopmentCard extends GameAction {
     constructor(config) {
-        super();
+        super(config);
 
         config = config || {};
-        this.playerId = config.playerId;
-        this.player = config.player;
         this.developmentCard = config.developmentCard || null;
     }
-    static fromData(data) {
+    static fromData(data, game) {
+        const player = game.getPlayerById(data.playerId);
         let developmentCard = null;
         if (data.buyDevelopmentCard.developmentCard) {
             developmentCard = DevelopmentCard.fromData(
-                data.buyDevelopmentCard.developmentCard);
+                data.buyDevelopmentCard.developmentCard, game);
         }
         return new BuyDevelopmentCard({
-            playerId: data.playerId,
+            player: player,
             developmentCard: developmentCard
         });
     }
@@ -32,17 +31,6 @@ export class BuyDevelopmentCard extends GameAction {
         const buyDev = {};
         if (dc !== null) {
             buyDev.developmentCard = dc.data;
-            // if (dc instanceof VictoryPoint) {
-            //     buyDev.victoryPoint = dc.data;
-            // } else if(dc instanceof Soldier) {
-            //     buyDev.soldier = dc.data;
-            // } else if(dc instanceof RoadBuilding) {
-            //     buyDev.roadBuilding = dc.data;
-            // } else if(dc instanceof YearOfPlenty) {
-            //     buyDev.yearOfPlenty = dc.data;
-            // } else if(dc instanceof Monopoly) {
-            //     buyDev.monopoly = dc.data;
-            // }
         }
         action.buyDevelopmentCard = buyDev;
         return action;
@@ -63,10 +51,11 @@ export class BuyDevelopmentCard extends GameAction {
         this.player.developmentCards.push(this.developmentCard);
         game.bank.resources.moveFrom(this.player.resources, DevelopmentCard.cost);
     }
-    performServer(host) {
-        const index = host.random.intFromZero(host.developmentCards.length);
-        const developmentCard = host.developmentCards[index];
-        host.developmentCards.remove(developmentCard);
+    performAtHost(hostGame) {
+        const index = hostGame.random.intFromZero(hostGame.game.developmentCards.length);
+        const developmentCard = hostGame.game.developmentCards[index];
+        developmentCard.turnBoughtIndex = hostGame.game.playTurns.turn.number;
+        hostGame.game.developmentCards.remove(developmentCard);
         this.developmentCard = developmentCard;
     }
 }

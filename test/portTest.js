@@ -1,9 +1,34 @@
 import { jsettlers as pb } from "../src/generated/data"
 import * as assert from "assert";
 import { PortList, Any4To1Port, Timber2To1Port, Any3To1Port, Wheat2To1Port, 
-    Sheep2To1Port, Clay2To1Port } from "../src/port";
+    Sheep2To1Port, Clay2To1Port, Port } from "../src/port";
 import { Timber, ResourceList, Wheat, Brick, Ore, Sheep } from '../src/resource';
+import { Coord3D } from "../src/coord";
 
+describe("Port", () => {
+    it("serializes empty port", () => {
+        const port = new Any3To1Port();
+
+        const buffer = pb.Port.encode(port.data).finish();
+        const revived = pb.Port.decode(buffer);
+        const copy = Port.fromData(revived);
+
+        assert.strictEqual(null, port.seaCoord);
+        assert.strictEqual(null, port.partIndex);
+        assert.strictEqual(pb.PortType.Any3To1, port.type);
+    });
+    it("serializes port with seaCoord and partIndex", () => {
+        const port = new Any4To1Port(2, Coord3D.center.neighbors[1]);
+
+        const buffer = pb.Port.encode(port.data).finish();
+        const revived = pb.Port.decode(buffer);
+        const copy = Port.fromData(revived);
+
+        assert.strictEqual(Coord3D.center.neighbors[1], port.seaCoord);
+        assert.strictEqual(2, port.partIndex);
+        assert.strictEqual(pb.PortType.Any4To1, port.type);
+    });
+});
 describe("PortList", () => {
     describe("bestPortForResourceType", () => {
         it("timberport when having timber", () => {
