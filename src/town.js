@@ -7,7 +7,7 @@ export class Town {
         this.node = node;
         this.player = player;
         this.victoryPoints = 1;
-        this.name = "town";
+        this.name = "Town";
     }
     get data() {
         return pb.Town.create({
