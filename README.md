@@ -1,7 +1,7 @@
 # jsettlers-web
 
 Build settlements, roads & cities on a hexagonal grid. Renders a 3D board of all
-the items using three.js. Most of the UI is implemented using vue.js. A complete
+the items using three.js. Most of the UI is implemented using vue.js! A complete
 and custom language is defined using antlr4, which is used for integration- and
 cucumber-style test scripts.
 
